@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# patina21 command-line entry point. Dispatches to bin/patina-<command>; no logic here.
+set -euo pipefail
+
+PATINA_PATH="${PATINA_PATH:-$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)}"
+export PATINA_PATH
+
+usage() {
+  cat <<EOF
+usage: patina <command> [args]
+
+patina21: a polish layer for KDE Plasma on openSUSE.
+
+commands:
+  install   Set up patina21 on this machine (theme, app bundles, Nextcloud, agent CLIs)
+  update    Pull the latest patina21 and run pending migrations
+  theme     List, preview or switch themes
+  doctor    Check the base system and report what patina21 would change
+  migrate   Run pending migrations without pulling
+  version   Print the patina21 version
+  help      Show this help
+
+A command without a bin/patina-<command> file is planned, not implemented yet.
+Roadmap: $PATINA_PATH/docs/roadmap.md
+EOF
+}
+
+version() {
+  if git -C "$PATINA_PATH" describe --tags --always --dirty 2>/dev/null; then
+    return
+  fi
+  echo "0.0.0-unknown"
+}
+
+main() {
+  local cmd="${1:-help}"
+  shift || true
+  case "$cmd" in
+    help | -h | --help) usage ;;
+    version | -V | --version) version ;;
+    install | update | theme | doctor | migrate)
+      if [[ -x "$PATINA_PATH/bin/patina-$cmd" ]]; then
+        exec "$PATINA_PATH/bin/patina-$cmd" "$@"
+      fi
+      echo "patina: '$cmd' is planned but not implemented yet (see docs/roadmap.md)." >&2
+      exit 2
+      ;;
+    *)
+      echo "patina: unknown command '$cmd' (try 'patina help')." >&2
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"

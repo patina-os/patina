@@ -1,0 +1,7 @@
+# Defaults applied by `patina install` unless the user picks otherwise.
+# Placeholders until Phase 1; keep this file small.
+theme: template              # a directory under themes/; a real default theme comes with Phase 1
+flatpak_remote: https://dl.flathub.org/repo/flathub.flatpakrepo
+fonts:                       # font names only; the packages providing them are listed in manifest/
+  ui: Noto Sans
+  monospace: Noto Sans Mono

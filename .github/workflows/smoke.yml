@@ -1,0 +1,51 @@
+name: smoke
+
+# Runs the patina21 entry point inside a stock openSUSE Tumbleweed container on both
+# architectures the layer targets. This job grows into the Path A bootstrap test
+# (docs/roadmap.md, Phase 1) once `patina install` exists.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  smoke:
+    name: smoke (${{ matrix.arch }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-24.04
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    container: registry.opensuse.org/opensuse/tumbleweed:latest
+    steps:
+      - name: Install what checkout and the smoke test need
+        run: zypper --non-interactive install git tar gzip yq
+      - uses: actions/checkout@v5
+      - name: Show the base
+        run: |
+          uname -m
+          grep PRETTY_NAME /etc/os-release
+      - name: Run the entry point
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          bin/patina version
+          bin/patina help
+          set +e
+          bin/patina install
+          rc=$?
+          set -e
+          test "$rc" -eq 2
+      - name: Every YAML file parses
+        run: |
+          git ls-files '*.yaml' '*.yml' | while read -r f; do
+            yq eval '.' "$f" > /dev/null || { echo "invalid YAML: $f"; exit 1; }
+          done

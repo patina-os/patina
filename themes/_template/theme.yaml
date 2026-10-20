@@ -1,0 +1,40 @@
+# patina21 theme. Copy this directory to themes/<name>/ and edit every field.
+# Colours are desktop-agnostic data; desktops/<desktop>/ renders them.
+name: template                 # directory name: lowercase, kebab-case
+display_name: Template
+author: Your Name
+license: GPL-3.0-or-later      # the theme data; SPDX identifier
+artwork_license: CC-BY-SA-4.0  # wallpapers and other images; SPDX identifier
+variant: dark                  # dark or light; tells renderers which base styles to start from
+
+# base16 palette: https://github.com/tinted-theming/home/blob/main/styling.md
+# Copy the palette block of an existing scheme or define your own. The values below
+# are placeholders. base10..base17 (base24) are optional extras.
+palette:
+  base00: "#1e1e1e"  # default background
+  base01: "#262626"  # lighter background: status bars, line numbers
+  base02: "#303030"  # selection background
+  base03: "#5a5a5a"  # comments, invisibles
+  base04: "#8a8a8a"  # dark foreground: status bars
+  base05: "#d0d0d0"  # default foreground
+  base06: "#e0e0e0"  # light foreground, rarely used
+  base07: "#f0f0f0"  # lightest, rarely used
+  base08: "#e06c75"  # red: errors, deleted
+  base09: "#d19a66"  # orange: constants
+  base0A: "#e5c07b"  # yellow: classes, search
+  base0B: "#98c379"  # green: strings, added
+  base0C: "#56b6c2"  # cyan: regular expressions, escapes
+  base0D: "#61afef"  # blue: functions, links
+  base0E: "#c678dd"  # magenta: keywords
+  base0F: "#be5046"  # brown: deprecated
+
+# Images relative to this directory; the first one is the default. The template ships
+# no image: add your own under wallpapers/.
+wallpapers:
+  - wallpapers/template.png
+
+# Optional per-desktop hints. Still data: a renderer reads them, nothing executes here.
+plasma:
+  icons: breeze-dark             # icon theme as installed from openSUSE repos
+  cursors: breeze_cursors
+  look_and_feel: org.kde.breezedark.desktop

@@ -1,0 +1,13 @@
+# Always installed. Keep this list short: everything else is a bundle the user picks.
+# Package names are illustrative until Phase 1 verifies them against Tumbleweed.
+name: base
+description: What patina21 itself needs to run
+default: true
+required: true
+packages:
+  - git       # `patina update` is a git pull
+  - yq        # the only parser patina21 scripts use for YAML
+  - flatpak   # Flathub is the source for GUI apps we do not track
+  - curl
+flatpaks: []
+upstream: []

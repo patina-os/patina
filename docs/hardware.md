@@ -1,0 +1,19 @@
+# Tested hardware
+
+The layer has no architecture; the base provides the hardware support. This list records
+what has been tested with patina21, how far it got, and where the device glue lives. An
+"ARM version" is this list plus `devices/`, never a separate release.
+
+Status values: untested, boots, works-with-caveats, supported.
+
+| Device | Arch | Status | Base image | Glue | Notes |
+|---|---|---|---|---|---|
+| Generic PC or VM (UEFI) | x86_64 | untested | openSUSE Tumbleweed DVD | none | reference target for Phase 1 and 2 |
+| Raspberry Pi 4 | aarch64 | untested | openSUSE's official RPi4 image | planned | Phase 3; USB SSD, clean reimage per run |
+| Snapdragon X Elite laptops | aarch64 | untested | n/a | planned (firmware helper) | works with caveats upstream; Phase 4 |
+| Snapdragon X2 Elite laptops | aarch64 | untested | n/a | none | upstreaming in progress |
+| Nvidia RTX Spark / N1X laptops | aarch64 | untested | n/a | none | no public Linux image yet |
+| Apple Silicon | aarch64 | out of scope | n/a | none | Fedora Asahi, not openSUSE |
+
+Add a row when you test a device, even when it fails, and link the `devices/<slug>/`
+directory when one exists.
