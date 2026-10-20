@@ -1,0 +1,13 @@
+# The polished-desktop bundle: the app stack from the README, all free software.
+# Illustrative until Phase 1 verifies the names and decides the office suite.
+name: desktop
+description: Curated desktop apps (Nextcloud, Thunderbird, Element, KeePassXC)
+default: true
+packages:
+  - nextcloud-desktop
+  - MozillaThunderbird   # openSUSE's package name; other backends map it
+  - keepassxc
+flatpaks:
+  - im.riot.Riot         # Element
+  # Office suite: Collabora Office or OnlyOffice, decided in Phase 1 (docs/roadmap.md).
+upstream: []

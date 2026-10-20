@@ -1,0 +1,6 @@
+# yamllint configuration: CI and contributors run `yamllint .` from the repository root.
+extends: relaxed
+rules:
+  line-length:
+    max: 100
+    level: warning

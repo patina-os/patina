@@ -1,0 +1,18 @@
+# Tools installed from their upstream installers, used only when no packaged version is
+# worth using. Methods: npm (global package via the base's nodejs and npm), uv (Python
+# tool via `uv tool install`), script (the upstream's documented install script).
+# Names and methods are illustrative until Phase 1 verifies them.
+claude-code:
+  method: npm
+  package: "@anthropic-ai/claude-code"
+codex:
+  method: npm
+  package: "@openai/codex"
+opencode:
+  method: npm
+  package: opencode-ai
+ollama:
+  # Tumbleweed packages ollama; bundles should list it under `packages`. This entry is
+  # the fallback for bases that do not package it.
+  method: script
+  url: https://ollama.com/install.sh

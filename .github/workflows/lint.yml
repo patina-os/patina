@@ -1,0 +1,36 @@
+name: lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: shellcheck every script
+        run: |
+          # Scripts are recognised by the shebang the conventions require (CLAUDE.md).
+          files=()
+          while IFS= read -r f; do
+            if [[ "$(head -n1 "$f" 2>/dev/null)" == '#!/usr/bin/env bash' ]]; then
+              files+=("$f")
+            fi
+          done < <(git ls-files)
+          printf 'checking: %s\n' "${files[@]}"
+          shellcheck --shell=bash "${files[@]}"
+
+  yamllint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: yamllint every YAML file
+        run: |
+          command -v yamllint >/dev/null || pipx install yamllint
+          yamllint .
