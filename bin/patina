@@ -7,10 +7,12 @@ PATINA_PATH="${PATINA_PATH:-$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)}"
 export PATINA_PATH
 
 usage() {
+  if [[ -r "$PATINA_PATH/branding/logo.txt" ]]; then
+    cat "$PATINA_PATH/branding/logo.txt"
+    echo
+  fi
   cat <<EOF
 usage: patina <command> [args]
-
-patina21: a polish layer for KDE Plasma on openSUSE.
 
 commands:
   install   Set up patina21 on this machine (theme, app bundles, Nextcloud, agent CLIs)

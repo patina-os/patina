@@ -63,6 +63,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   line in `manifest/` and a reason in the commit message
 - add abstraction layers, plugin systems, frameworks or a second language for the tooling
 - write "openSUSE patina21", "patina21 Linux" or `Patina21`
+- paste the logo into a script or redraw it; `branding/logo.txt` is the only copy and
+  scripts `cat` it
 - explain the 21
 
 ## Repository map
@@ -70,13 +72,14 @@ packs. Audience: developers and privacy-minded users in the EU.
 | Directory | Holds |
 |---|---|
 | `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash |
+| `branding/` | the marks as data: `logo.txt` is the ASCII wordmark scripts print |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
 | `defaults/` | desktop-agnostic keybindings and curated settings |
 | `desktops/` | per-desktop renderers (templates plus one `apply.sh`); `plasma/` first |
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
 | `devices/` | the only place for device- or architecture-specific files |
-| `iso/` | Agama profile, KIWI description, first-boot unit (Phase 2) |
+| `iso/` | Agama profile, KIWI description with the Agama product definition, first-boot unit, QEMU install test (Phase 2) |
 | `docs/` | roadmap, branding and trademark rules, tested hardware |
 | `.github/workflows/` | lint (shellcheck, yamllint) and smoke (Tumbleweed containers, x86_64 and aarch64) |
 

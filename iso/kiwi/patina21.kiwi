@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- OBS-ExclusiveArch: x86_64 aarch64 -->
+<!--
+  KIWI description of the patina21 live installer ISO: openSUSE Tumbleweed's Agama
+  installer, booted with our product definition and preset (root/, packed into
+  patina21-root.tar.xz by pack-overlay.sh). No kernel, no rebuilt package: every
+  package below comes from openSUSE's repositories through the Open Build Service.
+  Modelled on openSUSE's agama-installer image; compare against it on every Agama
+  release. See iso/README.md for how the OBS project is set up.
+-->
+<image schemaversion="7.5" name="patina21-installer">
+  <description type="system">
+    <author>patina21</author>
+    <contact>https://github.com/patina21/patina21</contact>
+    <specification>patina21 live installer: openSUSE Tumbleweed with Agama</specification>
+  </description>
+  <preferences>
+    <version>0.1.0</version>
+    <packagemanager>zypper</packagemanager>
+    <locale>en_US</locale>
+    <keytable>us</keytable>
+    <timezone>UTC</timezone>
+    <rpm-excludedocs>true</rpm-excludedocs>
+    <rpm-check-signatures>false</rpm-check-signatures>
+    <bootloader-theme>openSUSE</bootloader-theme>
+  </preferences>
+  <preferences arch="x86_64,aarch64">
+    <!-- volid is the ISO label the live initrd looks for; 32 characters at most -->
+    <type image="iso" flags="dmsquash" firmware="uefi" mediacheck="true"
+          publisher="patina21" volid="patina21-installer"
+          kernelcmdline="console=tty0 rd.live.overlay.overlayfs=1 plymouth.enable=0">
+      <bootloader name="grub2" timeout="10"/>
+    </type>
+  </preferences>
+  <users>
+    <!-- locked; Agama's live tooling sets a password from live.password= when given -->
+    <user password="!*" home="/root" name="root" groups="root"/>
+  </users>
+  <repository type="rpm-md">
+    <source path="obsrepositories:/"/>
+  </repository>
+
+  <!-- the live system: what Agama needs to probe hardware, reach the network and install -->
+  <packages type="image">
+    <package name="kernel-default"/>
+    <package name="kernel-firmware"/>
+    <package name="systemd"/>
+    <package name="systemd-zram-service"/>
+    <package name="dracut-kiwi-live"/>
+    <package name="plymouth" arch="x86_64,aarch64"/>
+    <package name="plymouth-dracut" arch="x86_64,aarch64"/>
+    <package name="grub2"/>
+    <package name="grub2-x86_64-efi" arch="x86_64"/>
+    <package name="grub2-i386-pc" arch="x86_64"/>
+    <package name="grub2-arm64-efi" arch="aarch64"/>
+    <package name="grub2-branding-openSUSE"/>
+    <package name="shim"/>
+    <package name="syslinux" arch="x86_64"/>
+    <package name="timezone"/>
+    <package name="NetworkManager"/>
+    <package name="NetworkManager-tui"/>
+    <package name="dhcp-client"/>
+    <package name="iproute2"/>
+    <package name="iputils"/>
+    <package name="bind-utils"/>
+    <package name="avahi"/>
+    <package name="openssh"/>
+    <package name="procps"/>
+    <package name="psmisc"/>
+    <package name="less"/>
+    <package name="which"/>
+    <package name="vim"/>
+    <package name="jq"/>
+    <package name="curl"/>
+    <package name="checkmedia"/>
+    <package name="libtss2-tcti-device0"/>
+    <package name="qemu-guest-agent" arch="x86_64,aarch64"/>
+    <package name="spice-vdagent"/>
+    <package name="image-janitor"/>
+    <package name="aaa_base-extras"/>
+    <package name="hyper-v" arch="x86_64,aarch64"/>
+    <!-- the installer -->
+    <package name="agama"/>
+    <package name="agama-yast"/>
+    <package name="agama-web-ui"/>
+    <package name="agama-cli"/>
+    <package name="agama-autoinstall"/>
+    <package name="rubygem(agama-yast)"/>
+    <package name="yast2-schema"/>
+    <package name="agama-products-opensuse"/>
+    <package name="openSUSE-build-key"/>
+    <package name="openSUSE-repos-Tumbleweed"/>
+    <package name="patterns-openSUSE-base"/>
+    <!-- the local installer screen (patina21-ui.service): X, a bare WM, a kiosk browser -->
+    <package name="xorg-x11-server"/>
+    <package name="xinit"/>
+    <package name="xrandr"/>
+    <package name="xsetroot"/>
+    <package name="icewm-lite"/>
+    <package name="MozillaFirefox"/>
+    <package name="MozillaFirefox-branding-openSUSE"/>
+    <package name="fontconfig"/>
+    <package name="fonts-config"/>
+    <package name="google-noto-sans-fonts"/>
+    <!-- our overlay: product definition, preset loader, installer screen, console mark -->
+    <archive name="patina21-root.tar.xz"/>
+  </packages>
+  <packages type="bootstrap">
+    <package name="udev"/>
+    <package name="filesystem"/>
+    <package name="glibc-locale"/>
+    <package name="ca-certificates"/>
+    <package name="ca-certificates-mozilla"/>
+    <package name="openSUSE-release"/>
+    <package name="openSUSE-release-ftp"/>
+  </packages>
+</image>
