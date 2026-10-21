@@ -17,6 +17,11 @@ on:
   push:
     tags: ['v*']
 
+# A newer push to the same branch cancels the run it supersedes; tag runs never overlap.
+concurrency:
+  group: iso-${{ github.ref }}
+  cancel-in-progress: true
+
 defaults:
   run:
     shell: bash

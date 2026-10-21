@@ -18,6 +18,8 @@ iso/
                             of Debian's own
   live/config/package-lists/  the live system: live-boot, NetworkManager, firmware,
                             Calamares and a bare X session for it. No Plasma here
+  live/config/apt/preferences  build-time pins that keep two large Recommends out of
+                            the live system; not part of the image
   live/arch/<arch>.list.chroot  the few per-architecture packages (signed GRUB and shim,
                             microcode); build.sh copies the right one in
   live/config/hooks/        one build hook: boot the live system into the installer
@@ -58,8 +60,8 @@ iso/
    never loops on first boot.
 
 That is Path A, executed for the user. The image carries only the installer, its
-configuration, the network stack and firmware, so it stays well under a gigabyte and
-Debian's mirrors carry the download, not us. The installed system is current Debian
+configuration, the network stack and firmware, so it stays under a gigabyte (873 MB
+for amd64) and Debian's mirrors carry the download, not us. The installed system is current Debian
 stable at install time, and an old image installs today's layer.
 
 ## Building
@@ -122,9 +124,12 @@ is committed and the logo keeps its single copy.
   `live/initrd.img-<version>`; the boot test finds them by pattern.
 - agetty treats backslashes in `/etc/issue` as escape sequences; `build.sh` doubles them
   in the console copy of the logo.
-- The `firmware-linux` metapackage pulls Debian's whole non-free firmware set, over 700
-  MiB of it for network cards no laptop has; the live image carries only the wifi and
-  graphics families and leaves the full set to `modules/packages.conf`.
+- live-build's own firmware detection (`--firmware-chroot`, on by default) and the
+  `firmware-linux` metapackage each pull Debian's whole non-free firmware set, over 700
+  MiB of it for network cards no laptop has, and made the first image 1.2 GB. With the
+  detection off, the wifi and graphics families listed by hand and two large Recommends
+  pinned out at build time (`config/apt/preferences`), the amd64 image is 873 MB; the
+  installed system gets the full firmware set from `modules/packages.conf`.
 
 ## Still to verify
 

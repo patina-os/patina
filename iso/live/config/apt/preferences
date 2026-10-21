@@ -1,0 +1,11 @@
+# Build-time apt pins for the live system; live-build removes this file from the image
+# after the packages are in. These are Recommends the installer screen does not need
+# and the installed system gets back from Debian's mirrors with Plasma and
+# firmware-linux (modules/packages.conf): together about 150 MiB uncompressed.
+Package: mesa-vulkan-drivers
+Pin: release *
+Pin-Priority: -1
+
+Package: firmware-nvidia-graphics
+Pin: release *
+Pin-Priority: -1

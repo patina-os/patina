@@ -24,8 +24,10 @@ All notable changes to patina21 are documented here. The format follows
 
 ### Added
 
-- The `iso` workflow builds and boot-tests the arm64 image too, natively on GitHub's
-  aarch64 runners (roadmap, Phase 3), and runs on every pull request that touches the
+- The first images: the amd64 and arm64 live images build with live-build and
+  Calamares 3.3 as Debian 13 ships them and boot to the installer screen in QEMU
+  (roadmap, Phase 2 and 3). The `iso` workflow builds both natively, on GitHub's x86_64
+  and aarch64 runners, boot-tests both and runs on every pull request that touches the
   image. The boot test falls back to CPU emulation where a runner has no KVM.
 - `devices/raspberry-pi-4/`: the first device entry (status untested, data only) with
   the manual validation procedure for Path A on a Raspberry Pi 4.

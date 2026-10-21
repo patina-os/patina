@@ -13,6 +13,8 @@ lb config noauto \
   --architectures "$arch" \
   --linux-flavours "$arch" \
   --archive-areas "main non-free-firmware" \
+  --firmware-chroot false \
+  --firmware-binary false \
   --mirror-bootstrap http://deb.debian.org/debian/ \
   --mirror-binary http://deb.debian.org/debian/ \
   --security true \
