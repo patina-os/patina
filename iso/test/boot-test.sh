@@ -9,10 +9,12 @@ usage() {
 usage: boot-test.sh <patina21.iso> [work-dir]
 
 Needs qemu-system-x86_64 or qemu-system-aarch64 (matching the image), the OVMF or
-AAVMF firmware, bsdtar and KVM. Environment:
+AAVMF firmware and bsdtar. KVM is used when /dev/kvm is writable; otherwise QEMU
+emulates the CPU (TCG), which is slower and gets a longer default timeout. Environment:
   PATINA_TEST_ARCH      amd64 (default) or arm64
   PATINA_TEST_MEMORY    VM memory in MiB (default 4096)
-  PATINA_TEST_TIMEOUT   seconds to wait for the installer (default 900)
+  PATINA_TEST_TIMEOUT   seconds to wait for the installer (default 900 with KVM,
+                        2700 without)
 The serial console lands in <work-dir>/boot.log.
 USAGE
 }
@@ -22,20 +24,36 @@ iso="$(readlink -f "$1")"
 work="${2:-$PWD/iso/build/test}"
 arch="${PATINA_TEST_ARCH:-amd64}"
 memory="${PATINA_TEST_MEMORY:-4096}"
-timeout_s="${PATINA_TEST_TIMEOUT:-900}"
 [[ -r "$iso" ]] || { echo "boot-test: cannot read $iso" >&2; exit 66; }
 
+if [[ -w /dev/kvm ]]; then
+  accel="kvm"
+  cpu="host"
+  timeout_s="${PATINA_TEST_TIMEOUT:-900}"
+else
+  accel="tcg"
+  cpu="max"
+  timeout_s="${PATINA_TEST_TIMEOUT:-2700}"
+fi
+cpus="$(nproc)"
+(( cpus > 4 )) && cpus=4
+
+# The display device gives X a framebuffer to start on while nothing is shown
+# (-display none): a VGA card on PCs, a virtio GPU on the arm64 virt machine.
 case "$arch" in
   amd64)
     qemu="qemu-system-x86_64"
     candidates=(/usr/share/OVMF/OVMF_CODE_4M.fd /usr/share/OVMF/OVMF_CODE.fd
       /usr/share/edk2/ovmf/OVMF_CODE.fd)
-    machine=(-machine "q35,accel=kvm" -cpu host)
+    machine=(-machine "q35,accel=$accel" -cpu "$cpu" -vga std)
+    serial="ttyS0"
     ;;
   arm64)
     qemu="qemu-system-aarch64"
-    candidates=(/usr/share/AAVMF/AAVMF_CODE.fd /usr/share/qemu-efi-aarch64/QEMU_EFI.fd)
-    machine=(-machine "virt,accel=kvm" -cpu host)
+    candidates=(/usr/share/AAVMF/AAVMF_CODE.fd /usr/share/qemu-efi-aarch64/QEMU_EFI.fd
+      /usr/share/edk2/aarch64/QEMU_EFI.fd)
+    machine=(-machine "virt,accel=$accel" -cpu "$cpu" -device virtio-gpu-pci)
+    serial="ttyAMA0"
     ;;
   *) echo "boot-test: unsupported arch $arch" >&2; exit 64 ;;
 esac
@@ -54,16 +72,22 @@ done
 mkdir -p "$work"
 log="$work/boot.log"
 : > "$log"
-# Kernel and initrd straight from the image (live-build puts them under live/), so the
-# boot options can be ours: the serial console the test watches.
-bsdtar -C "$work" -xf "$iso" live/vmlinuz live/initrd.img
+# Kernel and initrd straight from the image (live-build puts them under live/, named
+# after the kernel version), so the boot options can be ours: the serial console the
+# test watches.
+rm -rf "$work/live"
+bsdtar -C "$work" -xf "$iso" 'live/vmlinuz*' 'live/initrd*'
+kernel="$(find "$work/live" -name 'vmlinuz*' | sort | head -n1)"
+initrd="$(find "$work/live" -name 'initrd*' | sort | head -n1)"
+[[ -n "$kernel" && -n "$initrd" ]] \
+  || { echo "boot-test: no kernel or initrd under live/ in $iso" >&2; exit 65; }
 
-echo "boot-test: booting $iso"
-"$qemu" "${machine[@]}" -m "$memory" -smp 2 -display none -vga std -no-reboot \
+echo "boot-test: booting $iso ($arch, $accel, ${cpus} cpus, timeout ${timeout_s}s)"
+"$qemu" "${machine[@]}" -m "$memory" -smp "$cpus" -display none -no-reboot \
   -drive "if=pflash,format=raw,readonly=on,file=$firmware" \
   -cdrom "$iso" \
-  -kernel "$work/live/vmlinuz" -initrd "$work/live/initrd.img" \
-  -append "boot=live components quiet console=ttyS0,115200n8" \
+  -kernel "$kernel" -initrd "$initrd" \
+  -append "boot=live components quiet hostname=patina21-live username=live noautologin console=$serial,115200n8" \
   -netdev user,id=net0 -device virtio-net-pci,netdev=net0 \
   -serial "file:$log" &
 qemu_pid=$!

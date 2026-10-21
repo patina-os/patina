@@ -1,13 +1,26 @@
 name: iso
 
-# Builds the patina21 live image with live-build in a Debian container, boots it in QEMU
-# (the automated half of the release gate in iso/README.md), and attaches it to the
-# GitHub release of a tag only when that boot test passed. amd64 only until Phase 3.
+# Builds the patina21 live image with live-build in a Debian container on both
+# architectures, boots each image in QEMU (the automated half of the release gate in
+# iso/README.md), and attaches the images to the GitHub release of a tag only when every
+# boot test passed. Pull requests that touch the image run the build and the boot test
+# but never publish.
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'iso/**'
+      - 'branding/**'
+      - 'manifest/bundles/base.yaml'
+      - '.github/workflows/iso-build.yml'
   push:
     tags: ['v*']
+
+# A newer push to the same branch cancels the run it supersedes; tag runs never overlap.
+concurrency:
+  group: iso-${{ github.ref }}
+  cancel-in-progress: true
 
 defaults:
   run:
@@ -15,8 +28,16 @@ defaults:
 
 jobs:
   build:
-    name: build (amd64)
-    runs-on: ubuntu-24.04
+    name: build (${{ matrix.arch }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 90
     container:
       image: debian:13
@@ -27,7 +48,7 @@ jobs:
           apt-get update -q
           apt-get install -y -q live-build debootstrap git ca-certificates curl
           curl -fsSL --retry 4 -o /usr/local/bin/yq \
-            https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+            "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${{ matrix.arch }}"
           chmod +x /usr/local/bin/yq
       - uses: actions/checkout@v5
         with:
@@ -35,43 +56,56 @@ jobs:
       - name: Build the image
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          iso/live/build.sh amd64 "$GITHUB_WORKSPACE/iso/build/live"
+          iso/live/build.sh "${{ matrix.arch }}" "$GITHUB_WORKSPACE/iso/build/live"
       - name: Keep the build log
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: iso-build-log
+          name: iso-build-log-${{ matrix.arch }}
           path: iso/build/live/build.log
           if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
         with:
-          name: patina21-amd64
+          name: patina21-${{ matrix.arch }}
           path: iso/build/live/*.iso
           if-no-files-found: error
 
   boot-test:
-    name: boot test (amd64, QEMU)
+    name: boot test (${{ matrix.arch }}, QEMU)
     needs: build
-    runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+            packages: qemu-system-x86 ovmf
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+            packages: qemu-system-arm qemu-efi-aarch64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
       - uses: actions/download-artifact@v4
         with:
-          name: patina21-amd64
+          name: patina21-${{ matrix.arch }}
           path: image
-      - name: Install QEMU, UEFI firmware and bsdtar
+      - name: Install QEMU, the UEFI firmware and bsdtar
         run: |
           sudo apt-get update -q
-          sudo apt-get install -y -q qemu-system-x86 ovmf libarchive-tools
-          sudo chmod a+rw /dev/kvm
+          sudo apt-get install -y -q ${{ matrix.packages }} libarchive-tools
+          # KVM where the runner has it; boot-test.sh falls back to TCG where it does not.
+          if [[ -e /dev/kvm ]]; then sudo chmod a+rw /dev/kvm; fi
       - name: Boot the image
+        env:
+          PATINA_TEST_ARCH: ${{ matrix.arch }}
         run: iso/test/boot-test.sh image/*.iso "$RUNNER_TEMP/boot-test"
       - name: Keep the serial log
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: boot-test-log
+          name: boot-test-log-${{ matrix.arch }}
           path: ${{ runner.temp }}/boot-test/boot.log
           if-no-files-found: ignore
 
@@ -85,9 +119,10 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: patina21-amd64
+          pattern: patina21-*
           path: image
-      - name: Upload the image to the tag's release (created as a draft if missing)
+          merge-multiple: true
+      - name: Upload the images to the tag's release (created as a draft if missing)
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}

@@ -26,7 +26,6 @@ os-prober
 # the installer screen (patina21-ui.service): X, a bare window manager, a session bus
 xserver-xorg
 xinit
-x11-xserver-utils
 openbox
 dbus-bin
 fonts-noto-core

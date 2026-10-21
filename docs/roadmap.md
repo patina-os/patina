@@ -24,8 +24,9 @@ suite (Collabora Office or OnlyOffice), name and palette of the first theme.
 
 ## Phase 2: the live image on x86_64 (live-build, Calamares)
 
-Scaffolded in `iso/`; nothing built or booted yet. Phase 2 can be prepared next to
-Phase 1 because it only automates Path A, but it is done only after Phase 1 is.
+The image builds and boots (`iso/`); the manual install waits for Phase 1, because the
+first boot runs `patina install`. Phase 2 can be prepared next to Phase 1 because it
+only automates Path A, but it is done only after Phase 1 is.
 
 - [x] live-build configuration: a small live system that carries only Calamares, the
   network stack and firmware; Plasma and the base bundle are fetched from Debian's
@@ -35,7 +36,8 @@ Phase 1 because it only automates Path A, but it is done only after Phase 1 is.
 - [x] first-boot unit and script that run the same `patina install` as Path A
 - [x] `iso-build` workflow: build in a Debian container, boot test in QEMU, upload to the
   GitHub release of a tag only when the boot test passed
-- [ ] the first image builds and passes the boot test on x86_64
+- [x] the first image builds and passes the boot test on x86_64 (the `iso` workflow,
+  on every pull request that touches the image)
 - [ ] one manual install in a VM per release, until Calamares can be driven unattended
   (upstream has no unattended mode; see `iso/README.md`)
 - [x] branding within Debian's trademark policy (`docs/branding.md`, the logo)
@@ -43,10 +45,13 @@ Phase 1 because it only automates Path A, but it is done only after Phase 1 is.
 
 ## Phase 3: aarch64 (Raspberry Pi 4 first)
 
-- manual validation on a Raspberry Pi 4 (Debian's official Raspberry Pi image, USB SSD,
-  clean reimage per run), then Path A on it; the goal is correctness, not UX
-- the live image for arm64 (`iso/live/arch/arm64.list.chroot`) for machines that boot a
-  generic UEFI Debian
+- [ ] manual validation on a Raspberry Pi 4 (Debian's official Raspberry Pi image, USB
+  SSD, clean reimage per run), then Path A on it; the goal is correctness, not UX. The
+  procedure is in `devices/raspberry-pi-4/README.md`; it needs Phase 1's
+  `patina install` and the hardware
+- [x] the live image for arm64 (`iso/live/arch/arm64.list.chroot`) for machines that
+  boot a generic UEFI Debian: built natively on GitHub's aarch64 runners and boot-tested
+  in QEMU by the same `iso` workflow
 - Done when: Path A passes on the Pi 4 and the arm64 image passes the boot test.
 
 ## Phase 4: ARM laptops, as hardware allows

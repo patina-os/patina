@@ -49,7 +49,7 @@ Two paths, one layer. If they ever diverge, Path A wins.
 | Path | What you do | Status |
 |---|---|---|
 | A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (a small TUI: theme, app bundles, Nextcloud, agent tools) | pre-alpha, not usable yet |
-| B: the patina21 image | Boot a small live image, answer the installer (disk, user, locale), get the finished desktop. Plasma and the base are downloaded from Debian's mirrors during the install; first boot runs Path A | pre-alpha, scaffolded in `iso/`, no image built yet |
+| B: the patina21 image | Boot a small live image, answer the installer (disk, user, locale), get the finished desktop. Plasma and the base are downloaded from Debian's mirrors during the install; first boot runs Path A | pre-alpha: the image builds and boots to the installer in CI (x86_64 and aarch64), not released yet; the first boot waits for Path A |
 
 Updates: `patina update` runs `git pull` and then any pending migrations.
 

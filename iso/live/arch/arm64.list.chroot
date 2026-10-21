@@ -1,4 +1,6 @@
-# Packages only the arm64 live image needs (Phase 3). build.sh copies this file into the
-# package lists; live-build adds the kernel itself (--linux-flavours).
+# Packages only the arm64 live image needs. build.sh copies this file into the package
+# lists; live-build adds the kernel itself (--linux-flavours). The image targets machines
+# that boot a generic UEFI Debian; boards that need their own firmware are devices/.
+# Secure Boot: Debian's signed shim and GRUB, installed into the target by Calamares.
 grub-efi-arm64-signed
 shim-signed

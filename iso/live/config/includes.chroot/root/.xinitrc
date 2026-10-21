@@ -3,7 +3,6 @@
 # X session of the live image: a bare window manager and Calamares, full screen.
 set -euo pipefail
 
-xsetroot -solid '#1e1e1e' || true
 openbox &
 dbus-run-session -- calamares &
 session_pid=$!
