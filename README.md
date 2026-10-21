@@ -14,6 +14,16 @@ EU-sovereign app stack on top of Debian stable with Plasma. Not a distribution.
 
 **Status: pre-alpha.** Nothing is installable yet. See the [roadmap](docs/roadmap.md).
 
+## Screenshots
+
+The installer's welcome page, as the live image's boot test captures it in CI (amd64,
+QEMU, Calamares as Debian 13 ships it, branded through data):
+
+![The patina21 installer's welcome page](docs/screenshots/installer-amd64.png)
+
+The desktop follows with the first theme (roadmap, Phase 2). The screenshots are taken
+by CI and by the manual install check, never edited; see `iso/README.md`.
+
 ## What it is
 
 patina21 takes a stock Debian with Plasma and finishes it: one consistent theme across
