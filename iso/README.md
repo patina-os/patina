@@ -5,9 +5,11 @@ data. The image contains no logic of its own; it automates the stock-Debian path
 (Path A) and nothing else. If Path A and the image ever diverge, Path A wins and the
 image is fixed.
 
-Status: scaffolded (roadmap, Phase 2). Nothing here has been built or booted yet; the
-first run of the `iso` workflow is the step that verifies it. What each file assumes is
-written next to it, and the list of things to verify is at the end of this page.
+Status: builds and boots (roadmap, Phases 2 and 3). The amd64 image builds with
+live-build 20250505 and Calamares 3.3.14 as Debian 13 ships them and reaches the
+installer screen in QEMU; the `iso` workflow repeats that on every change and builds and
+boots the arm64 image the same way. What each file assumes is written next to it, and
+what the first build settled, plus what is still open, is at the end of this page.
 
 ```text
 iso/
@@ -106,21 +108,33 @@ is committed and the logo keeps its single copy.
   (no prompts, defaults for everything) and `PATINA_THEME=<name>`, and exit non-zero on
   failure so the first-boot script can say so.
 
-## To verify on the first build
+## Settled by the first build
 
-- Package names are checked by the smoke workflow's apt dry run on every pull request;
-  what it cannot check is whether the set is complete. The first boot of the image tells.
-- `--uefi-secure-boot enable` and `--bootloaders grub-efi` are live-build options whose
-  exact spelling changed across releases; compare with `lb config --help` on Debian 13.
-- Calamares' module options follow the 3.3 series as Debian 13 packages it. The
-  `users.conf` group syntax, `displaymanager.conf` and the `style` keys in
-  `branding.desc` are the ones most likely to need a rename.
-- Calamares runs as root inside `dbus-run-session`; if it insists on a polkit agent or a
-  system bus, `.xinitrc` is the place to fix it.
+- `lb config` on Debian 13 accepts every option in `auto/config` as spelled, including
+  `--uefi-secure-boot enable` and `--bootloaders grub-efi`.
+- Calamares 3.3.14: the module keys match upstream's example configurations of that
+  release. The branding `style` keys are capitalised (`SidebarBackground`), which the
+  first build caught. Encryption is LUKS1: Calamares puts `/boot` inside the encrypted
+  volume and Debian's GRUB cannot unlock LUKS2 with argon2id (`modules/partition.conf`).
+- Calamares runs as root inside `dbus-run-session` on a bare X session without a polkit
+  agent; the installer screen comes up and `.xinitrc` reports it.
+- live-build names the kernel and initrd on the image `live/vmlinuz-<version>` and
+  `live/initrd.img-<version>`; the boot test finds them by pattern.
+- agetty treats backslashes in `/etc/issue` as escape sequences; `build.sh` doubles them
+  in the console copy of the logo.
+- The `firmware-linux` metapackage pulls Debian's whole non-free firmware set, over 700
+  MiB of it for network cards no laptop has; the live image carries only the wifi and
+  graphics families and leaves the full set to `modules/packages.conf`.
+
+## Still to verify
+
 - The `packages` module needs working DNS inside the target; Calamares' `mount` module
   binds `/run` and `/etc/resolv.conf` on Debian's own live images, so it should here.
-- `grub-install` picks the signed images only when `grub-efi-amd64-signed` and
+  The manual install is the check.
+- `grub-install` picks the signed images only when `grub-efi-<arch>-signed` and
   `shim-signed` are present in the target; they come from the live system
-  (`live/arch/amd64.list.chroot`) and must survive the `remove` list.
-- `boot-test.sh` takes kernel and initrd from `live/` on the image and expects `-display
-  none -vga std` to leave X a framebuffer to start on.
+  (`live/arch/<arch>.list.chroot`) and must survive the `remove` list. The manual
+  install on a Secure Boot machine is the check.
+- Whether the package set the installer fetches is complete for first boot: the first
+  boot of an installed system tells (`patina21 firstboot: done`).
+- The arm64 image on real hardware: the boot test covers the QEMU `virt` machine only.

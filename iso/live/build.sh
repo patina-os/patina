@@ -32,8 +32,10 @@ install -D -m 0644 "$repo/iso/firstboot/patina21-firstboot.service" \
   "$chroot/etc/systemd/system/patina21-firstboot.service"
 
 # The logo from its only copy: the console mark, and an SVG of the same text for the
-# installer's sidebar and welcome page.
-install -D -m 0644 "$repo/branding/logo.txt" "$chroot/etc/issue.d/10-patina21.issue"
+# installer's sidebar and welcome page. agetty reads backslashes in /etc/issue as
+# escape sequences, so the console copy doubles them.
+install -d -m 0755 "$chroot/etc/issue.d"
+sed 's/\\/\\\\/g' "$repo/branding/logo.txt" > "$chroot/etc/issue.d/10-patina21.issue"
 branding="$chroot/etc/calamares/branding/patina21"
 {
   echo '<svg xmlns="http://www.w3.org/2000/svg" width="520" height="120" viewBox="0 0 520 120">'

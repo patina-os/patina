@@ -87,7 +87,7 @@ echo "boot-test: booting $iso ($arch, $accel, ${cpus} cpus, timeout ${timeout_s}
   -drive "if=pflash,format=raw,readonly=on,file=$firmware" \
   -cdrom "$iso" \
   -kernel "$kernel" -initrd "$initrd" \
-  -append "boot=live components quiet console=$serial,115200n8" \
+  -append "boot=live components quiet hostname=patina21-live username=live noautologin console=$serial,115200n8" \
   -netdev user,id=net0 -device virtio-net-pci,netdev=net0 \
   -serial "file:$log" &
 qemu_pid=$!
