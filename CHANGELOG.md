@@ -21,6 +21,9 @@ All notable changes to patina21 are documented here. The format follows
   attached to a tag's GitHub release only when the boot test passed.
 - CI runs the smoke test in Debian 13 containers and resolves every package the
   manifest and the image name against Debian's archive with an apt dry run.
+- The Nvidia N1X row in `docs/hardware.md` and the roadmap now carries the retail name,
+  RTX Spark: the laptops are on sale since October 2026, Windows only, and wait for the
+  platform patches to reach Debian's kernel.
 
 ### Added
 

@@ -73,8 +73,10 @@ expected order. Each one has a row in `docs/hardware.md`. Apple Silicon is out o
 - [ ] Snapdragon X2 Elite: waiting for upstream. Device trees land in Linux 7.4, GPU and
   NPU drivers are still upstreaming, Debian 13's kernel is 6.12; Qualcomm announced
   Debian support for late 2026. No device directory until one boots Debian's kernel
-- [ ] Nvidia N1X laptops: waiting for a Linux commitment from Nvidia; the devices ship
-  late 2026
+- [ ] Nvidia RTX Spark laptops (N1X): waiting for upstream. On sale since October 2026,
+  Windows only, no Linux commitment from Nvidia. Community bring-ups run on patched 7.x
+  kernels with Nvidia's open driver; the platform patches are not upstream, Debian 13's
+  kernel is 6.12. No device directory until one boots Debian's kernel
 - Done when: Path A passes on one Snapdragon X Elite laptop with Debian's own kernel.
 
 ## Later, unscheduled
