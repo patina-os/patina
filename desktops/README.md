@@ -6,7 +6,7 @@ that render `themes/` and `defaults/` into that desktop's configuration.
 ```text
 desktops/<desktop>/
   README.md         what the renderer produces and which tools it calls
-  apply.sh          `apply.sh <theme-dir>`: render templates, write config, reload (Phase 1)
+  apply.sh          `apply.sh <theme-dir>`: render templates, write config, reload (Phase 2)
   templates/        config files with ${BASE00}-style placeholders filled by envsubst
 ```
 

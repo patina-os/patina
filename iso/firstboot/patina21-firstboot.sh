@@ -10,7 +10,7 @@ repo_url="${PATINA_REPO_URL:-https://github.com/patina21/patina21.git}"
 repo_ref="${PATINA_REPO_REF:-main}"
 
 # Optional answers for unattended runs (written by hand, nothing in the image creates it):
-# PATINA_THEME, PATINA_UNATTENDED=1. `patina install` honours them (roadmap, Phase 1).
+# PATINA_THEME, PATINA_UNATTENDED=1. `patina install` honours them (roadmap, Phases 1 and 2).
 # shellcheck disable=SC1091  # optional, written by hand for unattended runs
 [[ -r /etc/patina21/firstboot.env ]] && source /etc/patina21/firstboot.env
 

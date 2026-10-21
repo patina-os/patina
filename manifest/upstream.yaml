@@ -6,7 +6,8 @@
 #   binary      a single static binary from the upstream's release page, installed to
 #               ~/.local/bin; `arch` maps uname -m to the upstream's file name
 #   apt-source  the upstream's own signed apt repository, added as a source and installed
-#               with apt; only for opt-in tools, never for a default
+#               with apt; for opt-in tools, and for a default only when the software is
+#               free and neither Debian's archive nor Flathub carries it (Euro-Office)
 # Names and methods are illustrative until Phase 1 verifies them.
 yq:
   # Debian's `yq` package is the Python jq wrapper, not the Go yq the data format is

@@ -1,7 +1,7 @@
 # desktops/plasma/
 
 Renderer for KDE Plasma 6 as shipped by Debian. Nothing here yet except this contract;
-`apply.sh` and `templates/` arrive with Phase 1 (`docs/roadmap.md`).
+`apply.sh` and `templates/` arrive with Phase 2 (`docs/roadmap.md`).
 
 What it will produce from a theme and `defaults/`:
 

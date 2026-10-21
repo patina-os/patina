@@ -69,10 +69,14 @@ The layer itself has no architecture. aarch64 is a first-class target from day o
 
 ## The app stack
 
-Nextcloud client, Thunderbird, Element, KeePassXC, an office suite (Collabora Office or
-OnlyOffice, to be decided), plus the agent tools above. GUI apps we do not want to track
-come from Flathub; agent tools come from their upstream installers (npm, uv, Anthropic's
-own apt repository for Claude Desktop).
+Nextcloud client, Thunderbird, Element, KeePassXC, Euro-Office (the European, AGPL fork of
+ONLYOFFICE), kitty as the terminal, a developer kit (fish, starship, bat, eza, fzf,
+ripgrep, lazygit, btop, zoxide, atuin, git-delta, neovim, fastfetch) and the Zed editor,
+plus the agent tools above. Everything comes from Debian's archive except what it does
+not carry: GUI apps we do not want to track come from Flathub, agent tools from their
+upstream installers (npm, uv, Anthropic's own apt repository for Claude Desktop), and
+Euro-Office from Nextcloud's signed apt repository until Flathub carries it. Ollama is
+the local backend the agent tools point at.
 
 ## FAQ
 
@@ -94,6 +98,11 @@ third-party installers, vendor packages and manuals assume apt. Debian 13 ships 
 openSUSE has the better Plasma polish and the Open Build Service; Debian has the
 ecosystem users actually meet. The package manifest is base-agnostic, so the openSUSE
 backend stays as data for a possible later flavour.
+
+**Is it fast like CachyOS?** It copies what makes CachyOS feel fast and is configuration:
+zram, I/O schedulers, memory and systemd settings, a lean boot, low-latency Plasma
+defaults. It does not copy the custom kernel or the rebuilt packages, because patina21
+owns nothing that gets CVEs.
 
 **Why Plasma?** The most complete free desktop, and it already handles the cross-app
 consistency (GTK, Flatpak portals) a layer would otherwise have to build.

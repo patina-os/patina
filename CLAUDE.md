@@ -29,10 +29,23 @@ packs. Audience: developers and privacy-minded users in the EU.
 - Sources: Debian's `main` archive first (plus `non-free-firmware` for firmware only, the
   same blobs every base ships), Flathub for GUI apps we do not track, upstream installers
   (npm, uv, a release binary, an upstream's own signed apt repository for an opt-in
-  tool) for the agent tools and for the Go `yq`, which Debian does not package.
-- App stack: Nextcloud client, Collabora Office or OnlyOffice (still open), Thunderbird,
-  Element, KeePassXC. Agent tools (Claude Code, Codex CLI, opencode, Claude Desktop,
-  Ollama) are an opt-in bundle because most of them are proprietary.
+  tool) for the agent tools and for the Go `yq`, which Debian does not package. An
+  upstream's signed apt repository may serve a default only when the software is free
+  and neither Debian's archive nor Flathub carries it (Euro-Office today); the recipe
+  moves to Flathub as soon as Flathub carries it.
+- App stack: Nextcloud client, Euro-Office (the AGPL fork of ONLYOFFICE by a European
+  consortium, from Nextcloud's signed apt repository until Flathub carries it), Thunderbird,
+  Element, KeePassXC, kitty as the terminal (Ghostty once Debian carries it), the
+  developer tools from Debian's archive and Zed from Flathub, all in the default desktop
+  bundle. Agent tools (Claude Code, Codex CLI, opencode, Claude Desktop, Ollama) are an
+  opt-in bundle because most of them are proprietary; Ollama is the local backend they
+  point at, and their desktop integration is a shortcut and a terminal profile, as data.
+- Look: the first theme is purple, continuing the logo's pink-to-purple gradient, with
+  generated abstract artwork licensed with the repository. No third-party wallpapers.
+- Speed: the system tuning CachyOS ships as configuration (zram, I/O schedulers, memory
+  sysctls, journald and systemd limits, boot) is copied as data for every install, kept
+  under `defaults/system/`; its kernel, rebuilt packages and own repository are not.
+  Plasma-side speed settings are curated defaults like any other.
 - Install model: per user, Omarchy-style. Clone at `~/.local/share/patina21`, symlink
   `~/.local/bin/patina`, state in `~/.local/state/patina21/`. `PATINA_PATH` overrides.
 - Updates: `git pull` plus versioned migrations (`migrations/`).
@@ -88,12 +101,12 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash |
 | `branding/` | the marks as data: `logo.txt` is the ASCII wordmark scripts print |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
-| `defaults/` | desktop-agnostic keybindings and curated settings |
+| `defaults/` | desktop-agnostic keybindings and curated settings; `system/` holds the system tuning files |
 | `desktops/` | per-desktop renderers (templates plus one `apply.sh`); `plasma/` first |
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
 | `devices/` | the only place for device- or architecture-specific files |
-| `iso/` | live-build configuration, Calamares configuration and branding, first-boot unit, QEMU boot test (Phase 2) |
+| `iso/` | live-build configuration, Calamares configuration and branding, first-boot unit, QEMU boot test (Phase 3) |
 | `docs/` | roadmap, branding and trademark rules, tested hardware |
 | `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), iso (build, boot test, release) |
 
@@ -120,6 +133,7 @@ Each directory's README is the authority on its file format.
   `eval`, no `curl | sh` except an upstream installer listed in `manifest/upstream.yaml`.
 - Idempotent: every script may run twice without harm. Check before changing.
 - `sudo` appears only in backend commands from `manifest/backends/`, never elsewhere.
+  System files are written only through that path, only from `defaults/system/`.
 - Read YAML with `yq`; never parse it with grep or sed. Write user config under XDG
   directories, never into the repository checkout.
 - Short, obvious code beats clever code. A function used once is not a function.
