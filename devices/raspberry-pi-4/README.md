@@ -3,7 +3,7 @@
 The first aarch64 target. Nothing here is specific to patina21 beyond the fact list in
 `device.yaml`: Debian's official Raspberry Pi image carries the firmware, kernel and
 device tree, and the layer has no architecture. This page is the manual validation
-procedure from the roadmap's Phase 3; `docs/hardware.md` records the result.
+procedure from the roadmap's Phase 4; `docs/hardware.md` records the result.
 
 ## What you need
 
@@ -47,7 +47,7 @@ leftovers from the previous attempt.
 
 5. Run `patina install` a second time: it must change nothing.
 6. Record the result as a row in `docs/hardware.md` (status, date, image version, what
-   failed), and open an issue for anything that is not a Phase 1 bug. If the run needs a
+   failed), and open an issue for anything that is not a bug in the layer itself. If the run needs a
    kernel parameter or an extra package, it goes into `device.yaml`, not into a script.
 
 The goal is correctness, not UX: a Pi 4 that ends in the same desktop as the x86_64 VM

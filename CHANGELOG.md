@@ -8,6 +8,11 @@ All notable changes to patina21 are documented here. The format follows
 
 ### Changed
 
+- The roadmap is renumbered into seven phases in the order they are finished: core
+  commands, theming, the branded install (TUI, first boot, image), ARM hardware, the 0.1
+  release, Debian 14, the Hyprland add-on. Two open decisions are settled: the TUI helper
+  is `gum`, the office suite is Euro-Office, from Nextcloud's signed apt repository until
+  Flathub carries it. Every file that cites a phase number follows.
 - The logo wordmark is redrawn in a bold block letterform; the patina wave is kept and the
   tagline is dropped. Still plain 7-bit ASCII within 60 columns, so it renders on a
   serial console and in a GitHub README. `branding/logo.txt` stays the only copy; the

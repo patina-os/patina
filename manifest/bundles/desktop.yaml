@@ -1,5 +1,5 @@
 # The polished-desktop bundle: the app stack from the README, all free software.
-# Illustrative until Phase 1 verifies the names and decides the office suite.
+# Illustrative until Phase 1 verifies the names.
 name: desktop
 description: Curated desktop apps (Nextcloud, Thunderbird, Element, KeePassXC)
 default: true
@@ -9,5 +9,6 @@ packages:
   - keepassxc
 flatpaks:
   - im.riot.Riot         # Element
-  # Office suite: Collabora Office or OnlyOffice, decided in Phase 1 (docs/roadmap.md).
+  # Office suite: Euro-Office, added in Phase 1 (docs/roadmap.md) as an apt-source recipe
+  # in manifest/upstream.yaml until Flathub carries it.
 upstream: []

@@ -3,7 +3,7 @@
 # (a letter, digit, F-key, Return, Space, Tab, Escape, Print, Left/Right/Up/Down).
 # Renderers map each action to their desktop's own mechanism and warn about actions
 # they do not know instead of failing.
-# The values are placeholders until Phase 1 curates them.
+# The values are placeholders until Phase 2 curates them.
 actions:
   terminal: Meta+Return
   launcher: Meta+Space

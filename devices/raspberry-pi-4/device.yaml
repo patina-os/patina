@@ -1,4 +1,4 @@
-# Raspberry Pi 4: the first aarch64 target (docs/roadmap.md, Phase 3). Data only: Debian's
+# Raspberry Pi 4: the first aarch64 target (docs/roadmap.md, Phase 4). Data only: Debian's
 # own Raspberry Pi image carries the firmware, kernel and device tree, so there is no glue.
 name: Raspberry Pi 4 Model B
 slug: raspberry-pi-4

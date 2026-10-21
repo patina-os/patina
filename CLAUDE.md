@@ -29,8 +29,12 @@ packs. Audience: developers and privacy-minded users in the EU.
 - Sources: Debian's `main` archive first (plus `non-free-firmware` for firmware only, the
   same blobs every base ships), Flathub for GUI apps we do not track, upstream installers
   (npm, uv, a release binary, an upstream's own signed apt repository for an opt-in
-  tool) for the agent tools and for the Go `yq`, which Debian does not package.
-- App stack: Nextcloud client, Collabora Office or OnlyOffice (still open), Thunderbird,
+  tool) for the agent tools and for the Go `yq`, which Debian does not package. An
+  upstream's signed apt repository may serve a default only when the software is free
+  and neither Debian's archive nor Flathub carries it (Euro-Office today); the recipe
+  moves to Flathub as soon as Flathub carries it.
+- App stack: Nextcloud client, Euro-Office (the AGPL fork of ONLYOFFICE by a European
+  consortium, from Nextcloud's signed apt repository until Flathub carries it), Thunderbird,
   Element, KeePassXC. Agent tools (Claude Code, Codex CLI, opencode, Claude Desktop,
   Ollama) are an opt-in bundle because most of them are proprietary.
 - Install model: per user, Omarchy-style. Clone at `~/.local/share/patina21`, symlink
@@ -93,7 +97,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
 | `devices/` | the only place for device- or architecture-specific files |
-| `iso/` | live-build configuration, Calamares configuration and branding, first-boot unit, QEMU boot test (Phase 2) |
+| `iso/` | live-build configuration, Calamares configuration and branding, first-boot unit, QEMU boot test (Phase 3) |
 | `docs/` | roadmap, branding and trademark rules, tested hardware |
 | `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), iso (build, boot test, release) |
 

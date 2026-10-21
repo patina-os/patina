@@ -1,8 +1,8 @@
 # desktops/hyprland/
 
-Hyprland as an add-on desktop, never the default (docs/roadmap.md, "Later"). Nothing
+Hyprland as an add-on desktop, never the default (docs/roadmap.md, Phase 7). Nothing
 here yet except this contract; `apply.sh` and `templates/` come only after the Plasma
-renderer (Phase 1) is stable, and only from the same theme data: a theme that needs a
+renderer (Phase 2) is stable, and only from the same theme data: a theme that needs a
 change under `themes/` to render on Hyprland is a renderer bug, not a theme bug.
 
 ## Why it waits
@@ -10,10 +10,10 @@ change under `themes/` to render on Hyprland is a renderer bug, not a theme bug.
 Debian 13 does not carry Hyprland in its main archive: it is in `trixie-backports`
 (0.55) and in Debian 14's archive (0.56, with `hyprpaper`, `hyprlock`, `hypridle` and
 `xdg-desktop-portal-hyprland`). The manifest installs from the base's main archive
-only, so the add-on waits for Debian 14, or for the manifest to learn about backports
-as a source, whichever the roadmap picks first. The rest of the stack is in Debian 13
-already: `waybar`, `fuzzel`, `swaybg`, `swaylock`, `swayidle`, `mako-notifier`, `foot`,
-`grim`, `slurp`, `wl-clipboard`, `brightnessctl`, `playerctl`, `wlogout`.
+only, so the add-on waits for Debian 14 (Phase 6); the manifest does not learn about
+backports as a source. The rest of the stack is in Debian 13 already: `waybar`,
+`fuzzel`, `swaybg`, `swaylock`, `swayidle`, `mako-notifier`, `foot`, `grim`, `slurp`,
+`wl-clipboard`, `brightnessctl`, `playerctl`, `wlogout`.
 
 ## What it will produce from a theme and `defaults/`
 

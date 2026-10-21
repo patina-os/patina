@@ -69,10 +69,11 @@ The layer itself has no architecture. aarch64 is a first-class target from day o
 
 ## The app stack
 
-Nextcloud client, Thunderbird, Element, KeePassXC, an office suite (Collabora Office or
-OnlyOffice, to be decided), plus the agent tools above. GUI apps we do not want to track
+Nextcloud client, Thunderbird, Element, KeePassXC, Euro-Office (the European, AGPL fork of
+ONLYOFFICE), plus the agent tools above. GUI apps we do not want to track
 come from Flathub; agent tools come from their upstream installers (npm, uv, Anthropic's
-own apt repository for Claude Desktop).
+own apt repository for Claude Desktop). Euro-Office comes from Nextcloud's signed apt
+repository until Flathub carries it.
 
 ## FAQ
 

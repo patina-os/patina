@@ -96,7 +96,7 @@ is committed and the logo keeps its single copy.
   QEMU directly, so the test does not cover GRUB and shim; the manual install does.
 - Manual, once per release: one real install in a VM through the installer, then a first
   boot that ends in `patina21 firstboot: done`. Calamares has no unattended mode, so
-  this part is not automated; the roadmap keeps it as an open Phase 2 item.
+  this part is not automated; the roadmap keeps it as an open Phase 3 item.
 - A failing build or test is simply not published; Path A users are never affected.
 
 ## Rules
@@ -106,7 +106,7 @@ is committed and the logo keeps its single copy.
   (`docs/branding.md`). Firmware from `non-free-firmware` is the only non-free content.
 - Debian's signed kernel, shim and GRUB stay untouched so Secure Boot keeps working. No
   kernel patches, no out-of-tree modules.
-- The first-boot contract for `patina install` (Phase 1): honour `PATINA_UNATTENDED=1`
+- The first-boot contract for `patina install` (Phases 1 and 2): honour `PATINA_UNATTENDED=1`
   (no prompts, defaults for everything) and `PATINA_THEME=<name>`, and exit non-zero on
   failure so the first-boot script can say so.
 
