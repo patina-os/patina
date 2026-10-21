@@ -14,5 +14,6 @@ repository (planned: `~/.config/patina21/`), so `git pull` never clobbers them.
   `/etc`, the one place in `defaults/` where a path is allowed, and the apt backend's
   sudo path is the only thing that writes them.
 
-Rules: no commands, no filesystem paths, no architecture names. If a default only makes
-sense on one desktop, it belongs in that desktop's directory, not here.
+Rules: no commands, no filesystem paths (except the destinations the `system/` files are
+named by), no architecture names. If a default only makes sense on one desktop, it
+belongs in that desktop's directory, not here.
