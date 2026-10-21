@@ -95,6 +95,8 @@ is committed and the logo keeps its single copy.
   and falls back to emulation (TCG) where it does not, with a longer timeout; GitHub's
   arm64 runners have no KVM, so the arm64 test is the slow one. The kernel is loaded by
   QEMU directly, so the test does not cover GRUB and shim; the manual install does.
+  The VM has an empty 32 GiB disk (a sparse file, no space used), so the welcome page's
+  requirement checks pass as they would on a laptop.
   Once the installer is up, the test asks QEMU's monitor for a screenshot of the
   display (`screendump`, which works without a window) and leaves it next to the serial
   log as `installer-<arch>.png`; the workflow uploads both in the `boot-test-<arch>`

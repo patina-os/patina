@@ -21,7 +21,8 @@ emulates the CPU (TCG), which is slower and gets a longer default timeout. Envir
                         120 without)
   PATINA_TEST_MONITOR   TCP port on localhost for QEMU's monitor (default 45454)
 The serial console lands in <work-dir>/boot.log, the screenshot of the installer screen
-in <work-dir>/installer-<arch>.png.
+in <work-dir>/installer-<arch>.png. The VM gets an empty 32 GiB disk (a sparse file in
+<work-dir>, no space used) so the installer's requirement checks pass as on a laptop.
 USAGE
 }
 
@@ -83,6 +84,11 @@ log="$work/boot.log"
 : > "$log"
 screenshot="$work/installer-$arch.png"
 rm -f "$screenshot"
+# An empty disk, so the welcome page shows a system that can be installed rather than
+# the two requirement errors of a machine without one. Sparse: it costs no space.
+disk="$work/disk.raw"
+rm -f "$disk"
+truncate -s 32G "$disk"
 # Kernel and initrd straight from the image (live-build puts them under live/, named
 # after the kernel version), so the boot options can be ours: the serial console the
 # test watches.
@@ -97,6 +103,7 @@ echo "boot-test: booting $iso ($arch, $accel, ${cpus} cpus, timeout ${timeout_s}
 "$qemu" "${machine[@]}" -m "$memory" -smp "$cpus" -display none -no-reboot \
   -drive "if=pflash,format=raw,readonly=on,file=$firmware" \
   -cdrom "$iso" \
+  -drive "file=$disk,format=raw,if=virtio" \
   -kernel "$kernel" -initrd "$initrd" \
   -append "boot=live components quiet hostname=patina21-live username=live noautologin console=$serial,115200n8" \
   -netdev user,id=net0 -device virtio-net-pci,netdev=net0 \
