@@ -34,3 +34,29 @@ jobs:
         run: |
           command -v yamllint >/dev/null || pipx install yamllint
           yamllint .
+
+  consistency:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: The logo copy on the ISO console matches branding/logo.txt
+        run: cmp branding/logo.txt iso/kiwi/root/etc/issue.d/10-patina21.issue
+      - name: The installer's mandatory packages cover manifest/bundles/base.yaml
+        run: |
+          # The ISO must leave a system on which `patina` runs at first boot, so every
+          # package of the base bundle is mandatory in the Agama product definition.
+          product=iso/kiwi/root/usr/share/agama/products.d/patina21.yaml
+          missing=0
+          for pkg in $(yq eval '.packages[]' manifest/bundles/base.yaml); do
+            if ! yq eval -e ".software.mandatory_packages[] | select(. == \"$pkg\")" \
+                "$product" > /dev/null; then
+              echo "missing in $product: $pkg"
+              missing=1
+            fi
+          done
+          exit "$missing"
+      - name: The Agama profiles are valid JSON
+        run: |
+          for f in iso/agama/*.json iso/test/*.json; do
+            jq empty "$f" || { echo "invalid JSON: $f"; exit 1; }
+          done

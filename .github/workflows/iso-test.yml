@@ -1,0 +1,42 @@
+name: iso-test
+
+# The ISO release gate (iso/README.md): install the ISO unattended in QEMU, boot the
+# result, require the first boot to finish. Runs on demand with the URL of an ISO the
+# Open Build Service produced; a schedule follows once the OBS project exists. The
+# x86_64 runner has KVM; aarch64 stays manual (Raspberry Pi 4, docs/hardware.md).
+
+on:
+  workflow_dispatch:
+    inputs:
+      iso_url:
+        description: URL of the patina21 ISO to test (from the OBS project)
+        required: true
+        type: string
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  install:
+    name: install test (x86_64, QEMU)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install QEMU, UEFI firmware and the tools install-test.sh needs
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q qemu-system-x86 qemu-utils ovmf libarchive-tools jq
+          sudo chmod a+rw /dev/kvm
+      - name: Download the ISO
+        run: curl -fsSL --retry 4 -o patina21.iso "${{ inputs.iso_url }}"
+      - name: Install in QEMU and boot the result
+        run: iso/test/install-test.sh patina21.iso "$RUNNER_TEMP/iso-test"
+      - name: Keep the serial logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: iso-test-logs
+          path: ${{ runner.temp }}/iso-test/*.log
+          if-no-files-found: ignore

@@ -8,7 +8,8 @@ Status: pre-alpha. Nothing below is done.
 
 ## Phase 1: Path A on x86_64 (openSUSE Tumbleweed)
 
-- `patina install` TUI: theme, app bundles, Nextcloud, agent CLIs
+- `patina install` TUI: theme, app bundles, Nextcloud, agent CLIs; it honours
+  `PATINA_UNATTENDED=1` and `PATINA_THEME` so the ISO's first boot can run it
 - `patina update` (git pull plus migrations), `patina theme`, `patina doctor`
 - zypper backend, Flathub, upstream installers for the agent CLIs
 - the Plasma renderer and the first theme(s)
@@ -22,11 +23,21 @@ office suite (Collabora Office or OnlyOffice), name and palette of the first the
 
 ## Phase 2: ISO on x86_64 via the Open Build Service
 
-- Agama autoinstall profile (disk, user, theme) and KIWI description in `iso/`
-- OBS project owned by the patina21 account; automatic rebuild and signing
-- first-boot service that runs the same `patina install` as Path A
-- QEMU install test in CI; the release rule from `iso/README.md`
-- branding within the openSUSE trademark guidelines (`docs/branding.md`)
+Scaffolded in `iso/`; nothing built or booted yet. Phase 2 can be prepared next to
+Phase 1 because it only automates Path A, but it is done only after Phase 1 is.
+
+- [x] Agama preset profile (product, first-boot files) and product definition
+  (openSUSE's oss and update repositories, Plasma, Tumbleweed's btrfs layout);
+  the installer asks disk and user, first boot asks the theme
+- [x] KIWI description and live-system overlay (preset loader, installer screen,
+  console mark)
+- [ ] OBS project owned by the patina21 account; first build, automatic rebuild and
+  signing; the "to verify" list in `iso/README.md`
+- [x] first-boot unit and script that run the same `patina install` as Path A
+- [x] QEMU install test (`iso/test/`) and the on-demand `iso-test` workflow; the release
+  rule from `iso/README.md`
+- [ ] the first ISO passes the install test on x86_64
+- [x] branding within the openSUSE trademark guidelines (`docs/branding.md`, the logo)
 - Done when: boot, three questions, finished desktop identical to Path A.
 
 ## Phase 3: aarch64 images (Raspberry Pi 4 first)

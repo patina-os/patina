@@ -1,0 +1,47 @@
+{
+  "_comment": "Merged over iso/agama/patina21.json by install-test.sh: the disk, user and root answers an unattended QEMU install needs, a serial console, and the first-boot answers. Throwaway credentials for a throwaway VM.",
+  "root": {
+    "hashedPassword": false,
+    "password": "patina21-test"
+  },
+  "user": {
+    "userName": "tester",
+    "fullName": "patina21 install test",
+    "hashedPassword": false,
+    "password": "patina21-test"
+  },
+  "l10n": {
+    "locale": "en_US.UTF-8",
+    "keymap": "us",
+    "timezone": "Europe/Berlin"
+  },
+  "hostname": {
+    "static": "patina21-test"
+  },
+  "storage": {
+    "drives": [
+      {
+        "search": {
+          "sort": { "size": "desc" },
+          "max": 1
+        },
+        "partitions": [
+          { "generate": "default" }
+        ]
+      }
+    ]
+  },
+  "bootloader": {
+    "timeout": 1,
+    "extraKernelParams": "console=ttyS0,115200n8 console=tty0"
+  },
+  "scripts": {
+    "post": [
+      {
+        "name": "patina21-enable-firstboot",
+        "chroot": true,
+        "content": "#!/usr/bin/env bash\nset -euo pipefail\nmkdir -p /var/lib/patina21 /etc/patina21\nprintf 'PATINA_UNATTENDED=1\\nPATINA_THEME=%s\\n' \"${PATINA_TEST_THEME:-template}\" > /etc/patina21/firstboot.env\nsystemctl enable patina21-firstboot.service\n"
+      }
+    ]
+  }
+}

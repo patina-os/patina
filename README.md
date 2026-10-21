@@ -1,7 +1,16 @@
 # patina21
 
-A polish layer for KDE Plasma on openSUSE: themes, consistency across apps, curated
-defaults, agent CLIs and a free-software, EU-sovereign app stack. Not a distribution.
+```text
+              __  _           ___ ___
+   ___  ___ _/ /_(_)__  ___ _|_  <  /
+  / _ \/ _ `/ __/ / _ \/ _ `/ __// /
+ / .__/\_,_/\__/_/_//_/\_,_/____/_/
+/_/  ~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'
+     a polish layer for KDE Plasma on openSUSE
+```
+
+Themes, consistency across apps, curated defaults, agent CLIs and a free-software,
+EU-sovereign app stack on top of openSUSE Tumbleweed with Plasma. Not a distribution.
 
 **Status: pre-alpha.** Nothing is installable yet. See the [roadmap](docs/roadmap.md).
 
@@ -38,7 +47,7 @@ Two paths, one layer. If they ever diverge, Path A wins.
 | Path | What you do | Status |
 |---|---|---|
 | A: on stock openSUSE | Install openSUSE Tumbleweed with Plasma, `git clone` this repository, run `patina install` (a small TUI: theme, app bundles, Nextcloud, agent CLIs) | pre-alpha, not usable yet |
-| B: the patina21 ISO | Boot the ISO, answer three questions (disk, user, theme), get the finished desktop. Built from openSUSE's own tooling on the Open Build Service; it only automates Path A | pre-alpha, planned for roadmap Phase 2 |
+| B: the patina21 ISO | Boot the ISO, answer three questions (disk, user, theme), get the finished desktop. Built from openSUSE's own tooling on the Open Build Service; it only automates Path A | pre-alpha, scaffolded in `iso/`, no image built yet |
 
 Updates: `patina update` runs `git pull` and then any pending migrations.
 

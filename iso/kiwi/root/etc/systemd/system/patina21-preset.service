@@ -1,0 +1,21 @@
+# Loads the patina21 profile into the running Agama installer, as a preset, not as an
+# unattended install: the user still answers disk and user in the installer. The profile
+# comes from the repository's main branch, so the ISO never carries install logic of its
+# own and an old ISO installs today's layer. Enabled by config.sh on the live system only.
+[Unit]
+Description=Load the patina21 installer preset
+Documentation=https://github.com/patina21/patina21/tree/main/iso
+After=network-online.target agama.service agama-web-server.service
+Wants=network-online.target
+Requires=agama.service
+ConditionKernelCommandLine=!inst.auto
+
+[Service]
+Type=oneshot
+Environment=PATINA_PROFILE_URL=https://raw.githubusercontent.com/patina21/patina21/main/iso/agama/patina21.json
+ExecStart=/usr/bin/agama config load ${PATINA_PROFILE_URL}
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

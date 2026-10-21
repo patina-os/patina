@@ -8,6 +8,12 @@ All notable changes to patina21 are documented here. The format follows
 
 ### Added
 
+- The patina21 logo: an ASCII wordmark in `branding/logo.txt`, shown by `patina help`,
+  in the README, on the ISO console and at first boot.
+- ISO scaffold under `iso/` (roadmap, Phase 2): Agama preset profile and product
+  definition, KIWI description with its live-system overlay, first-boot unit and
+  script that run Path A, QEMU install test and the `iso-test` workflow. Nothing is
+  built yet.
 - Repository skeleton: `bin/`, `themes/`, `defaults/`, `desktops/`, `manifest/`,
   `migrations/`, `devices/`, `iso/`, `docs/`, each with a README that fixes its purpose
   and file format.

@@ -1,0 +1,27 @@
+# First boot of a system installed from the patina21 ISO: runs Path A (git clone, then
+# `patina install`) on the console before the login screen appears. Installed into
+# /etc/systemd/system by the Agama profile (iso/agama/patina21.json) and enabled by its
+# post script. Runs once: the script writes /var/lib/patina21/firstboot-done.
+[Unit]
+Description=patina21 first boot: install the layer (Path A)
+Documentation=https://github.com/patina21/patina21/tree/main/iso
+ConditionPathExists=!/var/lib/patina21/firstboot-done
+After=network-online.target systemd-user-sessions.service
+Wants=network-online.target
+Before=display-manager.service getty@tty1.service
+Conflicts=getty@tty1.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/lib/patina21/firstboot.sh
+StandardInput=tty
+StandardOutput=tty
+StandardError=journal+console
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target
