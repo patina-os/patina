@@ -11,8 +11,11 @@ Status: pre-alpha. The live image builds and boots to the installer in CI on bot
 architectures; nothing is installable yet, because Phases 1 to 3 are open.
 
 Settled on this roadmap: the TUI helper is `gum` (Debian 13 ships 0.14 on both
-architectures), the office suite is Euro-Office (Phase 1). Still open: the name and
-palette of the first theme (Phase 2).
+architectures); the office suite is Euro-Office; the terminal is kitty until Debian
+carries Ghostty; the developer tools are part of the default desktop bundle (all
+Phase 1); the first theme is purple with generated artwork (Phase 2); the agent tools
+integrate through a shortcut, a terminal profile and Ollama as the local backend
+(Phases 1 and 2). Still open: the name of the first theme.
 
 ## Phase 1: the core commands on x86_64 (Debian 13)
 
@@ -22,8 +25,18 @@ backend, Flathub and the upstream recipes, plus the commands around it.
 - [ ] `patina install`: the `base` and `desktop` bundles, the Flathub remote and the
   flatpaks, the upstream recipes (npm, uv, the Go `yq` release binary); bundles chosen
   by flags, no prompts; honours `PATINA_UNATTENDED=1` (defaults for everything)
+- [ ] the extended desktop bundle, from Debian 13's archive on both architectures:
+  kitty as the terminal (Ghostty is in neither Debian's archive nor Flathub; it takes
+  kitty's place in Phase 6 if Debian 14 carries it) and the developer tools fish,
+  starship, bat, eza, fzf, ripgrep, lazygit, btop, zoxide, atuin, git-delta, neovim and
+  fastfetch; the Zed editor from Flathub (`dev.zed.Zed`, free licences, listing not
+  verified by its publisher) with its telemetry and cloud AI off in `defaults/`. Not in
+  Debian 13 and therefore not shipped: helix, yazi, zellij, difftastic, wezterm
 - [ ] the opt-in `agents` bundle: Claude Code, Codex CLI, opencode and Ollama from their
-  upstream installers, Claude Desktop from Anthropic's signed apt repository
+  upstream installers, Claude Desktop from Anthropic's signed apt repository. Ollama is
+  the local backend: its installer sets up the service, `patina install` points
+  opencode at `localhost:11434`, and the office suite too if Euro-Office kept
+  ONLYOFFICE's AI plugin (to verify), so documents never leave the machine
 - [ ] the office suite: Euro-Office, the AGPL-3.0 fork of ONLYOFFICE by a European
   consortium (IONOS, Nextcloud, XWiki, OpenProject and others; first stable release
   June 2026), desktop editors for amd64 and arm64. Debian does not package it and
@@ -44,10 +57,17 @@ backend, Flathub and the upstream recipes, plus the commands around it.
 ## Phase 2: theming (the Plasma renderer and the first theme)
 
 - [ ] `desktops/plasma/apply.sh` and its templates, against Plasma 6.3 as Debian 13
-  ships it: colour scheme, Konsole profile, GTK and Qt consistency, wallpaper,
-  keybindings from `defaults/keybindings.yaml`, settings from `defaults/settings.yaml`
-- [ ] the first theme under `themes/` (name and palette open), and `defaults/settings.yaml`
-  pointing at it
+  ships it: colour scheme, Konsole and kitty profiles, GTK and Qt consistency,
+  wallpaper, keybindings from `defaults/keybindings.yaml`, settings from
+  `defaults/settings.yaml`
+- [ ] the first theme under `themes/` (name open), and `defaults/settings.yaml` pointing
+  at it: a purple signature palette that continues the logo's pink-to-purple gradient,
+  and wallpapers generated from SVG kept in the theme, abstract organic forms with
+  Google DeepMind's visualisations on Pexels as the reference style, never their
+  files; the artwork is licensed with the repository
+- [ ] the agent shortcut: an `agent` action in `defaults/keybindings.yaml` opens the
+  agent CLI in a dedicated kitty profile the renderer writes from the palette; the
+  action is skipped when the `agents` bundle is not installed
 - [ ] `patina theme list|set|current`; `patina install` applies the default theme and
   honours `PATINA_THEME=<name>`
 - [ ] curated keybindings and settings: the placeholders in `defaults/` become the real
@@ -129,6 +149,8 @@ Debian 14.
   in the `smoke` and `iso` workflows, the firmware list of the live image
 - [ ] the Plasma version the renderer targets
 - [ ] a migration only if Plasma's configuration moved
+- [ ] Ghostty takes kitty's place as the terminal if Debian 14 carries it (Ubuntu 26.04
+  packages it, Debian's archive does not today); kitty stays otherwise
 - Done when: both paths pass on Debian 14 and the release images are built from it.
 
 ## Phase 7: the Hyprland add-on

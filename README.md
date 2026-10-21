@@ -70,10 +70,13 @@ The layer itself has no architecture. aarch64 is a first-class target from day o
 ## The app stack
 
 Nextcloud client, Thunderbird, Element, KeePassXC, Euro-Office (the European, AGPL fork of
-ONLYOFFICE), plus the agent tools above. GUI apps we do not want to track
-come from Flathub; agent tools come from their upstream installers (npm, uv, Anthropic's
-own apt repository for Claude Desktop). Euro-Office comes from Nextcloud's signed apt
-repository until Flathub carries it.
+ONLYOFFICE), kitty as the terminal, a developer kit (fish, starship, bat, eza, fzf,
+ripgrep, lazygit, btop, zoxide, atuin, git-delta, neovim, fastfetch) and the Zed editor,
+plus the agent tools above. Everything comes from Debian's archive except what it does
+not carry: GUI apps we do not want to track come from Flathub, agent tools from their
+upstream installers (npm, uv, Anthropic's own apt repository for Claude Desktop), and
+Euro-Office from Nextcloud's signed apt repository until Flathub carries it. Ollama is
+the local backend the agent tools point at.
 
 ## FAQ
 

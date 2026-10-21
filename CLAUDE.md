@@ -35,8 +35,13 @@ packs. Audience: developers and privacy-minded users in the EU.
   moves to Flathub as soon as Flathub carries it.
 - App stack: Nextcloud client, Euro-Office (the AGPL fork of ONLYOFFICE by a European
   consortium, from Nextcloud's signed apt repository until Flathub carries it), Thunderbird,
-  Element, KeePassXC. Agent tools (Claude Code, Codex CLI, opencode, Claude Desktop,
-  Ollama) are an opt-in bundle because most of them are proprietary.
+  Element, KeePassXC, kitty as the terminal (Ghostty once Debian carries it), the
+  developer tools from Debian's archive and Zed from Flathub, all in the default desktop
+  bundle. Agent tools (Claude Code, Codex CLI, opencode, Claude Desktop, Ollama) are an
+  opt-in bundle because most of them are proprietary; Ollama is the local backend they
+  point at, and their desktop integration is a shortcut and a terminal profile, as data.
+- Look: the first theme is purple, continuing the logo's pink-to-purple gradient, with
+  generated abstract artwork licensed with the repository. No third-party wallpapers.
 - Install model: per user, Omarchy-style. Clone at `~/.local/share/patina21`, symlink
   `~/.local/bin/patina`, state in `~/.local/state/patina21/`. `PATINA_PATH` overrides.
 - Updates: `git pull` plus versioned migrations (`migrations/`).

@@ -1,14 +1,30 @@
-# The polished-desktop bundle: the app stack from the README, all free software.
-# Illustrative until Phase 1 verifies the names.
+# The polished-desktop bundle: the app stack from the README, all free software. The
+# package names were checked against Debian 13's archive on amd64 and arm64; Phase 1
+# verifies the install itself.
 name: desktop
-description: Curated desktop apps (Nextcloud, Thunderbird, Element, KeePassXC)
+description: Curated desktop apps, kitty and the developer tools
 default: true
 packages:
   - nextcloud-desktop
   - thunderbird
   - keepassxc
+  - kitty        # the terminal; Ghostty takes its place when Debian carries it (Phase 6)
+  - fish
+  - starship
+  - bat
+  - eza
+  - fzf
+  - ripgrep
+  - lazygit
+  - btop
+  - zoxide
+  - atuin
+  - git-delta
+  - neovim
+  - fastfetch
 flatpaks:
   - im.riot.Riot         # Element
+  - dev.zed.Zed          # Zed editor; telemetry and cloud AI off in defaults/ (Phase 1)
   # Office suite: Euro-Office, added in Phase 1 (docs/roadmap.md) as an apt-source recipe
   # in manifest/upstream.yaml until Flathub carries it.
 upstream: []

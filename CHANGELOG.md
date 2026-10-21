@@ -13,6 +13,11 @@ All notable changes to patina21 are documented here. The format follows
   release, Debian 14, the Hyprland add-on. Two open decisions are settled: the TUI helper
   is `gum`, the office suite is Euro-Office, from Nextcloud's signed apt repository until
   Flathub carries it. Every file that cites a phase number follows.
+- The desktop bundle grows by kitty (Ghostty once Debian carries it), the developer
+  tools fish, starship, bat, eza, fzf, ripgrep, lazygit, btop, zoxide, atuin, git-delta,
+  neovim and fastfetch from Debian's archive, and Zed from Flathub. The roadmap settles
+  the first theme as purple with generated artwork, and the agent tools' desktop
+  integration as a shortcut, a terminal profile and Ollama as the local backend.
 - The logo wordmark is redrawn in a bold block letterform; the patina wave is kept and the
   tagline is dropped. Still plain 7-bit ASCII within 60 columns, so it renders on a
   serial console and in a GitHub README. `branding/logo.txt` stays the only copy; the
