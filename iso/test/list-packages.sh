@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Print every package the bundles and the live image name, one per line, for apt's dry
-# run in the smoke workflow: a wrong name fails CI before it fails a build.
+# Print every package the bundles, the devices and the live image name, one per line,
+# for apt's dry run in the smoke workflow: a wrong name fails CI before it fails a build.
 set -euo pipefail
 
 arch="${1:-amd64}"
@@ -12,6 +12,9 @@ live="$repo/iso/live"
 {
   for bundle in "$repo"/manifest/bundles/[a-z]*.yaml; do
     yq eval '.packages[]' "$bundle"
+  done
+  for device in "$repo"/devices/[a-z]*/device.yaml; do
+    yq eval '.extra_packages[]' "$device"
   done
   yq eval '.operations[].install[]?' \
     "$live/config/includes.chroot/etc/calamares/modules/packages.conf"

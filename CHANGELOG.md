@@ -24,6 +24,17 @@ All notable changes to patina21 are documented here. The format follows
 
 ### Added
 
+- `devices/snapdragon-x-elite/`: the first ARM laptop entry (roadmap, Phase 4), data
+  only and untested: the models with their device trees, the firmware packages from
+  Debian's archive, and the manual validation procedure after the Debian wiki. The
+  Snapdragon X2 Elite and Nvidia N1X rows in `docs/hardware.md` record why they wait.
+  The smoke test now resolves the packages devices name against Debian's archive too.
+- `manifest/backends/dnf.yaml` and `pacman.yaml`: Fedora and Arch backends as untested
+  data next to the openSUSE one, with the name maps for today's bundles (roadmap,
+  "Later").
+- `desktops/hyprland/README.md`: the contract for the Hyprland add-on, and why it waits
+  for Debian 14 (Debian 13 carries Hyprland only in backports).
+- The roadmap's "Later" section says what a Debian 14 move touches.
 - The first images: the amd64 and arm64 live images build with live-build and
   Calamares 3.3 as Debian 13 ships them and boot to the installer screen in QEMU
   (roadmap, Phase 2 and 3). The `iso` workflow builds both natively, on GitHub's x86_64

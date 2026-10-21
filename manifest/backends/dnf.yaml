@@ -1,0 +1,12 @@
+# Backend for Fedora (dnf). Kept as data for a possible later base (docs/roadmap.md,
+# "Later"); it is not run in CI and nothing is tested on it until the roadmap says so.
+# Canonical names are Debian's.
+name: dnf
+os_ids:   # ID= values from /etc/os-release this backend serves
+  - fedora
+refresh: sudo dnf --quiet makecache
+install: sudo dnf --quiet --assumeyes install   # package names are appended
+installed: rpm -q                               # exit 0 when the package is installed
+map:      # canonical (Debian) name -> dnf name, only where they differ
+  nextcloud-desktop: nextcloud-client
+  npm: nodejs-npm

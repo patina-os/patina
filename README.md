@@ -60,8 +60,9 @@ Updates: `patina update` runs `git pull` and then any pending migrations.
 | Debian 13 (trixie) | x86_64, aarch64 | reference base, pre-alpha |
 | Debian 14 | x86_64, aarch64 | follows when it becomes stable |
 | openSUSE Tumbleweed | | possible later; backend file kept, untested |
-| Fedora | | possible later, not a priority |
-| Ubuntu, Arch, CachyOS | | not planned |
+| Fedora | | possible later, not a priority; backend file kept, untested |
+| Arch Linux | | possible later, not a priority; backend file kept, untested |
+| Ubuntu, CachyOS | | not planned |
 
 The layer itself has no architecture. aarch64 is a first-class target from day one; see
 [docs/hardware.md](docs/hardware.md) for what has been tested.

@@ -1,7 +1,7 @@
 name: smoke
 
 # Runs the patina21 entry point inside a stock Debian 13 container on both architectures
-# the layer targets, and checks that every package the manifest and the image name
+# the layer targets, and checks that every package the manifest, the devices and the image name
 # exists in Debian's archive. This job grows into the Path A bootstrap test
 # (docs/roadmap.md, Phase 1) once `patina install` exists.
 
@@ -62,7 +62,7 @@ jobs:
           git ls-files '*.yaml' '*.yml' '*.conf' '*.desc' | while read -r f; do
             yq eval '.' "$f" > /dev/null || { echo "invalid YAML: $f"; exit 1; }
           done
-      - name: Every package the bundles and the image name exists in Debian
+      - name: Every package the bundles, the devices and the image name exists in Debian
         # A dry run resolves names and dependencies without installing anything.
         run: |
           # The container's sources carry main only; the image also uses non-free-firmware.

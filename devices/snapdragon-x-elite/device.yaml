@@ -1,0 +1,46 @@
+# Snapdragon X Elite laptops (docs/roadmap.md, Phase 4). One directory for the platform:
+# the laptops differ only in their device tree and firmware set, listed under `models`.
+# Data only; the firmware helper the hardware list mentions is written only after a run
+# shows which files Debian's archive lacks for a model.
+name: Snapdragon X Elite laptops (Qualcomm X1E80100 and X1E78100)
+slug: snapdragon-x-elite
+arch: aarch64
+status: untested
+base_image: https://wiki.debian.org/InstallingDebianOn/Thinkpad/T14s_Gen6_Snapdragon
+# The Debian wiki says the kernel needs "some cmdline options" but names none; the first
+# run records them here.
+kernel_params: []
+extra_packages:         # from Debian's non-free-firmware area, the only non-free content allowed
+  - firmware-qcom-soc   # qcom/x1e80100/: GPU, DSP, battery manager and audio topology, per model
+  - firmware-atheros    # ath12k/WCN7850/: the wifi and bluetooth chip these laptops share
+# Device tree per model, as Debian's arm64 kernel ships it under
+# /usr/lib/linux-image-<version>-arm64/qcom/.
+models:
+  - name: Lenovo ThinkPad T14s Gen 6 (21N1)
+    dtb: x1e78100-lenovo-thinkpad-t14s.dtb
+    firmware_in_debian: true    # firmware-qcom-soc carries qcom/x1e80100/LENOVO/21N1/
+  - name: Lenovo Yoga Slim 7x (83ED)
+    dtb: x1e80100-lenovo-yoga-slim7x.dtb
+    firmware_in_debian: true    # firmware-qcom-soc carries qcom/x1e80100/LENOVO/83ED/
+  - name: ASUS Vivobook S15
+    dtb: x1e80100-asus-vivobook-s15.dtb
+    firmware_in_debian: false
+  - name: Dell XPS 13 9345
+    dtb: x1e80100-dell-xps13-9345.dtb
+    firmware_in_debian: false
+  - name: HP OmniBook X 14
+    dtb: x1e80100-hp-omnibook-x14.dtb
+    firmware_in_debian: false
+  - name: Microsoft Surface Laptop 7 (13 and 15 inch)
+    dtb: x1e80100-microsoft-romulus13.dtb and x1e80100-microsoft-romulus15.dtb
+    firmware_in_debian: false
+notes: >
+  Boots Debian 13 with the kernel and firmware from trixie-backports (the Debian wiki
+  documents a manual debootstrap plus systemd-boot install on the ThinkPad T14s Gen 6;
+  Debian's installer and the patina21 live image do not boot here, because the firmware
+  offers no usable ACPI tables and the device tree must be handed to the kernel by the
+  boot loader). Upstream, NVMe, keyboard, touchpad, display including external outputs,
+  GPU and wifi work; audio has no speaker protection; suspend drains the battery within
+  a day; bluetooth and the camera still need an out-of-tree branch. Debian 13's own
+  firmware package covers the two Lenovo models; the others need firmware from the
+  machine's Windows partition, which patina21 neither ships nor has a helper for yet.
