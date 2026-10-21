@@ -1,4 +1,4 @@
-# Images and build output: the ISO is built on the Open Build Service, never committed
+# Images and build output: the live image is built in GitHub Actions, never committed
 *.iso
 *.img
 *.raw

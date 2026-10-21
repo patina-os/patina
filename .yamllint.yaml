@@ -1,5 +1,12 @@
 # yamllint configuration: CI and contributors run `yamllint .` from the repository root.
+# Calamares keeps its .conf and .desc names (CLAUDE.md, "Naming"); they are YAML too.
 extends: relaxed
+yaml-files:
+  - '*.yaml'
+  - '*.yml'
+  - '*.conf'
+  - '*.desc'
+  - '.yamllint'
 rules:
   line-length:
     max: 100

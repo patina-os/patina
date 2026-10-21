@@ -6,8 +6,8 @@ contain package names themselves.
 ```text
 manifest/
   bundles/<bundle>.yaml    what to install, by canonical name, grouped for the installer TUI
-  backends/<backend>.yaml  how one package manager installs it (zypper first)
-  upstream.yaml            tools that come from their upstream installers (agent CLIs)
+  backends/<backend>.yaml  how one package manager installs it (apt is the reference)
+  upstream.yaml            tools that come from their upstream installers (agent CLIs, yq)
 ```
 
 ## Bundles
@@ -16,6 +16,7 @@ manifest/
 name: dev
 description: Shown in the TUI
 default: true        # preselected in `patina install`
+required: false      # true only for base: the user cannot deselect it
 packages:            # canonical names, resolved through backends/<backend>.yaml
   - git
 flatpaks:            # Flathub application IDs; identical on every base
@@ -24,19 +25,24 @@ upstream:            # keys of manifest/upstream.yaml
   - claude-code
 ```
 
-Canonical names are the openSUSE package names, because openSUSE is the reference base.
+Canonical names are the Debian package names, because Debian is the reference base.
 A backend file maps them only where its own name differs.
 
 ## Backends
 
 A backend is one YAML file: the `ID` values from `/etc/os-release` it serves, the commands
 for refresh, install and is-installed, and the name map. Adding a base means adding a file
-here (and a container for it in the smoke workflow), not editing scripts.
+here (and a container for it in the smoke workflow), not editing scripts. `apt.yaml` is
+the reference and the only backend CI runs; `zypper.yaml` is kept as data for a possible
+later base and is untested.
 
 ## Sources, in order of preference
 
 1. the base's own repositories (security updates are the base's job)
 2. Flathub, for GUI apps we do not want to track
-3. upstream installers, only for tools that have no packaged version worth using
+3. upstream installers, only for tools that have no packaged version worth using: an npm
+   or uv package, the upstream's install script, a single release binary, or the
+   upstream's own signed apt repository for an opt-in tool
 
-Never: snap, vendor repositories we would have to maintain, binaries we build ourselves.
+Never: snap, repositories we would have to maintain ourselves, binaries we build
+ourselves, an upstream repository or installer for anything installed by default.

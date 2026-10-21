@@ -6,29 +6,30 @@
   / _ \/ _ `/ __/ / _ \/ _ `/ __// /
  / .__/\_,_/\__/_/_//_/\_,_/____/_/
 /_/  ~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'
-     a polish layer for KDE Plasma on openSUSE
+     a polish layer for KDE Plasma on Debian
 ```
 
 Themes, consistency across apps, curated defaults, agent CLIs and a free-software,
-EU-sovereign app stack on top of openSUSE Tumbleweed with Plasma. Not a distribution.
+EU-sovereign app stack on top of Debian stable with Plasma. Not a distribution.
 
 **Status: pre-alpha.** Nothing is installable yet. See the [roadmap](docs/roadmap.md).
 
 ## What it is
 
-patina21 takes a stock openSUSE Tumbleweed with Plasma and finishes it: one consistent
-theme across Plasma, terminal and editors, sane defaults, the apps a privacy-minded
-developer in the EU wants, and the agent command-line tools (Claude Code, Codex CLI,
-opencode, Ollama for local models) installed the way their upstreams intend.
+patina21 takes a stock Debian with Plasma and finishes it: one consistent theme across
+Plasma, terminal and editors, sane defaults, the apps a privacy-minded developer in the
+EU wants, and the agent tools (Claude Code, Codex CLI, opencode, Claude Desktop, Ollama
+for local models) installed the way their upstreams intend.
 
-It is inspired by [Omarchy](https://omarchy.org): the polish, the themes, the
-boot-to-finished-desktop install, and the `git pull` plus migrations update model. It does
-not copy Omarchy's tiling-first UX, patched kernel or own package repository.
+It is inspired by [Omarchy](https://omarchy.org): the polish, the themes, the quick
+branded boot-to-finished-desktop install, and the `git pull` plus migrations update
+model. It does not copy Omarchy's tiling-first UX, patched kernel or own package
+repository.
 
 ## What it is not
 
-- not a fork of openSUSE and not a distribution: every package comes from openSUSE
-  repositories, Flathub or an upstream installer
+- not a fork of Debian and not a distribution: every package comes from Debian's
+  archive, Flathub or an upstream installer
 - not a kernel, not a package repository, not rebuilt packages: security is the base's job
 - not Hyprland-first: Plasma first; Hyprland may become an add-on later
 - not for Apple Silicon
@@ -36,6 +37,7 @@ not copy Omarchy's tiling-first UX, patched kernel or own package repository.
 ## The stance
 
 1. Free software only. No snap, no proprietary defaults, no US cloud services as defaults.
+   Proprietary agent tools exist as an opt-in bundle, never preselected.
 2. Own the UI, own nothing that gets CVEs.
 3. Data over code: themes, keybindings and package lists are data files; scripts stay thin.
 4. Every design choice must reduce the work for a one-person, part-time maintainer.
@@ -46,8 +48,8 @@ Two paths, one layer. If they ever diverge, Path A wins.
 
 | Path | What you do | Status |
 |---|---|---|
-| A: on stock openSUSE | Install openSUSE Tumbleweed with Plasma, `git clone` this repository, run `patina install` (a small TUI: theme, app bundles, Nextcloud, agent CLIs) | pre-alpha, not usable yet |
-| B: the patina21 ISO | Boot the ISO, answer three questions (disk, user, theme), get the finished desktop. Built from openSUSE's own tooling on the Open Build Service; it only automates Path A | pre-alpha, scaffolded in `iso/`, no image built yet |
+| A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (a small TUI: theme, app bundles, Nextcloud, agent tools) | pre-alpha, not usable yet |
+| B: the patina21 image | Boot a small live image, answer the installer (disk, user, locale), get the finished desktop. Plasma and the base are downloaded from Debian's mirrors during the install; first boot runs Path A | pre-alpha, scaffolded in `iso/`, no image built yet |
 
 Updates: `patina update` runs `git pull` and then any pending migrations.
 
@@ -55,8 +57,9 @@ Updates: `patina update` runs `git pull` and then any pending migrations.
 
 | Base | Architectures | Status |
 |---|---|---|
-| openSUSE Tumbleweed | x86_64, aarch64 | reference base, pre-alpha |
-| openSUSE Leap | x86_64, aarch64 | planned second flavour |
+| Debian 13 (trixie) | x86_64, aarch64 | reference base, pre-alpha |
+| Debian 14 | x86_64, aarch64 | follows when it becomes stable |
+| openSUSE Tumbleweed | | possible later; backend file kept, untested |
 | Fedora | | possible later, not a priority |
 | Ubuntu, Arch, CachyOS | | not planned |
 
@@ -66,35 +69,40 @@ The layer itself has no architecture. aarch64 is a first-class target from day o
 ## The app stack
 
 Nextcloud client, Thunderbird, Element, KeePassXC, an office suite (Collabora Office or
-OnlyOffice, to be decided), plus the agent CLIs above. GUI apps we do not want to track
-come from Flathub; agent CLIs come from their upstream installers (npm, uv).
+OnlyOffice, to be decided), plus the agent tools above. GUI apps we do not want to track
+come from Flathub; agent tools come from their upstream installers (npm, uv, Anthropic's
+own apt repository for Claude Desktop).
 
 ## FAQ
 
 **What does the 21 stand for?** The maintainer's personal secret.
 
-**Is this a new distribution?** No. It is a layer on openSUSE and an ISO that only
+**Is this a new distribution?** No. It is a layer on Debian and a live image that only
 automates installing that layer. There is no patina21 kernel, package repository or
 rebuilt package, and there never will be.
 
-**Is it Omarchy for KDE?** It borrows Omarchy's polish and update model, not its tiling
-UX, kernel or package repository. Themes are stored as desktop-agnostic data, so a
-Hyprland rendering could be added later without touching them.
+**Is it Omarchy for KDE?** It borrows Omarchy's polish, quick branded install and update
+model, not its tiling UX, kernel or package repository. Themes are stored as
+desktop-agnostic data, so a Hyprland rendering could be added later without touching them.
 
-**Why openSUSE?** A community project with an EU vendor behind it, Plasma as its flagship
-desktop, an official aarch64 port, and the Open Build Service to build and sign images
-without running our own infrastructure.
+**Why Debian?** The strictest free-software archive of the large bases, the broadest
+arm64 support, a two-year stable cycle that keeps maintenance low, and the ecosystem:
+third-party installers, vendor packages and manuals assume apt. Debian 13 ships Plasma 6.
 
-**Why Plasma?** The most complete free desktop, openSUSE's flagship, and it already
-handles the cross-app consistency (GTK, Flatpak portals) a layer would otherwise have to
-build.
+**Wasn't this on openSUSE?** It started there, and switched before anything shipped.
+openSUSE has the better Plasma polish and the Open Build Service; Debian has the
+ecosystem users actually meet. The package manifest is base-agnostic, so the openSUSE
+backend stays as data for a possible later flavour.
+
+**Why Plasma?** The most complete free desktop, and it already handles the cross-app
+consistency (GTK, Flatpak portals) a layer would otherwise have to build.
 
 **Does it run on ARM?** It is meant to. Phase 1 runs the bootstrap in an aarch64 container
 in CI; real hardware starts with the Raspberry Pi 4 and continues with ARM laptops as they
-gain openSUSE support. There is never a separate ARM edition.
+gain Debian kernel support. There is never a separate ARM edition.
 
-**Can I use it on Fedora or Ubuntu?** Not yet. The package manifest is base-agnostic by
-design, but other backends come only after both install paths are stable on openSUSE.
+**Can I use it on Fedora or openSUSE?** Not yet. The package manifest is base-agnostic by
+design, but other backends come only after both install paths are stable on Debian.
 
 ## Contributing
 

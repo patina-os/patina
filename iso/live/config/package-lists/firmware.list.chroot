@@ -1,0 +1,8 @@
+# Firmware the live system and the installed system need for wifi and graphics. All from
+# Debian's non-free-firmware area: the same blobs every base ships, and the only
+# non-free content in the image (README, "The stance").
+firmware-linux
+firmware-iwlwifi
+firmware-realtek
+firmware-atheros
+firmware-brcm80211

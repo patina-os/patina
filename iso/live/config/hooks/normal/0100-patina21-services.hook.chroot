@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# live-build hook, run once inside the image root at build time: boot the live system
+# straight into the installer screen. The first-boot unit is also present in the image
+# but stays disabled here; Calamares enables it in the installed system.
+set -euo pipefail
+
+systemctl enable patina21-ui.service
+systemctl set-default graphical.target

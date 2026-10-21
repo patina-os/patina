@@ -5,7 +5,7 @@ description: Curated desktop apps (Nextcloud, Thunderbird, Element, KeePassXC)
 default: true
 packages:
   - nextcloud-desktop
-  - MozillaThunderbird   # openSUSE's package name; other backends map it
+  - thunderbird
   - keepassxc
 flatpaks:
   - im.riot.Riot         # Element
