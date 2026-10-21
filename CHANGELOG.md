@@ -8,8 +8,8 @@ All notable changes to patina21 are documented here. The format follows
 
 ### Changed
 
-- The logo wordmark is redrawn in a bold block letterform; the patina wave and the
-  tagline are unchanged. Still plain 7-bit ASCII within 60 columns, so it renders on a
+- The logo wordmark is redrawn in a bold block letterform; the patina wave is kept and the
+  tagline is dropped. Still plain 7-bit ASCII within 60 columns, so it renders on a
   serial console and in a GitHub README. `branding/logo.txt` stays the only copy; the
   README headers follow it. `patina help` prints the mark with a pink-to-purple
   gradient on an interactive terminal (24-bit colour, honouring `NO_COLOR`); the file

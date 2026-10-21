@@ -7,7 +7,6 @@
 |   __|___._||____|__||__|__|___._||______|______|
 |__|
 ~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'~
-     a polish layer for KDE Plasma on Debian
 ```
 
 Themes, consistency across apps, curated defaults, agent CLIs and a free-software,

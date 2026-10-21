@@ -5,7 +5,7 @@ themselves.
 
 ```text
 branding/
-  logo.txt      the ASCII wordmark with the tagline; the canonical text mark
+  logo.txt      the ASCII wordmark; the canonical text mark
 ```
 
 ## logo.txt
@@ -17,7 +17,6 @@ branding/
 |   __|___._||____|__||__|__|___._||______|______|
 |__|
 ~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'~
-     a polish layer for KDE Plasma on Debian
 ```
 
 The wave under the name is the patina: the layer that forms on the surface and gives the
@@ -32,7 +31,7 @@ Rules:
   the console, `/etc/issue.d` and the README still get the plain mark.
 - At most 60 columns and 8 lines, so it fits an 80-column terminal with a margin and a
   TTY with its login prompt.
-- The letterforms are fixed. Change the tagline or the wave only here, in one place.
+- The letterforms are fixed. Change the wave only here, in one place.
 - Where it appears: `patina help`, the README, the console of the live image and of the
   installed system (`/etc/issue.d`), the first-boot screen and the installer, which
   shows an SVG the image build renders from this file. See `docs/branding.md` for the
