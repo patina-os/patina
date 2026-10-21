@@ -140,6 +140,9 @@ are the one generated thing committed, refreshed for every release, never edited
   `live/initrd.img-<version>`; the boot test finds them by pattern.
 - agetty treats backslashes in `/etc/issue` as escape sequences; `build.sh` doubles them
   in the console copy of the logo.
+- Qt's SVG renderer, which draws the installer's logo, misreads percentage sizes: the
+  generated `logo.svg` uses absolute ones (the first screenshot showed a background
+  square that stopped short of the text).
 - live-build's own firmware detection (`--firmware-chroot`, on by default) and the
   `firmware-linux` metapackage each pull Debian's whole non-free firmware set, over 700
   MiB of it for network cards no laptop has, and made the first image 1.2 GB. With the

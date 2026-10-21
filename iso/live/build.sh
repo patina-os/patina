@@ -39,7 +39,9 @@ sed 's/\\/\\\\/g' "$repo/branding/logo.txt" > "$chroot/etc/issue.d/10-patina21.i
 branding="$chroot/etc/calamares/branding/patina21"
 {
   echo '<svg xmlns="http://www.w3.org/2000/svg" width="520" height="120" viewBox="0 0 520 120">'
-  echo '  <rect width="100%" height="100%" fill="#1e1e1e"/>'
+  # Absolute sizes: Qt's SVG renderer, which Calamares uses, misreads percentages
+  # here and drew a square that stopped short of the text.
+  echo '  <rect x="0" y="0" width="520" height="120" fill="#1e1e1e"/>'
   y=20
   # The wordmark is plain text, not YAML, so sed may escape it for XML.
   while IFS= read -r line; do
