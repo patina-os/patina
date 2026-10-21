@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# First boot after the patina21 ISO: do exactly what Path A does for the user Agama
+# First boot after the patina21 image: do exactly what Path A does for the user Calamares
 # created, then get out of the way. Idempotent and safe to re-run by hand.
 set -euo pipefail
 
@@ -9,9 +9,9 @@ done_marker="$state_dir/firstboot-done"
 repo_url="${PATINA_REPO_URL:-https://github.com/patina21/patina21.git}"
 repo_ref="${PATINA_REPO_REF:-main}"
 
-# Optional answers for unattended runs (the CI install test writes this file):
+# Optional answers for unattended runs (written by hand, nothing in the image creates it):
 # PATINA_THEME, PATINA_UNATTENDED=1. `patina install` honours them (roadmap, Phase 1).
-# shellcheck disable=SC1091  # optional, created by the Agama profile of the install test
+# shellcheck disable=SC1091  # optional, written by hand for unattended runs
 [[ -r /etc/patina21/firstboot.env ]] && source /etc/patina21/firstboot.env
 
 say() {
@@ -25,7 +25,7 @@ finish() {
 }
 
 clear 2>/dev/null || true
-# The user Agama created: the first regular account with a home directory.
+# The user Calamares created: the first regular account with a home directory.
 user="$(getent passwd | awk -F: '$3 >= 1000 && $3 < 60000 && $6 ~ /^\/home\// { print $1; exit }')"
 if [[ -z "$user" ]]; then
   say "no regular user found; run 'git clone $repo_url' and 'patina install' by hand"

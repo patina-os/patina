@@ -1,0 +1,32 @@
+# The live system: what Calamares needs to probe hardware, reach the network and install.
+# Plasma is not here; the installer fetches it (modules/packages.conf). Debian's live
+# tooling and the installer are removed from the installed system by the same module.
+live-boot
+live-config
+live-config-systemd
+systemd-timesyncd
+network-manager
+ca-certificates
+curl
+sudo
+locales
+console-setup
+keyboard-configuration
+# the installer and what its modules call
+calamares
+parted
+dosfstools
+e2fsprogs
+btrfs-progs
+cryptsetup
+efibootmgr
+squashfs-tools
+rsync
+os-prober
+# the installer screen (patina21-ui.service): X, a bare window manager, a session bus
+xserver-xorg
+xinit
+x11-xserver-utils
+openbox
+dbus-bin
+fonts-noto-core

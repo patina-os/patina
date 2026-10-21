@@ -1,13 +1,15 @@
 # Always installed. Keep this list short: everything else is a bundle the user picks.
-# Package names are illustrative until Phase 1 verifies them against Tumbleweed.
+# Package names are illustrative until Phase 1 verifies them against Debian 13.
 name: base
 description: What patina21 itself needs to run
 default: true
 required: true
 packages:
-  - git       # `patina update` is a git pull
-  - yq        # the only parser patina21 scripts use for YAML
-  - flatpak   # Flathub is the source for GUI apps we do not track
-  - curl
+  - git              # `patina update` is a git pull
+  - curl             # upstream installers and the Flathub remote
+  - ca-certificates
+  - sudo             # every backend command that needs root goes through sudo
+  - flatpak          # Flathub is the source for GUI apps we do not track
 flatpaks: []
-upstream: []
+upstream:
+  - yq               # the only YAML parser patina21 scripts use; Debian packages a different yq

@@ -1,7 +1,8 @@
-# First boot of a system installed from the patina21 ISO: runs Path A (git clone, then
+# First boot of a system installed from the patina21 image: runs Path A (git clone, then
 # `patina install`) on the console before the login screen appears. Installed into
-# /etc/systemd/system by the Agama profile (iso/agama/patina21.json) and enabled by its
-# post script. Runs once: the script writes /var/lib/patina21/firstboot-done.
+# the image by iso/live/build.sh and enabled in the installed system by Calamares
+# (modules/shellprocess-firstboot.conf). Runs once: the script writes
+# /var/lib/patina21/firstboot-done.
 [Unit]
 Description=patina21 first boot: install the layer (Path A)
 Documentation=https://github.com/patina21/patina21/tree/main/iso

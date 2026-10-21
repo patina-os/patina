@@ -1,7 +1,8 @@
 name: smoke
 
-# Runs the patina21 entry point inside a stock openSUSE Tumbleweed container on both
-# architectures the layer targets. This job grows into the Path A bootstrap test
+# Runs the patina21 entry point inside a stock Debian 13 container on both architectures
+# the layer targets, and checks that every package the manifest and the image name
+# exists in Debian's archive. This job grows into the Path A bootstrap test
 # (docs/roadmap.md, Phase 1) once `patina install` exists.
 
 on:
@@ -22,13 +23,25 @@ jobs:
         include:
           - arch: x86_64
             runner: ubuntu-24.04
+            deb_arch: amd64
           - arch: aarch64
             runner: ubuntu-24.04-arm
+            deb_arch: arm64
     runs-on: ${{ matrix.runner }}
-    container: registry.opensuse.org/opensuse/tumbleweed:latest
+    container: debian:13
     steps:
       - name: Install what checkout and the smoke test need
-        run: zypper --non-interactive install git tar gzip yq
+        run: |
+          apt-get update -q
+          apt-get install -y -q git ca-certificates curl
+      - name: Install the Go yq the way manifest/upstream.yaml describes
+        # Debian's yq package is the Python jq wrapper; the data format needs the Go one.
+        env:
+          YQ_URL: https://github.com/mikefarah/yq/releases/latest/download
+        run: |
+          curl -fsSL --retry 4 -o /usr/local/bin/yq "$YQ_URL/yq_linux_${{ matrix.deb_arch }}"
+          chmod +x /usr/local/bin/yq
+          yq --version
       - uses: actions/checkout@v5
       - name: Show the base
         run: |
@@ -46,6 +59,16 @@ jobs:
           test "$rc" -eq 2
       - name: Every YAML file parses
         run: |
-          git ls-files '*.yaml' '*.yml' | while read -r f; do
+          git ls-files '*.yaml' '*.yml' '*.conf' '*.desc' | while read -r f; do
             yq eval '.' "$f" > /dev/null || { echo "invalid YAML: $f"; exit 1; }
           done
+      - name: Every package the bundles and the image name exists in Debian
+        # A dry run resolves names and dependencies without installing anything.
+        run: |
+          # The container's sources carry main only; the image also uses non-free-firmware.
+          sed -i 's/^Components: main$/Components: main non-free-firmware/' \
+            /etc/apt/sources.list.d/debian.sources
+          apt-get update -q
+          mapfile -t pkgs < <(iso/test/list-packages.sh "${{ matrix.deb_arch }}")
+          printf 'resolving %d packages\n' "${#pkgs[@]}"
+          apt-get install --dry-run -y -q "${pkgs[@]}" > /dev/null

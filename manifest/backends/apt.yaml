@@ -1,0 +1,9 @@
+# Backend for Debian (apt). The reference backend: canonical names are Debian's, so the
+# map below should stay empty or nearly so.
+name: apt
+os_ids:   # ID= values from /etc/os-release this backend serves
+  - debian
+refresh: sudo apt-get --quiet update
+install: sudo apt-get --quiet --yes install   # package names are appended
+installed: dpkg-query --status                # exit 0 when the package is installed
+map: {}   # canonical name -> apt name, only where they differ

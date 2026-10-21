@@ -3,7 +3,7 @@ name: Template Device   # marketing name
 slug: template          # directory name: lowercase, kebab-case
 arch: aarch64           # x86_64 or aarch64
 status: untested        # untested | boots | works-with-caveats | supported
-base_image: ""          # URL of the openSUSE image or ISO known to boot on it
+base_image: ""          # URL of the Debian image known to boot on it
 kernel_params: []       # extra kernel command-line parameters, if any
 extra_packages: []      # canonical package names this device needs on top of the bundles
 notes: >

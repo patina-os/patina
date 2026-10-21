@@ -1,7 +1,25 @@
 # Tools installed from their upstream installers, used only when no packaged version is
-# worth using. Methods: npm (global package via the base's nodejs and npm), uv (Python
-# tool via `uv tool install`), script (the upstream's documented install script).
+# worth using. Methods:
+#   npm         global package via the base's nodejs and npm
+#   uv          Python tool via `uv tool install`
+#   script      the upstream's documented install script (the only `curl | sh` allowed)
+#   binary      a single static binary from the upstream's release page, installed to
+#               ~/.local/bin; `arch` maps uname -m to the upstream's file name
+#   apt-source  the upstream's own signed apt repository, added as a source and installed
+#               with apt; only for opt-in tools, never for a default
 # Names and methods are illustrative until Phase 1 verifies them.
+yq:
+  # Debian's `yq` package is the Python jq wrapper, not the Go yq the data format is
+  # written for, so the Go release binary is the only option on Debian.
+  method: binary
+  url: https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${arch}
+  arch:
+    x86_64: amd64
+    aarch64: arm64
+uv:
+  # Debian 13 does not package uv; the Python-based agent tools need it.
+  method: script
+  url: https://astral.sh/uv/install.sh
 claude-code:
   method: npm
   package: "@anthropic-ai/claude-code"
@@ -11,8 +29,17 @@ codex:
 opencode:
   method: npm
   package: opencode-ai
+claude-desktop:
+  # Anthropic ships Claude Desktop for Linux only as a Debian package, from its own
+  # signed apt repository. apt then keeps it updated like any other package.
+  method: apt-source
+  key: https://downloads.claude.ai/claude-desktop/key.asc
+  keyring: /usr/share/keyrings/claude-desktop-archive-keyring.asc
+  source:   # one deb line: url suite components, signed by the keyring above
+    url: https://downloads.claude.ai/claude-desktop/apt/stable
+    suite: stable
+    components: main
+  package: claude-desktop
 ollama:
-  # Tumbleweed packages ollama; bundles should list it under `packages`. This entry is
-  # the fallback for bases that do not package it.
   method: script
   url: https://ollama.com/install.sh

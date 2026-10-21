@@ -1,0 +1,4 @@
+# Packages only the arm64 live image needs (Phase 3). build.sh copies this file into the
+# package lists; live-build adds the kernel itself (--linux-flavours).
+grub-efi-arm64-signed
+shim-signed

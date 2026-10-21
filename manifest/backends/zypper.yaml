@@ -1,5 +1,5 @@
-# Backend for openSUSE (zypper). The reference backend: canonical names are openSUSE's,
-# so the map below should stay empty or nearly so.
+# Backend for openSUSE (zypper). Kept as data for a possible later base; it is not run in
+# CI and nothing is tested on it until the roadmap says so. Canonical names are Debian's.
 name: zypper
 os_ids:   # ID= values from /etc/os-release this backend serves
   - opensuse-tumbleweed
@@ -8,4 +8,5 @@ os_ids:   # ID= values from /etc/os-release this backend serves
 refresh: sudo zypper --non-interactive refresh
 install: sudo zypper --non-interactive install   # package names are appended
 installed: rpm -q                                # exit 0 when the package is installed
-map: {}   # canonical name -> zypper name, only where they differ
+map:      # canonical (Debian) name -> zypper name, only where they differ
+  thunderbird: MozillaThunderbird

@@ -1,6 +1,6 @@
 # desktops/plasma/
 
-Renderer for KDE Plasma 6 as shipped by openSUSE. Nothing here yet except this contract;
+Renderer for KDE Plasma 6 as shipped by Debian. Nothing here yet except this contract;
 `apply.sh` and `templates/` arrive with Phase 1 (`docs/roadmap.md`).
 
 What it will produce from a theme and `defaults/`:
@@ -12,5 +12,5 @@ What it will produce from a theme and `defaults/`:
 - GTK apps follow through Plasma's own GTK bridge; Flatpak apps through the portals
 
 Tools it may call: `kwriteconfig6`, `plasma-apply-colorscheme`,
-`plasma-apply-lookandfeel`, `plasma-apply-wallpaperimage`. All come from the openSUSE
-repositories; nothing is downloaded.
+`plasma-apply-lookandfeel`, `plasma-apply-wallpaperimage`. All come from Debian's
+archive; nothing is downloaded.

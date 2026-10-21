@@ -1,0 +1,41 @@
+# Calamares branding for the patina21 installer: strings, colours and the logo. The logo
+# file (logo.svg) is not committed; iso/live/build.sh renders it from branding/logo.txt,
+# the only copy, and fills in the version from git. Colours are the template palette
+# (themes/_template/theme.yaml) until the first theme exists.
+---
+componentName: patina21
+
+welcomeStyleCalamares: false
+welcomeExpandingLogo: true
+windowExpanding: fullscreen
+windowPlacement: center
+sidebar: widget
+navigation: widget
+
+strings:
+  productName: patina21
+  shortProductName: patina21
+  version: "0.0.0"
+  shortVersion: "0.0.0"
+  versionedName: patina21
+  shortVersionedName: patina21
+  bootloaderEntryName: Debian GNU/Linux
+  productUrl: https://github.com/patina21/patina21
+  supportUrl: https://github.com/patina21/patina21/issues
+  knownIssuesUrl: https://github.com/patina21/patina21/issues
+  releaseNotesUrl: https://github.com/patina21/patina21/blob/main/CHANGELOG.md
+
+images:
+  productLogo: logo.svg
+  productIcon: logo.svg
+  productWelcome: logo.svg
+
+# A still image instead of a QML slideshow: nothing to execute, nothing to maintain.
+slideshow:
+  - logo.svg
+
+style:
+  sidebarBackground: "#1e1e1e"
+  sidebarText: "#d0d0d0"
+  sidebarTextCurrent: "#1e1e1e"
+  sidebarBackgroundCurrent: "#61afef"

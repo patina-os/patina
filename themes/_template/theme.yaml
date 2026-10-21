@@ -35,6 +35,6 @@ wallpapers:
 
 # Optional per-desktop hints. Still data: a renderer reads them, nothing executes here.
 plasma:
-  icons: breeze-dark             # icon theme as installed from openSUSE repos
+  icons: breeze-dark             # icon theme as packaged by Debian
   cursors: breeze_cursors
   look_and_feel: org.kde.breezedark.desktop

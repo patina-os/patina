@@ -6,21 +6,45 @@ All notable changes to patina21 are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The base is Debian stable (Debian 13 today) instead of openSUSE Tumbleweed, decided
+  before anything shipped: third-party installers, vendor packages and manuals assume
+  apt, and Debian serves the project's top priorities at least as well. Canonical
+  package names are now Debian's; `manifest/backends/apt.yaml` is the reference
+  backend, `zypper.yaml` stays as untested data. README, CLAUDE.md, roadmap, branding
+  and hardware notes, the logo tagline and every README follow.
+- The image is a small live image built with Debian's live-build, installed by
+  Calamares with patina21 branding; Plasma and the base bundle are fetched from Debian's
+  mirrors during the install. It replaces the KIWI description, Agama profile and Open
+  Build Service plan under `iso/`. Built and boot-tested by the new `iso` workflow,
+  attached to a tag's GitHub release only when the boot test passed.
+- CI runs the smoke test in Debian 13 containers and resolves every package the
+  manifest and the image name against Debian's archive with an apt dry run.
+
 ### Added
+
+- `manifest/bundles/agents.yaml`: the agent tools as an opt-in bundle (Claude Code,
+  Codex CLI, opencode, Claude Desktop, Ollama). Claude Desktop comes from Anthropic's
+  own signed apt repository, the only form it ships for Linux.
+- Upstream recipes for the Go `yq` (Debian packages the Python one) and `uv`.
+
+### Removed
+
+- The openSUSE ISO scaffold (`iso/agama/`, `iso/kiwi/`, the OBS-based `iso-test`
+  workflow and the Agama install test).
 
 - The patina21 logo: an ASCII wordmark in `branding/logo.txt`, shown by `patina help`,
   in the README, on the ISO console and at first boot.
-- ISO scaffold under `iso/` (roadmap, Phase 2): Agama preset profile and product
-  definition, KIWI description with its live-system overlay, first-boot unit and
-  script that run Path A, QEMU install test and the `iso-test` workflow. Nothing is
-  built yet.
+- Image scaffold under `iso/` (roadmap, Phase 2): first-boot unit and script that run
+  Path A, and the live image configuration. Nothing is built yet.
 - Repository skeleton: `bin/`, `themes/`, `defaults/`, `desktops/`, `manifest/`,
   `migrations/`, `devices/`, `iso/`, `docs/`, each with a README that fixes its purpose
   and file format.
 - `patina` entry point with `help` and `version`; every other command reports that it is
   planned.
 - Project documentation: README, CLAUDE.md, roadmap, branding and hardware notes.
-- CI: shellcheck and yamllint; smoke run in openSUSE Tumbleweed containers on x86_64 and
+- CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
 [Unreleased]: https://github.com/patina21/patina21/commits/main
