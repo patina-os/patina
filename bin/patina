@@ -8,7 +8,26 @@ export PATINA_PATH
 
 usage() {
   if [[ -r "$PATINA_PATH/branding/logo.txt" ]]; then
-    cat "$PATINA_PATH/branding/logo.txt"
+    # logo.txt stays plain 7-bit ASCII (serial console, /etc/issue.d, README);
+    # the pink-to-purple gradient is added here, only for an interactive terminal.
+    if [[ -t 1 && -z "${NO_COLOR:-}" && "${TERM:-dumb}" != "dumb" &&
+          ( "${COLORTERM:-}" == "truecolor" || "${COLORTERM:-}" == "24bit" ) ]]; then
+      local -a lines
+      mapfile -t lines < "$PATINA_PATH/branding/logo.txt"
+      local n=${#lines[@]} i r g b
+      for i in "${!lines[@]}"; do
+        if (( n > 1 )); then
+          r=$(( 255 + (139 - 255) * i / (n - 1) ))
+          g=$(( 95 + (92 - 95) * i / (n - 1) ))
+          b=$(( 208 + (246 - 208) * i / (n - 1) ))
+        else
+          r=255 g=95 b=208
+        fi
+        printf '\033[38;2;%d;%d;%dm%s\033[0m\n' "$r" "$g" "$b" "${lines[i]}"
+      done
+    else
+      cat "$PATINA_PATH/branding/logo.txt"
+    fi
     echo
   fi
   cat <<EOF

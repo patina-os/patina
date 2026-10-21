@@ -27,6 +27,9 @@ Rules:
 
 - Plain 7-bit ASCII, no colour codes, no box-drawing characters: it must look right on a
   Linux console at first boot, over a serial line and in a GitHub README.
+- Colour is never in the file. `patina help` adds a pink-to-purple gradient at print
+  time, only for an interactive terminal (24-bit colour, suppressed by `NO_COLOR`), so
+  the console, `/etc/issue.d` and the README still get the plain mark.
 - At most 60 columns and 8 lines, so it fits an 80-column terminal with a margin and a
   TTY with its login prompt.
 - The letterforms are fixed. Change the tagline or the wave only here, in one place.

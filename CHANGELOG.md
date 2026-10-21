@@ -11,7 +11,9 @@ All notable changes to patina21 are documented here. The format follows
 - The logo wordmark is redrawn in a bold block letterform; the patina wave and the
   tagline are unchanged. Still plain 7-bit ASCII within 60 columns, so it renders on a
   serial console and in a GitHub README. `branding/logo.txt` stays the only copy; the
-  README headers follow it.
+  README headers follow it. `patina help` prints the mark with a pink-to-purple
+  gradient on an interactive terminal (24-bit colour, honouring `NO_COLOR`); the file
+  itself stays colourless so `/etc/issue.d`, serial consoles and the README are clean.
 - The base is Debian stable (Debian 13 today) instead of openSUSE Tumbleweed, decided
   before anything shipped: third-party installers, vendor packages and manuals assume
   apt, and Debian serves the project's top priorities at least as well. Canonical
