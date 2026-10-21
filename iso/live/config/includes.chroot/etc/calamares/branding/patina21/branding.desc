@@ -35,7 +35,7 @@ slideshow:
   - logo.svg
 
 style:
-  sidebarBackground: "#1e1e1e"
-  sidebarText: "#d0d0d0"
-  sidebarTextCurrent: "#1e1e1e"
-  sidebarBackgroundCurrent: "#61afef"
+  SidebarBackground: "#1e1e1e"
+  SidebarText: "#d0d0d0"
+  SidebarTextCurrent: "#1e1e1e"
+  SidebarBackgroundCurrent: "#61afef"

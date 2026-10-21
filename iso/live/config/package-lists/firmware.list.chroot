@@ -1,8 +1,15 @@
-# Firmware the live system and the installed system need for wifi and graphics. All from
-# Debian's non-free-firmware area: the same blobs every base ships, and the only
+# Firmware the live system needs to show a screen and reach the network on common
+# laptops: the free blobs, the shared non-free set and the wifi and graphics families.
+# Not the firmware-linux metapackage: it pulls the firmware for data-centre network
+# cards and the like, which alone would push the image past a gigabyte. The installed
+# system gets the full set from Debian's mirrors (modules/packages.conf). All of this
+# is from Debian's non-free-firmware area: the same blobs every base ships, and the only
 # non-free content in the image (README, "The stance").
-firmware-linux
+firmware-linux-free
+firmware-misc-nonfree
+firmware-intel-graphics
 firmware-iwlwifi
 firmware-realtek
 firmware-atheros
 firmware-brcm80211
+firmware-mediatek

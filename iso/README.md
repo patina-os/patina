@@ -62,14 +62,19 @@ stable at install time, and an old image installs today's layer.
 
 ## Building
 
-`.github/workflows/iso-build.yml` does it: `iso/live/build.sh amd64` in a privileged
-Debian 13 container, then the boot test on a runner with KVM, then, for a `v*` tag, the
-upload to that tag's GitHub release (created as a draft when missing). To build by hand
-on a Debian machine:
+`.github/workflows/iso-build.yml` does it for both architectures: `iso/live/build.sh
+<arch>` in a privileged Debian 13 container on an x86_64 and on an aarch64 runner (a
+native build on each, no emulation), then the boot test on a plain runner of the same
+architecture, then, for a `v*` tag, the upload of both images to that tag's GitHub
+release (created as a draft when missing). The workflow also runs on every pull request
+that touches `iso/`, `branding/`, the base bundle or the workflow itself, so an image
+change is built and booted before it is merged; it publishes only from a tag. To build by
+hand on a Debian machine of the target architecture:
 
 ```sh
 sudo apt-get install live-build debootstrap
-sudo iso/live/build.sh amd64            # writes iso/build/live/patina21-amd64-*.iso
+sudo iso/live/build.sh amd64            # writes iso/build/live/patina21-amd64.hybrid.iso
+sudo iso/live/build.sh arm64            # on an arm64 machine
 ```
 
 `build.sh` renders `branding/logo.txt` into `/etc/issue.d` and into the installer's
@@ -81,7 +86,10 @@ is committed and the logo keeps its single copy.
 - Automated: `test/boot-test.sh <iso>` boots the image in QEMU with the serial console
   attached and waits for `patina21 installer: ready`, which `.xinitrc` prints once
   Calamares is running. It proves the image, the kernel, the initrd and the installer
-  session; the workflow runs it before any upload.
+  session; the workflow runs it before any upload. It uses KVM where the runner has it
+  and falls back to emulation (TCG) where it does not, with a longer timeout; GitHub's
+  arm64 runners have no KVM, so the arm64 test is the slow one. The kernel is loaded by
+  QEMU directly, so the test does not cover GRUB and shim; the manual install does.
 - Manual, once per release: one real install in a VM through the installer, then a first
   boot that ends in `patina21 firstboot: done`. Calamares has no unattended mode, so
   this part is not automated; the roadmap keeps it as an open Phase 2 item.

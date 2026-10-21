@@ -4,8 +4,8 @@
 # it sits in auto/ of the build directory (iso/live/build.sh puts it there).
 set -euo pipefail
 
-# amd64 today; arm64 follows in Phase 3 (docs/roadmap.md). The kernel flavour is named
-# like the architecture on both.
+# amd64 and arm64 (docs/roadmap.md, Phases 2 and 3); build.sh passes the architecture.
+# The kernel flavour is named like the architecture on both.
 arch="${PATINA_ARCH:-amd64}"
 
 lb config noauto \
@@ -22,7 +22,7 @@ lb config noauto \
   --uefi-secure-boot enable \
   --debian-installer none \
   --memtest none \
-  --image-name "patina21-$arch" \
+  --image-name patina21 \
   --iso-volume patina21-installer \
   --iso-application "patina21 installer" \
   --iso-publisher patina21 \

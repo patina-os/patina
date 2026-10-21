@@ -1,0 +1,17 @@
+# Raspberry Pi 4: the first aarch64 target (docs/roadmap.md, Phase 3). Data only: Debian's
+# own Raspberry Pi image carries the firmware, kernel and device tree, so there is no glue.
+name: Raspberry Pi 4 Model B
+slug: raspberry-pi-4
+arch: aarch64
+status: untested
+base_image: https://raspi.debian.net/tested-images/
+kernel_params: []
+extra_packages: []
+notes: >
+  Boots Debian's official Raspberry Pi image (Debian 13, the raspi_4 image), which ships
+  Debian's arm64 kernel and the raspi-firmware package; the on-board wifi needs
+  firmware-brcm80211, already in that image. The image is console-only, so the Plasma
+  desktop Path A expects is installed from Debian's archive first (devices/raspberry-pi-4/
+  README.md). With the community UEFI firmware (pftf/RPi4, a third-party binary not from
+  Debian) the Pi 4 also boots the generic arm64 live image; patina21 does not ship or
+  test that firmware. 4 GiB of RAM is the smallest model worth using with Plasma.
