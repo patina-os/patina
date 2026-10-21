@@ -99,6 +99,11 @@ openSUSE has the better Plasma polish and the Open Build Service; Debian has the
 ecosystem users actually meet. The package manifest is base-agnostic, so the openSUSE
 backend stays as data for a possible later flavour.
 
+**Is it fast like CachyOS?** It copies what makes CachyOS feel fast and is configuration:
+zram, I/O schedulers, memory and systemd settings, a lean boot, low-latency Plasma
+defaults. It does not copy the custom kernel or the rebuilt packages, because patina21
+owns nothing that gets CVEs.
+
 **Why Plasma?** The most complete free desktop, and it already handles the cross-app
 consistency (GTK, Flatpak portals) a layer would otherwise have to build.
 

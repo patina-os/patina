@@ -15,7 +15,9 @@ architectures); the office suite is Euro-Office; the terminal is kitty until Deb
 carries Ghostty; the developer tools are part of the default desktop bundle (all
 Phase 1); the first theme is purple with generated artwork (Phase 2); the agent tools
 integrate through a shortcut, a terminal profile and Ollama as the local backend
-(Phases 1 and 2). Still open: the name of the first theme.
+(Phases 1 and 2); the system tuning CachyOS ships as configuration is copied as data for
+every install, its kernel and rebuilt packages are not (Phases 1 and 2). Still open: the
+name of the first theme.
 
 ## Phase 1: the core commands on x86_64 (Debian 13)
 
@@ -46,6 +48,16 @@ backend, Flathub and the upstream recipes, plus the commands around it.
   `manifest/upstream.yaml`, moved to Flathub as soon as Flathub carries it. This is the
   one default that comes from an upstream apt repository; the rule in `manifest/` says
   when that is allowed
+- [ ] the system tuning, in the `base` bundle for every install, after what CachyOS
+  ships as configuration (its `cachyos-settings` package, GPL-3.0): zram with zstd
+  through `systemd-zram-generator`, I/O scheduler udev rules (bfq for disks,
+  mq-deadline for SATA SSDs, none for NVMe), the memory sysctls for zram, a journald
+  size cap, shorter systemd stop timeouts, THP defrag, `irqbalance`, `systemd-oomd`, a
+  `MODULES=dep` initramfs and a one-second GRUB timeout. The files live as data under
+  `defaults/system/` and are written through the apt backend's one sudo path, the only
+  place the layer touches `/etc`; `patina doctor` reports them. Not copied: the kernel,
+  the rebuilt packages, the disabled NMI watchdog and relaxed pointer restrictions, the
+  US NTP servers, the Nvidia options
 - [ ] `patina update` (git pull plus pending migrations), `patina migrate`,
   `patina doctor` (base and architecture, `yq`, missing packages, state directory)
 - [ ] verified package names: the "illustrative" notes in `manifest/` go away
@@ -71,7 +83,9 @@ backend, Flathub and the upstream recipes, plus the commands around it.
 - [ ] `patina theme list|set|current`; `patina install` applies the default theme and
   honours `PATINA_THEME=<name>`
 - [ ] curated keybindings and settings: the placeholders in `defaults/` become the real
-  defaults
+  defaults, including the Plasma-side speed settings: KWin's lowest-latency policy, a
+  shorter animation factor, Baloo limited to file names under home, the Wayland
+  session, and no autostart entries beyond Plasma's own
 - Done when: one theme renders the whole desktop from data, `patina theme set` switches
   and switches back without leftovers, and a theme pack made by copying
   `themes/_template` renders without a code change.

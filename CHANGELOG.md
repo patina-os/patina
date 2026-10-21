@@ -18,6 +18,10 @@ All notable changes to patina21 are documented here. The format follows
   neovim and fastfetch from Debian's archive, and Zed from Flathub. The roadmap settles
   the first theme as purple with generated artwork, and the agent tools' desktop
   integration as a shortcut, a terminal profile and Ollama as the local backend.
+- The system tuning CachyOS ships as configuration (zram, I/O schedulers, memory
+  sysctls, journald and systemd limits, a lean boot) is adopted as data for every
+  install, and the Plasma-side speed settings become curated defaults (roadmap, Phases 1
+  and 2). The base bundle names `systemd-zram-generator` and `irqbalance`.
 - The logo wordmark is redrawn in a bold block letterform; the patina wave is kept and the
   tagline is dropped. Still plain 7-bit ASCII within 60 columns, so it renders on a
   serial console and in a GitHub README. `branding/logo.txt` stays the only copy; the

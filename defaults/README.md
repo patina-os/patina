@@ -8,6 +8,11 @@ repository (planned: `~/.config/patina21/`), so `git pull` never clobbers them.
   bind each action (which command to launch, which window-manager function to call).
 - `settings.yaml`: the small set of knobs `patina install` applies when the user does not
   choose otherwise: default theme, Flatpak remote, fonts.
+- `system/` (Phase 1, nothing there yet): the system tuning every install gets, copied
+  from what CachyOS ships as configuration: sysctl, udev rules, systemd drop-ins,
+  tmpfiles, initramfs and GRUB settings. Each file is named by its destination under
+  `/etc`, the one place in `defaults/` where a path is allowed, and the apt backend's
+  sudo path is the only thing that writes them.
 
 Rules: no commands, no filesystem paths, no architecture names. If a default only makes
 sense on one desktop, it belongs in that desktop's directory, not here.
