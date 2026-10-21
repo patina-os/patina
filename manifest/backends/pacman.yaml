@@ -1,0 +1,12 @@
+# Backend for Arch Linux (pacman). Kept as data for a possible later base
+# (docs/roadmap.md, "Later"); it is not run in CI and nothing is tested on it until the
+# roadmap says so. Only Arch itself: CachyOS was rejected (CLAUDE.md). Canonical names
+# are Debian's.
+name: pacman
+os_ids:   # ID= values from /etc/os-release this backend serves
+  - arch
+refresh: sudo pacman --noconfirm --sync --refresh
+install: sudo pacman --noconfirm --needed --sync   # package names are appended
+installed: pacman --query                          # exit 0 when the package is installed
+map:      # canonical (Debian) name -> pacman name, only where they differ
+  nextcloud-desktop: nextcloud-client

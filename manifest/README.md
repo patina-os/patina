@@ -33,8 +33,10 @@ A backend file maps them only where its own name differs.
 A backend is one YAML file: the `ID` values from `/etc/os-release` it serves, the commands
 for refresh, install and is-installed, and the name map. Adding a base means adding a file
 here (and a container for it in the smoke workflow), not editing scripts. `apt.yaml` is
-the reference and the only backend CI runs; `zypper.yaml` is kept as data for a possible
-later base and is untested.
+the reference and the only backend CI runs; `zypper.yaml`, `dnf.yaml` and `pacman.yaml`
+are kept as data for possible later bases and are untested: no container runs them until
+the roadmap schedules that base. Their maps cover the packages the bundles name today;
+a new bundle entry means checking the three maps too.
 
 ## Sources, in order of preference
 

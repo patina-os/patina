@@ -56,17 +56,41 @@ only automates Path A, but it is done only after Phase 1 is.
 
 ## Phase 4: ARM laptops, as hardware allows
 
-Per-device glue under `devices/`, only once a device boots Debian's kernel, in the
-expected order: Snapdragon X Elite (works with caveats upstream), Snapdragon X2 Elite
-(upstreaming in progress), Nvidia RTX Spark / N1X laptops (no public Linux image yet).
-Each one gets a row in `docs/hardware.md`. Apple Silicon is out of scope (Fedora Asahi,
-not Debian).
+Per-device data under `devices/`, only once a device boots Debian's kernel, in the
+expected order. Each one has a row in `docs/hardware.md`. Apple Silicon is out of scope
+(Fedora Asahi, not Debian).
+
+- [x] Snapdragon X Elite: `devices/snapdragon-x-elite/`, data only, status untested.
+  Debian 13 runs on them from the kernel and firmware in `trixie-backports`, installed
+  by hand (the Debian wiki documents the ThinkPad T14s Gen 6); the live image cannot
+  boot them, because the boot loader has to pass the model's device tree. Debian's
+  firmware package covers two Lenovo models; the rest need firmware from their Windows
+  partition
+- [ ] one run of Path A on a Snapdragon X Elite laptop (the procedure is in that
+  directory's README); it needs Phase 1's `patina install` and the hardware. The
+  firmware helper for the models Debian's archive does not cover is written after that
+  run, from what it shows missing
+- [ ] Snapdragon X2 Elite: waiting for upstream. Device trees land in Linux 7.4, GPU and
+  NPU drivers are still upstreaming, Debian 13's kernel is 6.12; Qualcomm announced
+  Debian support for late 2026. No device directory until one boots Debian's kernel
+- [ ] Nvidia N1X laptops: waiting for a Linux commitment from Nvidia; the devices ship
+  late 2026
+- Done when: Path A passes on one Snapdragon X Elite laptop with Debian's own kernel.
 
 ## Later, unscheduled
 
-- Debian 14 when it becomes stable (same layer; a migration if Plasma's config moved)
-- Hyprland as an add-on desktop (`desktops/hyprland/`), never the default
-- zypper (openSUSE), dnf and pacman backends, only after Path A and the image are stable
+- Debian 14 when it becomes stable: the same layer. What changes is data: the
+  distribution name in `iso/live/auto/config`, the `debian:13` container tags in the
+  `smoke` and `iso` workflows, the firmware list of the live image, the Plasma version
+  the renderer targets, and a migration only if Plasma's configuration moved. The apt
+  backend serves every Debian release as it is
+- Hyprland as an add-on desktop (`desktops/hyprland/`, the contract is written), never
+  the default. It waits for Debian 14: Debian 13 carries Hyprland only in
+  `trixie-backports`, and the manifest installs from the main archive only. The rest of
+  its stack is in Debian 13 already
+- zypper (openSUSE), dnf (Fedora) and pacman (Arch) backends: kept as untested data under
+  `manifest/backends/`, with the name maps for today's bundles. A smoke container and a
+  README row with a status come only after Path A and the image are stable on Debian
 
 ## Non-goals
 
