@@ -6,6 +6,13 @@ All notable changes to patina21 are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- The image's boot test takes a screenshot of the installer screen through QEMU's
+  monitor and the `iso` workflow uploads it with the serial log. The README shows the
+  amd64 one from `docs/screenshots/`; the desktop screenshot follows with the first
+  theme (roadmap, Phases 2 and 3).
+
 ### Changed
 
 - The roadmap is renumbered into seven phases in the order they are finished: core

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # The automated part of the image's release gate (iso/README.md): boot the live image in
-# QEMU and require the installer screen to come up. Exit 0 only then.
+# QEMU and require the installer screen to come up. Exit 0 only then. On the way out it
+# takes a screenshot of that screen, the source of the installer image in docs/screenshots/.
 set -euo pipefail
 
 usage() {
@@ -15,7 +16,12 @@ emulates the CPU (TCG), which is slower and gets a longer default timeout. Envir
   PATINA_TEST_MEMORY    VM memory in MiB (default 4096)
   PATINA_TEST_TIMEOUT   seconds to wait for the installer (default 900 with KVM,
                         2700 without)
-The serial console lands in <work-dir>/boot.log.
+  PATINA_TEST_SETTLE    seconds between the installer reporting ready and the
+                        screenshot, for the window to be drawn (default 30 with KVM,
+                        120 without)
+  PATINA_TEST_MONITOR   TCP port on localhost for QEMU's monitor (default 45454)
+The serial console lands in <work-dir>/boot.log, the screenshot of the installer screen
+in <work-dir>/installer-<arch>.png.
 USAGE
 }
 
@@ -30,11 +36,14 @@ if [[ -w /dev/kvm ]]; then
   accel="kvm"
   cpu="host"
   timeout_s="${PATINA_TEST_TIMEOUT:-900}"
+  settle_s="${PATINA_TEST_SETTLE:-30}"
 else
   accel="tcg"
   cpu="max"
   timeout_s="${PATINA_TEST_TIMEOUT:-2700}"
+  settle_s="${PATINA_TEST_SETTLE:-120}"
 fi
+monitor_port="${PATINA_TEST_MONITOR:-45454}"
 cpus="$(nproc)"
 (( cpus > 4 )) && cpus=4
 
@@ -72,6 +81,8 @@ done
 mkdir -p "$work"
 log="$work/boot.log"
 : > "$log"
+screenshot="$work/installer-$arch.png"
+rm -f "$screenshot"
 # Kernel and initrd straight from the image (live-build puts them under live/, named
 # after the kernel version), so the boot options can be ours: the serial console the
 # test watches.
@@ -89,7 +100,8 @@ echo "boot-test: booting $iso ($arch, $accel, ${cpus} cpus, timeout ${timeout_s}
   -kernel "$kernel" -initrd "$initrd" \
   -append "boot=live components quiet hostname=patina21-live username=live noautologin console=$serial,115200n8" \
   -netdev user,id=net0 -device virtio-net-pci,netdev=net0 \
-  -serial "file:$log" &
+  -serial "file:$log" \
+  -monitor "tcp:127.0.0.1:$monitor_port,server,nowait" &
 qemu_pid=$!
 trap 'kill "$qemu_pid" 2>/dev/null || true' EXIT
 
@@ -107,3 +119,18 @@ until grep -q 'patina21 installer: ready' "$log"; do
   waited=$((waited + 10))
 done
 echo "boot-test: passed (installer up after ${waited}s)"
+
+# The ready line says Calamares is running, not that its window is drawn; give it a
+# moment, then ask QEMU's monitor for a screenshot of the display it keeps even without
+# a window (-display none). A missing screenshot is reported but does not fail the gate.
+sleep "$settle_s"
+if exec 3<> "/dev/tcp/127.0.0.1/$monitor_port"; then
+  printf 'screendump %s -f png\n' "$screenshot" >&3
+  sleep 5
+  exec 3>&-
+fi
+if [[ -s "$screenshot" ]]; then
+  echo "boot-test: screenshot in $screenshot"
+else
+  echo "boot-test: no screenshot; QEMU's monitor on port $monitor_port did not deliver one" >&2
+fi

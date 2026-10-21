@@ -35,7 +35,8 @@ iso/
                             branding/logo.txt and firstboot/, then runs lb
   firstboot/                the systemd unit and script that run Path A on first boot;
                             build.sh puts them into the image, Calamares enables the unit
-  test/boot-test.sh         the automated release gate: the image boots to the installer
+  test/boot-test.sh         the automated release gate: the image boots to the installer;
+                            it also takes the screenshot of the installer screen
   test/list-packages.sh     every package the manifest and the image name, for the apt
                             dry run in the smoke workflow
 ```
@@ -94,10 +95,23 @@ is committed and the logo keeps its single copy.
   and falls back to emulation (TCG) where it does not, with a longer timeout; GitHub's
   arm64 runners have no KVM, so the arm64 test is the slow one. The kernel is loaded by
   QEMU directly, so the test does not cover GRUB and shim; the manual install does.
+  Once the installer is up, the test asks QEMU's monitor for a screenshot of the
+  display (`screendump`, which works without a window) and leaves it next to the serial
+  log as `installer-<arch>.png`; the workflow uploads both in the `boot-test-<arch>`
+  artifact. A missing screenshot is reported, not a failure: the gate is the boot.
 - Manual, once per release: one real install in a VM through the installer, then a first
   boot that ends in `patina21 firstboot: done`. Calamares has no unattended mode, so
-  this part is not automated; the roadmap keeps it as an open Phase 3 item.
+  this part is not automated; the roadmap keeps it as an open Phase 3 item. That run
+  also takes the screenshot of the finished desktop (`docs/screenshots/`, from Phase 2
+  on, once there is a theme to show).
 - A failing build or test is simply not published; Path A users are never affected.
+
+## Screenshots
+
+`docs/screenshots/` holds the screenshots the README shows: the installer screen is
+the boot test's own screenshot, copied from the `boot-test-amd64` artifact of the `iso`
+workflow run that built the release; the desktop comes from the manual install. They
+are the one generated thing committed, refreshed for every release, never edited.
 
 ## Rules
 

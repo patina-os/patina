@@ -104,10 +104,13 @@ backend, Flathub and the upstream recipes, plus the commands around it.
   test in QEMU, upload to the GitHub release of a tag only when both boot tests passed
 - [x] both images build and pass the boot test in CI (amd64 under KVM, arm64 under
   emulation), on every pull request that touches the image
+- [x] the boot test takes a screenshot of the installer screen; the README shows it
+  from `docs/screenshots/`
 - [x] branding within Debian's trademark policy (`docs/branding.md`, the logo)
 - [ ] one manual install in a VM per release, until Calamares can be driven unattended
   (upstream has no unattended mode; see `iso/README.md`): boot, answer the installer,
-  first boot ends in `patina21 firstboot: done`
+  first boot ends in `patina21 firstboot: done`, and a screenshot of the finished
+  desktop goes to `docs/screenshots/` (needs Phase 2, so there is a theme to show)
 - Done when: boot, answer the installer, finished desktop identical to Path A, in a VM
   on both architectures.
 
@@ -149,7 +152,8 @@ a row in `docs/hardware.md`. Apple Silicon is out of scope (Fedora Asahi, not De
   migration under `migrations/`
 - [ ] `docs/hardware.md`: at least one row at `works-with-caveats` or better per
   architecture
-- [ ] README: the status lines and the install table say what works
+- [ ] README: the status lines and the install table say what works, and the
+  screenshots are from the released images
 - Done when: a user who reads only the README gets from the release page to a finished
   desktop on either path.
 

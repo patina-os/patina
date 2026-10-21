@@ -107,7 +107,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `migrations/` | timestamped, idempotent update steps |
 | `devices/` | the only place for device- or architecture-specific files |
 | `iso/` | live-build configuration, Calamares configuration and branding, first-boot unit, QEMU boot test (Phase 3) |
-| `docs/` | roadmap, branding and trademark rules, tested hardware |
+| `docs/` | roadmap, branding and trademark rules, tested hardware; `screenshots/` holds the installer and desktop screenshots the README shows, taken by the image's boot test and by the manual install check, refreshed per release |
 | `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), iso (build, boot test, release) |
 
 Each directory's README is the authority on its file format.
@@ -137,7 +137,9 @@ Each directory's README is the authority on its file format.
 - Read YAML with `yq`; never parse it with grep or sed. Write user config under XDG
   directories, never into the repository checkout.
 - Short, obvious code beats clever code. A function used once is not a function.
-- One data file per concern; no generated files committed.
+- One data file per concern; no generated files committed. The one exception is
+  `docs/screenshots/`: images CI and the manual install check produce, committed as
+  they come, never edited.
 
 ## Data formats
 

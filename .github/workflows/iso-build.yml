@@ -4,7 +4,8 @@ name: iso
 # architectures, boots each image in QEMU (the automated half of the release gate in
 # iso/README.md), and attaches the images to the GitHub release of a tag only when every
 # boot test passed. Pull requests that touch the image run the build and the boot test
-# but never publish.
+# but never publish. Each boot test leaves a screenshot of the installer screen in its
+# artifact; the one under docs/screenshots/ is copied from there.
 
 on:
   workflow_dispatch:
@@ -101,12 +102,14 @@ jobs:
         env:
           PATINA_TEST_ARCH: ${{ matrix.arch }}
         run: iso/test/boot-test.sh image/*.iso "$RUNNER_TEMP/boot-test"
-      - name: Keep the serial log
+      - name: Keep the serial log and the screenshot of the installer screen
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: boot-test-log-${{ matrix.arch }}
-          path: ${{ runner.temp }}/boot-test/boot.log
+          name: boot-test-${{ matrix.arch }}
+          path: |
+            ${{ runner.temp }}/boot-test/boot.log
+            ${{ runner.temp }}/boot-test/installer-*.png
           if-no-files-found: ignore
 
   release:
