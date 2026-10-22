@@ -61,7 +61,9 @@ session() {
   theme="$("$PATINA_PATH/bin/patina" theme current)"
   "$PATINA_PATH/bin/patina" theme set "$theme" || true
   sleep 5
-  kitty fish -C fastfetch &
+  # fastfetch asks kitty for its version and reads the reply itself; give kitty a moment
+  # to finish its own startup first, or a late reply lands on the shell's prompt line.
+  kitty fish -C 'sleep 3; fastfetch' &
   sleep "$settle"
   scrot --overwrite "$out"
   [[ -s "$out" ]] || { echo "screenshot: scrot wrote nothing to $out" >&2; return 1; }

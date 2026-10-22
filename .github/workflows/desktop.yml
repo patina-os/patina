@@ -30,7 +30,7 @@ defaults:
 
 jobs:
   screenshot:
-    name: screenshot (amd64, Plasma on a virtual screen)
+    name: screenshot (amd64, Plasma on a virtual framebuffer)
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     container:
