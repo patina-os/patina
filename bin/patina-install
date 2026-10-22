@@ -337,7 +337,7 @@ install_apps() {
 # The theme, through `patina theme set`: PATINA_THEME, else the one already recorded,
 # else the default of defaults/settings.yaml. The first install also gives the desktop
 # the theme's panel layout (Plasma's stock bar is all that exists then); later runs
-# leave the panels alone. Counts as a change unless the renderer had nothing to do.
+# leave the panels alone. Counts as a change when a renderer changed something.
 install_theme() {
   local theme out
   local -a flags=()
@@ -349,7 +349,9 @@ install_theme() {
     warn "theme: '$theme' failed to apply"
     failed=1
   fi
-  grep -q 'theme: nothing to do' "$out" || changed
+  if grep -q ' change(s)' "$out"; then
+    changed
+  fi
   rm -f "$out"
 }
 

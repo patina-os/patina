@@ -124,6 +124,10 @@ real Plasma desktop, which the same VM run gives.
   --layout` brings it back; new windows centred at one share of the screen through KWin's placement and
   one window rule. No automatic tiling: Plasma has none and a KWin script from the
   store is code we would maintain; the tiling desktop is Phase 7
+- [x] the terminal for every desktop: `desktops/terminal/` renders kitty, the fastfetch
+  greeting, a btop theme and a neovim colour scheme from the palette, and points bat,
+  git-delta and fzf at the terminal's colours, which kitty takes from the theme; the
+  Hyprland add-on (Phase 7) reuses it unchanged
 - [x] CI: the smoke test checks the rendered files and settings, that setting the theme
   again changes nothing, and that a copy of the theme under another name renders and
   switches back without leftovers
@@ -235,8 +239,16 @@ Needs Phase 6: Debian 14 carries Hyprland in its main archive, Debian 13 only in
 default. The contract is in `desktops/hyprland/README.md`.
 
 - [ ] `desktops/hyprland/apply.sh` and its templates, from the same theme data as the
-  Plasma renderer: window colours, Waybar and Fuzzel styles, `foot` colours,
-  wallpaper, keybindings rendered to `bind` lines
+  Plasma renderer: window colours, Waybar, Fuzzel, mako and hyprlock styles,
+  wallpaper, the keybindings of `defaults/keybindings.yaml` rendered to `bind` lines
+  with the same chords as on Plasma, plus the tiling actions; the terminal comes from
+  `desktops/terminal/` unchanged
+- [ ] the agent workspace: `Meta+A` toggles a special workspace with the agent CLI in its
+  kitty profile; `nvtop` for the local model's GPU load
+- [ ] `patina menu`: networks (`nmtui`), Bluetooth (`bluetoothctl`), audio
+  (`pulsemixer`), a package search over apt and Flathub (`fzf`), theme and update, as
+  a list of commands in data, shown with fuzzel or `gum`; everything from Debian's
+  archive
 - [ ] a `hyprland` bundle; `patina install` offers the desktop; the smoke test resolves
   its packages
 - Done when: the first theme renders on Plasma and on Hyprland from the same data,

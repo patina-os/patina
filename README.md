@@ -106,8 +106,9 @@ The layer itself has no architecture. aarch64 is a first-class target from day o
 
 One theme from the boot menu to the desktop, from one data file: the live image's boot
 menu, the installer, the login screen, the Plasma splash, Plasma itself, Konsole, kitty,
-GTK and Flatpak apps, the install questions and the terminal greeting all take their
-colours from the theme's palette; the words are set in Source Sans 3, the details in
+GTK and Flatpak apps, the install questions, the terminal greeting and the tools in the
+terminal (btop, neovim, bat, fzf, lazygit, eza, starship) all take their colours from
+the theme's palette; the words are set in Source Sans 3, the details in
 JetBrains Mono, the wordmark in Sora. The default theme is datum: graphite, the ice blue
 of contour lines and one coral accent, with a contour map around a survey point as its
 wallpaper. The mark is text, a summit shaded with the letters of patina, so the

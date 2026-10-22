@@ -8,6 +8,18 @@ All notable changes to patina21 are documented here. The format follows
 
 ### Added
 
+- The terminal tools follow the theme. A new renderer, `desktops/terminal/`, runs for
+  every desktop before the desktop's own: kitty and the fastfetch greeting move there
+  from the Plasma renderer, btop gets a theme file from the palette, neovim a colour
+  scheme that turns on when your configuration chose none, and bat, git-delta and fzf
+  draw with the terminal's colours, which kitty takes from the theme (eza, starship,
+  lazygit and atuin already did). A btop theme or neovim colour scheme you picked
+  stays. `patina doctor` checks the terminal colours.
+- The Hyprland add-on's contract records what Omarchy shows power users and where
+  patina21 differs: the same theme and the same chords as on Plasma, an agent
+  workspace, a `patina menu` over the system's terminal tools from Debian's archive.
+  It still waits for Debian 14 (roadmap, Phase 7).
+
 - A cheat sheet: `patina keys` lists patina21's keys from `defaults/keybindings.yaml`
   (now with a `names` map in words) and Plasma's own essentials (`cheatsheet` in
   `desktops/plasma/actions.yaml`). The new `keys` action, Meta+K, opens it in kitty.

@@ -125,7 +125,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `branding/` | the marks as data: `logo.txt` (the mark) and `wordmark.txt` (the name in block letters) are what scripts print, `wordmark.svg` (the mark typeset beside patina²¹), `icon.svg` and `icon-small.svg` what screens show |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
 | `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `system/` the system tuning files |
-| `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, one `apply.sh`) and the headless session the desktop workflow screenshots (`screenshot.sh`); `plasma/` first |
+| `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, one `apply.sh`) and the headless session the desktop workflow screenshots (`screenshot.sh`); `plasma/` first; `terminal/` renders the terminal and its tools for every desktop |
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
 | `devices/` | the only place for device- or architecture-specific files |
@@ -163,9 +163,10 @@ Each directory's README is the authority on its file format.
   for the login screen's wallpaper and the Breeze SDDM theme's `theme.conf.user`
   (`/usr/local/share/patina21/login.png`, written by the desktop renderer).
   The scripts drop the `sudo` when they already run as root (a container, first boot).
-- Desktop configuration is written only by `desktops/<desktop>/apply.sh`, through the
-  desktop's own tool (`kwriteconfig6` on Plasma) and only when a value differs, so a
-  second run changes nothing. Generated files carry the theme's name and the renderer
+- Desktop configuration is written only by `desktops/<desktop>/apply.sh` (the
+  terminal's by `desktops/terminal/apply.sh`), through the desktop's own tool
+  (`kwriteconfig6` on Plasma) and only when a value differs, so a second run changes
+  nothing. Generated files carry the theme's name and the renderer
   removes those of other themes.
 - Read YAML with `yq`; never parse it with grep or sed. Write user config under XDG
   directories, never into the repository checkout.

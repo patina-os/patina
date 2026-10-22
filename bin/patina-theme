@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# List, switch, install and remove themes: render a theme through the desktop's renderer
+# List, switch, install and remove themes: render a theme for the terminal
+# (desktops/terminal/apply.sh) and through the desktop's renderer
 # (desktops/<desktop>/apply.sh) and record it; fetch a community theme from git as data.
 set -euo pipefail
 
@@ -14,8 +15,9 @@ usage: patina theme list | current | set <name> [--layout]
 
   list       the themes of patina21 and the installed ones (* marks the current one)
   current    the theme the last 'patina theme set' or 'patina install' applied
-  set NAME   render NAME for this user's desktop and make it current. Re-running it
-             changes nothing; switching back leaves nothing of the other theme behind
+  set NAME   render NAME for this user's terminal and desktop and make it current.
+             Re-running it changes nothing; switching back leaves nothing of the
+             other theme behind
   --layout   also replace this desktop's panels with the theme's layout (the centred
              bar of defaults/settings.yaml); needs a running Plasma session. The first
              'patina install' and a fresh login get the layout anyway; afterwards the
@@ -51,6 +53,7 @@ set_theme() {
   PATINA_BUNDLES="$(recorded_bundles | paste -sd ' ')"
   export PATINA_BUNDLES
   say "theme: $name on $desktop"
+  "$PATINA_PATH/desktops/terminal/apply.sh" "$dir"
   "$renderer" "$dir"
   mkdir -p "$PATINA_STATE"
   if [[ "$(cat "$PATINA_STATE/theme" 2> /dev/null)" != "$name" ]]; then
