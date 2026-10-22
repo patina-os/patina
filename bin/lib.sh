@@ -133,3 +133,93 @@ theme_dir() {
 current_theme() {
   [[ -s "$PATINA_STATE/theme" ]] && cat "$PATINA_STATE/theme"
 }
+
+# ---- a theme as template variables ----------------------------------------------------
+# Load a theme and defaults/settings.yaml into the global tpl[] array: the metadata, the
+# Plasma hints, the fonts, the agent, and every palette colour as hex (BASE00) and as the
+# r,g,b decimals KDE's files want (BASE00_RGB). WALLPAPER_FIRST is the absolute path of
+# the theme's default wallpaper. The desktop renderer and the image build fill their
+# templates from the same array, so no colour is ever copied by hand.
+theme_vars() {
+  local theme_yaml="$1" settings="$2" key hex first
+  declare -gA tpl=()
+  tpl[THEME]="$(yq eval '.name' "$theme_yaml")"
+  tpl[DISPLAY_NAME]="$(yq eval '.display_name' "$theme_yaml")"
+  tpl[AUTHOR]="$(yq eval '.author' "$theme_yaml")"
+  tpl[LICENSE]="$(yq eval '.license' "$theme_yaml")"
+  tpl[ARTWORK_LICENSE]="$(yq eval '.artwork_license' "$theme_yaml")"
+  tpl[VARIANT]="$(yq eval '.variant' "$theme_yaml")"
+  tpl[ICONS]="$(yq eval '.plasma.icons // "breeze"' "$theme_yaml")"
+  tpl[CURSORS]="$(yq eval '.plasma.cursors // "breeze_cursors"' "$theme_yaml")"
+  tpl[DESKTOP_THEME]="$(yq eval '.plasma.desktop_theme // "default"' "$theme_yaml")"
+  tpl[UI_FONT]="$(yq eval '.fonts.ui' "$settings")"
+  tpl[MONO_FONT]="$(yq eval '.fonts.monospace' "$settings")"
+  tpl[AGENT]="$(yq eval '.agent // "opencode"' "$settings")"
+  first="$(yq eval '.wallpapers[0] // ""' "$theme_yaml")"
+  tpl[WALLPAPER_FIRST]="${first:+$(cd "$(dirname "$theme_yaml")" && pwd)/$first}"
+  for key in 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F; do
+    hex="$(yq eval -e ".palette.base$key" "$theme_yaml")" || die "palette has no base$key"
+    [[ "$hex" =~ ^#[0-9a-fA-F]{6}$ ]] || die "base$key is not a #rrggbb colour: $hex"
+    tpl[BASE$key]="$hex"
+    tpl[BASE${key}_RGB]="$(printf '%d,%d,%d' "0x${hex:1:2}" "0x${hex:3:2}" "0x${hex:5:2}")"
+  done
+}
+
+# Fill the ${NAME} placeholders of a template from tpl[]: render <template> <out>.
+# Plain bash, no eval, no envsubst.
+render() {
+  local text name
+  text="$(< "$1")"
+  for name in "${!tpl[@]}"; do
+    text="${text//\$\{$name\}/${tpl[$name]}}"
+  done
+  printf '%s\n' "$text" > "$2"
+}
+
+# The ASCII mark, branding/logo.txt, which stays plain 7-bit ASCII (serial console,
+# /etc/issue.d, README). The pink-to-purple gradient is added here, at print time:
+# `print_logo auto` only for an interactive 24-bit terminal, `print_logo always` in any
+# case (the file fastfetch shows). The gradient is the brand's, not the theme's: a green
+# theme still prints it pink.
+print_logo() {
+  local mode="$1" logo="$PATINA_PATH/branding/logo.txt"
+  [[ -r "$logo" ]] || return 0
+  if [[ "$mode" == always ]] || [[ -t 1 && -z "${NO_COLOR:-}" && "${TERM:-dumb}" != "dumb" &&
+        ( "${COLORTERM:-}" == "truecolor" || "${COLORTERM:-}" == "24bit" ) ]]; then
+    local -a lines
+    mapfile -t lines < "$logo"
+    local n=${#lines[@]} i r g b
+    for i in "${!lines[@]}"; do
+      if (( n > 1 )); then
+        r=$(( 255 + (139 - 255) * i / (n - 1) ))
+        g=$(( 95 + (92 - 95) * i / (n - 1) ))
+        b=$(( 208 + (246 - 208) * i / (n - 1) ))
+      else
+        r=255 g=95 b=208
+      fi
+      printf '\033[38;2;%d;%d;%dm%s\033[0m\n' "$r" "$g" "$b" "${lines[i]}"
+    done
+  else
+    cat "$logo"
+  fi
+}
+
+# Can a file be written through the backend's sudo path right now: root already, sudo
+# without a prompt, or a terminal where sudo may ask once?
+system_writable() {
+  [[ "$EUID" -eq 0 ]] || sudo -n true 2> /dev/null || [[ -t 0 ]]
+}
+
+# gum's styles from the palette, for the install TUI; call after theme_vars. Flags
+# override these, and gum degrades the hex colours on a 16-colour console.
+tui_colors() {
+  export GUM_CHOOSE_CURSOR_FOREGROUND="${tpl[BASE0F]}"
+  export GUM_CHOOSE_HEADER_FOREGROUND="${tpl[BASE0E]}"
+  export GUM_CHOOSE_SELECTED_FOREGROUND="${tpl[BASE0F]}"
+  export GUM_CHOOSE_ITEM_FOREGROUND="${tpl[BASE05]}"
+  export GUM_CONFIRM_PROMPT_FOREGROUND="${tpl[BASE05]}"
+  export GUM_CONFIRM_SELECTED_BACKGROUND="${tpl[BASE0E]}"
+  export GUM_CONFIRM_SELECTED_FOREGROUND="${tpl[BASE00]}"
+  export GUM_CONFIRM_UNSELECTED_BACKGROUND="${tpl[BASE02]}"
+  export GUM_CONFIRM_UNSELECTED_FOREGROUND="${tpl[BASE05]}"
+}

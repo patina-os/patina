@@ -19,26 +19,16 @@ config="${XDG_CONFIG_HOME:-$HOME/.config}"
 data="${XDG_DATA_HOME:-$HOME/.local/share}"
 changes=0
 
+# shellcheck source=bin/lib.sh
+source "$PATINA_PATH/bin/lib.sh"
 say() { printf 'patina: theme: %s\n' "$*"; }
 warn() { printf 'patina: theme: %s\n' "$*" >&2; }
 changed() { changes=$((changes + 1)); }
 
 # ---- the theme as template variables ------------------------------------------------
-# tpl[NAME] fills ${NAME} in a template. Colours come as hex (BASE00) and as the r,g,b
-# decimals KDE's files want (BASE00_RGB).
-declare -A tpl
-tpl[THEME]="$(yq eval '.name' "$theme_yaml")"
-tpl[DISPLAY_NAME]="$(yq eval '.display_name' "$theme_yaml")"
-tpl[AUTHOR]="$(yq eval '.author' "$theme_yaml")"
-tpl[LICENSE]="$(yq eval '.license' "$theme_yaml")"
-tpl[ARTWORK_LICENSE]="$(yq eval '.artwork_license' "$theme_yaml")"
-tpl[VARIANT]="$(yq eval '.variant' "$theme_yaml")"
-tpl[ICONS]="$(yq eval '.plasma.icons // "breeze"' "$theme_yaml")"
-tpl[CURSORS]="$(yq eval '.plasma.cursors // "breeze_cursors"' "$theme_yaml")"
-tpl[DESKTOP_THEME]="$(yq eval '.plasma.desktop_theme // "default"' "$theme_yaml")"
-tpl[UI_FONT]="$(yq eval '.fonts.ui' "$settings")"
-tpl[MONO_FONT]="$(yq eval '.fonts.monospace' "$settings")"
-tpl[AGENT]="$(yq eval '.agent // "opencode"' "$settings")"
+# tpl[NAME] fills ${NAME} in a template (theme_vars and render in bin/lib.sh): colours as
+# hex (BASE00) and as the r,g,b decimals KDE's files want (BASE00_RGB).
+theme_vars "$theme_yaml" "$settings"
 tpl[CONFIG_HOME]="$config"
 tpl[WALLPAPER]=""
 tpl[WALLPAPER_PACKAGE]=""
@@ -46,24 +36,6 @@ tpl[AGENT_COMMAND]=""
 theme="${tpl[THEME]}"
 [[ "$theme" == "$(basename "$theme_dir")" ]] ||
   warn "theme.yaml says name: $theme but the directory is $(basename "$theme_dir")"
-
-for key in 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F; do
-  hex="$(yq eval -e ".palette.base$key" "$theme_yaml")" ||
-    { warn "palette has no base$key"; exit 1; }
-  [[ "$hex" =~ ^#[0-9a-fA-F]{6}$ ]] || { warn "base$key is not a #rrggbb colour: $hex"; exit 1; }
-  tpl[BASE$key]="$hex"
-  tpl[BASE${key}_RGB]="$(printf '%d,%d,%d' "0x${hex:1:2}" "0x${hex:3:2}" "0x${hex:5:2}")"
-done
-
-# Fill ${NAME} placeholders from tpl; plain bash, no eval, no envsubst.
-render() {
-  local text name
-  text="$(< "$1")"
-  for name in "${!tpl[@]}"; do
-    text="${text//\$\{$name\}/${tpl[$name]}}"
-  done
-  printf '%s\n' "$text" > "$2"
-}
 
 # Install a rendered file only when it differs from what is there.
 put() {
