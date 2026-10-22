@@ -52,14 +52,16 @@ packs. Audience: developers and privacy-minded users in the EU.
   theme's palette at build or apply time, never by hand; the words are set in Source
   Sans 3, details (versions, hostnames, progress, terminals) in JetBrains Mono, the
   wordmark in Sora, all from Debian's archive. The mark is text: a summit drawn as
-  contour rings with the letters of patina, the word itself as the summit line and the
-  survey point ▲. `branding/logo.txt` holds it for terminals; `branding/wordmark.svg`
-  sets the same characters beside patina²¹ for screens, `branding/icon.svg` reduces it
-  to dots for small squares. The brand's colours (slate, ice, white, coral) do not
-  follow a theme. The desktop's shape is a floating centred bar as on Windows 11 and
-  new windows centred at one size; all are knobs in `defaults/settings.yaml`. No
-  automatic tiling on Plasma: that would need a KWin script Debian does not package; a
-  tiling desktop is the Hyprland add-on.
+  contour rings with the letters of patina (i, t, n, a), the word itself as the summit
+  line and the survey point ▲. `branding/logo.txt` holds it for fastfetch and the
+  console, `branding/wordmark.txt` the name in block letters for `patina help`, the
+  install questions and the README; `branding/wordmark.svg` sets the mark beside
+  patina²¹ for screens, `icon.svg` and `icon-small.svg` are the mark as large and
+  small icons. The brand's colours (slate, ice, white, coral) do not follow a theme.
+  The desktop's shape is a floating centred bar as on Windows 11 and new windows
+  centred at one size; all are knobs in `defaults/settings.yaml`. No automatic tiling
+  on Plasma: that would need a KWin script Debian does not package; a tiling desktop
+  is the Hyprland add-on.
 - Speed: the system tuning CachyOS ships as configuration (zram, I/O schedulers, memory
   sysctls, journald and systemd limits, boot) is copied as data for every install, kept
   under `defaults/system/`; its kernel, rebuilt packages and own repository are not.
@@ -109,9 +111,10 @@ packs. Audience: developers and privacy-minded users in the EU.
 - add abstraction layers, plugin systems, frameworks or a second language for the tooling
 - write "Debian patina21", "patina21 Linux" or `Patina21`
 - paste the logo into a script or redraw it; `branding/logo.txt` is the only copy of the
-  text mark and `branding/wordmark.svg` the only copy of the typeset one (it repeats the
-  text mark's characters, changed together with `logo.txt`); scripts print or copy them
-  (`print_logo` in `lib.sh`, the image build and the renderer copy the SVG)
+  mark, `branding/wordmark.txt` of the text wordmark and `branding/wordmark.svg` of the
+  typeset one (it and `icon.svg` repeat the mark's characters, changed together with
+  `logo.txt`); scripts print or copy them (`print_logo` and `print_wordmark` in
+  `lib.sh`, the image build and the renderer copy the SVG)
 - explain the 21
 
 ## Repository map
@@ -119,7 +122,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 | Directory | Holds |
 |---|---|
 | `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash; `lib.sh` holds the few functions they share, among them the theme loader and template filler the renderers and the image build use |
-| `branding/` | the marks as data: `logo.txt` is the text mark scripts print, `wordmark.svg` (the text mark typeset beside patina²¹) and `icon.svg` (the square) the marks screens show |
+| `branding/` | the marks as data: `logo.txt` (the mark) and `wordmark.txt` (the name in block letters) are what scripts print, `wordmark.svg` (the mark typeset beside patina²¹), `icon.svg` and `icon-small.svg` what screens show |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
 | `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `system/` the system tuning files |
 | `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, one `apply.sh`) and the headless session the desktop workflow screenshots (`screenshot.sh`); `plasma/` first |

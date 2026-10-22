@@ -100,7 +100,8 @@ real Plasma desktop, which the same VM run gives.
   never their files; the artwork is CC-BY-SA-4.0 and the theme data GPL-3.0-or-later
 - [x] the redesign: datum, chosen from eight directions (`docs/design/futures.html`),
   becomes the default theme with a contour map drawn once as SVG; the mark becomes text
-  (`branding/logo.txt`, typeset in `wordmark.svg`, dots in `icon.svg`); Source Sans 3
+  (`branding/logo.txt`, typeset in `wordmark.svg` and `icon.svg`, dots in
+  `icon-small.svg`), the name in block letters (`wordmark.txt`); Source Sans 3
   and Sora join JetBrains Mono; the bar floats. amethyst stays as an option
 - [x] the agent shortcut: the `agent` action in `defaults/keybindings.yaml` (Meta+A)
   opens the agent CLI of `defaults/settings.yaml` (opencode by default) in a dedicated

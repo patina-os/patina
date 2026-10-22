@@ -53,7 +53,7 @@ ask() {
   d="$(theme_dir "$current")" || die "no theme '$current' under themes/ (try patina theme list)"
   theme_vars "$d/theme.yaml" "$PATINA_PATH/defaults/settings.yaml"
   tui_colors
-  print_logo auto
+  print_wordmark auto
   echo
   gum style --foreground "${tpl[BASE04]}" \
     "patina21 $("$PATINA_PATH/bin/patina" version) · $(basename "$BACKEND" .yaml) · $(uname -m)"

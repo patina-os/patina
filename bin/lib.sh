@@ -176,17 +176,22 @@ render() {
   printf '%s\n' "$text" > "$2"
 }
 
-# The text mark, branding/logo.txt, which stays plain text without colour codes (serial
-# console, /etc/issue.d, README). The colours are added here, at print time: `print_logo
-# auto` only for an interactive 24-bit terminal, `print_logo always` in any case (the
-# file fastfetch shows). They are the brand's, not the theme's, the same as in
-# branding/wordmark.svg: the rings shade from slate (i) through ice (t) to pale ice (n),
-# the word patina is bold white, the survey point coral.
+# Colour for a mark: `auto` only on an interactive 24-bit terminal (NO_COLOR wins),
+# `always` in any case (the file fastfetch shows).
+logo_colour() {
+  [[ "$1" == always ]] || [[ -t 1 && -z "${NO_COLOR:-}" && "${TERM:-dumb}" != "dumb" &&
+    ( "${COLORTERM:-}" == "truecolor" || "${COLORTERM:-}" == "24bit" ) ]]
+}
+
+# The mark, branding/logo.txt, which stays plain text without colour codes (serial
+# console, /etc/issue.d). The colours are added here, at print time, and are the
+# brand's, not the theme's, the same as in branding/wordmark.svg: the rings shade from
+# slate (i) through ice (t) to pale ice (n, a), the word patina is bold white, the
+# survey point coral. `print_logo auto|always`.
 print_logo() {
-  local mode="$1" logo="$PATINA_PATH/branding/logo.txt"
+  local logo="$PATINA_PATH/branding/logo.txt"
   [[ -r "$logo" ]] || return 0
-  if [[ "$mode" == always ]] || [[ -t 1 && -z "${NO_COLOR:-}" && "${TERM:-dumb}" != "dumb" &&
-        ( "${COLORTERM:-}" == "truecolor" || "${COLORTERM:-}" == "24bit" ) ]]; then
+  if logo_colour "$1"; then
     local line head word tail part reset=$'\033[0m'
     local -a parts
     while IFS= read -r line; do
@@ -200,12 +205,34 @@ print_logo() {
         part="${part//i/$'\033[38;2;79;115;148m'i$reset}"
         part="${part//t/$'\033[38;2;106;184;255m't$reset}"
         part="${part//n/$'\033[38;2;169;215;255m'n$reset}"
+        part="${part//a/$'\033[38;2;214;236;255m'a$reset}"
         parts+=("${part//▲/$'\033[38;2;255;95;109m'▲$reset}")
       done
       printf '%s%s%s\n' "${parts[0]}" "${word:+$'\033[1;38;2;245;247;249m'$word$reset}" "${parts[1]}"
     done < "$logo"
   else
     cat "$logo"
+  fi
+}
+
+# The wordmark, branding/wordmark.txt: patina in block letters over two contour lines,
+# for the terminal surfaces that show the name (`patina help`, the install questions).
+# The letters print white, the dot of the i (the ▲) coral, the lines ice and slate.
+# `print_wordmark auto|always`.
+print_wordmark() {
+  local file="$PATINA_PATH/branding/wordmark.txt" reset=$'\033[0m' i colour
+  [[ -r "$file" ]] || return 0
+  if logo_colour "$1"; then
+    local -a lines
+    mapfile -t lines < "$file"
+    for i in "${!lines[@]}"; do
+      colour=$'\033[38;2;245;247;249m'
+      (( i == ${#lines[@]} - 2 )) && colour=$'\033[38;2;106;184;255m'
+      (( i == ${#lines[@]} - 1 )) && colour=$'\033[38;2;79;115;148m'
+      printf '%s%s%s\n' "$colour" "${lines[i]//▲/$'\033[38;2;255;95;109m'▲$colour}" "$reset"
+    done
+  else
+    cat "$file"
   fi
 }
 

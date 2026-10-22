@@ -1,13 +1,16 @@
 # patina21
 
 ```text
-     iiiiiiiiiiiii
- iiiiittttttttttttiiii
-ii  ttt nnnnnnnnnntt ii
-i   t  nn patina▲nntt i
-ii  ttt nnnnnnnnnntt ii
- iiiiittttttttttttiiii
-     iiiiiiiiiiiii
+            █▌  ▲
+ ▄▄▟▙▖ ▄█▙▖▗█▙▄▗▄▄▗▄▟█▖ ▗▟█▄
+ ██▀▜█ ▀▀▜█▝█▛▀▝▜█▐█▛▜█ ▝▀▀█▌
+ █▌ ▐█ ▄███ █▌  ▐█▐█ ▐█ ▗▟██▌
+ █▙ ▟█▗█▌▐█ ▜▙  ▐█▐█ ▐█ ▟█ █▌
+ █▛██▛ ██▛█ ▝██ ▐█▐█ ▐█ ▐██▜▌
+ █▌
+ ▀▘
+⢄⣀⡀   ⢀⣀⡠⠤⠤⠒⠒⠒⠒⠢⠤⢄⣀⣀   ⢀⣀⣀⠤⠤⠒
+  ⠈⢉⣉⡩⠥⠔⠒⠒⠒⠒⠤⠤⣀⡀    ⠉⣉⣉⠥⠔⠒⠒⠒⠒
 ```
 
 Themes, consistency across apps, curated defaults, agent CLIs and a free-software,

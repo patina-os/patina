@@ -244,7 +244,7 @@ render "$templates/splash.qml" "$tmp/Splash.qml"
 put "$tmp/Splash.qml" "$lnf/contents/splash/Splash.qml"
 drop_other_themes "$data/plasma/look-and-feel/org.patina21.*" "$lnf"
 
-# fastfetch greets a new terminal with the mark: a gradient copy of branding/logo.txt
+# fastfetch greets a new terminal with the mark: a coloured copy of branding/logo.txt
 # (the file itself stays plain) and a configuration that points at it. The
 # configuration is written while its first line is ours; a user who removes that line
 # keeps their own.

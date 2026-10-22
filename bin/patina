@@ -9,7 +9,7 @@ export PATINA_PATH
 source "$PATINA_PATH/bin/lib.sh"
 
 usage() {
-  print_logo auto
+  print_wordmark auto
   echo
   cat <<EOF
 usage: patina <command> [args]

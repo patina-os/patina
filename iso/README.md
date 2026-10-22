@@ -96,7 +96,7 @@ sudo iso/live/build.sh arm64            # on an arm64 machine
 ```
 
 `build.sh` calls `assets.sh`, which renders everything the image shows from the data:
-`branding/logo.txt` into `/etc/issue.d`, `branding/wordmark.svg` and `icon.svg` into the
+`branding/logo.txt` into `/etc/issue.d`, `branding/wordmark.svg` and `icon-small.svg` into the
 installer's branding, the default theme's wallpapers under a veil as the installer's
 background, three slides, the splash of the boot menu, and the templates under
 `live/templates/` (the Calamares stylesheet, the GRUB theme, the openbox theme) with the

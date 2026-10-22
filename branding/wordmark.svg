@@ -1,41 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- The patina21 wordmark for screens: the text mark of logo.txt typeset in JetBrains
-     Mono beside patina²¹ in Sora ExtraBold, the 21 set small and raised, in coral. The
-     colours are the brand's, not a theme's: the rings shade from slate (i) through ice (t)
-     to pale ice (n), the word and the survey point stand out. Every character here is the
+<!-- The patina21 wordmark for screens: the mark of logo.txt typeset in JetBrains Mono
+     beside patina²¹ in Sora ExtraBold, the 21 set small and raised, in coral. The colours
+     are the brand's, not a theme's: the rings shade from slate (i) through ice (t) to
+     pale ice (n, a), the word and the survey point stand out. Every character here is the
      character of logo.txt in the same place; change both together (branding/README.md).
-     GPL-3.0-or-later. -->
-<svg xmlns="http://www.w3.org/2000/svg" width="620" height="160" viewBox="0 0 620 160">
- <g font-family="JetBrains Mono, monospace" font-weight="500" font-size="14.5" xml:space="preserve">
-  <text x="59.5" y="32.8" fill="#4f7394">iiiiiiiiiiiii</text>
-  <text x="24.7" y="50.2" fill="#4f7394">iiiii</text>
-  <text x="68.2" y="50.2" fill="#6ab8ff">tttttttttttt</text>
-  <text x="172.6" y="50.2" fill="#4f7394">iiii</text>
-  <text x="16" y="67.6" fill="#4f7394">ii</text>
-  <text x="50.8" y="67.6" fill="#6ab8ff">ttt</text>
-  <text x="85.6" y="67.6" fill="#a9d7ff">nnnnnnnnnn</text>
-  <text x="172.6" y="67.6" fill="#6ab8ff">tt</text>
-  <text x="198.7" y="67.6" fill="#4f7394">ii</text>
-  <text x="16" y="85" fill="#4f7394">i</text>
-  <text x="50.8" y="85" fill="#6ab8ff">t</text>
-  <text x="76.9" y="85" fill="#a9d7ff">nn</text>
-  <text x="103" y="85" fill="#f5f7f9" font-weight="800">patina</text>
-  <text x="155.2" y="85" fill="#ff5f6d">▲</text>
-  <text x="163.9" y="85" fill="#a9d7ff">nn</text>
-  <text x="181.3" y="85" fill="#6ab8ff">tt</text>
-  <text x="207.4" y="85" fill="#4f7394">i</text>
-  <text x="16" y="102.4" fill="#4f7394">ii</text>
-  <text x="50.8" y="102.4" fill="#6ab8ff">ttt</text>
-  <text x="85.6" y="102.4" fill="#a9d7ff">nnnnnnnnnn</text>
-  <text x="172.6" y="102.4" fill="#6ab8ff">tt</text>
-  <text x="198.7" y="102.4" fill="#4f7394">ii</text>
-  <text x="24.7" y="119.8" fill="#4f7394">iiiii</text>
-  <text x="68.2" y="119.8" fill="#6ab8ff">tttttttttttt</text>
-  <text x="172.6" y="119.8" fill="#4f7394">iiii</text>
-  <text x="59.5" y="137.2" fill="#4f7394">iiiiiiiiiiiii</text>
+     wordmark.txt is the terminal form of the word. GPL-3.0-or-later. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="160" viewBox="0 0 600 160">
+ <g font-family="JetBrains Mono, monospace" font-weight="500" font-size="12.6" xml:space="preserve">
+  <text x="61.4" y="23.7" fill="#4f7394">iiiiiiiiiii</text>
+  <text x="38.7" y="38.9" fill="#4f7394">iiii</text>
+  <text x="68.9" y="38.9" fill="#6ab8ff">tttttttttt</text>
+  <text x="144.5" y="38.9" fill="#4f7394">iii</text>
+  <text x="23.6" y="54.1" fill="#4f7394">iii</text>
+  <text x="53.8" y="54.1" fill="#6ab8ff">ttt</text>
+  <text x="84" y="54.1" fill="#a9d7ff">nnnnnnnn</text>
+  <text x="144.5" y="54.1" fill="#6ab8ff">ttt</text>
+  <text x="167.2" y="54.1" fill="#4f7394">ii</text>
+  <text x="16" y="69.3" fill="#4f7394">ii</text>
+  <text x="46.2" y="69.3" fill="#6ab8ff">tt</text>
+  <text x="68.9" y="69.3" fill="#a9d7ff">nnn</text>
+  <text x="91.6" y="69.3" fill="#d6ecff">aaaaaaa</text>
+  <text x="144.5" y="69.3" fill="#a9d7ff">nn</text>
+  <text x="159.6" y="69.3" fill="#6ab8ff">tt</text>
+  <text x="174.8" y="69.3" fill="#4f7394">ii</text>
+  <text x="16" y="84.5" fill="#4f7394">i</text>
+  <text x="46.2" y="84.5" fill="#6ab8ff">t</text>
+  <text x="68.9" y="84.5" fill="#a9d7ff">n</text>
+  <text x="91.6" y="84.5" fill="#f5f7f9" font-weight="800">patina</text>
+  <text x="137" y="84.5" fill="#ff5f6d">▲</text>
+  <text x="144.5" y="84.5" fill="#d6ecff">a</text>
+  <text x="152.1" y="84.5" fill="#a9d7ff">n</text>
+  <text x="167.2" y="84.5" fill="#6ab8ff">t</text>
+  <text x="182.3" y="84.5" fill="#4f7394">i</text>
+  <text x="16" y="99.7" fill="#4f7394">ii</text>
+  <text x="46.2" y="99.7" fill="#6ab8ff">tt</text>
+  <text x="68.9" y="99.7" fill="#a9d7ff">nnn</text>
+  <text x="91.6" y="99.7" fill="#d6ecff">aaaaaaa</text>
+  <text x="144.5" y="99.7" fill="#a9d7ff">nn</text>
+  <text x="159.6" y="99.7" fill="#6ab8ff">tt</text>
+  <text x="174.8" y="99.7" fill="#4f7394">ii</text>
+  <text x="23.6" y="114.9" fill="#4f7394">iii</text>
+  <text x="53.8" y="114.9" fill="#6ab8ff">ttt</text>
+  <text x="84" y="114.9" fill="#a9d7ff">nnnnnnnn</text>
+  <text x="144.5" y="114.9" fill="#6ab8ff">ttt</text>
+  <text x="167.2" y="114.9" fill="#4f7394">ii</text>
+  <text x="38.7" y="130.1" fill="#4f7394">iiii</text>
+  <text x="68.9" y="130.1" fill="#6ab8ff">tttttttttt</text>
+  <text x="144.5" y="130.1" fill="#4f7394">iii</text>
+  <text x="61.4" y="145.3" fill="#4f7394">iiiiiiiiiii</text>
  </g>
-  <text x="242.1" y="106" font-family="Sora, sans-serif" font-weight="800" font-size="96"
+  <text x="213.9" y="106" font-family="Sora, sans-serif" font-weight="800" font-size="96"
     letter-spacing="-2.5" fill="#f5f7f9">patina</text>
-  <text x="555.9" y="66" font-family="Sora, sans-serif" font-weight="800" font-size="42"
+  <text x="527.7" y="66" font-family="Sora, sans-serif" font-weight="800" font-size="42"
     letter-spacing="-1" fill="#ff5f6d">21</text>
 </svg>

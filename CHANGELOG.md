@@ -28,13 +28,16 @@ All notable changes to patina21 are documented here. The format follows
 
 ### Changed
 
-- The brand is redesigned. The mark is text: a summit drawn as contour rings and shaded
-  with the letters of patina, the word as the summit line and the survey point ▲ in
-  coral (`branding/logo.txt`, now UTF-8 for that one character). `patina help` and the
-  fastfetch greeting print it in the brand's colours instead of the pink-to-purple
-  gradient. `branding/wordmark.svg` sets the same characters beside patina²¹ in Sora
-  ExtraBold; `branding/icon.svg`, the summit as dots, replaces `wave.svg` as the square
-  mark.
+- The brand is redesigned, as a mark and a name. The mark is text: a summit drawn as
+  contour rings shaded with the letters of patina (i, t, n, a), the word as the summit
+  line and the survey point ▲ in coral (`branding/logo.txt`, 23x9, ASCII plus that one
+  character). fastfetch, the console and the first-boot screen show it, in the brand's
+  colours where the terminal has them. The name is `branding/wordmark.txt`: patina in
+  block letters traced from Sora with the ▲ as the dot of the i and two contour lines in
+  braille, shown by `patina help`, the install questions and the README.
+  `branding/wordmark.svg` sets the mark beside patina²¹ in Sora ExtraBold for screens;
+  `icon.svg` is the mark as a large icon and `icon-small.svg` as dots, which replaces
+  `wave.svg` as the square mark.
 - The interface font is Source Sans 3 instead of Inter (`fonts-adobe-sourcesans3`), in
   Plasma, GTK, the login screen, the installer and its window manager; the wordmark
   needs Sora (`fonts-sora`). Both join the desktop bundle, the live image and the

@@ -70,15 +70,19 @@ jobs:
             echo "defaults/system/sddm.conf.d/patina21.conf does not set Font=$font"
             exit 1
           }
-      - name: The logo has exactly one copy
+      - name: The mark and the wordmark have exactly one copy each
         run: |
-          # The image build renders branding/logo.txt at build time; nothing else may
-          # carry the wordmark (CLAUDE.md, "Never"). docs/design/ keeps design pages
-          # as they were shown, the marks they proposed included.
-          line="$(sed -n 2p branding/logo.txt)"
-          copies="$(git grep -l -F "$line" -- . ':!branding/' ':!README.md' ':!docs/design/' \
-            || true)"
-          if [[ -n "$copies" ]]; then
-            echo "logo copied into: $copies"
-            exit 1
-          fi
+          # Scripts print branding/logo.txt and wordmark.txt; nothing else may carry
+          # them (CLAUDE.md, "Never"). The README shows the wordmark as its header;
+          # docs/design/ keeps design pages as they were shown, the marks included.
+          status=0
+          for mark in branding/logo.txt branding/wordmark.txt; do
+            line="$(sed -n 2p "$mark")"
+            copies="$(git grep -l -F "$line" -- . ':!branding/' ':!README.md' ':!docs/design/' \
+              || true)"
+            if [[ -n "$copies" ]]; then
+              echo "$mark copied into: $copies"
+              status=1
+            fi
+          done
+          exit "$status"
