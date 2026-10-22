@@ -56,6 +56,11 @@ jobs:
           chown -R patina:patina "$GITHUB_WORKSPACE"
           mkdir -p "$RUNNER_TEMP/desktop"
           chown patina:patina "$RUNNER_TEMP/desktop"
+          # No systemd here, so no system bus. flatpak asks AccountsService over it
+          # whether a user may install an app, and skips the check only when the bus
+          # answers that no such service exists; root (the smoke workflow) is not asked.
+          mkdir -p /run/dbus
+          dbus-daemon --system --fork
       - name: patina install, as that user
         # Path A as on a laptop: the backend's sudo is used, not dropped. The agents
         # bundle stays out, as by default.
