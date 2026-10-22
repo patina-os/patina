@@ -455,7 +455,7 @@ if [[ $in_session -eq 1 ]]; then
   fi
   [[ $changes -eq 0 ]] || say "shortcuts apply at the next login"
 elif [[ "${PATINA_LAYOUT:-}" == 1 ]]; then
-  warn "--layout needs a running Plasma session; the layout script is in place for the next fresh login"
+  say "no Plasma session here; the panel layout is in place for the first login"
 elif [[ $changes -gt 0 ]]; then
   say "no Plasma session here; everything applies at the next login"
 fi

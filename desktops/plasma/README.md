@@ -22,8 +22,9 @@ Files, from `templates/`, each named after the theme:
   when `panel.layout` is `centered`: one bar at the bottom with the launcher and the
   icons-only task manager in the middle, the tray and the clock at the right, the apps
   behind `panel.pinned` pinned. Plasma runs it for a session that has no panels yet, so
-  the image's first login starts with it; an existing desktop keeps its panels unless
-  `patina theme set <name> --layout` replaces them
+  the image's first login starts with it; the first `patina install` inside a session
+  applies it too (Path A finds Plasma's stock bar there). Afterwards the panels are the
+  user's: only `patina theme set <name> --layout` replaces them again
 - with the agents bundle: `~/.config/kitty/patina21-agent.conf`, a quieter kitty profile
   from the same palette, and `~/.local/share/applications/patina21-agent.desktop`, which
   opens the command `agent` of `defaults/settings.yaml` in it; both are removed again
