@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Install the layer: the chosen bundles (packages through this base's backend, flatpaks
-# from Flathub, the upstream recipes), the system tuning and the app settings, all from
-# the data files. Idempotent: a second run changes nothing and says so.
+# from Flathub, the upstream recipes), the system tuning, the app settings and the theme,
+# all from the data files. Idempotent: a second run changes nothing and says so.
 set -euo pipefail
 
 # shellcheck source=bin/lib.sh
@@ -18,6 +18,9 @@ usage: patina install [--bundles <a,b,...>] [--all] [--list] [--unattended]
   --list         show the bundles and exit
   --unattended   no prompts, defaults for everything (same as PATINA_UNATTENDED=1).
                  There is no prompt yet; the TUI arrives with the branded install
+
+The theme: PATINA_THEME=<name> picks one (patina theme list); otherwise the theme already
+set on this machine, or the default of defaults/settings.yaml, is applied.
 EOU
 }
 
@@ -273,6 +276,22 @@ install_apps() {
   done
 }
 
+# The theme, through `patina theme set`: PATINA_THEME, else the one already recorded,
+# else the default of defaults/settings.yaml. Counts as a change unless the renderer
+# says it had nothing to do.
+install_theme() {
+  local theme out
+  theme="${PATINA_THEME:-}"
+  [[ -n "$theme" ]] || theme="$(current_theme || yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")"
+  out="$(mktemp)"
+  if ! "$PATINA_PATH/bin/patina-theme" set "$theme" | tee "$out"; then
+    warn "theme: '$theme' failed to apply"
+    failed=1
+  fi
+  grep -q 'theme: nothing to do' "$out" || changed
+  rm -f "$out"
+}
+
 record_state() {
   local first=0 m
   mkdir -p "$PATINA_STATE/migrations"
@@ -362,6 +381,7 @@ main() {
   install_system
   install_apps
   record_state
+  install_theme
 
   if [[ $failed -ne 0 ]]; then
     die "finished with errors (see above)"

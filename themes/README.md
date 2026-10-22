@@ -6,9 +6,14 @@ scripts. The renderers under `desktops/` turn a theme into real configuration.
 ```text
 themes/<name>/
   theme.yaml        metadata and palette (required)
-  wallpapers/       images listed in theme.yaml (optional)
+  wallpapers/       images listed in theme.yaml (optional): SVG, rendered when the
+                    theme is applied, or PNG, used as it is
   README.md         credits and screenshots (optional)
 ```
+
+`patina theme list` shows the themes, `patina theme set <name>` renders one for this
+user's desktop, `patina theme current` says which one is on. `patina install` applies
+the default of `defaults/settings.yaml`, or `PATINA_THEME=<name>`.
 
 `<name>` is lowercase kebab-case and equals the `name` field. `_template/` is the
 skeleton to copy; tools skip entries starting with `_`.
@@ -24,7 +29,8 @@ copying its `palette` block.
 
 1. `cp -r themes/_template themes/<name>` and fill in `theme.yaml`.
 2. Add wallpapers you have the right to redistribute; state their license in
-   `artwork_license`.
+   `artwork_license`. An SVG keeps the pack small and is rendered at 3840x2160 when the
+   theme is applied; keep it to gradients, paths and filters (`rsvg-convert` renders it).
 3. Keep it desktop-agnostic. Plasma-only hints go under the optional `plasma:` key as
    data, never into renderer code. If a theme seems to need a script, the renderer is
    missing a feature: add it under `desktops/` for all themes.

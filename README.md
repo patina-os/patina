@@ -13,8 +13,9 @@ Themes, consistency across apps, curated defaults, agent CLIs and a free-softwar
 EU-sovereign app stack on top of Debian stable with Plasma. Not a distribution.
 
 **Status: pre-alpha.** `patina install` installs the app stack and the system tuning on
-Debian 13 (checked in CI containers on x86_64 and aarch64, not yet on real machines);
-theming and the branded install are still to come. See the [roadmap](docs/roadmap.md).
+Debian 13 and renders the first theme, amethyst, into Plasma's configuration (checked in
+CI containers on x86_64 and aarch64, not yet on a real desktop); the branded install is
+still to come. See the [roadmap](docs/roadmap.md).
 
 ## What it is
 
@@ -50,7 +51,7 @@ Two paths, one layer. If they ever diverge, Path A wins.
 
 | Path | What you do | Status |
 |---|---|---|
-| A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (bundles by flags today; a small TUI for theme, bundles, Nextcloud and agent tools later) | pre-alpha: installs the app stack and the system tuning, checked in CI containers, no theme yet |
+| A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (bundles by flags today; a small TUI for theme, bundles, Nextcloud and agent tools later) | pre-alpha: installs the app stack, the system tuning and the theme, checked in CI containers, not yet on a real desktop |
 | B: the patina21 image | Boot a small live image, answer the installer (disk, user, locale), get the finished desktop. Plasma and the base are downloaded from Debian's mirrors during the install; first boot runs Path A | pre-alpha: the image builds and boots to the installer in CI (x86_64 and aarch64), not released yet; the first boot waits for Path A |
 
 ```sh
@@ -60,8 +61,10 @@ git clone https://github.com/patina21/patina21.git ~/.local/share/patina21
 ~/.local/share/patina21/bin/patina install --all      # plus the opt-in agent tools
 ```
 
-`patina install --list` shows the bundles, `patina doctor` checks the result, and
-`patina update` runs `git pull` and then any pending migrations. Put `~/.local/bin` on
+`patina install --list` shows the bundles, `patina doctor` checks the result,
+`patina theme list` and `patina theme set <name>` switch the theme (`PATINA_THEME=<name>`
+picks one for the install), and `patina update` runs `git pull` and then any pending
+migrations. Put `~/.local/bin` on
 your PATH and link `patina` there (`ln -s ~/.local/share/patina21/bin/patina
 ~/.local/bin/patina`).
 
@@ -78,6 +81,16 @@ your PATH and link `patina` there (`ln -s ~/.local/share/patina21/bin/patina
 
 The layer itself has no architecture. aarch64 is a first-class target from day one; see
 [docs/hardware.md](docs/hardware.md) for what has been tested.
+
+## The look
+
+One theme across Plasma, Konsole, kitty, GTK and Flatpak apps, from one data file. The
+first theme is amethyst: a purple palette on a deep aubergine background that continues
+the logo's pink-to-purple gradient, with two abstract wallpapers drawn as SVG. Meta plus
+one key opens the terminal (Return), the search (Space), the browser (B), the files (E)
+and, with the agent tools installed, the agent CLI in its own terminal profile (A). The
+Plasma-side speed settings CachyOS is known for (lowest compositor latency, shorter
+animations, file-name-only indexing, the Wayland session) are curated defaults.
 
 ## The app stack
 

@@ -40,8 +40,10 @@ packs. Audience: developers and privacy-minded users in the EU.
   bundle. Agent tools (Claude Code, Codex CLI, opencode, Claude Desktop, Ollama) are an
   opt-in bundle because most of them are proprietary; Ollama is the local backend they
   point at, and their desktop integration is a shortcut and a terminal profile, as data.
-- Look: the first theme is purple, continuing the logo's pink-to-purple gradient, with
-  generated abstract artwork licensed with the repository. No third-party wallpapers.
+- Look: the first theme is amethyst, purple, continuing the logo's pink-to-purple
+  gradient, with generated abstract artwork (SVG in the theme, rendered at apply time)
+  licensed with the repository. No third-party wallpapers. The `agent` shortcut opens
+  opencode by default (`defaults/settings.yaml`), the free one of the agent CLIs.
 - Speed: the system tuning CachyOS ships as configuration (zram, I/O schedulers, memory
   sysctls, journald and systemd limits, boot) is copied as data for every install, kept
   under `defaults/system/`; its kernel, rebuilt packages and own repository are not.
@@ -102,7 +104,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `branding/` | the marks as data: `logo.txt` is the ASCII wordmark scripts print |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
 | `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `system/` the system tuning files |
-| `desktops/` | per-desktop renderers (templates plus one `apply.sh`); `plasma/` first |
+| `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, one `apply.sh`); `plasma/` first |
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
 | `devices/` | the only place for device- or architecture-specific files |
@@ -138,6 +140,10 @@ Each directory's README is the authority on its file format.
   System files are written only through that path (`system.write`), only from
   `defaults/system/` and for the keyring and sources file of an `apt-source` recipe.
   The scripts drop the `sudo` when they already run as root (a container, first boot).
+- Desktop configuration is written only by `desktops/<desktop>/apply.sh`, through the
+  desktop's own tool (`kwriteconfig6` on Plasma) and only when a value differs, so a
+  second run changes nothing. Generated files carry the theme's name and the renderer
+  removes those of other themes.
 - Read YAML with `yq`; never parse it with grep or sed. Write user config under XDG
   directories, never into the repository checkout.
 - Short, obvious code beats clever code. A function used once is not a function.

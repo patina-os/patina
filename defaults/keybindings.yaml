@@ -1,15 +1,17 @@
 # Desktop-agnostic keybindings: action name -> key chord.
 # Chord syntax: modifiers Meta, Ctrl, Alt, Shift joined with '+', then the key
 # (a letter, digit, F-key, Return, Space, Tab, Escape, Print, Left/Right/Up/Down).
-# Renderers map each action to their desktop's own mechanism and warn about actions
-# they do not know instead of failing.
-# The values are placeholders until Phase 2 curates them.
+# Renderers map each action to their desktop's own mechanism (desktops/<desktop>/) and
+# warn about actions they do not know instead of failing.
+# Curated: Meta plus one key for the things a day starts with, Plasma's own chord where
+# it already had a good one (files, lock screen, screenshot).
 actions:
-  terminal: Meta+Return
-  launcher: Meta+Space
-  browser: Meta+B
-  files: Meta+E
+  terminal: Meta+Return    # kitty
+  launcher: Meta+Space     # search and run; Meta alone still opens the application menu
+  browser: Meta+B          # the default web browser
+  files: Meta+E            # the file manager
+  agent: Meta+A            # the agent CLI in its own terminal profile; only with the agents bundle
   close-window: Meta+Q
-  overview: Meta+Tab
+  overview: Meta+Tab       # all windows and desktops at a glance
   lock-screen: Meta+L
   screenshot: Print

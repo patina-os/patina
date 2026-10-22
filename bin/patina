@@ -35,9 +35,9 @@ usage: patina <command> [args]
 
 commands:
   install   Set up patina21 on this machine: app bundles, system tuning, app settings
-            (patina install --help for the flags; theme and TUI come with later phases)
+            and the theme (patina install --help for the flags; the TUI comes later)
   update    Pull the latest patina21 and run pending migrations
-  theme     List, preview or switch themes
+  theme     List themes, show the current one or switch (patina theme --help)
   doctor    Check the base system and report what patina21 would change
   migrate   Run pending migrations without pulling
   version   Print the patina21 version

@@ -9,8 +9,10 @@ ticked items while Phase 1 is open.
 
 Status: pre-alpha. The core commands exist and the smoke test runs `patina install`
 twice in Debian 13 containers on both architectures; the live image builds and boots to
-the installer in CI. Phase 1's last step, the run on a fresh Debian 13 VM with Plasma,
-is open, and so are Phases 2 and 3.
+the installer in CI; the Plasma renderer and the first theme, amethyst, render from data
+and switch without leftovers in the same containers. Phase 1's last step, the run on a
+fresh Debian 13 VM with Plasma, is open; Phase 2 waits for the same run to see the
+theme on a real desktop; Phase 3 is open.
 
 Settled on this roadmap: the TUI helper is `gum` (Debian 13 ships 0.14 on both
 architectures); the office suite is Euro-Office; the terminal is kitty until Debian
@@ -18,8 +20,9 @@ carries Ghostty; the developer tools are part of the default desktop bundle (all
 Phase 1); the first theme is purple with generated artwork (Phase 2); the agent tools
 integrate through a shortcut, a terminal profile and Ollama as the local backend
 (Phases 1 and 2); the system tuning CachyOS ships as configuration is copied as data for
-every install, its kernel and rebuilt packages are not (Phases 1 and 2). Still open: the
-name of the first theme.
+every install, its kernel and rebuilt packages are not (Phases 1 and 2); the first theme
+is called amethyst and the agent shortcut opens opencode, the free one, by default
+(Phase 2).
 
 ## Phase 1: the core commands on x86_64 (Debian 13)
 
@@ -77,24 +80,36 @@ what the ticks below still owe is the "done when" run on a real VM.
 
 ## Phase 2: theming (the Plasma renderer and the first theme)
 
-- [ ] `desktops/plasma/apply.sh` and its templates, against Plasma 6.3 as Debian 13
+The code and the data are in; what the ticks still owe, like Phase 1's, is the look on a
+real Plasma desktop, which the same VM run gives.
+
+- [x] `desktops/plasma/apply.sh` and its templates, against Plasma 6.3 as Debian 13
   ships it: colour scheme, Konsole and kitty profiles, GTK and Qt consistency,
   wallpaper, keybindings from `defaults/keybindings.yaml`, settings from
-  `defaults/settings.yaml`
-- [ ] the first theme under `themes/` (name open), and `defaults/settings.yaml` pointing
+  `defaults/settings.yaml`. A generated look-and-feel package hands a fresh session
+  (the image's first login) the whole theme at once
+- [x] the first theme under `themes/`, amethyst, and `defaults/settings.yaml` pointing
   at it: a purple signature palette that continues the logo's pink-to-purple gradient,
-  and wallpapers generated from SVG kept in the theme, abstract organic forms with
-  Google DeepMind's visualisations on Pexels as the reference style, never their
-  files; the artwork is licensed with the repository
-- [ ] the agent shortcut: an `agent` action in `defaults/keybindings.yaml` opens the
-  agent CLI in a dedicated kitty profile the renderer writes from the palette; the
-  action is skipped when the `agents` bundle is not installed
-- [ ] `patina theme list|set|current`; `patina install` applies the default theme and
+  and two wallpapers kept as SVG in the theme and rendered at apply time, abstract
+  organic forms with Google DeepMind's visualisations on Pexels as the reference style,
+  never their files; the artwork is CC-BY-SA-4.0 and the theme data GPL-3.0-or-later
+- [x] the agent shortcut: the `agent` action in `defaults/keybindings.yaml` (Meta+A)
+  opens the agent CLI of `defaults/settings.yaml` (opencode by default) in a dedicated
+  kitty profile the renderer writes from the palette; the action is skipped when the
+  `agents` bundle is not installed
+- [x] `patina theme list|set|current`; `patina install` applies the default theme and
   honours `PATINA_THEME=<name>`
-- [ ] curated keybindings and settings: the placeholders in `defaults/` become the real
+- [x] curated keybindings and settings: the placeholders in `defaults/` became the real
   defaults, including the Plasma-side speed settings: KWin's lowest-latency policy, a
-  shorter animation factor, Baloo limited to file names under home, the Wayland
-  session, and no autostart entries beyond Plasma's own
+  halved animation factor, Baloo limited to file names under home, the Wayland session
+  as the login screen's default (`defaults/system/sddm.conf.d/`), and no autostart
+  entries beyond Plasma's own
+- [x] CI: the smoke test checks the rendered files and settings, that setting the theme
+  again changes nothing, and that a copy of the theme under another name renders and
+  switches back without leftovers
+- [ ] the run that closes the phase: the theme on a real Plasma desktop, the live
+  reload inside a session and the wallpaper through the look-and-feel package at a
+  first login; what looks wrong goes back into the data
 - Done when: one theme renders the whole desktop from data, `patina theme set` switches
   and switches back without leftovers, and a theme pack made by copying
   `themes/_template` renders without a code change.

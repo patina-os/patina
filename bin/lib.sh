@@ -121,3 +121,15 @@ bundle_items() {
 booted_with_systemd() {
   [[ -d /run/systemd/system ]]
 }
+
+# The directory of a theme under themes/; entries starting with _ are templates.
+theme_dir() {
+  local d="$PATINA_PATH/themes/$1"
+  [[ "$1" == [a-z]* && -f "$d/theme.yaml" ]] || return 1
+  echo "$d"
+}
+
+# The theme the last `patina theme set` or `patina install` recorded; fails when none.
+current_theme() {
+  [[ -s "$PATINA_STATE/theme" ]] && cat "$PATINA_STATE/theme"
+}

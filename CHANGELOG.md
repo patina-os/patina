@@ -47,6 +47,27 @@ All notable changes to patina21 are documented here. The format follows
 
 ### Added
 
+- Theming (roadmap, Phase 2). `desktops/plasma/apply.sh` renders a theme and
+  `defaults/` into Plasma's configuration for the user: a colour scheme with the
+  theme's accent, Konsole and kitty profiles, wallpapers as Plasma wallpaper packages
+  (SVG rendered at 3840x2160 with `rsvg-convert`, hence `librsvg2-bin` in the base
+  bundle), a look-and-feel package so a fresh login starts in the theme, GTK and
+  Flatpak consistency, the global shortcuts from `defaults/keybindings.yaml` through
+  `desktops/plasma/actions.yaml`, the speed settings and fonts from
+  `defaults/settings.yaml`; inside a session it applies live. `patina theme
+  list|set|current` switches themes and back without leftovers; `patina install`
+  applies the default theme or `PATINA_THEME=<name>`; `patina doctor` reports it.
+- `themes/amethyst`: the first theme. A purple palette on a deep aubergine background
+  that continues the logo's pink-to-purple gradient, and two abstract wallpapers drawn as
+  SVG (`drift`, `bloom`), CC-BY-SA-4.0.
+- The curated defaults: Meta plus one key for terminal, search, browser, files, close,
+  overview and lock, Print for screenshots, Meta+A for the agent CLI in its own kitty
+  profile (opencode by default, only with the agents bundle); half-length animations,
+  KWin's lowest-latency policy, Baloo on file names under home only, and the Wayland
+  session as the login screen's default (`defaults/system/sddm.conf.d/`).
+- The installer's branding takes the default theme's colours; the smoke test checks the
+  rendered theme, that setting it again changes nothing, and that a copy of the theme
+  pack renders and switches back cleanly.
 - The core commands (roadmap, Phase 1). `patina install` installs the chosen bundles
   (`--bundles`, `--all`, `--list`; `--unattended` or `PATINA_UNATTENDED=1` for the
   first-boot contract): Debian packages through the apt backend, flatpaks per user from
