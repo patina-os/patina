@@ -17,6 +17,16 @@ Debian 13 and renders the first theme, amethyst, into Plasma's configuration (ch
 CI containers on x86_64 and aarch64, not yet on a real desktop); the branded install is
 still to come. See the [roadmap](docs/roadmap.md).
 
+## Screenshots
+
+The installer's welcome page, as the live image's boot test captures it in CI (amd64,
+QEMU, Calamares as Debian 13 ships it, branded through data):
+
+![The patina21 installer's welcome page](docs/screenshots/installer-amd64.png)
+
+The desktop screenshot comes with the manual install check (roadmap, Phase 3). The
+screenshots are taken by CI and by that check, never edited; see `iso/README.md`.
+
 ## What it is
 
 patina21 takes a stock Debian with Plasma and finishes it: one consistent theme across
