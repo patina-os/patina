@@ -51,7 +51,7 @@ Two paths, one layer. If they ever diverge, Path A wins.
 
 | Path | What you do | Status |
 |---|---|---|
-| A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (bundles by flags today; a small TUI for theme, bundles, Nextcloud and agent tools later) | pre-alpha: installs the app stack, the system tuning and the theme, checked in CI containers, not yet on a real desktop |
+| A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (it asks the theme and the app bundles on a terminal; flags or `--unattended` skip the questions) | pre-alpha: installs the app stack, the system tuning and the theme, checked in CI containers, not yet on a real desktop |
 | B: the patina21 image | Boot a small live image, answer the installer (disk, user, locale), get the finished desktop. Plasma and the base are downloaded from Debian's mirrors during the install; first boot runs Path A | pre-alpha: the image builds and boots to the installer in CI (x86_64 and aarch64), not released yet; the first boot waits for Path A |
 
 ```sh
@@ -84,9 +84,13 @@ The layer itself has no architecture. aarch64 is a first-class target from day o
 
 ## The look
 
-One theme across Plasma, Konsole, kitty, GTK and Flatpak apps, from one data file. The
-first theme is amethyst: a purple palette on a deep aubergine background that continues
-the logo's pink-to-purple gradient, with two abstract wallpapers drawn as SVG. Meta plus
+One theme from the boot menu to the desktop, from one data file: the live image's boot
+menu, the installer, the login screen, the Plasma splash, Plasma itself, Konsole, kitty,
+GTK and Flatpak apps, the install questions and the terminal greeting all take their
+colours from the theme's palette; the words are set in Inter, the details in JetBrains
+Mono. The first theme is amethyst: a purple palette on a deep aubergine background that
+continues the logo's pink-to-purple gradient, with two abstract wallpapers drawn as SVG.
+Meta plus
 one key opens the terminal (Return), the search (Space), the browser (B), the files (E)
 and, with the agent tools installed, the agent CLI in its own terminal profile (A). The
 Plasma-side speed settings CachyOS is known for (lowest compositor latency, shorter

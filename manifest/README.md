@@ -16,7 +16,7 @@ manifest/
 
 ```yaml
 name: dev
-description: Shown in the TUI
+description: Shown in the TUI   # no comma: gum takes the preselected lines as a list
 default: true        # preselected in `patina install`
 required: false      # true only for base: the user cannot deselect it
 packages:            # canonical names, resolved through backends/<backend>.yaml
@@ -36,9 +36,9 @@ one.
 
 A backend is one YAML file: the `ID` values from `/etc/os-release` it serves, the commands
 for refresh, install and is-installed, the name map, and under `system` the one command
-that writes a file under `/etc` (`write`, for `defaults/system/` and the keyrings and
-sources of `apt-source` recipes) with the commands run after a tuning file changed
-(`apply`). Every command that needs root starts with `sudo`; the scripts drop it when
+that writes a system file (`write`, for `defaults/system/`, the keyrings and sources of
+`apt-source` recipes, and the login screen's wallpaper and SDDM override the desktop
+renderer writes) with the commands run after a tuning file changed (`apply`). Every command that needs root starts with `sudo`; the scripts drop it when
 they already run as root. Adding a base means adding a file here (and a container for
 it in the smoke workflow), not editing scripts. `apt.yaml` is the reference and the only
 backend CI runs; `zypper.yaml`, `dnf.yaml` and `pacman.yaml` are kept as data for

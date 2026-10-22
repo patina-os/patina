@@ -43,7 +43,13 @@ packs. Audience: developers and privacy-minded users in the EU.
 - Look: the first theme is amethyst, purple, continuing the logo's pink-to-purple
   gradient, with generated abstract artwork (SVG in the theme, rendered at apply time)
   licensed with the repository. No third-party wallpapers. The `agent` shortcut opens
-  opencode by default (`defaults/settings.yaml`), the free one of the agent CLIs.
+  opencode by default (`defaults/settings.yaml`), the free one of the agent CLIs. One
+  look from the boot menu to the desktop: the installer, the boot menu, the login
+  screen and the Plasma splash take their colours from the default theme's palette at
+  build or apply time, never by hand; the words are set in Inter, details (versions,
+  hostnames, progress, terminals) in JetBrains Mono, both from Debian's archive. Two
+  marks: the ASCII wordmark on terminals, the typeset wordmark patina²¹
+  (`branding/wordmark.svg`) on screens, never both on one surface.
 - Speed: the system tuning CachyOS ships as configuration (zram, I/O schedulers, memory
   sysctls, journald and systemd limits, boot) is copied as data for every install, kept
   under `defaults/system/`; its kernel, rebuilt packages and own repository are not.
@@ -92,23 +98,24 @@ packs. Audience: developers and privacy-minded users in the EU.
   line in `manifest/` and a reason in the commit message
 - add abstraction layers, plugin systems, frameworks or a second language for the tooling
 - write "Debian patina21", "patina21 Linux" or `Patina21`
-- paste the logo into a script or redraw it; `branding/logo.txt` is the only copy and
-  scripts `cat` it (the image build generates its copies from it)
+- paste the logo into a script or redraw it; `branding/logo.txt` is the only copy of the
+  text mark and `branding/wordmark.svg` the only copy of the typeset one; scripts print
+  or copy them (`print_logo` in `lib.sh`, the image build and the renderer copy the SVG)
 - explain the 21
 
 ## Repository map
 
 | Directory | Holds |
 |---|---|
-| `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash; `lib.sh` holds the few functions they share |
-| `branding/` | the marks as data: `logo.txt` is the ASCII wordmark scripts print |
+| `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash; `lib.sh` holds the few functions they share, among them the theme loader and template filler the renderers and the image build use |
+| `branding/` | the marks as data: `logo.txt` is the ASCII wordmark scripts print, `wordmark.svg` and `wave.svg` the marks screens show |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
 | `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `system/` the system tuning files |
 | `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, one `apply.sh`); `plasma/` first |
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
 | `devices/` | the only place for device- or architecture-specific files |
-| `iso/` | live-build configuration, Calamares configuration and branding, first-boot unit, QEMU boot test (Phase 3) |
+| `iso/` | live-build configuration, Calamares configuration and branding, the templates `iso/live/assets.sh` renders from the theme (installer artwork and stylesheet, boot menu theme), first-boot unit, QEMU boot test (Phase 3) |
 | `docs/` | roadmap, branding and trademark rules, tested hardware |
 | `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), iso (build, boot test, release) |
 
