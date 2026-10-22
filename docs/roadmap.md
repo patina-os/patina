@@ -147,7 +147,7 @@ real Plasma desktop, which the same VM run gives.
 - [x] the boot test takes a screenshot of the installer screen; the README shows it
   from `docs/screenshots/`
 - [x] the `desktop` workflow takes a screenshot of the finished desktop: Path A in a
-  Debian 13 container, then a Plasma session on a virtual screen
+  Debian 13 container, then a Plasma X11 session on a virtual framebuffer
   (`desktops/plasma/screenshot.sh`) with the theme applied inside it and kitty with
   the greeting; the README shows it from `docs/screenshots/`
 - [x] branding within Debian's trademark policy (`docs/branding.md`, the logo)

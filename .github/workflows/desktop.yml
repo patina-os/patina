@@ -1,9 +1,9 @@
 name: desktop
 
 # The finished desktop as a picture, from Path A: `patina install` as a user in a stock
-# Debian 13 container with Plasma, then desktops/plasma/screenshot.sh runs a Plasma
-# session on a virtual screen (no GPU, no display, no login), applies the theme inside
-# it, opens kitty with the greeting and takes one screenshot through KWin. The picture
+# Debian 13 container with Plasma, then desktops/plasma/screenshot.sh runs a Plasma X11
+# session on a virtual framebuffer (Xvfb, software OpenGL, no GPU and no login), applies
+# the theme inside it, opens kitty with the greeting and grabs the screen. The picture
 # is uploaded as an artifact; the one under docs/screenshots/ is copied from there,
 # never edited. amd64 only: the smoke workflow proves the layer on arm64 as well, and
 # the desktop looks the same.
@@ -38,14 +38,15 @@ jobs:
       options: --privileged   # flatpak's bubblewrap sandbox, as in the smoke workflow
     steps:
       - name: Install Plasma and what Path A starts from
-        # Plasma as Debian ships it with the apps the bar pins (Dolphin, Firefox), what
-        # a session needs without a login manager (a session bus, Mesa's software
-        # renderer) and Spectacle for the picture. git and curl are what the README
-        # asks for; sudo is the user's way to apt.
+        # Plasma as Debian ships it (the X11 session and its window manager) with the
+        # apps the bar pins (Dolphin, Firefox), the virtual framebuffer and Mesa's
+        # software renderer a session needs without a GPU or a login manager, and scrot
+        # for the grab. git and curl are what the README asks for; sudo is the user's
+        # way to apt.
         run: |
           apt-get update -q
           DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
-            plasma-desktop plasma-workspace kwin-wayland libkscreen-bin kde-spectacle \
+            plasma-desktop plasma-workspace kwin-x11 xvfb scrot \
             dolphin firefox-esr dbus libgl1-mesa-dri libegl-mesa0 \
             git ca-certificates curl sudo
       - uses: actions/checkout@v5

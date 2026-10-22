@@ -13,10 +13,10 @@ All notable changes to patina21 are documented here. The format follows
   amd64 one from `docs/screenshots/`.
 - The `desktop` workflow takes a screenshot of the finished desktop: `patina install`
   as a user in a Debian 13 container with Plasma, then `desktops/plasma/screenshot.sh`
-  runs a Plasma session on KWin's virtual screen, applies the theme inside it, opens
-  kitty with the fastfetch greeting and takes the picture through KWin. It runs on
-  pull requests that change the look and by hand; the README shows its amd64 picture
-  from `docs/screenshots/`.
+  runs a Plasma X11 session on a virtual framebuffer (Xvfb, software OpenGL), applies
+  the theme inside it, opens kitty with the fastfetch greeting and grabs the screen.
+  It runs on pull requests that change the look and by hand; the README shows its amd64
+  picture from `docs/screenshots/`.
 
 ### Changed
 

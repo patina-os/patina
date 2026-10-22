@@ -87,15 +87,17 @@ applies at the next login through the look-and-feel package.
 ## The desktop as a picture
 
 `screenshot.sh <out.png>` shows what the renderer produces without a machine to log in
-to: a Plasma session on KWin's virtual screen (`kwin_wayland --virtual`, no GPU, no
-display), `plasmashell` in it, which runs the layout script as a first login does, then
-`patina theme set` once more inside that session (the live reload and the window rule,
-which needs a screen), kitty with the fastfetch greeting, and one screenshot through
-KWin (`spectacle --background --fullscreen`). Run it as the user the layer is installed
-for, on anything with Plasma installed; the `desktop` workflow runs it in a Debian 13
-container after `patina install`, and `docs/screenshots/desktop-amd64.png` is its
-picture, copied from the workflow's artifact unchanged. `PATINA_SHOT_SIZE` sets the
-screen (1920x1080 by default); the session's output lands in `<out.png>.log`.
+to: a Plasma X11 session on a virtual framebuffer (`Xvfb`, Mesa's software OpenGL, no
+GPU and no login), `plasmashell` in it, which runs the layout script as a first login
+does, then `patina theme set` once more inside that session (the live reload and the
+window rule, which needs a screen), kitty with the fastfetch greeting, and one grab of
+the whole screen (`scrot`). It is the X11 session, not Wayland, because KWin's Wayland
+backend needs a DRM render node a GPU-less container does not have. Run it as the user
+the layer is installed for, on anything with Plasma installed; the `desktop` workflow
+runs it in a Debian 13 container after `patina install`, and
+`docs/screenshots/desktop-amd64.png` is its picture, copied from the workflow's artifact
+unchanged. `PATINA_SHOT_SIZE` sets the screen (1920x1080 by default); the session's
+output lands in `<out.png>.log`.
 
 Tools it calls, all from Debian's archive: `kwriteconfig6`, `kreadconfig6`
 (`libkf6config-bin`, a dependency of every KDE app), `rsvg-convert` (`librsvg2-bin`, in

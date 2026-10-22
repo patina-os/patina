@@ -140,8 +140,8 @@ files.
 the boot test's own screenshot, copied from the `boot-test-amd64` artifact of the `iso`
 workflow run that built the release; the desktop is the `desktop` workflow's, copied
 from its `desktop-amd64` artifact (Path A in a Debian 13 container, then
-`desktops/plasma/screenshot.sh`: a Plasma session on a virtual screen with kitty and
-the greeting in it). They are the one generated thing committed, refreshed for every
+`desktops/plasma/screenshot.sh`: a Plasma X11 session on a virtual framebuffer with
+kitty and the greeting in it). They are the one generated thing committed, refreshed for every
 release, never edited.
 
 ## Rules
