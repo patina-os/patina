@@ -10,6 +10,7 @@ packages:
   - ca-certificates
   - sudo             # every backend command that needs root goes through sudo
   - flatpak          # Flathub is the source for GUI apps we do not track
+  - librsvg2-bin     # rsvg-convert renders a theme's SVG wallpapers (desktops/plasma/apply.sh)
   # System tuning for every install (docs/roadmap.md, Phase 1); the files are data under
   # defaults/system/.
   - systemd-zram-generator   # zram swap with zstd

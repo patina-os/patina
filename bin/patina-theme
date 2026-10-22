@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# List the themes under themes/, show the current one, or switch: render a theme through
+# the desktop's renderer (desktops/<desktop>/apply.sh) and record it in the state dir.
+set -euo pipefail
+
+# shellcheck source=bin/lib.sh
+source "$PATINA_PATH/bin/lib.sh"
+
+usage() {
+  cat << EOU
+usage: patina theme list | current | set <name>
+
+  list       the themes under themes/ (* marks the current one)
+  current    the theme the last 'patina theme set' or 'patina install' applied
+  set NAME   render NAME for this user's desktop and make it current. Re-running it
+             changes nothing; switching back leaves nothing of the other theme behind
+EOU
+}
+
+list_themes() {
+  local current d name
+  current="$(current_theme || true)"
+  for d in "$PATINA_PATH"/themes/[a-z]*/; do
+    [[ -f "$d/theme.yaml" ]] || continue
+    name="$(basename "$d")"
+    printf '%s %-12s %s (%s)\n' "$([[ "$name" == "$current" ]] && echo '*' || echo ' ')" \
+      "$name" "$(yq eval '.display_name' "$d/theme.yaml")" "$(yq eval '.variant' "$d/theme.yaml")"
+  done
+}
+
+set_theme() {
+  local name="$1" dir desktop renderer
+  dir="$(theme_dir "$name")" || die "no theme '$name' under themes/ (try patina theme list)"
+  desktop="$(yq eval '.desktop' "$PATINA_PATH/defaults/settings.yaml")"
+  renderer="$PATINA_PATH/desktops/$desktop/apply.sh"
+  [[ -x "$renderer" ]] || die "no renderer for '$desktop' (desktops/$desktop/apply.sh)"
+  PATINA_BUNDLES="$(recorded_bundles | paste -sd ' ')"
+  export PATINA_BUNDLES
+  say "theme: $name on $desktop"
+  "$renderer" "$dir"
+  mkdir -p "$PATINA_STATE"
+  if [[ "$(cat "$PATINA_STATE/theme" 2> /dev/null)" != "$name" ]]; then
+    echo "$name" > "$PATINA_STATE/theme"
+  fi
+}
+
+main() {
+  need_yq
+  case "${1:-}" in
+    list) list_themes ;;
+    current)
+      current_theme || { echo "none (patina theme set <name>)"; exit 1; }
+      ;;
+    set)
+      [[ $# -eq 2 ]] || { usage >&2; exit 1; }
+      set_theme "$2"
+      ;;
+    -h | --help) usage ;;
+    *)
+      usage >&2
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"

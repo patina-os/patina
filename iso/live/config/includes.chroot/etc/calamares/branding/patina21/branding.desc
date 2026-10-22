@@ -1,7 +1,8 @@
 # Calamares branding for the patina21 installer: strings, colours and the logo. The logo
 # file (logo.svg) is not committed; iso/live/build.sh renders it from branding/logo.txt,
-# the only copy, and fills in the version from git. Colours are the template palette
-# (themes/_template/theme.yaml) until the first theme exists.
+# the only copy, and fills in the version from git. The colours are the default theme's
+# palette (themes/amethyst/theme.yaml: base00, base05, base0E), kept by hand because
+# Calamares reads this file as it is; the logo's colours build.sh takes from the theme.
 ---
 componentName: patina21
 
@@ -35,7 +36,7 @@ slideshow:
   - logo.svg
 
 style:
-  SidebarBackground: "#1e1e1e"
-  SidebarText: "#d0d0d0"
-  SidebarTextCurrent: "#1e1e1e"
-  SidebarBackgroundCurrent: "#61afef"
+  SidebarBackground: "#15101d"
+  SidebarText: "#d9d0e8"
+  SidebarTextCurrent: "#15101d"
+  SidebarBackgroundCurrent: "#c084fc"

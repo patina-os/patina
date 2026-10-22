@@ -37,10 +37,11 @@ jobs:
     steps:
       - name: Install what Path A starts from
         # The README asks for git and curl; a stock Debian desktop has them, the bare
-        # container does not.
+        # container does not. A Plasma desktop also has kwriteconfig6 (every KDE app
+        # depends on it), which the theme renderer writes settings with.
         run: |
           apt-get update -q
-          apt-get install -y -q git ca-certificates curl
+          apt-get install -y -q git ca-certificates curl libkf6config-bin
       - uses: actions/checkout@v5
       - name: Show the base
         run: |
@@ -66,15 +67,48 @@ jobs:
         run: |
           bin/patina doctor
           bin/patina migrate --list
+      - name: The theme rendered and switches without leftovers
+        # `patina install` applied the default theme; setting it again changes nothing.
+        # A copy of it under another name stands in for a second theme pack: the
+        # renderer takes it without a code change, and switching back removes it.
+        run: |
+          theme="$(yq eval '.theme' defaults/settings.yaml)"
+          data="$HOME/.local/share"
+          scheme() { kreadconfig6 --file kdeglobals --group General --key ColorScheme; }
+          [[ "$(bin/patina theme current)" == "$theme" ]]
+          bin/patina theme list
+          test -s "$data/color-schemes/patina21-$theme.colors"
+          test -s "$data/wallpapers/patina21-$theme-drift/contents/images/3840x2160.png"
+          test -s "$data/plasma/look-and-feel/org.patina21.$theme/contents/defaults"
+          [[ "$(scheme)" == "patina21-$theme" ]]
+          launch="$(kreadconfig6 --file kglobalshortcutsrc --group services \
+            --group kitty.desktop --key _launch)"
+          [[ "$launch" == Meta+Return,* ]]
+          bin/patina theme set "$theme" | tee again.txt
+          grep -q 'theme: nothing to do' again.txt
+          cp -r "themes/$theme" themes/zz-copy
+          sed -i "s/^name: $theme/name: zz-copy/" themes/zz-copy/theme.yaml
+          bin/patina theme set zz-copy
+          test -s "$data/color-schemes/patina21-zz-copy.colors"
+          test ! -e "$data/color-schemes/patina21-$theme.colors"
+          [[ "$(scheme)" == "patina21-zz-copy" ]]
+          bin/patina theme set "$theme"
+          rm -r themes/zz-copy
+          test ! -e "$data/color-schemes/patina21-zz-copy.colors"
+          test ! -e "$data/wallpapers/patina21-zz-copy-drift"
+          [[ "$(scheme)" == "patina21-$theme" ]]
       - name: What landed
         run: |
           yq --version
           flatpak list --user --columns=application,version
           ls -l /etc/apt/sources.list.d /etc/apt/keyrings
           cat "$HOME/.local/state/patina21/bundles"
+          cat "$HOME/.local/state/patina21/theme"
       - name: Every YAML file parses
         run: |
-          git ls-files '*.yaml' '*.yml' '*.conf' '*.desc' ':!defaults/system/' | while read -r f; do
+          git ls-files '*.yaml' '*.yml' '*.conf' '*.desc' \
+            ':!defaults/system/' ':!desktops/*/templates/' |
+          while read -r f; do
             yq eval '.' "$f" > /dev/null || { echo "invalid YAML: $f"; exit 1; }
           done
       - name: Every package the bundles, the devices and the image name exists in Debian

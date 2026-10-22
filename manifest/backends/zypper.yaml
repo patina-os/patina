@@ -10,6 +10,7 @@ install: sudo zypper --non-interactive install   # package names are appended
 installed: rpm -q                                # exit 0 when the package is installed
 map:      # canonical (Debian) name -> zypper name, only where they differ
   thunderbird: MozillaThunderbird
+  librsvg2-bin: rsvg-convert
 system:   # untested, like the rest of this file; the files under defaults/system/ that name
           # initramfs-tools and /etc/default/grub.d are Debian's and need a map here later
   write: sudo install -D -m 0644

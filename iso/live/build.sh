@@ -32,19 +32,22 @@ install -D -m 0644 "$repo/iso/firstboot/patina21-firstboot.service" \
   "$chroot/etc/systemd/system/patina21-firstboot.service"
 
 # The logo from its only copy: the console mark, and an SVG of the same text for the
-# installer's sidebar and welcome page. agetty reads backslashes in /etc/issue as
-# escape sequences, so the console copy doubles them.
+# installer's sidebar and welcome page, in the default theme's colours. agetty reads
+# backslashes in /etc/issue as escape sequences, so the console copy doubles them.
 install -d -m 0755 "$chroot/etc/issue.d"
 sed 's/\\/\\\\/g' "$repo/branding/logo.txt" > "$chroot/etc/issue.d/10-patina21.issue"
 branding="$chroot/etc/calamares/branding/patina21"
+theme="$repo/themes/$(yq eval '.theme' "$repo/defaults/settings.yaml")/theme.yaml"
+background="$(yq eval '.palette.base00' "$theme")"
+foreground="$(yq eval '.palette.base05' "$theme")"
 {
   echo '<svg xmlns="http://www.w3.org/2000/svg" width="520" height="120" viewBox="0 0 520 120">'
-  echo '  <rect width="100%" height="100%" fill="#1e1e1e"/>'
+  echo "  <rect width=\"100%\" height=\"100%\" fill=\"$background\"/>"
   y=20
   # The wordmark is plain text, not YAML, so sed may escape it for XML.
   while IFS= read -r line; do
-    printf '  <text x="12" y="%d" font-family="monospace" font-size="14" fill="#d0d0d0" xml:space="preserve">%s</text>\n' \
-      "$y" "$line"
+    printf '  <text x="12" y="%d" font-family="monospace" font-size="14" fill="%s" xml:space="preserve">%s</text>\n' \
+      "$y" "$foreground" "$line"
     y=$((y + 16))
   done < <(sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' "$repo/branding/logo.txt")
   echo '</svg>'

@@ -10,6 +10,7 @@ installed: rpm -q                               # exit 0 when the package is ins
 map:      # canonical (Debian) name -> dnf name, only where they differ
   nextcloud-desktop: nextcloud-client
   npm: nodejs-npm
+  librsvg2-bin: librsvg2-tools
 system:   # untested, like the rest of this file; the files under defaults/system/ that name
           # initramfs-tools and /etc/default/grub.d are Debian's and need a map here later
   write: sudo install -D -m 0644

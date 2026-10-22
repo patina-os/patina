@@ -1,0 +1,56 @@
+# How the Plasma renderer binds the actions of defaults/keybindings.yaml, as data read by
+# apply.sh. Each action is one of:
+#   service: a .desktop file; the chord becomes its _launch shortcut in kglobalshortcutsrc.
+#            The value default-web-browser resolves through `xdg-settings`. A service
+#            whose desktop file is not installed is warned about and skipped.
+#   component + key: a kglobalaccel component (kwin, ksmserver, plasmashell) and the
+#            action key in that component. `default` is Plasma's own chord, kept in the
+#            reset-to-default field; `label` is the friendly name Plasma shows.
+# An action of defaults/keybindings.yaml that is missing here is warned about, not fatal.
+actions:
+  terminal:
+    service: kitty.desktop
+    label: kitty
+  launcher:
+    service: org.kde.krunner.desktop
+    label: KRunner
+  browser:
+    service: default-web-browser
+    label: Web Browser
+  files:
+    service: org.kde.dolphin.desktop
+    label: Dolphin
+  screenshot:
+    service: org.kde.spectacle.desktop
+    label: Spectacle
+  agent:
+    # apply.sh writes this desktop file when the agents bundle is installed; otherwise
+    # the action is skipped.
+    service: patina21-agent.desktop
+    label: Agent
+  close-window:
+    component: kwin
+    key: Window Close
+    default: Alt+F4
+    label: Close Window
+  overview:
+    component: kwin
+    key: Overview
+    default: Meta+W
+    label: Toggle Overview
+  lock-screen:
+    component: ksmserver
+    key: Lock Session
+    default: Meta+L
+    label: Lock Session
+
+# Plasma defaults that use a chord the curated keybindings take; they are set to none.
+unbind:
+  - component: plasmashell
+    key: manage activities
+    default: Meta+Q
+    label: Show Activity Switcher
+  - component: plasmashell
+    key: next activity
+    default: Meta+Tab
+    label: Walk through activities

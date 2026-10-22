@@ -1,6 +1,7 @@
 # yamllint configuration: CI and contributors run `yamllint .` from the repository root.
 # Calamares keeps its .conf and .desc names (CLAUDE.md, "Naming"); they are YAML too.
-# The files under defaults/system/ are sysctl, udev and systemd files, not YAML.
+# The files under defaults/system/ are sysctl, udev and systemd files, not YAML, and the
+# renderer templates under desktops/*/templates/ carry the names of the files they become.
 extends: relaxed
 yaml-files:
   - '*.yaml'
@@ -10,6 +11,7 @@ yaml-files:
   - '.yamllint'
 ignore: |
   defaults/system/
+  desktops/*/templates/
 rules:
   line-length:
     max: 100

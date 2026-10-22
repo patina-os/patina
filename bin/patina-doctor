@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Check the base, the tools and what `patina install` put in place; report what is
-# missing or differs. Exit 0 when clean, 1 otherwise. Changes nothing.
+# Check the base, the tools, the theme and what `patina install` put in place; report
+# what is missing or differs. Exit 0 when clean, 1 otherwise. Changes nothing.
 set -euo pipefail
 
 # shellcheck source=bin/lib.sh
@@ -126,6 +126,27 @@ check_system() {
   fi
 }
 
+check_theme() {
+  local theme
+  echo "theme"
+  if ! theme="$(current_theme)"; then
+    bad "no theme recorded (run patina theme set <name>)"
+    return
+  fi
+  if ! theme_dir "$theme" > /dev/null; then
+    bad "theme '$theme' is recorded but not under themes/"
+    return
+  fi
+  if [[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/color-schemes/patina21-$theme.colors" ]]; then
+    ok "$theme: colour scheme in place"
+  else
+    bad "$theme: colour scheme missing (run patina theme set $theme)"
+  fi
+  if ! command -v kwriteconfig6 > /dev/null; then
+    note "kwriteconfig6 is missing: Plasma is not installed here, so only the files were written"
+  fi
+}
+
 main() {
   if [[ $# -gt 0 ]]; then
     echo "usage: patina doctor" >&2
@@ -140,6 +161,7 @@ main() {
   check_state
   check_bundles
   check_system
+  check_theme
   if [[ $problems -eq 0 ]]; then
     say "doctor: clean"
   else

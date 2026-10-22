@@ -28,13 +28,15 @@ palette:
   base0E: "#c678dd"  # magenta: keywords
   base0F: "#be5046"  # brown: deprecated
 
-# Images relative to this directory; the first one is the default. The template ships
-# no image: add your own under wallpapers/.
+# Images relative to this directory; the first one is the default. An SVG is rendered by
+# the desktop renderer when the theme is applied (at 3840x2160; nothing rendered is
+# committed), a PNG is used as it is. The template ships no image: add your own under
+# wallpapers/.
 wallpapers:
-  - wallpapers/template.png
+  - wallpapers/template.svg
 
 # Optional per-desktop hints. Still data: a renderer reads them, nothing executes here.
 plasma:
   icons: breeze-dark             # icon theme as packaged by Debian
   cursors: breeze_cursors
-  look_and_feel: org.kde.breezedark.desktop
+  desktop_theme: default         # the panel and widget style; default follows the colour scheme
