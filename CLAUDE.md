@@ -43,7 +43,11 @@ packs. Audience: developers and privacy-minded users in the EU.
 - Look: the first theme is amethyst, purple, continuing the logo's pink-to-purple
   gradient, with generated abstract artwork (SVG in the theme, rendered at apply time)
   licensed with the repository. No third-party wallpapers. The `agent` shortcut opens
-  opencode by default (`defaults/settings.yaml`), the free one of the agent CLIs.
+  opencode by default (`defaults/settings.yaml`), the free one of the agent CLIs. The
+  desktop's shape is a centred bar as on Windows 11 and new windows centred at one
+  size; both are knobs in `defaults/settings.yaml`. No automatic tiling on Plasma:
+  that would need a KWin script Debian does not package; a tiling desktop is the
+  Hyprland add-on.
 - Speed: the system tuning CachyOS ships as configuration (zram, I/O schedulers, memory
   sysctls, journald and systemd limits, boot) is copied as data for every install, kept
   under `defaults/system/`; its kernel, rebuilt packages and own repository are not.

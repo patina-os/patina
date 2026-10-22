@@ -17,6 +17,7 @@ templates="$here/templates"
 
 config="${XDG_CONFIG_HOME:-$HOME/.config}"
 data="${XDG_DATA_HOME:-$HOME/.local/share}"
+agent_desktop="$data/applications/patina21-agent.desktop"
 changes=0
 
 say() { printf 'patina: theme: %s\n' "$*"; }
@@ -43,6 +44,8 @@ tpl[CONFIG_HOME]="$config"
 tpl[WALLPAPER]=""
 tpl[WALLPAPER_PACKAGE]=""
 tpl[AGENT_COMMAND]=""
+tpl[PANEL_FLOATING]="$(yq eval '.panel.floating // false' "$settings")"
+tpl[PINNED_LAUNCHERS]=""
 theme="${tpl[THEME]}"
 [[ "$theme" == "$(basename "$theme_dir")" ]] ||
   warn "theme.yaml says name: $theme but the directory is $(basename "$theme_dir")"
@@ -107,6 +110,34 @@ kdel() {
   say "$file: [$*] $key removed"
   kwriteconfig6 --file "$file" "${groups[@]}" --key "$key" --delete
   changed
+}
+
+# The .desktop file an action of defaults/keybindings.yaml launches, through
+# actions.yaml; empty (with a warning) when the action has none or it is not installed.
+service_installed() {
+  [[ -f "$data/applications/$1" || -f /usr/share/applications/$1 || -f /usr/local/share/applications/$1 ]]
+}
+service_for_action() {
+  local action="$1" service
+  service="$(yq eval ".actions[\"$action\"].service // \"\"" "$actions")"
+  if [[ "$service" == default-web-browser ]]; then
+    service="$(xdg-settings get default-web-browser 2> /dev/null || true)"
+    if [[ -z "$service" ]]; then
+      warn "$action: no default web browser is set (xdg-settings); skipping"
+      return
+    fi
+  fi
+  if [[ -z "$service" ]]; then
+    return
+  fi
+  if [[ "$service" == patina21-agent.desktop && ! -f "$agent_desktop" ]]; then
+    return   # the agents bundle is not installed
+  fi
+  if ! service_installed "$service"; then
+    warn "$action: $service is not installed; skipping"
+    return
+  fi
+  echo "$service"
 }
 
 # Everything generated carries the theme in its name; what belongs to another theme
@@ -209,7 +240,6 @@ put "$tmp/lnf.defaults" "$lnf/contents/defaults"
 drop_other_themes "$data/plasma/look-and-feel/org.patina21.*" "$lnf"
 
 # The agent terminal profile and launcher, only with the agents bundle installed.
-agent_desktop="$data/applications/patina21-agent.desktop"
 if [[ " ${PATINA_BUNDLES:-} " == *" agents "* ]]; then
   tpl[AGENT_COMMAND]="$(command -v "${tpl[AGENT]}" 2> /dev/null || echo "${tpl[AGENT]}")"
   render "$templates/kitty-agent.conf" "$tmp/kitty-agent.conf"
@@ -233,6 +263,26 @@ finish() {
     say "$changes change(s)"
   fi
 }
+
+# The panel layout, as the look-and-feel package's layout script: Plasma runs it for a
+# session without panels (the first login) and `patina theme set --layout` for an
+# existing one. The pinned launchers are the apps behind the actions panel.pinned names.
+layout="$lnf/contents/layouts/org.kde.plasma.desktop-layout.js"
+if [[ "$(yq eval '.panel.layout' "$settings")" == centered ]]; then
+  pinned=""
+  while IFS= read -r action; do
+    service="$(service_for_action "$action")"
+    [[ -n "$service" ]] || continue
+    pinned="$pinned${pinned:+, }\"applications:$service\""
+  done < <(yq eval '.panel.pinned[]?' "$settings")
+  tpl[PINNED_LAUNCHERS]="$pinned"
+  render "$templates/layout.js" "$tmp/layout.js"
+  put "$tmp/layout.js" "$layout"
+elif [[ -e "$layout" ]]; then
+  say "removing $layout (panel.layout is not centered)"
+  rm -f "$layout"
+  changed
+fi
 
 # ---- settings: kdeglobals, kwin, baloo, shortcuts, GTK; through kwriteconfig6 --------
 if ! command -v kwriteconfig6 > /dev/null || ! command -v kreadconfig6 > /dev/null; then
@@ -286,31 +336,67 @@ case "$(yq eval '.speed.file_indexing' "$settings")" in
     ;;
 esac
 
+# Windows: where a new one opens, and the size of a new main window as a KWin rule
+# applied once at its first appearance. The size is a share of the screen, so the rule
+# needs a screen: inside a session it comes from kscreen-doctor (the output with
+# priority 1, else the first enabled one); outside, the rule waits for the next
+# `patina theme set` in a session.
+in_session=0
+[[ "${XDG_CURRENT_DESKTOP:-}" == *KDE* && -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]] && in_session=1
+case "$(yq eval '.windows.placement' "$settings")" in
+  centered) kset kwinrc Placement Centered Windows ;;
+  smart) kset kwinrc Placement Smart Windows ;;
+esac
+rule=patina21-new-windows
+percent="$(yq eval '.windows.size // 0' "$settings")"
+rules="$(kreadconfig6 --file kwinrulesrc --group General --key rules)"
+if [[ "$percent" -gt 0 ]]; then
+  screen=""
+  if [[ $in_session -eq 1 ]] && command -v kscreen-doctor > /dev/null; then
+    screen="$(kscreen-doctor --outputs 2> /dev/null | sed 's/\x1b\[[0-9;]*m//g' |
+      awk '/^Output:/ { enabled = 0; first = 0 }
+           /^[[:space:]]*enabled/ { enabled = 1 }
+           /priority 1$/ { first = 1 }
+           /Geometry:/ { if (enabled && first) { print $3; exit }
+                         if (enabled && !fallback) fallback = $3 }
+           END { if (!first && fallback) print fallback }')"
+  fi
+  if [[ "$screen" =~ ^([0-9]+)x([0-9]+)$ ]]; then
+    kset kwinrulesrc Description "patina21: a new window opens at $percent% of the screen" "$rule"
+    kset kwinrulesrc types 1 "$rule"
+    kset kwinrulesrc size "$(( BASH_REMATCH[1] * percent / 100 )),$(( BASH_REMATCH[2] * percent / 100 ))" "$rule"
+    kset kwinrulesrc sizerule 3 "$rule"
+    if [[ ",$rules," != *",$rule,"* ]]; then
+      kset kwinrulesrc rules "${rules:+$rules,}$rule" General
+    fi
+  elif [[ $in_session -eq 1 ]]; then
+    warn "kscreen-doctor gave no screen size; the window size rule is not written"
+  else
+    say "no Plasma session here; the window size rule comes with the next 'patina theme set' inside one"
+  fi
+elif [[ -n "$(kreadconfig6 --file kwinrulesrc --group "$rule" --key sizerule)" ]]; then
+  for key in Description types size sizerule; do
+    kdel kwinrulesrc "$key" "$rule"
+  done
+  rules="${rules//$rule/}"
+  rules="${rules//,,/,}"
+  rules="${rules#,}"
+  rules="${rules%,}"
+  kset kwinrulesrc rules "$rules" General
+fi
+
 # Global shortcuts: each action of defaults/keybindings.yaml through actions.yaml.
-service_installed() {
-  [[ -f "$data/applications/$1" || -f /usr/share/applications/$1 || -f /usr/local/share/applications/$1 ]]
-}
 while IFS= read -r action; do
   chord="$(yq eval ".actions[\"$action\"]" "$keybindings")"
-  service="$(yq eval ".actions[\"$action\"].service // \"\"" "$actions")"
   component="$(yq eval ".actions[\"$action\"].component // \"\"" "$actions")"
   label="$(yq eval ".actions[\"$action\"].label // \"$action\"" "$actions")"
-  if [[ -n "$service" ]]; then
-    if [[ "$service" == default-web-browser ]]; then
-      service="$(xdg-settings get default-web-browser 2> /dev/null || true)"
-      if [[ -z "$service" ]]; then
-        warn "$action: no default web browser is set (xdg-settings); skipping"
-        continue
-      fi
-    fi
-    if [[ "$service" == patina21-agent.desktop && ! -f "$agent_desktop" ]]; then
-      kdel kglobalshortcutsrc _launch services "$service"   # the agents bundle is not installed
+  if yq eval -e ".actions[\"$action\"].service" "$actions" > /dev/null 2>&1; then
+    if [[ "$(yq eval ".actions[\"$action\"].service" "$actions")" == patina21-agent.desktop && ! -f "$agent_desktop" ]]; then
+      kdel kglobalshortcutsrc _launch services patina21-agent.desktop   # the agents bundle is not installed
       continue
     fi
-    if ! service_installed "$service"; then
-      warn "$action: $service is not installed; skipping"
-      continue
-    fi
+    service="$(service_for_action "$action")"
+    [[ -n "$service" ]] || continue
     kset kglobalshortcutsrc _launch "$chord,none,$label" services "$service"
   elif [[ -n "$component" ]]; then
     key="$(yq eval ".actions[\"$action\"].key" "$actions")"
@@ -344,9 +430,20 @@ if command -v flatpak > /dev/null &&
 fi
 
 # ---- a running Plasma session picks the theme up now ---------------------------------
-if [[ "${XDG_CURRENT_DESKTOP:-}" == *KDE* && -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]]; then
+if [[ $in_session -eq 1 ]]; then
   if command -v plasma-apply-lookandfeel > /dev/null; then
-    plasma-apply-lookandfeel --apply "org.patina21.$theme" > /dev/null || warn "plasma-apply-lookandfeel failed"
+    if [[ "${PATINA_LAYOUT:-}" == 1 ]]; then
+      # Replaces this user's panels with the layout script above.
+      say "resetting the panels to the theme's layout"
+      plasma-apply-lookandfeel --apply "org.patina21.$theme" --resetLayout > /dev/null ||
+        warn "plasma-apply-lookandfeel --resetLayout failed"
+    else
+      plasma-apply-lookandfeel --apply "org.patina21.$theme" > /dev/null || warn "plasma-apply-lookandfeel failed"
+    fi
+  fi
+  if [[ $changes -gt 0 ]] && command -v dbus-send > /dev/null; then
+    dbus-send --session --dest=org.kde.KWin /KWin org.kde.KWin.reconfigure 2> /dev/null ||
+      warn "KWin did not reload its settings; they apply at the next login"
   fi
   command -v plasma-apply-colorscheme > /dev/null &&
     { plasma-apply-colorscheme "patina21-$theme" > /dev/null || warn "plasma-apply-colorscheme failed"; }
@@ -356,7 +453,9 @@ if [[ "${XDG_CURRENT_DESKTOP:-}" == *KDE* && -n "${DBUS_SESSION_BUS_ADDRESS:-}" 
     plasma-apply-wallpaperimage "$wallpaper_dir/contents/images/3840x2160.png" > /dev/null ||
       warn "plasma-apply-wallpaperimage failed"
   fi
-  [[ $changes -eq 0 ]] || say "shortcuts and KWin settings apply at the next login"
+  [[ $changes -eq 0 ]] || say "shortcuts apply at the next login"
+elif [[ "${PATINA_LAYOUT:-}" == 1 ]]; then
+  warn "--layout needs a running Plasma session; the layout script is in place for the next fresh login"
 elif [[ $changes -gt 0 ]]; then
   say "no Plasma session here; everything applies at the next login"
 fi
