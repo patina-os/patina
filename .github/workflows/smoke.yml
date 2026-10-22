@@ -97,6 +97,38 @@ jobs:
           test ! -e "$data/color-schemes/patina21-zz-copy.colors"
           test ! -e "$data/wallpapers/patina21-zz-copy-drift"
           [[ "$(scheme)" == "patina21-$theme" ]]
+      - name: The login screen, the splash and the terminal greeting rendered
+        run: |
+          theme="$(yq eval '.theme' defaults/settings.yaml)"
+          data="$HOME/.local/share"
+          test -s /usr/local/share/patina21/login.png
+          splash="$data/plasma/look-and-feel/org.patina21.$theme/contents/splash"
+          test -s "$splash/Splash.qml"
+          test -s "$splash/images/logo.svg"
+          ! grep -q '\${' "$splash/Splash.qml"
+          ksplash="$(kreadconfig6 --file ksplashrc --group KSplash --key Theme)"
+          [[ "$ksplash" == "org.patina21.$theme" ]]
+          test -s "$data/patina21/logo.txt"
+          test -s "$HOME/.config/fastfetch/config.jsonc"
+      - name: The image's assets render from the theme
+        # What iso/live/build.sh renders before lb, without root or live-build: the
+        # installer's marks, artwork and stylesheet, the boot menu's theme and splash.
+        run: |
+          theme="$(yq eval '.theme' defaults/settings.yaml)"
+          build="$(mktemp -d)"
+          cp -r iso/live/config "$build/"
+          iso/live/assets.sh "$build"
+          b="$build/config/includes.chroot/etc/calamares/branding/patina21"
+          for f in logo.svg logo-square.svg wallpaper.png slide-1.png slide-2.png slide-3.png \
+              stylesheet.qss; do
+            test -s "$b/$f"
+          done
+          test -s "$build/config/bootloaders/grub-pc/splash.png"
+          test -s "$build/config/bootloaders/grub-pc/live-theme/theme.txt"
+          test -s "$build/config/includes.chroot/usr/share/themes/patina21/openbox-3/themerc"
+          test -s "$build/config/includes.chroot/etc/issue.d/10-patina21.issue"
+          sidebar="$(yq eval '.style.SidebarBackground' "$b/branding.desc")"
+          [[ "$sidebar" == "$(yq eval '.palette.base00' "themes/$theme/theme.yaml")" ]]
       - name: What landed
         run: |
           yq --version

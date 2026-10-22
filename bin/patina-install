@@ -16,19 +16,76 @@ usage: patina install [--bundles <a,b,...>] [--all] [--list] [--unattended]
                  installed is removed. Default: the bundles marked default
   --all          every bundle, the opt-in ones (agents) included
   --list         show the bundles and exit
-  --unattended   no prompts, defaults for everything (same as PATINA_UNATTENDED=1).
-                 There is no prompt yet; the TUI arrives with the branded install
+  --unattended   no questions, defaults for everything (same as PATINA_UNATTENDED=1):
+                 the contract the image's first boot and CI use
 
-The theme: PATINA_THEME=<name> picks one (patina theme list); otherwise the theme already
-set on this machine, or the default of defaults/settings.yaml, is applied.
+On a terminal, without --bundles or --all, the install asks (with gum): the theme, the
+app bundles, then a summary and a yes. The theme: PATINA_THEME=<name> picks one (patina
+theme list) and skips that question; otherwise the theme already set on this machine, or
+the default of defaults/settings.yaml, is offered first.
 EOU
 }
 
 changes=0
 failed=0
+tui=0
 
 changed() {
   changes=$((changes + 1))
+}
+
+# A section line before each part of the install, only when the questions were asked;
+# unattended output stays as it is.
+section() {
+  [[ $tui -eq 1 ]] || return 0
+  echo
+  gum style --bold --foreground "${tpl[BASE0E]}" "── $1 ──"
+}
+
+# The questions, on a terminal: the theme, the app bundles, a summary and a yes. Sets
+# PATINA_THEME and bundles. Esc or Cancel leaves without a change. Bundle descriptions
+# carry no comma: gum takes the preselected lines as a comma-separated list.
+ask() {
+  local current d name kind lines choice chosen_lines
+  local -a theme_lines=() bundle_lines=() preselected=()
+  current="${PATINA_THEME:-$(current_theme || yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")}"
+  d="$(theme_dir "$current")" || die "no theme '$current' under themes/ (try patina theme list)"
+  theme_vars "$d/theme.yaml" "$PATINA_PATH/defaults/settings.yaml"
+  tui_colors
+  print_logo auto
+  echo
+  gum style --foreground "${tpl[BASE04]}" \
+    "patina21 $("$PATINA_PATH/bin/patina" version) · $(basename "$BACKEND" .yaml) · $(uname -m)"
+  echo
+  if [[ -z "${PATINA_THEME:-}" ]]; then
+    mapfile -t theme_lines < <("$PATINA_PATH/bin/patina-theme" list | sed 's/^[* ] //')
+    choice="$(printf '%s\n' "${theme_lines[@]}" | grep "^$current ")" || choice="${theme_lines[0]}"
+    choice="$(gum choose --header "Theme" --selected "$choice" "${theme_lines[@]}")" || exit 0
+    PATINA_THEME="${choice%% *}"
+    export PATINA_THEME
+    echo
+  fi
+  for name in $(all_bundles); do
+    yq eval -e '.required == true' "$PATINA_PATH/manifest/bundles/$name.yaml" > /dev/null 2>&1 && continue
+    kind="opt-in"
+    yq eval -e '.default == true' "$PATINA_PATH/manifest/bundles/$name.yaml" > /dev/null 2>&1 && kind="default"
+    lines="$(printf '%-9s %-8s %s' "$name" "($kind)" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$name.yaml")")"
+    bundle_lines+=("$lines")
+    [[ "$kind" == default ]] && preselected+=("$lines")
+  done
+  chosen_lines="$(gum choose --no-limit --header "App bundles (x or space toggles, enter confirms)" \
+    --selected "$(IFS=,; echo "${preselected[*]}")" "${bundle_lines[@]}")" || exit 0
+  mapfile -t bundles < <(printf 'base\n%s\n' "$(printf '%s\n' "$chosen_lines" | awk 'NF { print $1 }')" | awk 'NF && !seen[$0]++')
+  echo
+  gum style --border rounded --border-foreground "${tpl[BASE0E]}" --padding "1 3" \
+    "$(printf 'theme    %s\nbundles  %s\nbackend  %s (%s)' "$PATINA_THEME" "${bundles[*]}" \
+      "$(basename "$BACKEND" .yaml)" "$(uname -m)")"
+  echo
+  if ! gum confirm "Install now?" --affirmative Install --negative Cancel; then
+    say "nothing changed"
+    exit 0
+  fi
+  tui=1
 }
 
 # Download to a file with curl, or wget while curl is not installed yet.
@@ -366,6 +423,9 @@ main() {
     done
   else
     mapfile -t bundles < <(default_bundles)
+    if [[ -t 0 && -t 1 && -z "$PATINA_UNATTENDED" ]] && command -v gum > /dev/null; then
+      ask
+    fi
   fi
   say "bundles: ${bundles[*]} ($(basename "$BACKEND" .yaml) backend, $(uname -m))"
 
@@ -373,14 +433,19 @@ main() {
   mapfile -t flatpaks < <(bundle_items flatpaks "${bundles[@]}")
   mapfile -t upstream < <(bundle_items upstream "${bundles[@]}")
 
+  section packages
   install_packages
+  section flatpaks
   install_flatpaks
+  section upstream
   for b in "${upstream[@]}"; do
     install_upstream "$b"
   done
+  section system
   install_system
   install_apps
   record_state
+  section theme
   install_theme
 
   if [[ $failed -ne 0 ]]; then

@@ -22,5 +22,9 @@ LayoutName=org.kde.breeze.desktop
 [kwinrc][DesktopSwitcher]
 LayoutName=org.kde.breeze.desktop
 
+[ksplashrc][KSplash]
+Theme=org.patina21.${THEME}
+Engine=KSplashQML
+
 [Wallpaper]
 Image=${WALLPAPER_PACKAGE}

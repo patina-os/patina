@@ -19,51 +19,25 @@ config="${XDG_CONFIG_HOME:-$HOME/.config}"
 data="${XDG_DATA_HOME:-$HOME/.local/share}"
 changes=0
 
+# shellcheck source=bin/lib.sh
+source "$PATINA_PATH/bin/lib.sh"
 say() { printf 'patina: theme: %s\n' "$*"; }
 warn() { printf 'patina: theme: %s\n' "$*" >&2; }
 changed() { changes=$((changes + 1)); }
 
 # ---- the theme as template variables ------------------------------------------------
-# tpl[NAME] fills ${NAME} in a template. Colours come as hex (BASE00) and as the r,g,b
-# decimals KDE's files want (BASE00_RGB).
-declare -A tpl
-tpl[THEME]="$(yq eval '.name' "$theme_yaml")"
-tpl[DISPLAY_NAME]="$(yq eval '.display_name' "$theme_yaml")"
-tpl[AUTHOR]="$(yq eval '.author' "$theme_yaml")"
-tpl[LICENSE]="$(yq eval '.license' "$theme_yaml")"
-tpl[ARTWORK_LICENSE]="$(yq eval '.artwork_license' "$theme_yaml")"
-tpl[VARIANT]="$(yq eval '.variant' "$theme_yaml")"
-tpl[ICONS]="$(yq eval '.plasma.icons // "breeze"' "$theme_yaml")"
-tpl[CURSORS]="$(yq eval '.plasma.cursors // "breeze_cursors"' "$theme_yaml")"
-tpl[DESKTOP_THEME]="$(yq eval '.plasma.desktop_theme // "default"' "$theme_yaml")"
-tpl[UI_FONT]="$(yq eval '.fonts.ui' "$settings")"
-tpl[MONO_FONT]="$(yq eval '.fonts.monospace' "$settings")"
-tpl[AGENT]="$(yq eval '.agent // "opencode"' "$settings")"
+# tpl[NAME] fills ${NAME} in a template (theme_vars and render in bin/lib.sh): colours as
+# hex (BASE00) and as the r,g,b decimals KDE's files want (BASE00_RGB).
+theme_vars "$theme_yaml" "$settings"
 tpl[CONFIG_HOME]="$config"
+tpl[DATA_HOME]="$data"
+tpl[ACCENT_SGR]="38;2;${tpl[BASE0E_RGB]//,/;}"   # the accent as an ANSI colour, for fastfetch
 tpl[WALLPAPER]=""
 tpl[WALLPAPER_PACKAGE]=""
 tpl[AGENT_COMMAND]=""
 theme="${tpl[THEME]}"
 [[ "$theme" == "$(basename "$theme_dir")" ]] ||
   warn "theme.yaml says name: $theme but the directory is $(basename "$theme_dir")"
-
-for key in 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F; do
-  hex="$(yq eval -e ".palette.base$key" "$theme_yaml")" ||
-    { warn "palette has no base$key"; exit 1; }
-  [[ "$hex" =~ ^#[0-9a-fA-F]{6}$ ]] || { warn "base$key is not a #rrggbb colour: $hex"; exit 1; }
-  tpl[BASE$key]="$hex"
-  tpl[BASE${key}_RGB]="$(printf '%d,%d,%d' "0x${hex:1:2}" "0x${hex:3:2}" "0x${hex:5:2}")"
-done
-
-# Fill ${NAME} placeholders from tpl; plain bash, no eval, no envsubst.
-render() {
-  local text name
-  text="$(< "$1")"
-  for name in "${!tpl[@]}"; do
-    text="${text//\$\{$name\}/${tpl[$name]}}"
-  done
-  printf '%s\n' "$text" > "$2"
-}
 
 # Install a rendered file only when it differs from what is there.
 put() {
@@ -198,6 +172,33 @@ for pkg in "$data"/wallpapers/patina21-*; do
   fi
 done
 
+# The login screen: SDDM runs as its own user, so the wallpaper has to live outside
+# home. The first wallpaper's rendering and the Breeze theme's override file are written
+# through the backend's one sudo path (CLAUDE.md names this case), each only when it
+# differs; without sudo the login screen keeps what it has and the run goes on.
+login_png=/usr/local/share/patina21/login.png
+sddm_breeze=/usr/share/sddm/themes/breeze
+if [[ -n "$wallpaper_dir" && -f "$wallpaper_dir/contents/images/3840x2160.png" ]]; then
+  render "$templates/sddm-theme.conf.user" "$tmp/theme.conf.user"
+  login_todo=()
+  cmp -s "$wallpaper_dir/contents/images/3840x2160.png" "$login_png" ||
+    login_todo+=("$wallpaper_dir/contents/images/3840x2160.png:$login_png")
+  if [[ -d "$sddm_breeze" ]] && ! cmp -s "$tmp/theme.conf.user" "$sddm_breeze/theme.conf.user"; then
+    login_todo+=("$tmp/theme.conf.user:$sddm_breeze/theme.conf.user")
+  fi
+  if [[ ${#login_todo[@]} -gt 0 ]]; then
+    if BACKEND="$(backend_file 2> /dev/null)" && system_writable; then
+      for pair in "${login_todo[@]}"; do
+        say "login screen: writing ${pair#*:}"
+        backend_run system.write "${pair%%:*}" "${pair#*:}"
+        changed
+      done
+    else
+      warn "login screen: no sudo here; $login_png keeps the wallpaper it has"
+    fi
+  fi
+fi
+
 # The look-and-feel package: Plasma's own way to hand a new session its colours,
 # icons, cursors and wallpaper at once, so a fresh user gets the theme at first login.
 tpl[WALLPAPER_PACKAGE]="${wallpaper_dir:+$wallpaper_dir/}"
@@ -206,7 +207,23 @@ render "$templates/look-and-feel-metadata.json" "$tmp/lnf.json"
 put "$tmp/lnf.json" "$lnf/metadata.json"
 render "$templates/look-and-feel-defaults" "$tmp/lnf.defaults"
 put "$tmp/lnf.defaults" "$lnf/contents/defaults"
+# The splash: the wordmark on the theme's background, one accent line (templates/splash.qml).
+put "$PATINA_PATH/branding/wordmark.svg" "$lnf/contents/splash/images/logo.svg"
+render "$templates/splash.qml" "$tmp/Splash.qml"
+put "$tmp/Splash.qml" "$lnf/contents/splash/Splash.qml"
 drop_other_themes "$data/plasma/look-and-feel/org.patina21.*" "$lnf"
+
+# fastfetch greets a new terminal with the mark: a gradient copy of branding/logo.txt
+# (the file itself stays plain) and a configuration that points at it. The
+# configuration is written while its first line is ours; a user who removes that line
+# keeps their own.
+print_logo always > "$tmp/logo.txt"
+put "$tmp/logo.txt" "$data/patina21/logo.txt"
+fastfetch="$config/fastfetch/config.jsonc"
+if [[ ! -e "$fastfetch" || "$(head -n 1 "$fastfetch")" == "// patina21:"* ]]; then
+  render "$templates/fastfetch.jsonc" "$tmp/fastfetch.jsonc"
+  put "$tmp/fastfetch.jsonc" "$fastfetch"
+fi
 
 # The agent terminal profile and launcher, only with the agents bundle installed.
 agent_desktop="$data/applications/patina21-agent.desktop"
@@ -257,6 +274,8 @@ kset kdeglobals Theme "${tpl[ICONS]}" Icons
 kset kcminputrc cursorTheme "${tpl[CURSORS]}" Mouse
 kset plasmarc name "${tpl[DESKTOP_THEME]}" Theme
 kset konsolerc DefaultProfile "patina21-$theme.profile" "Desktop Entry"
+kset ksplashrc Theme "org.patina21.$theme" KSplash
+kset ksplashrc Engine KSplashQML KSplash
 if [[ -n "$wallpaper_dir" ]]; then
   kset kscreenlockerrc Image "$wallpaper_dir/" Greeter Wallpaper org.kde.image General
 fi

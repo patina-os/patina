@@ -142,6 +142,15 @@ check_theme() {
   else
     bad "$theme: colour scheme missing (run patina theme set $theme)"
   fi
+  if [[ -f /usr/local/share/patina21/login.png ]]; then
+    ok "login screen: wallpaper in place"
+  else
+    note "login screen: /usr/local/share/patina21/login.png not written (run patina theme set $theme where sudo works)"
+  fi
+  if [[ -d /usr/share/sddm/themes/breeze ]] &&
+      ! grep -qsx 'background=/usr/local/share/patina21/login.png' /usr/share/sddm/themes/breeze/theme.conf.user; then
+    bad "login screen: the Breeze theme does not point at the wallpaper (run patina theme set $theme)"
+  fi
   if ! command -v kwriteconfig6 > /dev/null; then
     note "kwriteconfig6 is missing: Plasma is not installed here, so only the files were written"
   fi

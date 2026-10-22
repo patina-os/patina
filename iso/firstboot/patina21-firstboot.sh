@@ -46,7 +46,8 @@ if [[ ! -d "$clone/.git" ]]; then
 fi
 runuser -u "$user" -- ln -sfn "$clone/bin/patina" "$home/.local/bin/patina"
 
-if [[ -r "$clone/branding/logo.txt" ]]; then
+# The mark on the console; the questions `patina install` asks print it themselves.
+if [[ -n "${PATINA_UNATTENDED:-}" && -r "$clone/branding/logo.txt" ]]; then
   cat "$clone/branding/logo.txt"
   echo
 fi

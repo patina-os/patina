@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <!-- slide 2: the second wallpaper, the wordmark small -->
+  <image xlink:href="second.png" width="1920" height="1080"/>
+  <rect width="1920" height="1080" fill="${BASE00}" fill-opacity="0.6"/>
+  <image xlink:href="logo.png" x="1380" y="880" width="420" height="120"/>
+</svg>

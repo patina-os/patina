@@ -1,0 +1,247 @@
+/* Calamares stylesheet for the patina21 installer, rendered by iso/live/assets.sh from
+   the default theme's palette and the fonts of defaults/settings.yaml; nothing here is
+   typed by hand. Written against Qt's Fusion style (root/.xinitrc sets it). The sidebar's
+   step list reads its colours from branding.desc's style keys, which assets.sh fills
+   from the same palette. Known limit: the partition bars' segment colours are
+   Calamares' own and cannot be styled. */
+
+QWidget {
+  font-family: "${UI_FONT}";
+  font-size: 11pt;
+  color: ${BASE05};
+  background: transparent;
+  selection-background-color: ${BASE0E};
+  selection-color: ${BASE00};
+}
+
+#mainApp, QMainWindow, QDialog, QMessageBox, QMenu, QWizard {
+  background-color: ${BASE00};
+}
+#sidebarApp {
+  background-color: ${BASE00};
+  border-right: 1px solid rgba(${BASE0E_RGB}, 60);
+}
+#navigationApp {
+  background-color: rgba(${BASE00_RGB}, 220);
+  border-top: 1px solid rgba(${BASE0E_RGB}, 60);
+}
+
+/* the glass panels: the groups a page puts its controls in */
+QGroupBox, QFrame[frameShape="4"], QFrame[frameShape="6"], #scrollAreaWidgetContents {
+  background-color: rgba(${BASE01_RGB}, 200);
+  border: 1px solid rgba(${BASE0E_RGB}, 90);
+  border-radius: 8px;
+}
+QGroupBox {
+  margin-top: 1.2em;
+  padding: 10px;
+}
+QGroupBox::title {
+  subcontrol-origin: margin;
+  left: 12px;
+  padding: 0 4px;
+  color: ${BASE04};
+}
+QScrollArea {
+  border: none;
+}
+QLabel {
+  background: transparent;
+}
+#bootInfoLable, #defineInfoLabel {
+  color: ${BASE04};
+}
+
+/* what the user types into or picks from */
+QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox, QTextEdit, QPlainTextEdit {
+  background-color: rgba(${BASE02_RGB}, 220);
+  border: 1px solid ${BASE03};
+  border-radius: 6px;
+  padding: 5px 9px;
+}
+QLineEdit:focus, QComboBox:focus, QSpinBox:focus, QDoubleSpinBox:focus, QTextEdit:focus {
+  border-color: ${BASE0E};
+}
+QLineEdit:disabled, QComboBox:disabled, QSpinBox:disabled {
+  color: ${BASE03};
+  border-color: ${BASE02};
+}
+QComboBox::drop-down {
+  border: none;
+  width: 24px;
+}
+QComboBox QAbstractItemView {
+  background-color: ${BASE01};
+  border: 1px solid ${BASE0E};
+  selection-background-color: ${BASE0E};
+  selection-color: ${BASE00};
+}
+
+/* buttons: one solid (the default action), the rest outlined */
+QPushButton, QToolButton {
+  background-color: rgba(${BASE02_RGB}, 200);
+  border: 1px solid ${BASE0E};
+  border-radius: 6px;
+  padding: 6px 16px;
+  min-height: 1.4em;
+}
+QPushButton:hover, QToolButton:hover {
+  border-color: ${BASE0F};
+}
+QPushButton:pressed, QPushButton:checked, QToolButton:checked {
+  background-color: ${BASE02};
+  border-color: ${BASE0F};
+}
+QPushButton:default {
+  background-color: ${BASE0E};
+  color: ${BASE00};
+  font-weight: 600;
+}
+QPushButton:default:hover {
+  background-color: ${BASE0F};
+}
+QPushButton:disabled, QToolButton:disabled {
+  color: ${BASE03};
+  border-color: ${BASE02};
+  background-color: transparent;
+}
+QPushButton:flat {
+  border: none;
+  background: transparent;
+}
+
+/* lists, trees and tables: the partition page lives here */
+QTreeView, QListView, QTableView, QListWidget, QTreeWidget {
+  background-color: rgba(${BASE01_RGB}, 200);
+  alternate-background-color: rgba(${BASE02_RGB}, 120);
+  border: 1px solid ${BASE02};
+  border-radius: 6px;
+  selection-background-color: ${BASE0E};
+  selection-color: ${BASE00};
+  outline: none;
+}
+QTreeView::item, QListView::item, QTableView::item {
+  padding: 4px;
+}
+QTreeView::item:selected, QListView::item:selected, QTableView::item:selected {
+  background-color: ${BASE0E};
+  color: ${BASE00};
+}
+QTreeView::item:hover, QListView::item:hover {
+  background-color: rgba(${BASE0E_RGB}, 50);
+}
+QHeaderView::section {
+  background-color: ${BASE02};
+  color: ${BASE04};
+  border: none;
+  padding: 5px 8px;
+}
+#partitionBarView {
+  background: transparent;
+  border: none;
+}
+
+/* the one glowing line: progress */
+QProgressBar {
+  background-color: ${BASE01};
+  border: 1px solid ${BASE0E};
+  border-radius: 4px;
+  text-align: center;
+  font-family: "${MONO_FONT}";
+  color: ${BASE05};
+  min-height: 1.2em;
+}
+QProgressBar::chunk {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 ${BASE0F}, stop: 1 ${BASE0E});
+  border-radius: 3px;
+}
+
+/* checks and radios */
+QCheckBox, QRadioButton {
+  spacing: 8px;
+}
+QCheckBox::indicator, QRadioButton::indicator {
+  width: 16px;
+  height: 16px;
+  background-color: ${BASE02};
+  border: 1px solid ${BASE03};
+  border-radius: 4px;
+}
+QRadioButton::indicator {
+  border-radius: 8px;
+}
+QCheckBox::indicator:hover, QRadioButton::indicator:hover {
+  border-color: ${BASE0E};
+}
+QCheckBox::indicator:checked, QRadioButton::indicator:checked {
+  background-color: ${BASE0E};
+  border-color: ${BASE0E};
+}
+QCheckBox::indicator:disabled, QRadioButton::indicator:disabled {
+  border-color: ${BASE02};
+}
+
+/* tabs, scrollbars, tooltips, menus */
+QTabWidget::pane {
+  border: 1px solid ${BASE02};
+  border-radius: 6px;
+}
+QTabBar::tab {
+  background: transparent;
+  color: ${BASE04};
+  padding: 6px 14px;
+  border-bottom: 2px solid transparent;
+}
+QTabBar::tab:selected {
+  color: ${BASE05};
+  border-bottom-color: ${BASE0E};
+}
+QScrollBar:vertical, QScrollBar:horizontal {
+  background: ${BASE01};
+  width: 8px;
+  height: 8px;
+  margin: 0;
+}
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+  background: ${BASE03};
+  border-radius: 4px;
+  min-height: 24px;
+  min-width: 24px;
+}
+QScrollBar::handle:hover {
+  background: ${BASE0E};
+}
+QScrollBar::add-line, QScrollBar::sub-line, QScrollBar::add-page, QScrollBar::sub-page {
+  background: none;
+  border: none;
+  height: 0;
+  width: 0;
+}
+QToolTip {
+  background-color: ${BASE01};
+  color: ${BASE05};
+  border: 1px solid ${BASE0E};
+  padding: 4px;
+}
+QMenu::item {
+  padding: 6px 20px;
+}
+QMenu::item:selected {
+  background-color: ${BASE0E};
+  color: ${BASE00};
+}
+QSlider::groove:horizontal {
+  height: 4px;
+  background: ${BASE02};
+  border-radius: 2px;
+}
+QSlider::handle:horizontal {
+  width: 14px;
+  margin: -6px 0;
+  background: ${BASE0E};
+  border-radius: 7px;
+}
+QSlider::sub-page:horizontal {
+  background: ${BASE0E};
+  border-radius: 2px;
+}
