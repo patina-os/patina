@@ -3,9 +3,9 @@
 theme: amethyst              # a directory under themes/; PATINA_THEME=<name> overrides
 desktop: plasma              # the renderer: desktops/<desktop>/apply.sh
 flatpak_remote: https://dl.flathub.org/repo/flathub.flatpakrepo
-fonts:                       # font names only; the packages providing them are listed in manifest/
-  ui: Noto Sans
-  monospace: Noto Sans Mono
+fonts:                       # font names only; the desktop bundle installs the packages
+  ui: Inter                  # everything the user reads
+  monospace: JetBrains Mono  # terminals and details (versions, hostnames, progress)
 agent: opencode              # what the `agent` keybinding opens (needs the agents bundle)
 # The speed settings (docs/roadmap.md, Phase 2), after what CachyOS sets on Plasma.
 speed:

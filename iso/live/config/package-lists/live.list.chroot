@@ -28,4 +28,6 @@ xserver-xorg
 xinit
 openbox
 dbus-bin
-fonts-noto-core
+fonts-noto-core        # glyph fallback
+fonts-inter            # the layer's fonts: the installer's stylesheet names them
+fonts-jetbrains-mono
