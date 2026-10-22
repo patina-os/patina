@@ -29,8 +29,8 @@ Files, from `templates/`, each named after the theme:
   what it has and the run goes on with a warning; `patina doctor` reports it.
   `defaults/system/sddm.conf.d/patina21.conf` selects Breeze with the layer's font and
   cursor
-- the fastfetch greeting: `~/.local/share/patina21/logo.txt`, the ASCII mark with its
-  gradient (`print_logo always`), and `~/.config/fastfetch/config.jsonc` pointing at it
+- the fastfetch greeting: `~/.local/share/patina21/logo.txt`, the text mark in the
+  brand's colours (`print_logo always`), and `~/.config/fastfetch/config.jsonc` pointing at it
   with the theme's accent for the labels, rewritten only while its first line is ours
 - the panel layout in that package (`contents/layouts/org.kde.plasma.desktop-layout.js`)
   when `panel.layout` is `centered`: one bar at the bottom with the launcher and the
@@ -43,6 +43,11 @@ Files, from `templates/`, each named after the theme:
   from the same palette, and `~/.local/share/applications/patina21-agent.desktop`, which
   opens the command `agent` of `defaults/settings.yaml` in it; both are removed again
   when the bundle is not installed
+- the cheat sheet's launcher, `~/.local/share/applications/patina21-keys.desktop` (from
+  `templates/keys.desktop`): kitty showing `patina keys` until a key is pressed, bound
+  to the `keys` action (Meta+K). The sheet lists the actions of
+  `defaults/keybindings.yaml` and Plasma's own chords worth knowing, kept as words under
+  `cheatsheet` in `actions.yaml`
 
 Settings, through `kwriteconfig6`, each written only when it differs:
 
@@ -59,7 +64,8 @@ Settings, through `kwriteconfig6`, each written only when it differs:
   `patina theme set` in a session
 - global shortcuts in `kglobalshortcutsrc` from `defaults/keybindings.yaml`, each action
   through `actions.yaml`: a `.desktop` file's `_launch` (kitty, KRunner, Dolphin,
-  Spectacle, the default web browser from `xdg-settings`, the agent launcher) or a KWin,
+  Spectacle, the default web browser from `xdg-settings`, the agent launcher, the cheat
+  sheet) or a KWin,
   ksmserver or plasmashell action. A service that is not installed is skipped with a
   warning; Plasma's own chords that collide are unbound (`unbind` in `actions.yaml`)
 - GTK 3 and 4 `settings.ini`: Breeze, the icon and cursor theme, the font, dark or light

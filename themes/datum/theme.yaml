@@ -1,0 +1,39 @@
+# datum: the default patina21 theme. A contour map around a survey point: graphite,
+# ice-blue lines and one coral accent, with JetBrains Mono for the details.
+# Desktop-agnostic data; desktops/<desktop>/ renders it.
+name: datum
+display_name: Datum
+author: patina21 contributors
+license: GPL-3.0-or-later      # the theme data
+artwork_license: CC-BY-SA-4.0  # the wallpaper under wallpapers/
+variant: dark
+
+# base16 palette: https://github.com/tinted-theming/home/blob/main/styling.md
+palette:
+  base00: "#111315"  # default background: graphite
+  base01: "#181b1e"  # lighter background: status bars, line numbers, panels
+  base02: "#22262a"  # selection background in editors, buttons
+  base03: "#3d434a"  # comments, invisibles
+  base04: "#7d8690"  # dark foreground: status bars
+  base05: "#cfd6dd"  # default foreground
+  base06: "#e4e9ee"  # light foreground
+  base07: "#f5f7f9"  # lightest
+  base08: "#ff7b54"  # red: errors, deleted; warmer than the accent so the two stay apart
+  base09: "#f2b35e"  # orange: constants
+  base0A: "#e8d36b"  # yellow: classes, search
+  base0B: "#7fd1a3"  # green: strings, added
+  base0C: "#6fd8e3"  # cyan: regular expressions, escapes
+  base0D: "#6ab8ff"  # blue: functions, links; the ice of the contour lines and the mark
+  base0E: "#ff5f6d"  # magenta slot: keywords; the coral accent of the desktop
+  base0F: "#ff9aa3"  # light coral: deprecated, embedded tags; the glow under the splash line
+
+# Images relative to this directory; the first one is the default. SVG files are
+# rendered by the desktop renderer at apply time; nothing rendered is committed.
+wallpapers:
+  - wallpapers/contour.svg
+
+# Per-desktop hints, still data.
+plasma:
+  icons: breeze-dark             # icon theme as packaged by Debian
+  cursors: breeze_cursors
+  desktop_theme: default         # the panel and widget style; default follows the colour scheme

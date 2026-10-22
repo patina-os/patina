@@ -62,7 +62,7 @@ compose() {   # compose <template> <out.png>: fill the template, render it over 
 # the sidebar colours and the version in branding.desc.
 say "rendering the installer's branding"
 cp "$repo/branding/wordmark.svg" "$branding/logo.svg"
-cp "$repo/branding/wave.svg" "$branding/logo-square.svg"
+cp "$repo/branding/icon-small.svg" "$branding/logo-square.svg"
 compose calamares/wallpaper.svg "$branding/wallpaper.png"
 compose calamares/slide-1.svg "$branding/slide-1.png"
 compose calamares/slide-2.svg "$branding/slide-2.png"

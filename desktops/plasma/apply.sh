@@ -244,7 +244,7 @@ render "$templates/splash.qml" "$tmp/Splash.qml"
 put "$tmp/Splash.qml" "$lnf/contents/splash/Splash.qml"
 drop_other_themes "$data/plasma/look-and-feel/org.patina21.*" "$lnf"
 
-# fastfetch greets a new terminal with the mark: a gradient copy of branding/logo.txt
+# fastfetch greets a new terminal with the mark: a coloured copy of branding/logo.txt
 # (the file itself stays plain) and a configuration that points at it. The
 # configuration is written while its first line is ours; a user who removes that line
 # keeps their own.
@@ -272,6 +272,12 @@ else
     fi
   done
 fi
+
+# The cheat sheet's launcher, which the keys action (Meta+K) starts: kitty showing
+# `patina keys` until a key is pressed.
+tpl[PATINA_PATH]="$PATINA_PATH"
+render "$templates/keys.desktop" "$tmp/keys.desktop"
+put "$tmp/keys.desktop" "$data/applications/patina21-keys.desktop"
 
 finish() {
   if [[ $changes -eq 0 ]]; then

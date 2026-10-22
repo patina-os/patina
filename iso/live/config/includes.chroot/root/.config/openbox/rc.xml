@@ -8,12 +8,12 @@
     <titleLayout>LC</titleLayout>
     <keepBorder>no</keepBorder>
     <animateIconify>no</animateIconify>
-    <font place="ActiveWindow"><name>Inter</name><size>10</size><weight>Bold</weight></font>
-    <font place="InactiveWindow"><name>Inter</name><size>10</size><weight>Normal</weight></font>
-    <font place="MenuHeader"><name>Inter</name><size>10</size></font>
-    <font place="MenuItem"><name>Inter</name><size>10</size></font>
-    <font place="ActiveOnScreenDisplay"><name>Inter</name><size>10</size></font>
-    <font place="InactiveOnScreenDisplay"><name>Inter</name><size>10</size></font>
+    <font place="ActiveWindow"><name>Source Sans 3</name><size>10</size><weight>Bold</weight></font>
+    <font place="InactiveWindow"><name>Source Sans 3</name><size>10</size><weight>Normal</weight></font>
+    <font place="MenuHeader"><name>Source Sans 3</name><size>10</size></font>
+    <font place="MenuItem"><name>Source Sans 3</name><size>10</size></font>
+    <font place="ActiveOnScreenDisplay"><name>Source Sans 3</name><size>10</size></font>
+    <font place="InactiveOnScreenDisplay"><name>Source Sans 3</name><size>10</size></font>
   </theme>
   <placement>
     <policy>Smart</policy>

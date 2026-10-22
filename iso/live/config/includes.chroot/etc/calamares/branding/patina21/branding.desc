@@ -27,7 +27,7 @@ strings:
   releaseNotesUrl: https://github.com/patina21/patina21/blob/main/CHANGELOG.md
 
 images:
-  productLogo: logo-square.svg      # the wave: Calamares shows this one at 80x80
+  productLogo: logo-square.svg      # the square mark: Calamares shows this one at 80x80
   productIcon: logo-square.svg
   productWelcome: logo.svg          # the wordmark, once, on the welcome page
   productWallpaper: wallpaper.png   # the theme's first wallpaper, veiled, behind every page

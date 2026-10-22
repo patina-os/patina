@@ -37,6 +37,28 @@ copying its `palette` block.
 4. Check with `yq eval '.' themes/<name>/theme.yaml` (CI does the same) and open a pull
    request with a line in `CHANGELOG.md`.
 
+## Sharing a theme from its own repository
+
+A theme can also live in a git repository of its own, by convention named
+`patina21-<name>-theme`, with `theme.yaml` at its top and the wallpapers under
+`wallpapers/`. Anyone installs it with
+
+```sh
+patina theme install https://example.org/you/patina21-<name>-theme.git
+patina theme set <name>
+```
+
+`install` clones it into a temporary directory and keeps only data: `theme.yaml`, a
+`README.md`, a `LICENSE` and the wallpapers `theme.yaml` lists (SVG or PNG, directly
+under `wallpapers/`). Scripts, other files and links never leave the clone. The name
+must be lowercase kebab-case and may not be one of the themes here; the palette must be
+complete; the names and hints that end up in configuration (`display_name`, `author`,
+the licenses, the `plasma:` hints) must be plain words. The theme lands in
+`~/.local/share/patina21/themes/<name>/`, outside the checkout, with a `.source.yaml`
+that records where it came from. `patina theme install` again, or `patina theme
+update`, fetches it anew; `patina theme remove <name>` deletes it (never the current
+theme, never one of the themes here).
+
 Theme data in this repository is contributed under the repository license
 (GPL-3.0-or-later). Artwork may carry its own license, declared in `artwork_license`;
 CC-BY-SA-4.0 is the recommended choice.
