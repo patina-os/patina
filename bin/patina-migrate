@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Run the migrations under migrations/ that have not run yet, in filename order, and
+# record each as a marker in the state directory. `--list` prints the pending ones.
+set -euo pipefail
+
+# shellcheck source=bin/lib.sh
+source "$PATINA_PATH/bin/lib.sh"
+
+list_only=0
+case "${1:-}" in
+  "") ;;
+  --list) list_only=1 ;;
+  *)
+    echo "usage: patina migrate [--list]" >&2
+    exit 1
+    ;;
+esac
+
+markers="$PATINA_STATE/migrations"
+mkdir -p "$markers"
+ran=0
+for m in "$PATINA_PATH"/migrations/[0-9]*.sh; do
+  [[ -e "$m" ]] || continue
+  name="$(basename "$m")"
+  [[ -e "$markers/$name" ]] && continue
+  if [[ $list_only -eq 1 ]]; then
+    echo "$name"
+    continue
+  fi
+  say "migration: $name"
+  bash "$m"
+  date -u +%FT%TZ > "$markers/$name"
+  ran=$((ran + 1))
+done
+if [[ $list_only -eq 0 ]]; then
+  say "migrations: $ran run"
+fi

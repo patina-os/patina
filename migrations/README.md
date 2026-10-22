@@ -16,4 +16,6 @@ Rules:
 - `_template.sh` is the skeleton; tools skip entries starting with `_`.
 
 Migrations exist for installed users only. A fresh `patina install` already produces the
-end state, so no migration may be required for a fresh install to work.
+end state, so no migration may be required for a fresh install to work; the first
+`patina install` on a machine records every existing migration as done. `patina migrate
+--list` prints the pending ones, `patina migrate` runs them without pulling.

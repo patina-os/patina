@@ -1,0 +1,151 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Check the base, the tools and what `patina install` put in place; report what is
+# missing or differs. Exit 0 when clean, 1 otherwise. Changes nothing.
+set -euo pipefail
+
+# shellcheck source=bin/lib.sh
+source "$PATINA_PATH/bin/lib.sh"
+
+problems=0
+
+ok() { printf '  ok    %s\n' "$*"; }
+bad() {
+  printf '  FAIL  %s\n' "$*"
+  problems=$((problems + 1))
+}
+note() { printf '  note  %s\n' "$*"; }
+
+check_base() {
+  local name id arch
+  # shellcheck source=/dev/null
+  name="$(. /etc/os-release && echo "${PRETTY_NAME:-${ID:-unknown}}")"
+  # shellcheck source=/dev/null
+  id="$(. /etc/os-release && echo "${ID:-}")"
+  arch="$(uname -m)"
+  echo "base"
+  if BACKEND="$(backend_file 2> /dev/null)"; then
+    ok "$name, $arch, backend $(basename "$BACKEND" .yaml)"
+  else
+    bad "$name (ID=$id): no backend in manifest/backends/ serves it"
+    BACKEND=""
+  fi
+  case "$arch" in
+    x86_64 | aarch64) ;;
+    *) note "$arch is not an architecture the layer is tested on" ;;
+  esac
+}
+
+check_tools() {
+  echo "tools"
+  if have_go_yq; then
+    ok "yq: $(yq --version)"
+  else
+    bad "the Go yq is missing (patina install fetches it)"
+  fi
+  if git -C "$PATINA_PATH" rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    ok "checkout: $PATINA_PATH ($(git -C "$PATINA_PATH" describe --tags --always 2> /dev/null))"
+  else
+    bad "$PATINA_PATH is not a git checkout; patina update needs one"
+  fi
+  if [[ "$(readlink -f "$(command -v patina 2> /dev/null || echo /nonexistent)")" == "$PATINA_PATH/bin/patina" ]]; then
+    ok "patina on PATH"
+  else
+    note "patina is not on PATH; ln -s $PATINA_PATH/bin/patina ~/.local/bin/patina"
+  fi
+}
+
+check_state() {
+  echo "state"
+  if [[ -e "$PATINA_STATE/installed-at" ]]; then
+    ok "installed $(cat "$PATINA_STATE/installed-at"), bundles: $(recorded_bundles | paste -sd ' ')"
+  else
+    bad "no install recorded in $PATINA_STATE (run patina install)"
+  fi
+  local pending
+  pending="$("$PATINA_PATH/bin/patina-migrate" --list | wc -l)"
+  if [[ "$pending" -eq 0 ]]; then
+    ok "no pending migration"
+  else
+    bad "$pending pending migration(s): run patina update"
+  fi
+}
+
+check_bundles() {
+  local -a bundles packages flatpaks upstream
+  local p missing
+  mapfile -t bundles < <(recorded_bundles)
+  mapfile -t packages < <(bundle_items packages "${bundles[@]}")
+  mapfile -t flatpaks < <(bundle_items flatpaks "${bundles[@]}")
+  mapfile -t upstream < <(bundle_items upstream "${bundles[@]}")
+  echo "bundles: ${bundles[*]}"
+  missing=""
+  for p in "${packages[@]}"; do
+    package_installed "$p" || missing="$missing $p"
+  done
+  if [[ -z "$missing" ]]; then
+    ok "packages: all ${#packages[@]} installed"
+  else
+    bad "packages missing:$missing"
+  fi
+  missing=""
+  for p in "${flatpaks[@]}"; do
+    flatpak_installed "$p" || missing="$missing $p"
+  done
+  if [[ -z "$missing" ]]; then
+    ok "flatpaks: all ${#flatpaks[@]} installed"
+  else
+    bad "flatpaks missing:$missing"
+  fi
+  missing=""
+  for p in "${upstream[@]}"; do
+    upstream_installed "$p" || missing="$missing $p"
+  done
+  if [[ -z "$missing" ]]; then
+    ok "upstream tools: all ${#upstream[@]} installed"
+  else
+    bad "upstream tools missing:$missing"
+  fi
+}
+
+check_system() {
+  local src rel dest differs=""
+  echo "system tuning (defaults/system/)"
+  while IFS= read -r src; do
+    rel="${src#"$PATINA_PATH/defaults/system/"}"
+    dest="/etc/$rel"
+    cmp -s "$src" "$dest" || differs="$differs $dest"
+  done < <(find "$PATINA_PATH/defaults/system" -type f | sort)
+  if [[ -z "$differs" ]]; then
+    ok "every file in place and identical"
+  else
+    bad "missing or different:$differs"
+  fi
+  if ! booted_with_systemd; then
+    note "not booted with systemd (a container?); the tuning cannot be active here"
+  fi
+}
+
+main() {
+  if [[ $# -gt 0 ]]; then
+    echo "usage: patina doctor" >&2
+    exit 1
+  fi
+  check_base
+  check_tools
+  if ! have_go_yq || [[ -z "$BACKEND" ]]; then
+    echo "patina doctor: cannot check further without yq and a backend"
+    exit 1
+  fi
+  check_state
+  check_bundles
+  check_system
+  if [[ $problems -eq 0 ]]; then
+    say "doctor: clean"
+  else
+    say "doctor: $problems problem(s)"
+    exit 1
+  fi
+}
+
+main "$@"

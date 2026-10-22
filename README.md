@@ -12,7 +12,9 @@
 Themes, consistency across apps, curated defaults, agent CLIs and a free-software,
 EU-sovereign app stack on top of Debian stable with Plasma. Not a distribution.
 
-**Status: pre-alpha.** Nothing is installable yet. See the [roadmap](docs/roadmap.md).
+**Status: pre-alpha.** `patina install` installs the app stack and the system tuning on
+Debian 13 (checked in CI containers on x86_64 and aarch64, not yet on real machines);
+theming and the branded install are still to come. See the [roadmap](docs/roadmap.md).
 
 ## What it is
 
@@ -48,10 +50,20 @@ Two paths, one layer. If they ever diverge, Path A wins.
 
 | Path | What you do | Status |
 |---|---|---|
-| A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (a small TUI: theme, app bundles, Nextcloud, agent tools) | pre-alpha, not usable yet |
+| A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (bundles by flags today; a small TUI for theme, bundles, Nextcloud and agent tools later) | pre-alpha: installs the app stack and the system tuning, checked in CI containers, no theme yet |
 | B: the patina21 image | Boot a small live image, answer the installer (disk, user, locale), get the finished desktop. Plasma and the base are downloaded from Debian's mirrors during the install; first boot runs Path A | pre-alpha: the image builds and boots to the installer in CI (x86_64 and aarch64), not released yet; the first boot waits for Path A |
 
-Updates: `patina update` runs `git pull` and then any pending migrations.
+```sh
+sudo apt install git curl
+git clone https://github.com/patina21/patina21.git ~/.local/share/patina21
+~/.local/share/patina21/bin/patina install            # the default bundles: base, desktop
+~/.local/share/patina21/bin/patina install --all      # plus the opt-in agent tools
+```
+
+`patina install --list` shows the bundles, `patina doctor` checks the result, and
+`patina update` runs `git pull` and then any pending migrations. Put `~/.local/bin` on
+your PATH and link `patina` there (`ln -s ~/.local/share/patina21/bin/patina
+~/.local/bin/patina`).
 
 ## Supported bases
 

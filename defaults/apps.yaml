@@ -1,0 +1,34 @@
+# Settings `patina install` merges into applications' own configuration files, as data.
+# Per app: `requires`, the flatpak ID or upstream key that must be part of the install
+# for the settings to apply; `file`, the JSON file the app reads (~ is the home
+# directory; a Flatpak's configuration lives under ~/.var/app/<id>/config); `settings`,
+# the keys merged into it, so the user's other settings stay. A file yq cannot parse
+# (Zed writes comments into a settings.json the user has opened) is left alone with a
+# warning that names the keys.
+zed:
+  requires:
+    flatpak: dev.zed.Zed
+  file: ~/.var/app/dev.zed.Zed/config/zed/settings.json
+  settings:
+    telemetry:
+      diagnostics: false
+      metrics: false
+    disable_ai: true
+opencode:
+  # Ollama as the local backend: the OpenAI-compatible endpoint on this machine and the
+  # model Ollama's own opencode guide names. Nothing is pulled; `ollama pull qwen3.5`
+  # once, then opencode has a model that never leaves the machine.
+  requires:
+    upstream: opencode
+  file: ~/.config/opencode/opencode.json
+  settings:
+    $schema: https://opencode.ai/config.json
+    provider:
+      ollama:
+        npm: "@ai-sdk/openai-compatible"
+        name: Ollama (local)
+        options:
+          baseURL: http://localhost:11434/v1
+        models:
+          "qwen3.5":
+            name: qwen3.5
