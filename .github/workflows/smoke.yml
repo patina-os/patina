@@ -88,18 +88,41 @@ jobs:
             --group kitty.desktop --key _launch)"
           [[ "$launch" == Meta+Return,* ]]
           bin/patina theme set "$theme" | tee again.txt
+          grep -q 'terminal: nothing to do' again.txt
           grep -q 'theme: nothing to do' again.txt
           cp -r "themes/$theme" themes/zz-copy
           sed -i "s/^name: $theme/name: zz-copy/" themes/zz-copy/theme.yaml
           bin/patina theme set zz-copy
           test -s "$data/color-schemes/patina21-zz-copy.colors"
           test ! -e "$data/color-schemes/patina21-$theme.colors"
+          test ! -e "$HOME/.config/btop/themes/patina21-$theme.theme"
           [[ "$(scheme)" == "patina21-zz-copy" ]]
           bin/patina theme set "$theme"
           rm -r themes/zz-copy
           test ! -e "$data/color-schemes/patina21-zz-copy.colors"
           test ! -e "$data/wallpapers/patina21-zz-copy-drift"
+          test ! -e "$HOME/.config/nvim/colors/patina21-zz-copy.lua"
           [[ "$(scheme)" == "patina21-$theme" ]]
+      - name: The terminal and its tools rendered
+        # desktops/terminal/: kitty carries the palette, btop and neovim get their own
+        # files, and neovim loads the colour scheme when nothing else chose one.
+        run: |
+          theme="$(yq eval '.theme' defaults/settings.yaml)"
+          config="$HOME/.config"
+          grep -qxF 'include patina21.conf' "$config/kitty/kitty.conf"
+          grep -q "^color13 $(yq eval '.palette.base0E' "themes/$theme/theme.yaml")" \
+            "$config/kitty/patina21.conf"
+          test -s "$config/btop/themes/patina21-$theme.theme"
+          btop_theme="$config/btop/themes/patina21-$theme.theme"
+          test -s "$btop_theme"
+          grep -qxF "color_theme = \"$btop_theme\"" "$config/btop/btop.conf"
+          test -s "$config/bat/config"
+          test -s "$config/environment.d/60-patina21.conf"
+          if grep -rq '\${' "$config/kitty" "$config/btop/themes" "$config/nvim"; then
+            exit 1   # a placeholder the renderer did not fill
+          fi
+          colors="$(nvim --headless +'lua io.write(vim.g.colors_name)' +qa 2>&1)"
+          [[ "$colors" == "patina21-$theme" ]]
       - name: The login screen, the splash and the terminal greeting rendered
         run: |
           theme="$(yq eval '.theme' defaults/settings.yaml)"

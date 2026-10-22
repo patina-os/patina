@@ -176,6 +176,30 @@ render() {
   printf '%s\n' "$text" > "$2"
 }
 
+# The renderers' two ways of writing: install a rendered file only when it differs
+# (put <src> <dest>), and remove what another theme left (drop_other_themes <glob>
+# <keep-prefix>). Both call the renderer's own say and changed.
+put() {
+  local src="$1" dest="$2"
+  if cmp -s "$src" "$dest"; then
+    return
+  fi
+  say "writing $dest"
+  install -D -m 0644 "$src" "$dest"
+  changed
+}
+
+drop_other_themes() {
+  local pattern="$1" keep="$2" f
+  for f in $pattern; do
+    [[ -e "$f" ]] || continue
+    [[ "$f" == "$keep"* ]] && continue
+    say "removing $f (another theme)"
+    rm -rf "$f"
+    changed
+  done
+}
+
 # The ASCII mark, branding/logo.txt, which stays plain 7-bit ASCII (serial console,
 # /etc/issue.d, README). The pink-to-purple gradient is added here, at print time:
 # `print_logo auto` only for an interactive 24-bit terminal, `print_logo always` in any

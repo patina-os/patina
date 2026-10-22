@@ -142,6 +142,11 @@ check_theme() {
   else
     bad "$theme: colour scheme missing (run patina theme set $theme)"
   fi
+  if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/kitty/patina21.conf" ]]; then
+    ok "$theme: terminal colours in place"
+  else
+    bad "$theme: terminal colours missing (run patina theme set $theme)"
+  fi
   if [[ -f /usr/local/share/patina21/login.png ]]; then
     ok "login screen: wallpaper in place"
   else

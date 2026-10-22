@@ -27,5 +27,10 @@ Contract:
   renderer in bash. They keep the names of the files they become, so the YAML checks
   skip `templates/`.
 
+`terminal/` is not a desktop: it renders what every desktop shares, kitty, the fastfetch
+greeting and the tools in the terminal (btop, neovim, bat, fzf), from the same theme.
+`patina theme set` runs it before the desktop's renderer; a desktop may point at its
+files, never write them. Its README says what it produces.
+
 `plasma/` is the first and reference desktop. A later `hyprland/` must work from the same
 theme data without changes to `themes/`.

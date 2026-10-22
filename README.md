@@ -101,8 +101,9 @@ The layer itself has no architecture. aarch64 is a first-class target from day o
 
 One theme from the boot menu to the desktop, from one data file: the live image's boot
 menu, the installer, the login screen, the Plasma splash, Plasma itself, Konsole, kitty,
-GTK and Flatpak apps, the install questions and the terminal greeting all take their
-colours from the theme's palette; the words are set in Inter, the details in JetBrains
+GTK and Flatpak apps, the install questions, the terminal greeting and the tools in the
+terminal (btop, neovim, bat, fzf, lazygit, eza, starship) all take their colours from
+the theme's palette; the words are set in Inter, the details in JetBrains
 Mono. The first theme is amethyst: a purple palette on a deep aubergine background that
 continues the logo's pink-to-purple gradient, with two abstract wallpapers drawn as SVG.
 Meta plus

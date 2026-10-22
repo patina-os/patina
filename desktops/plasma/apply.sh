@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Render a theme and defaults/ into KDE Plasma's configuration for this user: colour
-# schemes, terminal profiles, wallpapers, a look-and-feel package, shortcuts and the
+# schemes, the Konsole profile, wallpapers, a look-and-feel package, shortcuts and the
 # curated settings. `apply.sh <theme-dir>`; idempotent, output only under XDG dirs.
 set -euo pipefail
 
@@ -31,8 +31,6 @@ changed() { changes=$((changes + 1)); }
 # hex (BASE00) and as the r,g,b decimals KDE's files want (BASE00_RGB).
 theme_vars "$theme_yaml" "$settings"
 tpl[CONFIG_HOME]="$config"
-tpl[DATA_HOME]="$data"
-tpl[ACCENT_SGR]="38;2;${tpl[BASE0E_RGB]//,/;}"   # the accent as an ANSI colour, for fastfetch
 tpl[WALLPAPER]=""
 tpl[WALLPAPER_PACKAGE]=""
 tpl[AGENT_COMMAND]=""
@@ -41,17 +39,6 @@ tpl[PINNED_LAUNCHERS]=""
 theme="${tpl[THEME]}"
 [[ "$theme" == "$(basename "$theme_dir")" ]] ||
   warn "theme.yaml says name: $theme but the directory is $(basename "$theme_dir")"
-
-# Install a rendered file only when it differs from what is there.
-put() {
-  local src="$1" dest="$2"
-  if cmp -s "$src" "$dest"; then
-    return
-  fi
-  say "writing $dest"
-  install -D -m 0644 "$src" "$dest"
-  changed
-}
 
 # Write one key with kwriteconfig6 when its value differs: kset <rc> <key> <value> <group>...
 # The rc is a name under ~/.config or an absolute path, as the tool takes it.
@@ -114,20 +101,7 @@ service_for_action() {
   echo "$service"
 }
 
-# Everything generated carries the theme in its name; what belongs to another theme
-# goes, so switching themes leaves nothing behind.
-drop_other_themes() {
-  local pattern="$1" keep="$2" f
-  for f in $pattern; do
-    [[ -e "$f" ]] || continue
-    [[ "$f" == "$keep"* ]] && continue
-    say "removing $f (another theme)"
-    rm -rf "$f"
-    changed
-  done
-}
-
-# ---- files: colour schemes, terminals, wallpapers, the look-and-feel package --------
+# ---- files: colour schemes, Konsole, wallpapers, the look-and-feel package ----------
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
@@ -140,22 +114,6 @@ put "$tmp/konsole.colorscheme" "$data/konsole/patina21-$theme.colorscheme"
 render "$templates/konsole.profile" "$tmp/konsole.profile"
 put "$tmp/konsole.profile" "$data/konsole/patina21-$theme.profile"
 drop_other_themes "$data/konsole/patina21-*" "$data/konsole/patina21-$theme."
-
-render "$templates/kitty.conf" "$tmp/kitty.conf"
-put "$tmp/kitty.conf" "$config/kitty/patina21.conf"
-if ! grep -qxF 'include patina21.conf' "$config/kitty/kitty.conf" 2> /dev/null; then
-  say "kitty.conf: adding the include line"
-  mkdir -p "$config/kitty"
-  {
-    printf '# patina21: the theme and fonts; keep your own settings below this line.\n'
-    printf 'include patina21.conf\n'
-    if [[ -f "$config/kitty/kitty.conf" ]]; then
-      cat "$config/kitty/kitty.conf"
-    fi
-  } > "$tmp/kitty.conf.new"
-  mv "$tmp/kitty.conf.new" "$config/kitty/kitty.conf"
-  changed
-fi
 
 # Wallpapers: one Plasma wallpaper package per image. An SVG is rendered once, at 4K,
 # and again only when the theme's file is newer than the rendering (a git pull sets
@@ -244,33 +202,16 @@ render "$templates/splash.qml" "$tmp/Splash.qml"
 put "$tmp/Splash.qml" "$lnf/contents/splash/Splash.qml"
 drop_other_themes "$data/plasma/look-and-feel/org.patina21.*" "$lnf"
 
-# fastfetch greets a new terminal with the mark: a gradient copy of branding/logo.txt
-# (the file itself stays plain) and a configuration that points at it. The
-# configuration is written while its first line is ours; a user who removes that line
-# keeps their own.
-print_logo always > "$tmp/logo.txt"
-put "$tmp/logo.txt" "$data/patina21/logo.txt"
-fastfetch="$config/fastfetch/config.jsonc"
-if [[ ! -e "$fastfetch" || "$(head -n 1 "$fastfetch")" == "// patina21:"* ]]; then
-  render "$templates/fastfetch.jsonc" "$tmp/fastfetch.jsonc"
-  put "$tmp/fastfetch.jsonc" "$fastfetch"
-fi
-
-# The agent terminal profile and launcher, only with the agents bundle installed.
+# The agent launcher, only with the agents bundle installed. It opens the agent CLI in
+# the kitty profile desktops/terminal/ writes.
 if [[ " ${PATINA_BUNDLES:-} " == *" agents "* ]]; then
   tpl[AGENT_COMMAND]="$(command -v "${tpl[AGENT]}" 2> /dev/null || echo "${tpl[AGENT]}")"
-  render "$templates/kitty-agent.conf" "$tmp/kitty-agent.conf"
-  put "$tmp/kitty-agent.conf" "$config/kitty/patina21-agent.conf"
   render "$templates/agent.desktop" "$tmp/agent.desktop"
   put "$tmp/agent.desktop" "$agent_desktop"
-else
-  for f in "$config/kitty/patina21-agent.conf" "$agent_desktop"; do
-    if [[ -e "$f" ]]; then
-      say "removing $f (the agents bundle is not installed)"
-      rm -f "$f"
-      changed
-    fi
-  done
+elif [[ -e "$agent_desktop" ]]; then
+  say "removing $agent_desktop (the agents bundle is not installed)"
+  rm -f "$agent_desktop"
+  changed
 fi
 
 finish() {

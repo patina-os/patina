@@ -1,7 +1,9 @@
 # desktops/plasma/
 
 Renderer for KDE Plasma 6 as Debian 13 ships it (Plasma 6.3). `patina theme set <name>`
-and `patina install` run `apply.sh <theme-dir>` for the current user.
+and `patina install` run `apply.sh <theme-dir>` for the current user, after
+`desktops/terminal/`, which renders kitty, the fastfetch greeting and the terminal tools
+for every desktop.
 
 ## What it produces
 
@@ -11,8 +13,6 @@ Files, from `templates/`, each named after the theme:
   the theme's `base0E` as the accent and selection colour
 - a Konsole colour scheme and profile under `~/.local/share/konsole/`, made the default
   profile in `konsolerc`
-- kitty: `~/.config/kitty/patina21.conf` (colours and fonts), included from `kitty.conf`;
-  the include line is added once, above whatever the user keeps there
 - one Plasma wallpaper package per image under `~/.local/share/wallpapers/`; an SVG is
   rendered with `rsvg-convert` at 3840x2160 and only again when the theme's file is newer
 - a look-and-feel package, `~/.local/share/plasma/look-and-feel/org.patina21.<theme>/`,
@@ -29,9 +29,6 @@ Files, from `templates/`, each named after the theme:
   what it has and the run goes on with a warning; `patina doctor` reports it.
   `defaults/system/sddm.conf.d/patina21.conf` selects Breeze with the layer's font and
   cursor
-- the fastfetch greeting: `~/.local/share/patina21/logo.txt`, the ASCII mark with its
-  gradient (`print_logo always`), and `~/.config/fastfetch/config.jsonc` pointing at it
-  with the theme's accent for the labels, rewritten only while its first line is ours
 - the panel layout in that package (`contents/layouts/org.kde.plasma.desktop-layout.js`)
   when `panel.layout` is `centered`: one bar at the bottom with the launcher and the
   icons-only task manager in the middle, the tray and the clock at the right, the apps
@@ -39,10 +36,9 @@ Files, from `templates/`, each named after the theme:
   the image's first login starts with it; the first `patina install` inside a session
   applies it too (Path A finds Plasma's stock bar there). Afterwards the panels are the
   user's: only `patina theme set <name> --layout` replaces them again
-- with the agents bundle: `~/.config/kitty/patina21-agent.conf`, a quieter kitty profile
-  from the same palette, and `~/.local/share/applications/patina21-agent.desktop`, which
-  opens the command `agent` of `defaults/settings.yaml` in it; both are removed again
-  when the bundle is not installed
+- with the agents bundle: `~/.local/share/applications/patina21-agent.desktop`, which
+  opens the command `agent` of `defaults/settings.yaml` in the agent's kitty profile;
+  removed again when the bundle is not installed
 
 Settings, through `kwriteconfig6`, each written only when it differs:
 

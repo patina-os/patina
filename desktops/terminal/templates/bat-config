@@ -1,0 +1,4 @@
+# patina21: written by `patina theme set` while this first line stays; remove it to keep
+# your own configuration. base16-256 draws with the terminal's colours, which kitty
+# takes from the theme, so bat follows every theme.
+--theme=base16-256
