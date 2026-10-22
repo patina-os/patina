@@ -24,6 +24,12 @@ QEMU, Calamares as Debian 13 ships it, branded through data):
 
 ![The patina21 installer's welcome page](docs/screenshots/installer-amd64.png)
 
+The finished desktop, as the `desktop` workflow captures it in CI (amd64, a Plasma X11
+session on a virtual framebuffer after `patina install`): the amethyst theme, the centred
+bar, and kitty with the fastfetch greeting.
+
+![The patina21 desktop with the amethyst theme](docs/screenshots/desktop-amd64.png)
+
 The screenshots are taken by CI, never edited; see `iso/README.md`.
 
 ## What it is
