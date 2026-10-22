@@ -9,12 +9,15 @@ source "$PATINA_PATH/bin/lib.sh"
 
 usage() {
   cat << EOU
-usage: patina theme list | current | set <name>
+usage: patina theme list | current | set <name> [--layout]
 
   list       the themes under themes/ (* marks the current one)
   current    the theme the last 'patina theme set' or 'patina install' applied
   set NAME   render NAME for this user's desktop and make it current. Re-running it
              changes nothing; switching back leaves nothing of the other theme behind
+  --layout   also replace this desktop's panels with the theme's layout (the centred
+             bar of defaults/settings.yaml); needs a running Plasma session. A fresh
+             login gets the layout anyway; existing panels are only touched with this
 EOU
 }
 
@@ -53,8 +56,17 @@ main() {
       current_theme || { echo "none (patina theme set <name>)"; exit 1; }
       ;;
     set)
-      [[ $# -eq 2 ]] || { usage >&2; exit 1; }
-      set_theme "$2"
+      shift
+      local name="" arg
+      for arg in "$@"; do
+        case "$arg" in
+          --layout) export PATINA_LAYOUT=1 ;;
+          -*) usage >&2; exit 1 ;;
+          *) [[ -z "$name" ]] || { usage >&2; exit 1; }; name="$arg" ;;
+        esac
+      done
+      [[ -n "$name" ]] || { usage >&2; exit 1; }
+      set_theme "$name"
       ;;
     -h | --help) usage ;;
     *)

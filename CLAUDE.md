@@ -50,6 +50,10 @@ packs. Audience: developers and privacy-minded users in the EU.
   hostnames, progress, terminals) in JetBrains Mono, both from Debian's archive. Two
   marks: the ASCII wordmark on terminals, the typeset wordmark patina²¹
   (`branding/wordmark.svg`) on screens, never both on one surface.
+  The desktop's shape is a centred bar as on Windows 11 and new windows centred at one
+  size; both are knobs in `defaults/settings.yaml`. No automatic tiling on Plasma:
+  that would need a KWin script Debian does not package; a tiling desktop is the
+  Hyprland add-on.
 - Speed: the system tuning CachyOS ships as configuration (zram, I/O schedulers, memory
   sysctls, journald and systemd limits, boot) is copied as data for every install, kept
   under `defaults/system/`; its kernel, rebuilt packages and own repository are not.

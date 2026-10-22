@@ -90,6 +90,12 @@ All notable changes to patina21 are documented here. The format follows
   profile (opencode by default, only with the agents bundle); half-length animations,
   KWin's lowest-latency policy, Baloo on file names under home only, and the Wayland
   session as the login screen's default (`defaults/system/sddm.conf.d/`).
+- The desktop's shape as data (`defaults/settings.yaml`, `windows` and `panel`): a
+  centred bar with the launcher and the task icons in the middle as on Windows 11, the
+  files, browser and terminal pinned, written as the look-and-feel package's layout
+  script so a fresh login starts with it; `patina theme set <name> --layout` replaces an
+  existing desktop's panels with it. New windows open centred, and a KWin rule gives
+  every new main window 70% of the screen at its first appearance.
 - The smoke test checks the rendered theme, that setting it again changes nothing, and
   that a copy of the theme pack renders and switches back cleanly.
 - The core commands (roadmap, Phase 1). `patina install` installs the chosen bundles
