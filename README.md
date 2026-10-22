@@ -115,7 +115,10 @@ terminal and the screens show the same one. amethyst, the first theme, a purple 
 with two abstract wallpapers, stays as an option (`patina theme set amethyst`).
 Meta plus
 one key opens the terminal (Return), the search (Space), the browser (B), the files (E)
-and, with the agent tools installed, the agent CLI in its own terminal profile (A). The
+and, with the agent tools installed, the agent CLI in its own terminal profile (A);
+Meta+K shows all of them, and Plasma's own, at a glance (`patina keys`). Themes shared
+in a repository of their own install with `patina theme install <git-url>`, as data
+only. The
 Plasma-side speed settings CachyOS is known for (lowest compositor latency, shorter
 animations, file-name-only indexing, the Wayland session) are curated defaults. So is the
 shape of the desktop: one bar with the launcher and the task icons in the centre, as on

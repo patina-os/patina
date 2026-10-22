@@ -122,11 +122,21 @@ booted_with_systemd() {
   [[ -d /run/systemd/system ]]
 }
 
-# The directory of a theme under themes/; entries starting with _ are templates.
+# Themes installed with `patina theme install`, outside the checkout.
+PATINA_THEMES="${XDG_DATA_HOME:-$HOME/.local/share}/patina21/themes"
+
+# The directory of a theme: the repository's themes/ first, then the installed ones.
+# Entries starting with _ are templates.
 theme_dir() {
-  local d="$PATINA_PATH/themes/$1"
-  [[ "$1" == [a-z]* && -f "$d/theme.yaml" ]] || return 1
-  echo "$d"
+  local d
+  [[ "$1" =~ ^[a-z0-9][a-z0-9-]*$ ]] || return 1
+  for d in "$PATINA_PATH/themes/$1" "$PATINA_THEMES/$1"; do
+    if [[ -f "$d/theme.yaml" ]]; then
+      echo "$d"
+      return
+    fi
+  done
+  return 1
 }
 
 # The theme the last `patina theme set` or `patina install` recorded; fails when none.

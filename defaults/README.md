@@ -4,8 +4,10 @@ Curated defaults as desktop-agnostic data. Nothing here is specific to Plasma; t
 renderers under `desktops/` translate it. Users keep their own overrides outside the
 repository (planned: `~/.config/patina21/`), so `git pull` never clobbers them.
 
-- `keybindings.yaml`: named actions mapped to key chords. A desktop renderer knows how to
-  bind each action (which command to launch, which window-manager function to call).
+- `keybindings.yaml`: named actions mapped to key chords, and under `names` what each
+  does in words. A desktop renderer knows how to bind each action (which command to
+  launch, which window-manager function to call); `patina keys` and Meta+K show the
+  names as the cheat sheet.
 - `settings.yaml`: the small set of knobs `patina install` applies when the user does not
   choose otherwise: default theme and desktop, Flatpak remote, fonts, the command the
   `agent` action opens, the speed settings (animation factor, compositor latency,

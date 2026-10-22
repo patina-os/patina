@@ -109,6 +109,10 @@ real Plasma desktop, which the same VM run gives.
   `agents` bundle is not installed
 - [x] `patina theme list|set|current`; `patina install` applies the default theme and
   honours `PATINA_THEME=<name>`
+- [x] themes from git: `patina theme install <git-url>|update|remove`, data only, into
+  `~/.local/share/patina21/themes/`, after Omarchy's theme installs
+- [x] a cheat sheet: `patina keys` and Meta+K, from `defaults/keybindings.yaml` and
+  Plasma's essentials as data
 - [x] curated keybindings and settings: the placeholders in `defaults/` became the real
   defaults, including the Plasma-side speed settings: KWin's lowest-latency policy, a
   halved animation factor, Baloo limited to file names under home, the Wayland session

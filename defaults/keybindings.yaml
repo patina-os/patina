@@ -15,3 +15,16 @@ actions:
   overview: Meta+Tab       # all windows and desktops at a glance
   lock-screen: Meta+L
   screenshot: Print
+  keys: Meta+K             # these keys at a glance (`patina keys`)
+# What each action does, in words, for the cheat sheet (`patina keys`, Meta+K).
+names:
+  terminal: Open a terminal
+  launcher: Search and run
+  browser: Open the web browser
+  files: Open the file manager
+  agent: Open the agent CLI (agents bundle)
+  close-window: Close the window
+  overview: Show all windows and desktops
+  lock-screen: Lock the screen
+  screenshot: Take a screenshot
+  keys: Show these keys

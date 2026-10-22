@@ -8,6 +8,14 @@ All notable changes to patina21 are documented here. The format follows
 
 ### Added
 
+- A cheat sheet: `patina keys` lists patina21's keys from `defaults/keybindings.yaml`
+  (now with a `names` map in words) and Plasma's own essentials (`cheatsheet` in
+  `desktops/plasma/actions.yaml`). The new `keys` action, Meta+K, opens it in kitty.
+- Themes from git: `patina theme install <git-url>` fetches a theme kept in a repository
+  of its own (`patina21-<name>-theme`) into `~/.local/share/patina21/themes/`, keeping
+  only data and checking the name, the palette and every value that reaches
+  configuration; `patina theme update` fetches installed themes anew, `patina theme
+  remove <name>` deletes one. `patina theme list` and the install questions show them.
 - The datum theme, the new default: graphite, the ice blue of contour lines and one
   coral accent (`base0E`), with a contour map around a survey point as its wallpaper,
   drawn once and kept as SVG artwork (CC-BY-SA-4.0). amethyst stays as an option.

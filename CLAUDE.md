@@ -191,7 +191,9 @@ Each directory's README is the authority on its file format.
 3. Keep it desktop-agnostic; Plasma-only hints go under the `plasma:` key as data.
 4. No scripts in a theme. If a theme needs code, the renderer is missing a feature: add it
    to `desktops/<desktop>/` for all themes.
-5. Validate the YAML, add a `CHANGELOG.md` line, open a pull request.
+5. Validate the YAML, add a `CHANGELOG.md` line, open a pull request. A theme kept in a
+   repository of its own (`patina21-<name>-theme`) installs with `patina theme install
+   <git-url>`, which keeps only its data (`themes/README.md`).
 
 ## How to add a base backend
 
