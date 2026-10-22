@@ -4,8 +4,9 @@ name: desktop
 description: Curated desktop apps with kitty and the developer tools
 default: true
 packages:
-  - fonts-inter          # fonts.ui of defaults/settings.yaml
-  - fonts-jetbrains-mono # fonts.monospace
+  - fonts-adobe-sourcesans3 # fonts.ui of defaults/settings.yaml
+  - fonts-jetbrains-mono # fonts.monospace, the text mark and the wallpaper labels
+  - fonts-sora           # the wordmark (branding/wordmark.svg) on the splash
   - nextcloud-desktop
   - thunderbird
   - keepassxc

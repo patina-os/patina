@@ -53,8 +53,8 @@ iso/
 
 1. Boot the image. The GRUB menu shows the theme's wallpaper and the wordmark. The live
    system starts `patina21-ui.service`: an X session on tty7 with Calamares full screen
-   in the theme's palette and fonts, the wordmark on the welcome page, the wave in the
-   sidebar, the wallpaper veiled behind every page, three still slides while it
+   in the theme's palette and fonts, the wordmark on the welcome page, the square mark in
+   the sidebar, the wallpaper veiled behind every page, three still slides while it
    installs. The console shows `branding/logo.txt`.
 2. Calamares asks what it must: time zone and keyboard (pre-filled), disk (erase is
    preselected; encryption and manual partitioning are available) and the user. The
@@ -89,13 +89,14 @@ change is built and booted before it is merged; it publishes only from a tag. To
 hand on a Debian machine of the target architecture:
 
 ```sh
-sudo apt-get install live-build debootstrap librsvg2-bin fonts-inter fonts-jetbrains-mono
+sudo apt-get install live-build debootstrap librsvg2-bin fonts-adobe-sourcesans3 \
+  fonts-jetbrains-mono fonts-sora
 sudo iso/live/build.sh amd64            # writes iso/build/live/patina21-amd64.hybrid.iso
 sudo iso/live/build.sh arm64            # on an arm64 machine
 ```
 
 `build.sh` calls `assets.sh`, which renders everything the image shows from the data:
-`branding/logo.txt` into `/etc/issue.d`, `branding/wordmark.svg` and `wave.svg` into the
+`branding/logo.txt` into `/etc/issue.d`, `branding/wordmark.svg` and `icon-small.svg` into the
 installer's branding, the default theme's wallpapers under a veil as the installer's
 background, three slides, the splash of the boot menu, and the templates under
 `live/templates/` (the Calamares stylesheet, the GRUB theme, the openbox theme) with the
@@ -125,13 +126,13 @@ files.
   boot that ends in `patina21 firstboot: done`. Calamares has no unattended mode, so
   this part is not automated; the roadmap keeps it as an open Phase 3 item. The look is
   part of this check, since the boot test skips GRUB and shows no screen: the boot menu
-  in the palette over the splash, readable; the installer's welcome page (the wave in
-  the sidebar, the wordmark on the page, the wallpaper behind, Inter), the partition
+  in the palette over the splash, readable; the installer's welcome page (the square
+  mark in the sidebar, the wordmark on the page, the wallpaper behind, Source Sans 3), the partition
   page with the manual partition editor's dialog (openbox's patina21 frame), the
   install page with the gradient progress bar and the three slides; at first boot the
   mark on tty1 and the questions; then the login screen with the theme's wallpaper,
-  the splash with the wordmark and the accent line, and the desktop in Inter and
-  JetBrains Mono, as `docs/screenshots/desktop-amd64.png` shows it.
+  the splash with the wordmark and the accent line, and the desktop in Source Sans 3
+  and JetBrains Mono, as `docs/screenshots/desktop-amd64.png` shows it.
 - A failing build or test is simply not published; Path A users are never affected.
 
 ## Screenshots

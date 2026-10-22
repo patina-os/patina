@@ -214,6 +214,12 @@ elif [[ -e "$agent_desktop" ]]; then
   changed
 fi
 
+# The cheat sheet's launcher, which the keys action (Meta+K) starts: kitty showing
+# `patina keys` until a key is pressed.
+tpl[PATINA_PATH]="$PATINA_PATH"
+render "$templates/keys.desktop" "$tmp/keys.desktop"
+put "$tmp/keys.desktop" "$data/applications/patina21-keys.desktop"
+
 finish() {
   if [[ $changes -eq 0 ]]; then
     say "nothing to do"

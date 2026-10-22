@@ -53,7 +53,7 @@ stack is in Debian 13 already: `waybar`, `fuzzel`, `swaybg`, `mako-notifier`,
 ## What it will produce from a theme and `defaults/`
 
 - `~/.config/hypr/patina21-theme.conf` with the window border (the accent fading into
-  the logo's pink), shadow, gap and group colours from the base16 palette, sourced by
+  `base0F`), shadow, gap and group colours from the base16 palette, sourced by
   the user's `hyprland.conf`
 - `~/.config/hypr/patina21-binds.conf` with the actions from `defaults/keybindings.yaml`
   translated to `bind` lines through an `actions.yaml`, the same chords as on Plasma;

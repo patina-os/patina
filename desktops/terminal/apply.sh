@@ -68,7 +68,7 @@ elif [[ -e "$config/kitty/patina21-agent.conf" ]]; then
   changed
 fi
 
-# fastfetch greets a new terminal with the mark: a gradient copy of branding/logo.txt
+# fastfetch greets a new terminal with the mark: a coloured copy of branding/logo.txt
 # (the file itself stays plain) and a configuration that points at it.
 print_logo always > "$tmp/logo.txt"
 put "$tmp/logo.txt" "$data/patina21/logo.txt"

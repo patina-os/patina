@@ -1,19 +1,23 @@
 # patina21
 
 ```text
-              __   __               ______ ____
-.-----.---.-.|  |_|__|.-----.---.-.|__    |_   |
-|  _  |  _  ||   _|  ||     |  _  ||    __|_|  |_
-|   __|___._||____|__||__|__|___._||______|______|
-|__|
-~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'~.~'~
+            █▌  ▲
+ ▄▄▟▙▖ ▄█▙▖▗█▙▄▗▄▄▗▄▟█▖ ▗▟█▄
+ ██▀▜█ ▀▀▜█▝█▛▀▝▜█▐█▛▜█ ▝▀▀█▌
+ █▌ ▐█ ▄███ █▌  ▐█▐█ ▐█ ▗▟██▌
+ █▙ ▟█▗█▌▐█ ▜▙  ▐█▐█ ▐█ ▟█ █▌
+ █▛██▛ ██▛█ ▝██ ▐█▐█ ▐█ ▐██▜▌
+ █▌
+ ▀▘
+⢄⣀⡀   ⢀⣀⡠⠤⠤⠒⠒⠒⠒⠢⠤⢄⣀⣀   ⢀⣀⣀⠤⠤⠒
+  ⠈⢉⣉⡩⠥⠔⠒⠒⠒⠒⠤⠤⣀⡀    ⠉⣉⣉⠥⠔⠒⠒⠒⠒
 ```
 
 Themes, consistency across apps, curated defaults, agent CLIs and a free-software,
 EU-sovereign app stack on top of Debian stable with Plasma. Not a distribution.
 
 **Status: pre-alpha.** `patina install` installs the app stack and the system tuning on
-Debian 13 and renders the first theme, amethyst, into Plasma's configuration (checked in
+Debian 13 and renders the default theme, datum, into Plasma's configuration (checked in
 CI containers on x86_64 and aarch64, not yet on a real desktop); the branded install is
 still to come. See the [roadmap](docs/roadmap.md).
 
@@ -25,8 +29,9 @@ QEMU, Calamares as Debian 13 ships it, branded through data):
 ![The patina21 installer's welcome page](docs/screenshots/installer-amd64.png)
 
 The finished desktop, as the `desktop` workflow captures it in CI (amd64, a Plasma X11
-session on a virtual framebuffer after `patina install`): the amethyst theme, the centred
-bar, and kitty with the fastfetch greeting.
+session on a virtual framebuffer after `patina install`): the centred bar and kitty with
+the fastfetch greeting. This picture still shows amethyst, the first theme; the next one
+CI takes shows datum.
 
 ![The patina21 desktop with the amethyst theme](docs/screenshots/desktop-amd64.png)
 
@@ -103,12 +108,18 @@ One theme from the boot menu to the desktop, from one data file: the live image'
 menu, the installer, the login screen, the Plasma splash, Plasma itself, Konsole, kitty,
 GTK and Flatpak apps, the install questions, the terminal greeting and the tools in the
 terminal (btop, neovim, bat, fzf, lazygit, eza, starship) all take their colours from
-the theme's palette; the words are set in Inter, the details in JetBrains
-Mono. The first theme is amethyst: a purple palette on a deep aubergine background that
-continues the logo's pink-to-purple gradient, with two abstract wallpapers drawn as SVG.
+the theme's palette; the words are set in Source Sans 3, the details in
+JetBrains Mono, the wordmark in Sora. The default theme is datum: graphite, the ice blue
+of contour lines and one coral accent, with a contour map around a survey point as its
+wallpaper. The mark is text, a summit shaded with the letters of patina, so the
+terminal and the screens show the same one. amethyst, the first theme, a purple palette
+with two abstract wallpapers, stays as an option (`patina theme set amethyst`).
 Meta plus
 one key opens the terminal (Return), the search (Space), the browser (B), the files (E)
-and, with the agent tools installed, the agent CLI in its own terminal profile (A). The
+and, with the agent tools installed, the agent CLI in its own terminal profile (A);
+Meta+K shows all of them, and Plasma's own, at a glance (`patina keys`). Themes shared
+in a repository of their own install with `patina theme install <git-url>`, as data
+only. The
 Plasma-side speed settings CachyOS is known for (lowest compositor latency, shorter
 animations, file-name-only indexing, the Wayland session) are curated defaults. So is the
 shape of the desktop: one bar with the launcher and the task icons in the centre, as on

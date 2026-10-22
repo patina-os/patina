@@ -30,6 +30,7 @@ openbox
 dbus-bin
 # the layer's fonts, which the installer's stylesheet names, and Noto as glyph fallback
 # (live-build strips whole comment lines only, so no comment goes after a package name)
-fonts-inter
+fonts-adobe-sourcesans3
 fonts-jetbrains-mono
+fonts-sora
 fonts-noto-core

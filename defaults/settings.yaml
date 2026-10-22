@@ -1,10 +1,10 @@
 # Defaults applied by `patina install` unless the user picks otherwise. Keep this file
 # small: one knob per line, desktop-agnostic; the renderer under desktops/ translates.
-theme: amethyst              # a directory under themes/; PATINA_THEME=<name> overrides
+theme: datum                 # a directory under themes/; PATINA_THEME=<name> overrides
 desktop: plasma              # the renderer: desktops/<desktop>/apply.sh
 flatpak_remote: https://dl.flathub.org/repo/flathub.flatpakrepo
 fonts:                       # font names only; the desktop bundle installs the packages
-  ui: Inter                  # everything the user reads
+  ui: Source Sans 3          # everything the user reads
   monospace: JetBrains Mono  # terminals and details (versions, hostnames, progress)
 agent: opencode              # what the `agent` keybinding opens (needs the agents bundle)
 # The speed settings (docs/roadmap.md, Phase 2), after what CachyOS sets on Plasma.
@@ -19,5 +19,5 @@ windows:
   size: 70                   # percent of the screen a new main window takes; 0 keeps the app's size
 panel:
   layout: centered           # centered: launcher and task icons in the middle; plasma: stock bar
-  floating: false            # false: edge to edge; true: Plasma's floating bar
+  floating: true             # true: Plasma's floating bar; false: edge to edge
   pinned: [files, browser, terminal]   # actions of keybindings.yaml pinned to the bar, in order

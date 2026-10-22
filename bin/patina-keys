@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# The cheat sheet: patina21's keys from defaults/keybindings.yaml and the desktop's own
+# essentials from desktops/<desktop>/actions.yaml, as a table. Meta+K shows it in kitty.
+set -euo pipefail
+
+# shellcheck source=bin/lib.sh
+source "$PATINA_PATH/bin/lib.sh"
+
+wait_key=0
+case "${1:-}" in
+  "") ;;
+  --wait) wait_key=1 ;;   # keep the window open until a key is pressed (Meta+K)
+  -h | --help)
+    echo "usage: patina keys [--wait]"
+    exit 0
+    ;;
+  *)
+    echo "usage: patina keys [--wait]" >&2
+    exit 1
+    ;;
+esac
+need_yq
+
+keybindings="$PATINA_PATH/defaults/keybindings.yaml"
+desktop="$(yq eval '.desktop' "$PATINA_PATH/defaults/settings.yaml")"
+actions="$PATINA_PATH/desktops/$desktop/actions.yaml"
+
+# The chords in the theme's accent on a colour terminal, plain otherwise.
+on="" off=""
+if logo_colour auto; then
+  if d="$(theme_dir "$(current_theme || yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")")"; then
+    hex="$(yq eval '.palette.base0E' "$d/theme.yaml")"
+    printf -v on '\033[1;38;2;%d;%d;%dm' "0x${hex:1:2}" "0x${hex:3:2}" "0x${hex:5:2}"
+    off=$'\033[0m'
+  fi
+fi
+
+echo
+echo "  patina21"
+# shellcheck disable=SC2016 # $a is a yq variable inside the expression, not a shell one
+while IFS=$'\t' read -r chord name; do
+  printf '  %s%-34s%s %s\n' "$on" "$chord" "$off" "$name"
+done < <(yq eval '.actions as $a | .names | to_entries | .[] | [$a[.key], .value] | @tsv' "$keybindings")
+if [[ -f "$actions" ]] && yq eval -e '.cheatsheet' "$actions" > /dev/null 2>&1; then
+  echo
+  echo "  ${desktop^}"
+  while IFS=$'\t' read -r chord name; do
+    printf '  %s%-34s%s %s\n' "$on" "$chord" "$off" "$name"
+  done < <(yq eval '.cheatsheet[] | [.chord, .name] | @tsv' "$actions")
+fi
+echo
+echo "  Change them: defaults/keybindings.yaml, then 'patina theme set <theme>'"
+if [[ $wait_key -eq 1 ]]; then
+  read -rsn1 -p "  Press any key to close."
+fi

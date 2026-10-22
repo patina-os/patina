@@ -39,6 +39,11 @@ Files, from `templates/`, each named after the theme:
 - with the agents bundle: `~/.local/share/applications/patina21-agent.desktop`, which
   opens the command `agent` of `defaults/settings.yaml` in the agent's kitty profile;
   removed again when the bundle is not installed
+- the cheat sheet's launcher, `~/.local/share/applications/patina21-keys.desktop` (from
+  `templates/keys.desktop`): kitty showing `patina keys` until a key is pressed, bound
+  to the `keys` action (Meta+K). The sheet lists the actions of
+  `defaults/keybindings.yaml` and Plasma's own chords worth knowing, kept as words under
+  `cheatsheet` in `actions.yaml`
 
 Settings, through `kwriteconfig6`, each written only when it differs:
 
@@ -55,7 +60,8 @@ Settings, through `kwriteconfig6`, each written only when it differs:
   `patina theme set` in a session
 - global shortcuts in `kglobalshortcutsrc` from `defaults/keybindings.yaml`, each action
   through `actions.yaml`: a `.desktop` file's `_launch` (kitty, KRunner, Dolphin,
-  Spectacle, the default web browser from `xdg-settings`, the agent launcher) or a KWin,
+  Spectacle, the default web browser from `xdg-settings`, the agent launcher, the cheat
+  sheet) or a KWin,
   ksmserver or plasmashell action. A service that is not installed is skipped with a
   warning; Plasma's own chords that collide are unbound (`unbind` in `actions.yaml`)
 - GTK 3 and 4 `settings.ini`: Breeze, the icon and cursor theme, the font, dark or light

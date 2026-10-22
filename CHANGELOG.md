@@ -20,6 +20,22 @@ All notable changes to patina21 are documented here. The format follows
   workspace, a `patina menu` over the system's terminal tools from Debian's archive.
   It still waits for Debian 14 (roadmap, Phase 7).
 
+- A cheat sheet: `patina keys` lists patina21's keys from `defaults/keybindings.yaml`
+  (now with a `names` map in words) and Plasma's own essentials (`cheatsheet` in
+  `desktops/plasma/actions.yaml`). The new `keys` action, Meta+K, opens it in kitty.
+- Themes from git: `patina theme install <git-url>` fetches a theme kept in a repository
+  of its own (`patina21-<name>-theme`) into `~/.local/share/patina21/themes/`, keeping
+  only data and checking the name, the palette and every value that reaches
+  configuration; `patina theme update` fetches installed themes anew, `patina theme
+  remove <name>` deletes one. `patina theme list` and the install questions show them.
+- The datum theme, the new default: graphite, the ice blue of contour lines and one
+  coral accent (`base0E`), with a contour map around a survey point as its wallpaper,
+  drawn once and kept as SVG artwork (CC-BY-SA-4.0). amethyst stays as an option.
+- `docs/design/futures.html`: the eight directions of the October 2026 redesign
+  (Perigee, Sodium, Phosphor, Nacre, Sirocco, Canopy, Cascade, Datum) with mockups,
+  palettes, type and what each would cost to ship, kept as candidates for more themes.
+- A migration for installed machines: `patina update` runs `patina install` once more,
+  which installs the new fonts and renders the theme already set again.
 - The image's boot test takes a screenshot of the installer screen through QEMU's
   monitor and the `iso` workflow uploads it with the serial log. The README shows the
   amd64 one from `docs/screenshots/`.
@@ -32,6 +48,22 @@ All notable changes to patina21 are documented here. The format follows
 
 ### Changed
 
+- The brand is redesigned, as a mark and a name. The mark is text: a summit drawn as
+  contour rings shaded with the letters of patina (i, t, n, a), the word as the summit
+  line and the survey point ▲ in coral (`branding/logo.txt`, 23x9, ASCII plus that one
+  character). fastfetch, the console and the first-boot screen show it, in the brand's
+  colours where the terminal has them. The name is `branding/wordmark.txt`: patina in
+  block letters traced from Sora with the ▲ as the dot of the i and two contour lines in
+  braille, shown by `patina help`, the install questions and the README.
+  `branding/wordmark.svg` sets the mark beside patina²¹ in Sora ExtraBold for screens;
+  `icon.svg` is the mark as a large icon and `icon-small.svg` as dots, which replaces
+  `wave.svg` as the square mark.
+- The interface font is Source Sans 3 instead of Inter (`fonts-adobe-sourcesans3`), in
+  Plasma, GTK, the login screen, the installer and its window manager; the wordmark
+  needs Sora (`fonts-sora`). Both join the desktop bundle, the live image and the
+  packages the installer adds. The bar floats by default (`panel.floating: true`).
+- The smoke test finds the default theme's wallpaper by name instead of expecting
+  amethyst's, and the lint check for copies of the mark leaves `docs/design/` alone.
 - The roadmap is renumbered into seven phases in the order they are finished: core
   commands, theming, the branded install (TUI, first boot, image), ARM hardware, the 0.1
   release, Debian 14, the Hyprland add-on. Two open decisions are settled: the TUI helper

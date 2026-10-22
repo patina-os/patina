@@ -13,16 +13,18 @@ Verify this page against Debian's current trademark policy before the first imag
 
 ## The logo
 
-Two marks, each with one copy under `branding/`. The ASCII wordmark in `logo.txt`, the
-name with the wave of patina under it, is plain text so that it looks the same in a
-README, in `patina help`, on the live image's console, on the first-boot screen, in the
-install TUI and in the fastfetch greeting of a new terminal. The typeset wordmark in
-`wordmark.svg`, patina²¹ in Inter with the wave under it (and `wave.svg`, the wave alone,
-as a square icon), is what screens show: the live image's boot menu, the installer, the
-login screen and the Plasma splash. Never both on one surface. `branding/README.md` has
-the rules for changing either. There is no bitmap logo: the image build and the desktop
-renderer copy or rasterise the SVG. Both marks are ours only, nothing that borrows from
-Debian's or KDE's.
+The mark is text: a summit drawn as contour rings with the letters of patina, i at the
+foot, then t, n and a, the word itself as the summit line and the survey point ▲ beside
+it. `logo.txt` holds it as plain text for the fastfetch greeting, the live image's and
+the installed system's console and the first-boot screen. `wordmark.txt` holds the name
+in block letters for `patina help`, the install questions and the README.
+`wordmark.svg` sets the mark's characters in JetBrains Mono beside patina²¹ in Sora
+ExtraBold; that lockup is what screens show: the live image's boot menu, the installer,
+the login screen and the Plasma splash. `icon.svg` is the mark in a square for large
+icons, `icon-small.svg` the mark as dots for small ones (the installer's sidebar, a
+window icon). `branding/README.md` has the rules for changing them. There is no bitmap
+logo: the image build and the desktop renderer copy or rasterise the SVG. The marks are
+ours only, nothing that borrows from Debian's or KDE's.
 
 Wording next to the logo: "a polish layer for KDE Plasma on Debian" or "based on
 Debian". Never the swirl, never "Debian" in a larger type than our own name.

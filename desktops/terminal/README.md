@@ -23,13 +23,13 @@ neovim.
 - with the agents bundle: `~/.config/kitty/patina21-agent.conf`, a quieter kitty profile
   from the same palette for the agent CLI; removed again when the bundle is not
   installed
-- the fastfetch greeting: `~/.local/share/patina21/logo.txt`, the ASCII mark with its
-  gradient (`print_logo always`), and `~/.config/fastfetch/config.jsonc` pointing at it
-  with the theme's accent for the labels
-- btop: `~/.config/btop/themes/patina21-<theme>.theme`, its gradients running from blue
-  through the accent to the logo's pink, made `color_theme` in `btop.conf` while that
-  is btop's `Default` or a patina21 theme; a theme the user picked stays. btop rewrites
-  `btop.conf` itself and keeps the key
+- the fastfetch greeting: `~/.local/share/patina21/logo.txt`, the text mark in the
+  brand's colours (`print_logo always`), and `~/.config/fastfetch/config.jsonc`
+  pointing at it with the theme's accent for the labels
+- btop: `~/.config/btop/themes/patina21-<theme>.theme`, its load gradients running
+  from `base0D` through the accent (`base0E`) to `base0F`, made `color_theme` in
+  `btop.conf` while that is btop's `Default` or a patina21 theme; a theme the user
+  picked stays. btop rewrites `btop.conf` itself and keeps the key
 - neovim: the colour scheme `~/.config/nvim/colors/patina21-<theme>.lua` (editor, syntax
   after the base16 styling guide, tree-sitter, diagnostics, diffs, the built-in
   terminal's colours) and `~/.config/nvim/plugin/patina21.lua`, which turns it on only

@@ -1,7 +1,9 @@
 # amethyst
 
 The first patina21 theme: a purple signature palette on a deep aubergine background,
-continuing the logo's pink-to-purple gradient. Dark variant.
+continuing the pink-to-purple gradient of the first logo. Since the redesign of October
+2026 it is an option beside the default, datum (`patina theme set amethyst`). Dark
+variant.
 
 ## Palette
 

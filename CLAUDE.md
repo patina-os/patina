@@ -40,20 +40,28 @@ packs. Audience: developers and privacy-minded users in the EU.
   bundle. Agent tools (Claude Code, Codex CLI, opencode, Claude Desktop, Ollama) are an
   opt-in bundle because most of them are proprietary; Ollama is the local backend they
   point at, and their desktop integration is a shortcut and a terminal profile, as data.
-- Look: the first theme is amethyst, purple, continuing the logo's pink-to-purple
-  gradient, with generated abstract artwork (SVG in the theme, rendered at apply time)
-  licensed with the repository. No third-party wallpapers. The `agent` shortcut opens
-  opencode by default (`defaults/settings.yaml`), the free one of the agent CLIs. One
-  look from the boot menu to the desktop: the installer, the boot menu, the login
-  screen and the Plasma splash take their colours from the default theme's palette at
-  build or apply time, never by hand; the words are set in Inter, details (versions,
-  hostnames, progress, terminals) in JetBrains Mono, both from Debian's archive. Two
-  marks: the ASCII wordmark on terminals, the typeset wordmark patina²¹
-  (`branding/wordmark.svg`) on screens, never both on one surface.
-  The desktop's shape is a centred bar as on Windows 11 and new windows centred at one
-  size; both are knobs in `defaults/settings.yaml`. No automatic tiling on Plasma:
-  that would need a KWin script Debian does not package; a tiling desktop is the
-  Hyprland add-on.
+- Look: the default theme is datum, chosen in the October 2026 redesign
+  (`docs/design/futures.html` keeps the eight directions it came from): graphite, the
+  ice blue of contour lines and one coral accent, with a contour map as artwork (SVG
+  in the theme, rendered at apply time) licensed with the repository. amethyst, the
+  first theme, stays as an option. No third-party wallpapers. Artwork drawn by a
+  script is committed as the SVG it produced, never with the script. The `agent`
+  shortcut opens opencode by default (`defaults/settings.yaml`), the free one of the
+  agent CLIs. One look from the boot menu to the desktop: the installer, the boot
+  menu, the login screen and the Plasma splash take their colours from the default
+  theme's palette at build or apply time, never by hand; the words are set in Source
+  Sans 3, details (versions, hostnames, progress, terminals) in JetBrains Mono, the
+  wordmark in Sora, all from Debian's archive. The mark is text: a summit drawn as
+  contour rings with the letters of patina (i, t, n, a), the word itself as the summit
+  line and the survey point ▲. `branding/logo.txt` holds it for fastfetch and the
+  console, `branding/wordmark.txt` the name in block letters for `patina help`, the
+  install questions and the README; `branding/wordmark.svg` sets the mark beside
+  patina²¹ for screens, `icon.svg` and `icon-small.svg` are the mark as large and
+  small icons. The brand's colours (slate, ice, white, coral) do not follow a theme.
+  The desktop's shape is a floating centred bar as on Windows 11 and new windows
+  centred at one size; all are knobs in `defaults/settings.yaml`. No automatic tiling
+  on Plasma: that would need a KWin script Debian does not package; a tiling desktop
+  is the Hyprland add-on.
 - Speed: the system tuning CachyOS ships as configuration (zram, I/O schedulers, memory
   sysctls, journald and systemd limits, boot) is copied as data for every install, kept
   under `defaults/system/`; its kernel, rebuilt packages and own repository are not.
@@ -103,8 +111,10 @@ packs. Audience: developers and privacy-minded users in the EU.
 - add abstraction layers, plugin systems, frameworks or a second language for the tooling
 - write "Debian patina21", "patina21 Linux" or `Patina21`
 - paste the logo into a script or redraw it; `branding/logo.txt` is the only copy of the
-  text mark and `branding/wordmark.svg` the only copy of the typeset one; scripts print
-  or copy them (`print_logo` in `lib.sh`, the image build and the renderer copy the SVG)
+  mark, `branding/wordmark.txt` of the text wordmark and `branding/wordmark.svg` of the
+  typeset one (it and `icon.svg` repeat the mark's characters, changed together with
+  `logo.txt`); scripts print or copy them (`print_logo` and `print_wordmark` in
+  `lib.sh`, the image build and the renderer copy the SVG)
 - explain the 21
 
 ## Repository map
@@ -112,7 +122,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 | Directory | Holds |
 |---|---|
 | `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash; `lib.sh` holds the few functions they share, among them the theme loader and template filler the renderers and the image build use |
-| `branding/` | the marks as data: `logo.txt` is the ASCII wordmark scripts print, `wordmark.svg` and `wave.svg` the marks screens show |
+| `branding/` | the marks as data: `logo.txt` (the mark) and `wordmark.txt` (the name in block letters) are what scripts print, `wordmark.svg` (the mark typeset beside patina²¹), `icon.svg` and `icon-small.svg` what screens show |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
 | `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `system/` the system tuning files |
 | `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, one `apply.sh`) and the headless session the desktop workflow screenshots (`screenshot.sh`); `plasma/` first; `terminal/` renders the terminal and its tools for every desktop |
@@ -120,7 +130,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `migrations/` | timestamped, idempotent update steps |
 | `devices/` | the only place for device- or architecture-specific files |
 | `iso/` | live-build configuration, Calamares configuration and branding, the templates `iso/live/assets.sh` renders from the theme (installer artwork and stylesheet, boot menu theme), first-boot unit, QEMU boot test (Phase 3) |
-| `docs/` | roadmap, branding and trademark rules, tested hardware; `screenshots/` holds the installer and desktop screenshots the README shows, taken by the image's boot test and by the desktop workflow's headless Plasma session, refreshed per release |
+| `docs/` | roadmap, branding and trademark rules, tested hardware; `design/` keeps design explorations as self-contained HTML pages (`futures.html`: the eight directions of the 2026 redesign, candidates for more themes); `screenshots/` holds the installer and desktop screenshots the README shows, taken by the image's boot test and by the desktop workflow's headless Plasma session, refreshed per release |
 | `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), desktop (Path A plus a Plasma X11 session on a virtual framebuffer, screenshot), iso (build, boot test, release) |
 
 Each directory's README is the authority on its file format.
@@ -182,7 +192,9 @@ Each directory's README is the authority on its file format.
 3. Keep it desktop-agnostic; Plasma-only hints go under the `plasma:` key as data.
 4. No scripts in a theme. If a theme needs code, the renderer is missing a feature: add it
    to `desktops/<desktop>/` for all themes.
-5. Validate the YAML, add a `CHANGELOG.md` line, open a pull request.
+5. Validate the YAML, add a `CHANGELOG.md` line, open a pull request. A theme kept in a
+   repository of its own (`patina21-<name>-theme`) installs with `patina theme install
+   <git-url>`, which keeps only its data (`themes/README.md`).
 
 ## How to add a base backend
 

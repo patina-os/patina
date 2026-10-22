@@ -28,6 +28,10 @@ actions:
     # the action is skipped.
     service: patina21-agent.desktop
     label: Agent
+  keys:
+    # apply.sh writes this desktop file: kitty showing `patina keys`.
+    service: patina21-keys.desktop
+    label: patina21 keys
   close-window:
     component: kwin
     key: Window Close
@@ -54,3 +58,22 @@ unbind:
     key: next activity
     default: Meta+Tab
     label: Walk through activities
+
+# Plasma's own chords worth knowing, for the cheat sheet (`patina keys`, Meta+K): the
+# defaults of Plasma 6 that patina21 leaves as they are. Words only; nothing is bound here.
+cheatsheet:
+  - {chord: "Meta", name: "Open the application menu"}
+  - {chord: "Alt+Tab", name: "Switch between windows"}
+  - {chord: "Meta+Left / Meta+Right", name: "Tile the window to the left or right half"}
+  - {chord: "Meta+Up / Meta+Down", name: "Tile the window to the top or bottom half"}
+  - {chord: "Meta+PgUp", name: "Maximise the window"}
+  - {chord: "Meta+PgDown", name: "Minimise the window"}
+  - {chord: "Meta+T", name: "Edit the window tiles"}
+  - {chord: "Meta+D", name: "Peek at the desktop"}
+  - {chord: "Ctrl+Meta+Left / Ctrl+Meta+Right", name: "Switch to the desktop on the left or right"}
+  - {chord: "Meta+V", name: "Clipboard history"}
+  - {chord: "Meta+.", name: "Emoji"}
+  - {chord: "Meta+P", name: "Switch displays"}
+  - {chord: "Meta+Shift+Print", name: "Screenshot of a region"}
+  - {chord: "Ctrl+Esc", name: "System monitor"}
+  - {chord: "Ctrl+Alt+Del", name: "Log out, restart or shut down"}

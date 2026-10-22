@@ -73,12 +73,14 @@ jobs:
         # renderer takes it without a code change, and switching back removes it.
         run: |
           theme="$(yq eval '.theme' defaults/settings.yaml)"
+          wallpaper="$(basename "$(yq eval '.wallpapers[0]' "themes/$theme/theme.yaml")")"
+          wallpaper="${wallpaper%.*}"
           data="$HOME/.local/share"
           scheme() { kreadconfig6 --file kdeglobals --group General --key ColorScheme; }
           [[ "$(bin/patina theme current)" == "$theme" ]]
           bin/patina theme list
           test -s "$data/color-schemes/patina21-$theme.colors"
-          test -s "$data/wallpapers/patina21-$theme-drift/contents/images/3840x2160.png"
+          test -s "$data/wallpapers/patina21-$theme-$wallpaper/contents/images/3840x2160.png"
           test -s "$data/plasma/look-and-feel/org.patina21.$theme/contents/defaults"
           grep -q 'org.kde.plasma.icontasks' \
             "$data/plasma/look-and-feel/org.patina21.$theme/contents/layouts/org.kde.plasma.desktop-layout.js"
@@ -100,7 +102,7 @@ jobs:
           bin/patina theme set "$theme"
           rm -r themes/zz-copy
           test ! -e "$data/color-schemes/patina21-zz-copy.colors"
-          test ! -e "$data/wallpapers/patina21-zz-copy-drift"
+          test ! -e "$data/wallpapers/patina21-zz-copy-$wallpaper"
           test ! -e "$HOME/.config/nvim/colors/patina21-zz-copy.lua"
           [[ "$(scheme)" == "patina21-$theme" ]]
       - name: The terminal and its tools rendered
@@ -136,6 +138,39 @@ jobs:
           [[ "$ksplash" == "org.patina21.$theme" ]]
           test -s "$data/patina21/logo.txt"
           test -s "$HOME/.config/fastfetch/config.jsonc"
+      - name: The cheat sheet, and a theme installed from git
+        # A local repository stands in for a community theme: install keeps only its
+        # data, set renders it, remove refuses the current theme and deletes it after.
+        run: |
+          data="$HOME/.local/share"
+          theme="$(yq eval '.theme' defaults/settings.yaml)"
+          # Output is captured before grep: grep -q stops at the first match, and with
+          # pipefail the writer's SIGPIPE would fail the step.
+          out="$(bin/patina keys)"
+          grep -q 'Show these keys' <<< "$out"
+          test -s "$data/applications/patina21-keys.desktop"
+          launch="$(kreadconfig6 --file kglobalshortcutsrc --group services \
+            --group patina21-keys.desktop --key _launch)"
+          [[ "$launch" == Meta+K,* ]]
+          repo="$(mktemp -d)/patina21-dusk-theme"
+          cp -r themes/amethyst "$repo"
+          sed -i 's/^name: amethyst/name: dusk/' "$repo/theme.yaml"
+          echo 'echo not data' > "$repo/run.sh"
+          git -C "$repo" init -q
+          git -C "$repo" add -A
+          git -C "$repo" -c user.email=ci@patina21 -c user.name=ci commit -qm theme
+          bin/patina theme install "file://$repo"
+          test -s "$data/patina21/themes/dusk/theme.yaml"
+          test ! -e "$data/patina21/themes/dusk/run.sh"
+          out="$(bin/patina theme list)"
+          grep -q '^  dusk .*installed' <<< "$out"
+          out="$(bin/patina theme install "file://$repo")"
+          grep -q 'up to date' <<< "$out"
+          bin/patina theme set dusk
+          if bin/patina theme remove dusk; then exit 1; fi
+          bin/patina theme set "$theme"
+          bin/patina theme remove dusk
+          test ! -e "$data/patina21/themes/dusk"
       - name: The image's assets render from the theme
         # What iso/live/build.sh renders before lb, without root or live-build: the
         # installer's marks, artwork and stylesheet, the boot menu's theme and splash.

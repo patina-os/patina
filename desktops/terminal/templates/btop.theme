@@ -18,7 +18,7 @@ theme[mem_box]="${BASE0B}"
 theme[net_box]="${BASE0D}"
 theme[proc_box]="${BASE0F}"
 
-# Gradients: the load ones run from blue through the accent to the logo's pink.
+# Gradients: the load ones run from base0D through the accent (base0E) to base0F.
 theme[cpu_start]="${BASE0D}"
 theme[cpu_mid]="${BASE0E}"
 theme[cpu_end]="${BASE0F}"
