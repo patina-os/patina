@@ -3,6 +3,9 @@
 # X session of the live image: a bare window manager and Calamares, full screen.
 set -euo pipefail
 
+# The installer's stylesheet (etc/calamares/branding/patina21/stylesheet.qss) is written
+# against Qt's Fusion style.
+export QT_STYLE_OVERRIDE=Fusion
 openbox &
 dbus-run-session -- calamares &
 session_pid=$!

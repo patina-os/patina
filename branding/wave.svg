@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The patina wave alone, square, for places that show a small square mark (the
+     installer's sidebar, a window icon). Same gradient as wordmark.svg. GPL-3.0-or-later. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+  <defs>
+    <linearGradient id="patina" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff5fd0"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <path d="M 8 40 q 8 -8 16 0 t 16 0 t 16 0 t 16 0" fill="none" stroke="url(#patina)"
+    stroke-width="4" stroke-linecap="round"/>
+</svg>

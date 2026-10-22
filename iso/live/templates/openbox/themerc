@@ -1,0 +1,68 @@
+# Openbox theme for the dialogs Calamares opens on the live image (the partition editor,
+# message boxes): a flat frame in the default theme's palette. Rendered by
+# iso/live/assets.sh; root/.config/openbox/rc.xml selects it.
+border.width: 1
+padding.width: 8
+padding.height: 6
+window.handle.width: 0
+window.client.padding.width: 0
+window.label.text.justify: left
+
+window.active.border.color: ${BASE0E}
+window.inactive.border.color: ${BASE02}
+window.active.title.separator.color: ${BASE01}
+window.inactive.title.separator.color: ${BASE01}
+
+window.active.title.bg: flat solid
+window.active.title.bg.color: ${BASE01}
+window.active.label.bg: parentrelative
+window.active.label.text.color: ${BASE05}
+window.inactive.title.bg: flat solid
+window.inactive.title.bg.color: ${BASE01}
+window.inactive.label.bg: parentrelative
+window.inactive.label.text.color: ${BASE04}
+
+window.active.handle.bg: flat solid
+window.active.handle.bg.color: ${BASE01}
+window.inactive.handle.bg: flat solid
+window.inactive.handle.bg.color: ${BASE01}
+window.active.grip.bg: flat solid
+window.active.grip.bg.color: ${BASE01}
+window.inactive.grip.bg: flat solid
+window.inactive.grip.bg.color: ${BASE01}
+
+window.active.button.unpressed.bg: parentrelative
+window.active.button.unpressed.image.color: ${BASE04}
+window.active.button.hover.bg: parentrelative
+window.active.button.hover.image.color: ${BASE0F}
+window.active.button.pressed.bg: parentrelative
+window.active.button.pressed.image.color: ${BASE0E}
+window.active.button.disabled.bg: parentrelative
+window.active.button.disabled.image.color: ${BASE03}
+window.inactive.button.unpressed.bg: parentrelative
+window.inactive.button.unpressed.image.color: ${BASE03}
+window.inactive.button.hover.bg: parentrelative
+window.inactive.button.hover.image.color: ${BASE0F}
+window.inactive.button.pressed.bg: parentrelative
+window.inactive.button.pressed.image.color: ${BASE0E}
+window.inactive.button.disabled.bg: parentrelative
+window.inactive.button.disabled.image.color: ${BASE02}
+
+menu.border.width: 1
+menu.border.color: ${BASE0E}
+menu.title.bg: flat solid
+menu.title.bg.color: ${BASE01}
+menu.title.text.color: ${BASE05}
+menu.items.bg: flat solid
+menu.items.bg.color: ${BASE00}
+menu.items.text.color: ${BASE05}
+menu.items.disabled.text.color: ${BASE03}
+menu.items.active.bg: flat solid
+menu.items.active.bg.color: ${BASE0E}
+menu.items.active.text.color: ${BASE00}
+
+osd.border.width: 1
+osd.border.color: ${BASE0E}
+osd.bg: flat solid
+osd.bg.color: ${BASE00}
+osd.label.text.color: ${BASE05}

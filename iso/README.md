@@ -28,11 +28,19 @@ iso/
     etc/calamares/modules/*.conf       one file per step; packages.conf is the list the
                             installer fetches from Debian's mirrors (Plasma and the base
                             bundle) and the live tooling it removes afterwards
-    etc/calamares/branding/patina21/   strings and colours; logo.svg is generated
+    etc/calamares/branding/patina21/   the strings; the marks, artwork, stylesheet and
+                            colours next to them are rendered by assets.sh
     etc/systemd/system/patina21-ui.service  the installer screen (X, openbox, Calamares)
     root/.xinitrc                      that session
+    root/.config/openbox/rc.xml        openbox with the patina21 theme for the dialogs
+  live/templates/           what assets.sh fills from the theme's palette and the fonts:
+                            calamares/ (stylesheet.qss, the wallpaper and the slides as
+                            SVG compositions), grub/ (theme.txt, splash.svg), openbox/
+  live/assets.sh            renders the above plus branding/ into a build directory: the
+                            console mark, the installer's files, the boot menu's theme
+                            and splash; no root, so the smoke test runs it too
   live/build.sh             assembles iso/build/live/ (gitignored) from the above plus
-                            branding/logo.txt and firstboot/, then runs lb
+                            assets.sh's output and firstboot/, then runs lb
   firstboot/                the systemd unit and script that run Path A on first boot;
                             build.sh puts them into the image, Calamares enables the unit
   test/boot-test.sh         the automated release gate: the image boots to the installer;
@@ -43,8 +51,11 @@ iso/
 
 ## How an install works
 
-1. Boot the image. The live system starts `patina21-ui.service`: an X session on tty7
-   with Calamares full screen, branded patina21. The console shows `branding/logo.txt`.
+1. Boot the image. The GRUB menu shows the theme's wallpaper and the wordmark. The live
+   system starts `patina21-ui.service`: an X session on tty7 with Calamares full screen
+   in the theme's palette and fonts, the wordmark on the welcome page, the wave in the
+   sidebar, the wallpaper veiled behind every page, three still slides while it
+   installs. The console shows `branding/logo.txt`.
 2. Calamares asks what it must: time zone and keyboard (pre-filled), disk (erase is
    preselected; encryption and manual partitioning are available) and the user. The
    summary page is the last look before anything is written.
@@ -55,7 +66,8 @@ iso/
    Debian's signed shim.
 4. First boot: the service takes tty1 before the login screen, clones this repository
    into the user's `~/.local/share/patina21`, links `~/.local/bin/patina` and runs
-   `patina install`, which asks the remaining question, the theme. Then it writes
+   `patina install`, which asks the remaining questions on tty1 (the theme and the app
+   bundles, with `gum`; `/etc/patina21/firstboot.env` can answer them). Then it writes
    `/var/lib/patina21/firstboot-done` and never runs again. A failed clone or install
    prints the Path A command to run by hand and still marks the boot done, so a machine
    never loops on first boot.
@@ -77,14 +89,22 @@ change is built and booted before it is merged; it publishes only from a tag. To
 hand on a Debian machine of the target architecture:
 
 ```sh
-sudo apt-get install live-build debootstrap
+sudo apt-get install live-build debootstrap librsvg2-bin fonts-inter fonts-jetbrains-mono
 sudo iso/live/build.sh amd64            # writes iso/build/live/patina21-amd64.hybrid.iso
 sudo iso/live/build.sh arm64            # on an arm64 machine
 ```
 
-`build.sh` renders `branding/logo.txt` into `/etc/issue.d` and into the installer's
-`logo.svg`, and fills the version into `branding.desc` with `yq`, so nothing generated
-is committed and the logo keeps its single copy.
+`build.sh` calls `assets.sh`, which renders everything the image shows from the data:
+`branding/logo.txt` into `/etc/issue.d`, `branding/wordmark.svg` and `wave.svg` into the
+installer's branding, the default theme's wallpapers under a veil as the installer's
+background, three slides, the splash of the boot menu, and the templates under
+`live/templates/` (the Calamares stylesheet, the GRUB theme, the openbox theme) with the
+palette of `themes/<default>/theme.yaml` and the fonts of `defaults/settings.yaml`,
+plus the version and the sidebar colours into `branding.desc` with `yq`. Nothing
+generated is committed, no colour is typed by hand, and the marks keep their single
+copies. To see the output without a build: copy `iso/live/config` somewhere and run
+`iso/live/assets.sh <that directory>`; the smoke workflow does the same and checks the
+files.
 
 ## The release gate
 
@@ -103,9 +123,16 @@ is committed and the logo keeps its single copy.
   artifact. A missing screenshot is reported, not a failure: the gate is the boot.
 - Manual, once per release: one real install in a VM through the installer, then a first
   boot that ends in `patina21 firstboot: done`. Calamares has no unattended mode, so
-  this part is not automated; the roadmap keeps it as an open Phase 3 item. That run
-  also takes the screenshot of the finished desktop (`docs/screenshots/`, from Phase 2
-  on, once there is a theme to show).
+  this part is not automated; the roadmap keeps it as an open Phase 3 item. The look is
+  part of this check, since the boot test skips GRUB and shows no screen: the boot menu
+  in the palette over the splash, readable; the installer's welcome page (the wave in
+  the sidebar, the wordmark on the page, the wallpaper behind, Inter), the partition
+  page with the manual partition editor's dialog (openbox's patina21 frame), the
+  install page with the gradient progress bar and the three slides; at first boot the
+  mark on tty1 and the questions; then the login screen with the theme's wallpaper,
+  the splash with the wordmark and the accent line, and the desktop in Inter and
+  JetBrains Mono. That run also takes the screenshot of the
+  finished desktop for `docs/screenshots/`.
 - A failing build or test is simply not published; Path A users are never affected.
 
 ## Screenshots
@@ -140,9 +167,6 @@ are the one generated thing committed, refreshed for every release, never edited
   `live/initrd.img-<version>`; the boot test finds them by pattern.
 - agetty treats backslashes in `/etc/issue` as escape sequences; `build.sh` doubles them
   in the console copy of the logo.
-- Qt's SVG renderer, which draws the installer's logo, misreads percentage sizes: the
-  generated `logo.svg` uses absolute ones (the first screenshot showed a background
-  square that stopped short of the text).
 - live-build's own firmware detection (`--firmware-chroot`, on by default) and the
   `firmware-linux` metapackage each pull Debian's whole non-free firmware set, over 700
   MiB of it for network cards no laptop has, and made the first image 1.2 GB. With the
@@ -151,6 +175,13 @@ are the one generated thing committed, refreshed for every release, never edited
   installed system gets the full firmware set from `modules/packages.conf`.
 
 ## Still to verify
+
+- The look on a screen, listed under the release gate above: Calamares scales
+  `logo-square.svg` to 80x80 and `logo.svg` on the welcome page; `productWallpaper`
+  tiles on screens larger than 1920x1080 (if it looks wrong, the veiled wallpaper goes
+  and `#mainApp`'s background stays); the stylesheet over Fusion on Calamares' own
+  widgets (the partition bars keep Calamares' colours by design); GRUB's `crop` scaling
+  of the splash at live-build's 800x600 mode.
 
 - The `packages` module needs working DNS inside the target; Calamares' `mount` module
   binds `/run` and `/etc/resolv.conf` on Debian's own live images, so it should here.

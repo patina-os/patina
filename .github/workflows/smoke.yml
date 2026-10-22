@@ -1,9 +1,9 @@
 name: smoke
 
-# Runs the patina21 entry point inside a stock Debian 13 container on both architectures
-# the layer targets, and checks that every package the manifest, the devices and the image name
-# exists in Debian's archive. This job grows into the Path A bootstrap test
-# (docs/roadmap.md, Phase 1) once `patina install` exists.
+# Path A in a stock Debian 13 container on both architectures the layer targets:
+# `patina install` unattended, twice (the second run must change nothing), then
+# `patina doctor`. Also checks that every package the manifest, the devices and the
+# image name exists in Debian's archive.
 
 on:
   push:
@@ -28,20 +28,20 @@ jobs:
             runner: ubuntu-24.04-arm
             deb_arch: arm64
     runs-on: ${{ matrix.runner }}
-    container: debian:13
+    timeout-minutes: 90
+    container:
+      image: debian:13
+      # flatpak runs its post-install triggers in a bubblewrap sandbox, which needs
+      # namespaces the default container profile forbids.
+      options: --privileged
     steps:
-      - name: Install what checkout and the smoke test need
+      - name: Install what Path A starts from
+        # The README asks for git and curl; a stock Debian desktop has them, the bare
+        # container does not. A Plasma desktop also has kwriteconfig6 (every KDE app
+        # depends on it), which the theme renderer writes settings with.
         run: |
           apt-get update -q
-          apt-get install -y -q git ca-certificates curl
-      - name: Install the Go yq the way manifest/upstream.yaml describes
-        # Debian's yq package is the Python jq wrapper; the data format needs the Go one.
-        env:
-          YQ_URL: https://github.com/mikefarah/yq/releases/latest/download
-        run: |
-          curl -fsSL --retry 4 -o /usr/local/bin/yq "$YQ_URL/yq_linux_${{ matrix.deb_arch }}"
-          chmod +x /usr/local/bin/yq
-          yq --version
+          apt-get install -y -q git ca-certificates curl libkf6config-bin
       - uses: actions/checkout@v5
       - name: Show the base
         run: |
@@ -52,14 +52,95 @@ jobs:
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           bin/patina version
           bin/patina help
-          set +e
-          bin/patina install
-          rc=$?
-          set -e
-          test "$rc" -eq 2
+          bin/patina install --list
+      - name: patina install, first run
+        # As root: the backend's sudo is dropped; curl, flatpak and the rest come from
+        # the base bundle; yq is fetched by the installer itself.
+        run: |
+          bin/patina install --unattended
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: patina install, second run changes nothing
+        run: |
+          bin/patina install --unattended | tee second-run.txt
+          grep -q 'patina: nothing to do' second-run.txt
+      - name: patina doctor reports clean
+        run: |
+          bin/patina doctor
+          bin/patina migrate --list
+      - name: The theme rendered and switches without leftovers
+        # `patina install` applied the default theme; setting it again changes nothing.
+        # A copy of it under another name stands in for a second theme pack: the
+        # renderer takes it without a code change, and switching back removes it.
+        run: |
+          theme="$(yq eval '.theme' defaults/settings.yaml)"
+          data="$HOME/.local/share"
+          scheme() { kreadconfig6 --file kdeglobals --group General --key ColorScheme; }
+          [[ "$(bin/patina theme current)" == "$theme" ]]
+          bin/patina theme list
+          test -s "$data/color-schemes/patina21-$theme.colors"
+          test -s "$data/wallpapers/patina21-$theme-drift/contents/images/3840x2160.png"
+          test -s "$data/plasma/look-and-feel/org.patina21.$theme/contents/defaults"
+          [[ "$(scheme)" == "patina21-$theme" ]]
+          launch="$(kreadconfig6 --file kglobalshortcutsrc --group services \
+            --group kitty.desktop --key _launch)"
+          [[ "$launch" == Meta+Return,* ]]
+          bin/patina theme set "$theme" | tee again.txt
+          grep -q 'theme: nothing to do' again.txt
+          cp -r "themes/$theme" themes/zz-copy
+          sed -i "s/^name: $theme/name: zz-copy/" themes/zz-copy/theme.yaml
+          bin/patina theme set zz-copy
+          test -s "$data/color-schemes/patina21-zz-copy.colors"
+          test ! -e "$data/color-schemes/patina21-$theme.colors"
+          [[ "$(scheme)" == "patina21-zz-copy" ]]
+          bin/patina theme set "$theme"
+          rm -r themes/zz-copy
+          test ! -e "$data/color-schemes/patina21-zz-copy.colors"
+          test ! -e "$data/wallpapers/patina21-zz-copy-drift"
+          [[ "$(scheme)" == "patina21-$theme" ]]
+      - name: The login screen, the splash and the terminal greeting rendered
+        run: |
+          theme="$(yq eval '.theme' defaults/settings.yaml)"
+          data="$HOME/.local/share"
+          test -s /usr/local/share/patina21/login.png
+          splash="$data/plasma/look-and-feel/org.patina21.$theme/contents/splash"
+          test -s "$splash/Splash.qml"
+          test -s "$splash/images/logo.svg"
+          ! grep -q '\${' "$splash/Splash.qml"
+          ksplash="$(kreadconfig6 --file ksplashrc --group KSplash --key Theme)"
+          [[ "$ksplash" == "org.patina21.$theme" ]]
+          test -s "$data/patina21/logo.txt"
+          test -s "$HOME/.config/fastfetch/config.jsonc"
+      - name: The image's assets render from the theme
+        # What iso/live/build.sh renders before lb, without root or live-build: the
+        # installer's marks, artwork and stylesheet, the boot menu's theme and splash.
+        run: |
+          theme="$(yq eval '.theme' defaults/settings.yaml)"
+          build="$(mktemp -d)"
+          cp -r iso/live/config "$build/"
+          iso/live/assets.sh "$build"
+          b="$build/config/includes.chroot/etc/calamares/branding/patina21"
+          for f in logo.svg logo-square.svg wallpaper.png slide-1.png slide-2.png slide-3.png \
+              stylesheet.qss; do
+            test -s "$b/$f"
+          done
+          test -s "$build/config/bootloaders/grub-pc/splash.png"
+          test -s "$build/config/bootloaders/grub-pc/live-theme/theme.txt"
+          test -s "$build/config/includes.chroot/usr/share/themes/patina21/openbox-3/themerc"
+          test -s "$build/config/includes.chroot/etc/issue.d/10-patina21.issue"
+          sidebar="$(yq eval '.style.SidebarBackground' "$b/branding.desc")"
+          [[ "$sidebar" == "$(yq eval '.palette.base00' "themes/$theme/theme.yaml")" ]]
+      - name: What landed
+        run: |
+          yq --version
+          flatpak list --user --columns=application,version
+          ls -l /etc/apt/sources.list.d /etc/apt/keyrings
+          cat "$HOME/.local/state/patina21/bundles"
+          cat "$HOME/.local/state/patina21/theme"
       - name: Every YAML file parses
         run: |
-          git ls-files '*.yaml' '*.yml' '*.conf' '*.desc' | while read -r f; do
+          git ls-files '*.yaml' '*.yml' '*.conf' '*.desc' \
+            ':!defaults/system/' ':!desktops/*/templates/*' |
+          while read -r f; do
             yq eval '.' "$f" > /dev/null || { echo "invalid YAML: $f"; exit 1; }
           done
       - name: Every package the bundles, the devices and the image name exists in Debian

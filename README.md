@@ -12,7 +12,10 @@
 Themes, consistency across apps, curated defaults, agent CLIs and a free-software,
 EU-sovereign app stack on top of Debian stable with Plasma. Not a distribution.
 
-**Status: pre-alpha.** Nothing is installable yet. See the [roadmap](docs/roadmap.md).
+**Status: pre-alpha.** `patina install` installs the app stack and the system tuning on
+Debian 13 and renders the first theme, amethyst, into Plasma's configuration (checked in
+CI containers on x86_64 and aarch64, not yet on a real desktop); the branded install is
+still to come. See the [roadmap](docs/roadmap.md).
 
 ## Screenshots
 
@@ -21,8 +24,8 @@ QEMU, Calamares as Debian 13 ships it, branded through data):
 
 ![The patina21 installer's welcome page](docs/screenshots/installer-amd64.png)
 
-The desktop follows with the first theme (roadmap, Phase 2). The screenshots are taken
-by CI and by the manual install check, never edited; see `iso/README.md`.
+The desktop screenshot comes with the manual install check (roadmap, Phase 3). The
+screenshots are taken by CI and by that check, never edited; see `iso/README.md`.
 
 ## What it is
 
@@ -58,10 +61,22 @@ Two paths, one layer. If they ever diverge, Path A wins.
 
 | Path | What you do | Status |
 |---|---|---|
-| A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (a small TUI: theme, app bundles, Nextcloud, agent tools) | pre-alpha, not usable yet |
+| A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (it asks the theme and the app bundles on a terminal; flags or `--unattended` skip the questions) | pre-alpha: installs the app stack, the system tuning and the theme, checked in CI containers, not yet on a real desktop |
 | B: the patina21 image | Boot a small live image, answer the installer (disk, user, locale), get the finished desktop. Plasma and the base are downloaded from Debian's mirrors during the install; first boot runs Path A | pre-alpha: the image builds and boots to the installer in CI (x86_64 and aarch64), not released yet; the first boot waits for Path A |
 
-Updates: `patina update` runs `git pull` and then any pending migrations.
+```sh
+sudo apt install git curl
+git clone https://github.com/patina21/patina21.git ~/.local/share/patina21
+~/.local/share/patina21/bin/patina install            # the default bundles: base, desktop
+~/.local/share/patina21/bin/patina install --all      # plus the opt-in agent tools
+```
+
+`patina install --list` shows the bundles, `patina doctor` checks the result,
+`patina theme list` and `patina theme set <name>` switch the theme (`PATINA_THEME=<name>`
+picks one for the install), and `patina update` runs `git pull` and then any pending
+migrations. Put `~/.local/bin` on
+your PATH and link `patina` there (`ln -s ~/.local/share/patina21/bin/patina
+~/.local/bin/patina`).
 
 ## Supported bases
 
@@ -76,6 +91,20 @@ Updates: `patina update` runs `git pull` and then any pending migrations.
 
 The layer itself has no architecture. aarch64 is a first-class target from day one; see
 [docs/hardware.md](docs/hardware.md) for what has been tested.
+
+## The look
+
+One theme from the boot menu to the desktop, from one data file: the live image's boot
+menu, the installer, the login screen, the Plasma splash, Plasma itself, Konsole, kitty,
+GTK and Flatpak apps, the install questions and the terminal greeting all take their
+colours from the theme's palette; the words are set in Inter, the details in JetBrains
+Mono. The first theme is amethyst: a purple palette on a deep aubergine background that
+continues the logo's pink-to-purple gradient, with two abstract wallpapers drawn as SVG.
+Meta plus
+one key opens the terminal (Return), the search (Space), the browser (B), the files (E)
+and, with the agent tools installed, the agent CLI in its own terminal profile (A). The
+Plasma-side speed settings CachyOS is known for (lowest compositor latency, shorter
+animations, file-name-only indexing, the Wayland session) are curated defaults.
 
 ## The app stack
 

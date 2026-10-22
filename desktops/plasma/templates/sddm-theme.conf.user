@@ -1,0 +1,6 @@
+# patina21: the login screen's wallpaper, the current theme's first one, written by
+# `patina theme set` through the backend's sudo path; edits are overwritten.
+[General]
+type=image
+background=/usr/local/share/patina21/login.png
+fontSize=10

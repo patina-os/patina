@@ -40,8 +40,16 @@ packs. Audience: developers and privacy-minded users in the EU.
   bundle. Agent tools (Claude Code, Codex CLI, opencode, Claude Desktop, Ollama) are an
   opt-in bundle because most of them are proprietary; Ollama is the local backend they
   point at, and their desktop integration is a shortcut and a terminal profile, as data.
-- Look: the first theme is purple, continuing the logo's pink-to-purple gradient, with
-  generated abstract artwork licensed with the repository. No third-party wallpapers.
+- Look: the first theme is amethyst, purple, continuing the logo's pink-to-purple
+  gradient, with generated abstract artwork (SVG in the theme, rendered at apply time)
+  licensed with the repository. No third-party wallpapers. The `agent` shortcut opens
+  opencode by default (`defaults/settings.yaml`), the free one of the agent CLIs. One
+  look from the boot menu to the desktop: the installer, the boot menu, the login
+  screen and the Plasma splash take their colours from the default theme's palette at
+  build or apply time, never by hand; the words are set in Inter, details (versions,
+  hostnames, progress, terminals) in JetBrains Mono, both from Debian's archive. Two
+  marks: the ASCII wordmark on terminals, the typeset wordmark patina²¹
+  (`branding/wordmark.svg`) on screens, never both on one surface.
 - Speed: the system tuning CachyOS ships as configuration (zram, I/O schedulers, memory
   sysctls, journald and systemd limits, boot) is copied as data for every install, kept
   under `defaults/system/`; its kernel, rebuilt packages and own repository are not.
@@ -90,23 +98,24 @@ packs. Audience: developers and privacy-minded users in the EU.
   line in `manifest/` and a reason in the commit message
 - add abstraction layers, plugin systems, frameworks or a second language for the tooling
 - write "Debian patina21", "patina21 Linux" or `Patina21`
-- paste the logo into a script or redraw it; `branding/logo.txt` is the only copy and
-  scripts `cat` it (the image build generates its copies from it)
+- paste the logo into a script or redraw it; `branding/logo.txt` is the only copy of the
+  text mark and `branding/wordmark.svg` the only copy of the typeset one; scripts print
+  or copy them (`print_logo` in `lib.sh`, the image build and the renderer copy the SVG)
 - explain the 21
 
 ## Repository map
 
 | Directory | Holds |
 |---|---|
-| `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash |
-| `branding/` | the marks as data: `logo.txt` is the ASCII wordmark scripts print |
+| `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash; `lib.sh` holds the few functions they share, among them the theme loader and template filler the renderers and the image build use |
+| `branding/` | the marks as data: `logo.txt` is the ASCII wordmark scripts print, `wordmark.svg` and `wave.svg` the marks screens show |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
-| `defaults/` | desktop-agnostic keybindings and curated settings; `system/` holds the system tuning files |
-| `desktops/` | per-desktop renderers (templates plus one `apply.sh`); `plasma/` first |
+| `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `system/` the system tuning files |
+| `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, one `apply.sh`); `plasma/` first |
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
 | `devices/` | the only place for device- or architecture-specific files |
-| `iso/` | live-build configuration, Calamares configuration and branding, first-boot unit, QEMU boot test (Phase 3) |
+| `iso/` | live-build configuration, Calamares configuration and branding, the templates `iso/live/assets.sh` renders from the theme (installer artwork and stylesheet, boot menu theme), first-boot unit, QEMU boot test (Phase 3) |
 | `docs/` | roadmap, branding and trademark rules, tested hardware; `screenshots/` holds the installer and desktop screenshots the README shows, taken by the image's boot test and by the manual install check, refreshed per release |
 | `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), iso (build, boot test, release) |
 
@@ -120,7 +129,9 @@ Each directory's README is the authority on its file format.
 - Scripts in `bin/`: `patina-<cmd>`, no extension. Other scripts: `.sh`.
 - Data files end in `.yaml`; GitHub workflows keep GitHub's `.yml`; Calamares keeps its
   `.conf` and `branding.desc` names and live-build its `.list.chroot` names, because the
-  tools require them. They are YAML all the same and are linted as such.
+  tools require them. They are YAML all the same and are linted as such. The files under
+  `defaults/system/` are the exception: sysctl, udev and systemd files named by their
+  destination, excluded from the YAML checks.
 - Entries starting with `_` are templates; tools skip them.
 
 ## Coding conventions
@@ -133,7 +144,15 @@ Each directory's README is the authority on its file format.
   `eval`, no `curl | sh` except an upstream installer listed in `manifest/upstream.yaml`.
 - Idempotent: every script may run twice without harm. Check before changing.
 - `sudo` appears only in backend commands from `manifest/backends/`, never elsewhere.
-  System files are written only through that path, only from `defaults/system/`.
+  System files are written only through that path (`system.write`), only from
+  `defaults/system/`, for the keyring and sources file of an `apt-source` recipe, and
+  for the login screen's wallpaper and the Breeze SDDM theme's `theme.conf.user`
+  (`/usr/local/share/patina21/login.png`, written by the desktop renderer).
+  The scripts drop the `sudo` when they already run as root (a container, first boot).
+- Desktop configuration is written only by `desktops/<desktop>/apply.sh`, through the
+  desktop's own tool (`kwriteconfig6` on Plasma) and only when a value differs, so a
+  second run changes nothing. Generated files carry the theme's name and the renderer
+  removes those of other themes.
 - Read YAML with `yq`; never parse it with grep or sed. Write user config under XDG
   directories, never into the repository checkout.
 - Short, obvious code beats clever code. A function used once is not a function.

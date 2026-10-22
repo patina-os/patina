@@ -1,10 +1,11 @@
 # The polished-desktop bundle: the app stack from the README, all free software. The
-# package names were checked against Debian 13's archive on amd64 and arm64; Phase 1
-# verifies the install itself.
+# package names are Debian 13's; the smoke test installs the bundle on amd64 and arm64.
 name: desktop
-description: Curated desktop apps, kitty and the developer tools
+description: Curated desktop apps with kitty and the developer tools
 default: true
 packages:
+  - fonts-inter          # fonts.ui of defaults/settings.yaml
+  - fonts-jetbrains-mono # fonts.monospace
   - nextcloud-desktop
   - thunderbird
   - keepassxc
@@ -24,7 +25,6 @@ packages:
   - fastfetch
 flatpaks:
   - im.riot.Riot         # Element
-  - dev.zed.Zed          # Zed editor; telemetry and cloud AI off in defaults/ (Phase 1)
-  # Office suite: Euro-Office, added in Phase 1 (docs/roadmap.md) as an apt-source recipe
-  # in manifest/upstream.yaml until Flathub carries it.
-upstream: []
+  - dev.zed.Zed          # Zed editor; telemetry and AI off through defaults/apps.yaml
+upstream:
+  - euro-office          # from Nextcloud's signed apt repository until Flathub carries it

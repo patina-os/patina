@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Update the layer: git pull in the checkout, then the pending migrations.
+set -euo pipefail
+
+# shellcheck source=bin/lib.sh
+source "$PATINA_PATH/bin/lib.sh"
+
+if [[ $# -gt 0 ]]; then
+  echo "usage: patina update" >&2
+  exit 1
+fi
+git -C "$PATINA_PATH" rev-parse --is-inside-work-tree > /dev/null 2>&1 ||
+  die "$PATINA_PATH is not a git checkout"
+if [[ -n "$(git -C "$PATINA_PATH" status --porcelain)" ]]; then
+  warn "the checkout has local changes; the pull keeps them if it can"
+fi
+say "pulling $(git -C "$PATINA_PATH" rev-parse --abbrev-ref HEAD) in $PATINA_PATH"
+git -C "$PATINA_PATH" pull --ff-only --quiet
+say "now at $(git -C "$PATINA_PATH" describe --tags --always)"
+exec "$PATINA_PATH/bin/patina-migrate"

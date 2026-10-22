@@ -7,8 +7,12 @@ finished in, not the order they were prepared in: the image and the device entri
 written as data before the layer's own commands existed, so Phases 3 and 4 already carry
 ticked items while Phase 1 is open.
 
-Status: pre-alpha. The live image builds and boots to the installer in CI on both
-architectures; nothing is installable yet, because Phases 1 to 3 are open.
+Status: pre-alpha. The core commands exist and the smoke test runs `patina install`
+twice in Debian 13 containers on both architectures; the live image builds and boots to
+the installer in CI; the Plasma renderer and the first theme, amethyst, render from data
+and switch without leftovers in the same containers. Phase 1's last step, the run on a
+fresh Debian 13 VM with Plasma, is open; Phase 2 waits for the same run to see the
+theme on a real desktop; Phase 3 is open.
 
 Settled on this roadmap: the TUI helper is `gum` (Debian 13 ships 0.14 on both
 architectures); the office suite is Euro-Office; the terminal is kitty until Debian
@@ -16,30 +20,35 @@ carries Ghostty; the developer tools are part of the default desktop bundle (all
 Phase 1); the first theme is purple with generated artwork (Phase 2); the agent tools
 integrate through a shortcut, a terminal profile and Ollama as the local backend
 (Phases 1 and 2); the system tuning CachyOS ships as configuration is copied as data for
-every install, its kernel and rebuilt packages are not (Phases 1 and 2). Still open: the
-name of the first theme.
+every install, its kernel and rebuilt packages are not (Phases 1 and 2); the first theme
+is called amethyst and the agent shortcut opens opencode, the free one, by default
+(Phase 2); the fonts are Inter and JetBrains Mono, and the installer, the boot menu, the
+login screen and the splash share the theme's look, rendered from its palette (Phase 3).
 
 ## Phase 1: the core commands on x86_64 (Debian 13)
 
 `patina install` without a TUI yet: it installs what the manifest says, through the apt
-backend, Flathub and the upstream recipes, plus the commands around it.
+backend, Flathub and the upstream recipes, plus the commands around it. The code is in;
+what the ticks below still owe is the "done when" run on a real VM.
 
-- [ ] `patina install`: the `base` and `desktop` bundles, the Flathub remote and the
+- [x] `patina install`: the `base` and `desktop` bundles, the Flathub remote and the
   flatpaks, the upstream recipes (npm, uv, the Go `yq` release binary); bundles chosen
-  by flags, no prompts; honours `PATINA_UNATTENDED=1` (defaults for everything)
-- [ ] the extended desktop bundle, from Debian 13's archive on both architectures:
+  by flags, no prompts; honours `PATINA_UNATTENDED=1` (defaults for everything).
+  Flatpaks are installed per user, like the layer itself; nothing needs sudo except the
+  backend's commands
+- [x] the extended desktop bundle, from Debian 13's archive on both architectures:
   kitty as the terminal (Ghostty is in neither Debian's archive nor Flathub; it takes
   kitty's place in Phase 6 if Debian 14 carries it) and the developer tools fish,
   starship, bat, eza, fzf, ripgrep, lazygit, btop, zoxide, atuin, git-delta, neovim and
   fastfetch; the Zed editor from Flathub (`dev.zed.Zed`, free licences, listing not
-  verified by its publisher) with its telemetry and cloud AI off in `defaults/`. Not in
+  verified by its publisher) with its telemetry and AI off through `defaults/apps.yaml`. Not in
   Debian 13 and therefore not shipped: helix, yazi, zellij, difftastic, wezterm
-- [ ] the opt-in `agents` bundle: Claude Code, Codex CLI, opencode and Ollama from their
+- [x] the opt-in `agents` bundle: Claude Code, Codex CLI, opencode and Ollama from their
   upstream installers, Claude Desktop from Anthropic's signed apt repository. Ollama is
   the local backend: its installer sets up the service, `patina install` points
   opencode at `localhost:11434`, and the office suite too if Euro-Office kept
   ONLYOFFICE's AI plugin (to verify), so documents never leave the machine
-- [ ] the office suite: Euro-Office, the AGPL-3.0 fork of ONLYOFFICE by a European
+- [x] the office suite: Euro-Office, the AGPL-3.0 fork of ONLYOFFICE by a European
   consortium (IONOS, Nextcloud, XWiki, OpenProject and others; first stable release
   June 2026), desktop editors for amd64 and arm64. Debian does not package it and
   Flathub does not carry it yet (an upstream issue is open), so it comes from
@@ -48,7 +57,7 @@ backend, Flathub and the upstream recipes, plus the commands around it.
   `manifest/upstream.yaml`, moved to Flathub as soon as Flathub carries it. This is the
   one default that comes from an upstream apt repository; the rule in `manifest/` says
   when that is allowed
-- [ ] the system tuning, in the `base` bundle for every install, after what CachyOS
+- [x] the system tuning, in the `base` bundle for every install, after what CachyOS
   ships as configuration (its `cachyos-settings` package, GPL-3.0): zram with zstd
   through `systemd-zram-generator`, I/O scheduler udev rules (bfq for disks,
   mq-deadline for SATA SSDs, none for NVMe), the memory sysctls for zram, a journald
@@ -58,42 +67,67 @@ backend, Flathub and the upstream recipes, plus the commands around it.
   place the layer touches `/etc`; `patina doctor` reports them. Not copied: the kernel,
   the rebuilt packages, the disabled NMI watchdog and relaxed pointer restrictions, the
   US NTP servers, the Nvidia options
-- [ ] `patina update` (git pull plus pending migrations), `patina migrate`,
+- [x] `patina update` (git pull plus pending migrations), `patina migrate`,
   `patina doctor` (base and architecture, `yq`, missing packages, state directory)
-- [ ] verified package names: the "illustrative" notes in `manifest/` go away
-- [ ] CI: the smoke job runs `patina install` unattended, twice, in the Debian 13
+- [x] verified package names: the "illustrative" notes in `manifest/` go away
+- [x] CI: the smoke job runs `patina install` unattended, twice, in the Debian 13
   containers on x86_64 and aarch64 (the ARM plan's first step happens here)
+- [ ] the run that closes the phase: a fresh Debian 13 VM with Plasma, `git clone`,
+  `patina install`, a second run, `patina doctor`; what it shows missing goes back into
+  the data. The CI containers prove everything but the systemd side (zram, oomd, the
+  schedulers, GRUB and the initramfs) and the sudo path as a user
 - Done when: a fresh Debian 13 VM with Plasma gets the whole app stack with one command,
   a second run changes nothing, and `patina doctor` reports clean.
 
 ## Phase 2: theming (the Plasma renderer and the first theme)
 
-- [ ] `desktops/plasma/apply.sh` and its templates, against Plasma 6.3 as Debian 13
+The code and the data are in; what the ticks still owe, like Phase 1's, is the look on a
+real Plasma desktop, which the same VM run gives.
+
+- [x] `desktops/plasma/apply.sh` and its templates, against Plasma 6.3 as Debian 13
   ships it: colour scheme, Konsole and kitty profiles, GTK and Qt consistency,
   wallpaper, keybindings from `defaults/keybindings.yaml`, settings from
-  `defaults/settings.yaml`
-- [ ] the first theme under `themes/` (name open), and `defaults/settings.yaml` pointing
+  `defaults/settings.yaml`. A generated look-and-feel package hands a fresh session
+  (the image's first login) the whole theme at once
+- [x] the first theme under `themes/`, amethyst, and `defaults/settings.yaml` pointing
   at it: a purple signature palette that continues the logo's pink-to-purple gradient,
-  and wallpapers generated from SVG kept in the theme, abstract organic forms with
-  Google DeepMind's visualisations on Pexels as the reference style, never their
-  files; the artwork is licensed with the repository
-- [ ] the agent shortcut: an `agent` action in `defaults/keybindings.yaml` opens the
-  agent CLI in a dedicated kitty profile the renderer writes from the palette; the
-  action is skipped when the `agents` bundle is not installed
-- [ ] `patina theme list|set|current`; `patina install` applies the default theme and
+  and two wallpapers kept as SVG in the theme and rendered at apply time, abstract
+  organic forms with Google DeepMind's visualisations on Pexels as the reference style,
+  never their files; the artwork is CC-BY-SA-4.0 and the theme data GPL-3.0-or-later
+- [x] the agent shortcut: the `agent` action in `defaults/keybindings.yaml` (Meta+A)
+  opens the agent CLI of `defaults/settings.yaml` (opencode by default) in a dedicated
+  kitty profile the renderer writes from the palette; the action is skipped when the
+  `agents` bundle is not installed
+- [x] `patina theme list|set|current`; `patina install` applies the default theme and
   honours `PATINA_THEME=<name>`
-- [ ] curated keybindings and settings: the placeholders in `defaults/` become the real
+- [x] curated keybindings and settings: the placeholders in `defaults/` became the real
   defaults, including the Plasma-side speed settings: KWin's lowest-latency policy, a
-  shorter animation factor, Baloo limited to file names under home, the Wayland
-  session, and no autostart entries beyond Plasma's own
+  halved animation factor, Baloo limited to file names under home, the Wayland session
+  as the login screen's default (`defaults/system/sddm.conf.d/`), and no autostart
+  entries beyond Plasma's own
+- [x] CI: the smoke test checks the rendered files and settings, that setting the theme
+  again changes nothing, and that a copy of the theme under another name renders and
+  switches back without leftovers
+- [ ] the run that closes the phase: the theme on a real Plasma desktop, the live
+  reload inside a session and the wallpaper through the look-and-feel package at a
+  first login; what looks wrong goes back into the data
 - Done when: one theme renders the whole desktop from data, `patina theme set` switches
   and switches back without leftovers, and a theme pack made by copying
   `themes/_template` renders without a code change.
 
 ## Phase 3: the branded install (TUI, first boot, the live image)
 
-- [ ] the `patina install` TUI with `gum`: theme, bundles, Nextcloud, agent tools. The
-  unattended mode from Phase 1 stays the contract the image's first boot uses
+- [x] the `patina install` TUI with `gum`: on a terminal it asks the theme and the app
+  bundles (the agent tools among them), shows a summary and waits for a yes; Nextcloud
+  is part of the desktop bundle. The unattended mode from Phase 1 stays the contract
+  the image's first boot uses
+- [x] one look from the boot menu to the desktop, every colour from the default theme's
+  palette: the live image's GRUB menu (theme and splash), the installer (a stylesheet
+  down to the partition page, the wordmark, a veiled wallpaper, three still slides), the
+  login screen (the theme's wallpaper through the backend's sudo path, Inter), the
+  Plasma splash (the wordmark and one accent line), the install TUI and the fastfetch
+  greeting. Inter and JetBrains Mono are the layer's fonts; the typeset wordmark
+  patina²¹ is the mark of screens, the ASCII mark the mark of terminals
 - [x] live-build configuration: a small live system that carries only Calamares, the
   network stack and firmware; Plasma and the base bundle are fetched from Debian's
   mirrors during the install
@@ -110,7 +144,7 @@ backend, Flathub and the upstream recipes, plus the commands around it.
 - [ ] one manual install in a VM per release, until Calamares can be driven unattended
   (upstream has no unattended mode; see `iso/README.md`): boot, answer the installer,
   first boot ends in `patina21 firstboot: done`, and a screenshot of the finished
-  desktop goes to `docs/screenshots/` (needs Phase 2, so there is a theme to show)
+  desktop goes to `docs/screenshots/`
 - Done when: boot, answer the installer, finished desktop identical to Path A, in a VM
   on both architectures.
 

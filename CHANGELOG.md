@@ -10,8 +10,8 @@ All notable changes to patina21 are documented here. The format follows
 
 - The image's boot test takes a screenshot of the installer screen through QEMU's
   monitor and the `iso` workflow uploads it with the serial log. The README shows the
-  amd64 one from `docs/screenshots/`; the desktop screenshot follows with the first
-  theme (roadmap, Phases 2 and 3).
+  amd64 one from `docs/screenshots/`; the desktop screenshot comes with the manual
+  install check (roadmap, Phase 3).
 
 ### Changed
 
@@ -54,6 +54,74 @@ All notable changes to patina21 are documented here. The format follows
 
 ### Added
 
+- One look from the boot menu to the desktop (roadmap, Phase 3). Every surface before
+  the desktop takes its colours from the default theme's palette, rendered at build or
+  apply time, never typed by hand: the live image's GRUB menu (a theme and a splash
+  live-build takes over its stock files), the Calamares installer (a Qt stylesheet for
+  every page down to the partition editor, the wordmark on the welcome page, the wave in
+  the sidebar, the theme's wallpaper veiled behind every page, three still slides while
+  it installs, an openbox theme for its dialogs), the SDDM login screen (the theme's
+  first wallpaper, written to `/usr/local/share/patina21/login.png` with the Breeze
+  theme's override through the backend's one sudo path; Breeze with Inter and the
+  theme's cursor from `defaults/system/sddm.conf.d/`), the Plasma splash (the wordmark
+  and one accent line, `templates/splash.qml` in the look-and-feel package) and the
+  fastfetch greeting of a new terminal (the ASCII mark in its gradient). The templates
+  live under `iso/live/templates/` and `desktops/plasma/templates/`, filled by the
+  theme loader and template filler now shared in `bin/lib.sh`; `iso/live/assets.sh`
+  renders the image's files, and the smoke test runs it and checks them.
+- The typeset wordmark, patina²¹ in Inter with the wave under it (`branding/wordmark.svg`,
+  and `wave.svg` for a square icon), the mark of every screen; the ASCII mark in
+  `branding/logo.txt` stays the mark of every terminal surface. Inter and JetBrains Mono
+  become the layer's fonts (`defaults/settings.yaml`), from Debian's archive through the
+  desktop bundle, the installer's package list and the live image.
+- The `patina install` questions (roadmap, Phase 3): on a terminal, without `--bundles`
+  or `--all`, the install asks the theme and the app bundles with `gum` (in the base
+  bundle), shows a summary and waits for a yes, then prints a section line before each
+  part while apt's and flatpak's own output stays visible. `--unattended`, the
+  first-boot contract and CI take the same path as before.
+- Theming (roadmap, Phase 2). `desktops/plasma/apply.sh` renders a theme and
+  `defaults/` into Plasma's configuration for the user: a colour scheme with the
+  theme's accent, Konsole and kitty profiles, wallpapers as Plasma wallpaper packages
+  (SVG rendered at 3840x2160 with `rsvg-convert`, hence `librsvg2-bin` in the base
+  bundle), a look-and-feel package so a fresh login starts in the theme, GTK and
+  Flatpak consistency, the global shortcuts from `defaults/keybindings.yaml` through
+  `desktops/plasma/actions.yaml`, the speed settings and fonts from
+  `defaults/settings.yaml`; inside a session it applies live. `patina theme
+  list|set|current` switches themes and back without leftovers; `patina install`
+  applies the default theme or `PATINA_THEME=<name>`; `patina doctor` reports it.
+- `themes/amethyst`: the first theme. A purple palette on a deep aubergine background
+  that continues the logo's pink-to-purple gradient, and two abstract wallpapers drawn as
+  SVG (`drift`, `bloom`), CC-BY-SA-4.0.
+- The curated defaults: Meta plus one key for terminal, search, browser, files, close,
+  overview and lock, Print for screenshots, Meta+A for the agent CLI in its own kitty
+  profile (opencode by default, only with the agents bundle); half-length animations,
+  KWin's lowest-latency policy, Baloo on file names under home only, and the Wayland
+  session as the login screen's default (`defaults/system/sddm.conf.d/`).
+- The smoke test checks the rendered theme, that setting it again changes nothing, and
+  that a copy of the theme pack renders and switches back cleanly.
+- The core commands (roadmap, Phase 1). `patina install` installs the chosen bundles
+  (`--bundles`, `--all`, `--list`; `--unattended` or `PATINA_UNATTENDED=1` for the
+  first-boot contract): Debian packages through the apt backend, flatpaks per user from
+  Flathub, the upstream recipes (the Go `yq` binary, npm and uv tools, install scripts,
+  signed upstream apt repositories in deb822 form), the system tuning files from
+  `defaults/system/` and the app settings from `defaults/apps.yaml`. It fetches `yq`
+  itself, drops `sudo` when already root, runs twice without changes and records the
+  install under `~/.local/state/patina21/`. `patina doctor` reports the base, the tools,
+  missing packages, flatpaks and upstream tools, the tuning files and pending migrations;
+  `patina migrate` runs pending migrations, `patina update` pulls and then migrates.
+- Euro-Office joins the desktop bundle, from Nextcloud's signed apt repository (the
+  signed builds are published as Nextcloud Office, amd64 and arm64). Claude Desktop's
+  recipe is verified against Anthropic's repository. Every upstream recipe names the
+  command or package it leaves behind.
+- `defaults/system/`: the tuning after CachyOS's configuration, as the files `patina
+  install` writes under `/etc`: zram with zstd, I/O schedulers per device type, the
+  memory sysctls, a journald cap, shorter stop timeouts, systemd-oomd, background THP
+  defragmentation, a one-second GRUB menu, a `MODULES=dep` initramfs. The base bundle
+  names `systemd-oomd`, which Debian packages apart from systemd.
+- `defaults/apps.yaml`: Zed with telemetry and AI off, opencode pointed at Ollama on
+  this machine.
+- The smoke workflow runs `patina install` unattended, twice, then `patina doctor`, in
+  the Debian 13 containers on both architectures.
 - `devices/snapdragon-x-elite/`: the first ARM laptop entry (roadmap, Phase 4), data
   only and untested: the models with their device trees, the firmware packages from
   Debian's archive, and the manual validation procedure after the Debian wiki. The

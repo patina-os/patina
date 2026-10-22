@@ -1,0 +1,461 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Install the layer: the chosen bundles (packages through this base's backend, flatpaks
+# from Flathub, the upstream recipes), the system tuning, the app settings and the theme,
+# all from the data files. Idempotent: a second run changes nothing and says so.
+set -euo pipefail
+
+# shellcheck source=bin/lib.sh
+source "$PATINA_PATH/bin/lib.sh"
+
+usage() {
+  cat << EOU
+usage: patina install [--bundles <a,b,...>] [--all] [--list] [--unattended]
+
+  --bundles a,b  install these bundles; base is always included, and nothing already
+                 installed is removed. Default: the bundles marked default
+  --all          every bundle, the opt-in ones (agents) included
+  --list         show the bundles and exit
+  --unattended   no questions, defaults for everything (same as PATINA_UNATTENDED=1):
+                 the contract the image's first boot and CI use
+
+On a terminal, without --bundles or --all, the install asks (with gum): the theme, the
+app bundles, then a summary and a yes. The theme: PATINA_THEME=<name> picks one (patina
+theme list) and skips that question; otherwise the theme already set on this machine, or
+the default of defaults/settings.yaml, is offered first.
+EOU
+}
+
+changes=0
+failed=0
+tui=0
+
+changed() {
+  changes=$((changes + 1))
+}
+
+# A section line before each part of the install, only when the questions were asked;
+# unattended output stays as it is.
+section() {
+  [[ $tui -eq 1 ]] || return 0
+  echo
+  gum style --bold --foreground "${tpl[BASE0E]}" "── $1 ──"
+}
+
+# The questions, on a terminal: the theme, the app bundles, a summary and a yes. Sets
+# PATINA_THEME and bundles. Esc or Cancel leaves without a change. Bundle descriptions
+# carry no comma: gum takes the preselected lines as a comma-separated list.
+ask() {
+  local current d name kind lines choice chosen_lines
+  local -a theme_lines=() bundle_lines=() preselected=()
+  current="${PATINA_THEME:-$(current_theme || yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")}"
+  d="$(theme_dir "$current")" || die "no theme '$current' under themes/ (try patina theme list)"
+  theme_vars "$d/theme.yaml" "$PATINA_PATH/defaults/settings.yaml"
+  tui_colors
+  print_logo auto
+  echo
+  gum style --foreground "${tpl[BASE04]}" \
+    "patina21 $("$PATINA_PATH/bin/patina" version) · $(basename "$BACKEND" .yaml) · $(uname -m)"
+  echo
+  if [[ -z "${PATINA_THEME:-}" ]]; then
+    mapfile -t theme_lines < <("$PATINA_PATH/bin/patina-theme" list | sed 's/^[* ] //')
+    choice="$(printf '%s\n' "${theme_lines[@]}" | grep "^$current ")" || choice="${theme_lines[0]}"
+    choice="$(gum choose --header "Theme" --selected "$choice" "${theme_lines[@]}")" || exit 0
+    PATINA_THEME="${choice%% *}"
+    export PATINA_THEME
+    echo
+  fi
+  for name in $(all_bundles); do
+    yq eval -e '.required == true' "$PATINA_PATH/manifest/bundles/$name.yaml" > /dev/null 2>&1 && continue
+    kind="opt-in"
+    yq eval -e '.default == true' "$PATINA_PATH/manifest/bundles/$name.yaml" > /dev/null 2>&1 && kind="default"
+    lines="$(printf '%-9s %-8s %s' "$name" "($kind)" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$name.yaml")")"
+    bundle_lines+=("$lines")
+    [[ "$kind" == default ]] && preselected+=("$lines")
+  done
+  chosen_lines="$(gum choose --no-limit --header "App bundles (x or space toggles, enter confirms)" \
+    --selected "$(IFS=,; echo "${preselected[*]}")" "${bundle_lines[@]}")" || exit 0
+  mapfile -t bundles < <(printf 'base\n%s\n' "$(printf '%s\n' "$chosen_lines" | awk 'NF { print $1 }')" | awk 'NF && !seen[$0]++')
+  echo
+  gum style --border rounded --border-foreground "${tpl[BASE0E]}" --padding "1 3" \
+    "$(printf 'theme    %s\nbundles  %s\nbackend  %s (%s)' "$PATINA_THEME" "${bundles[*]}" \
+      "$(basename "$BACKEND" .yaml)" "$(uname -m)")"
+  echo
+  if ! gum confirm "Install now?" --affirmative Install --negative Cancel; then
+    say "nothing changed"
+    exit 0
+  fi
+  tui=1
+}
+
+# Download to a file with curl, or wget while curl is not installed yet.
+fetch() {
+  if command -v curl > /dev/null; then
+    curl -fsSL --retry 4 -o "$2" "$1"
+  elif command -v wget > /dev/null; then
+    wget -q -O "$2" "$1"
+  else
+    die "neither curl nor wget is installed; install curl first"
+  fi
+}
+
+# yq cannot read its own recipe, so this is the one download a script spells out. The
+# URL and the arch map must equal the yq entry of manifest/upstream.yaml; CI checks that.
+bootstrap_yq() {
+  have_go_yq && return
+  local arch
+  case "$(uname -m)" in
+    x86_64) arch=amd64 ;;
+    aarch64) arch=arm64 ;;
+    *) die "no yq build for $(uname -m)" ;;
+  esac
+  say "fetching the Go yq into ~/.local/bin"
+  mkdir -p "$HOME/.local/bin"
+  fetch "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${arch}" \
+    "$HOME/.local/bin/yq"
+  chmod +x "$HOME/.local/bin/yq"
+  changed
+  have_go_yq || die "yq was fetched but does not run; check ~/.local/bin/yq"
+}
+
+list_bundles() {
+  local b f kind
+  for b in $(all_bundles); do
+    f="$PATINA_PATH/manifest/bundles/$b.yaml"
+    kind=opt-in
+    yq eval -e '.default == true' "$f" > /dev/null 2>&1 && kind=default
+    yq eval -e '.required == true' "$f" > /dev/null 2>&1 && kind=always
+    printf '%-8s %-9s %s\n' "$b" "($kind)" "$(yq eval '.description' "$f")"
+  done
+}
+
+install_packages() {
+  local -a missing=()
+  local p
+  for p in "${packages[@]}"; do
+    package_installed "$p" || missing+=("$p")
+  done
+  if [[ ${#missing[@]} -eq 0 ]]; then
+    say "packages: all ${#packages[@]} installed"
+    return
+  fi
+  say "packages: installing ${missing[*]}"
+  backend_run refresh
+  backend_run install "${missing[@]}"
+  changed
+}
+
+install_flatpaks() {
+  [[ ${#flatpaks[@]} -gt 0 ]] || return 0
+  local remote id
+  remote="$(yq eval '.flatpak_remote' "$PATINA_PATH/defaults/settings.yaml")"
+  # Per user, like the layer itself: no sudo, and Discover shows them all the same.
+  if ! flatpak remotes --user --columns=name 2> /dev/null | grep -qx flathub; then
+    say "flatpak: adding the Flathub remote for this user"
+    flatpak remote-add --user --if-not-exists flathub "$remote"
+    changed
+  fi
+  for id in "${flatpaks[@]}"; do
+    if flatpak_installed "$id"; then
+      continue
+    fi
+    say "flatpak: installing $id"
+    flatpak install --user --noninteractive --assumeyes flathub "$id"
+    changed
+  done
+  say "flatpaks: all ${#flatpaks[@]} installed"
+}
+
+# Keyring and sources file of an apt-source recipe, written through the backend's one
+# sudo path, as deb822 so no shell line is composed. Returns 0 when something changed.
+add_apt_source() {
+  local key="$1" name keyring keyurl sources_dir url suite components tmp dest changed_here=0
+  name="$(yq eval ".$key.name" "$UPSTREAM")"
+  keyring="$(yq eval ".$key.keyring" "$UPSTREAM")"
+  keyurl="$(yq eval ".$key.key" "$UPSTREAM")"
+  url="$(yq eval ".$key.source.url" "$UPSTREAM")"
+  suite="$(yq eval ".$key.source.suite" "$UPSTREAM")"
+  components="$(yq eval ".$key.source.components" "$UPSTREAM")"
+  sources_dir="$(yq eval -e '.apt_source.sources_dir' "$BACKEND" 2> /dev/null)" ||
+    die "$(basename "$BACKEND") cannot add apt sources; $key needs an apt base"
+  tmp="$(mktemp)"
+  fetch "$keyurl" "$tmp"
+  if ! cmp -s "$tmp" "$keyring"; then
+    say "$key: writing $keyring"
+    backend_run system.write "$tmp" "$keyring"
+    changed_here=1
+  fi
+  dest="$sources_dir/$name.sources"
+  cat > "$tmp" << EOS
+# Written by patina install from manifest/upstream.yaml ($key); edits are overwritten.
+Types: deb
+URIs: $url
+Suites: $suite
+Components: $components
+Signed-By: $keyring
+EOS
+  if ! cmp -s "$tmp" "$dest"; then
+    say "$key: writing $dest"
+    backend_run system.write "$tmp" "$dest"
+    changed_here=1
+  fi
+  rm -f "$tmp"
+  [[ $changed_here -eq 1 ]]
+}
+
+install_upstream() {
+  local key="$1" method command package url arch
+  method="$(yq eval ".$key.method" "$UPSTREAM")"
+  command="$(yq eval ".$key.command // \"\"" "$UPSTREAM")"
+  package="$(yq eval ".$key.package // \"\"" "$UPSTREAM")"
+  case "$method" in
+    apt-source)
+      # The sources are kept current even when the package is already installed.
+      if add_apt_source "$key"; then
+        backend_run refresh
+        changed
+      fi
+      if ! upstream_installed "$key"; then
+        say "$key: installing $package"
+        backend_run install "$package"
+        changed
+      fi
+      ;;
+    *)
+      if upstream_installed "$key"; then
+        return
+      fi
+      say "$key: installing ($method)"
+      mkdir -p "$HOME/.local/bin"
+      case "$method" in
+        binary)
+          url="$(yq eval ".$key.url" "$UPSTREAM")"
+          arch="$(yq eval -e ".$key.arch.$(uname -m)" "$UPSTREAM" 2> /dev/null)" ||
+            die "$key has no build for $(uname -m)"
+          fetch "${url//\$\{arch\}/$arch}" "$HOME/.local/bin/$command"
+          chmod +x "$HOME/.local/bin/$command"
+          ;;
+        script)
+          # The only `curl | sh` the conventions allow: an installer listed in
+          # manifest/upstream.yaml.
+          url="$(yq eval ".$key.url" "$UPSTREAM")"
+          curl -fsSL --retry 4 "$url" | sh
+          ;;
+        npm)
+          command -v npm > /dev/null || die "$key needs npm; the bundle must list nodejs and npm"
+          npm install --global --prefix "$HOME/.local" "$package"
+          ;;
+        uv)
+          command -v uv > /dev/null || install_upstream uv
+          uv tool install "$package"
+          ;;
+        *) die "unknown upstream method '$method' for $key" ;;
+      esac
+      changed
+      ;;
+  esac
+}
+
+# The system tuning: every file under defaults/system/ lands at the same path under
+# /etc, through the backend's sudo path. The apply commands run once when a file
+# changed and the machine is booted with systemd; a container gets the files only.
+install_system() {
+  local src rel dest changed_here=0 cmd first
+  while IFS= read -r src; do
+    rel="${src#"$PATINA_PATH/defaults/system/"}"
+    dest="/etc/$rel"
+    if cmp -s "$src" "$dest"; then
+      continue
+    fi
+    say "system: writing $dest"
+    backend_run system.write "$src" "$dest"
+    changed_here=1
+    changed
+  done < <(find "$PATINA_PATH/defaults/system" -type f | sort)
+  if [[ $changed_here -eq 0 ]]; then
+    say "system: tuning files in place"
+    return
+  fi
+  if ! booted_with_systemd; then
+    say "system: not booted with systemd (a container?); the tuning applies at the next boot"
+    return
+  fi
+  while IFS= read -r cmd; do
+    first="${cmd#sudo }"
+    first="${first%% *}"
+    if ! command -v "$first" > /dev/null; then
+      continue   # no GRUB on a Raspberry Pi, for instance
+    fi
+    if ! run_words "$cmd"; then
+      warn "system: '$cmd' failed"
+      failed=1
+    fi
+  done < <(yq eval '.system.apply[]' "$BACKEND")
+}
+
+# Settings merged into applications' own files, from defaults/apps.yaml, for the apps
+# this install carries.
+install_apps() {
+  local apps="$PATINA_PATH/defaults/apps.yaml" app need file tmp merged
+  for app in $(yq eval 'keys | .[]' "$apps"); do
+    need="$(yq eval ".$app.requires.flatpak // \"\"" "$apps")"
+    if [[ -n "$need" ]] && ! printf '%s\n' "${flatpaks[@]}" | grep -qx "$need"; then
+      continue
+    fi
+    need="$(yq eval ".$app.requires.upstream // \"\"" "$apps")"
+    if [[ -n "$need" ]] && ! printf '%s\n' "${upstream[@]}" | grep -qx "$need"; then
+      continue
+    fi
+    file="$(yq eval ".$app.file" "$apps")"
+    file="${file/#\~/$HOME}"
+    tmp="$(mktemp)"
+    yq eval -o=json ".$app.settings" "$apps" > "$tmp"
+    if [[ -f "$file" ]]; then
+      merged="$(mktemp)"
+      if ! yq eval-all -o=json 'select(fileIndex == 0) * select(fileIndex == 1)' "$file" "$tmp" > "$merged" 2> /dev/null; then
+        warn "$app: cannot parse $file (comments?); set these by hand: $(yq eval -o=json -I=0 '.' "$tmp")"
+        rm -f "$tmp" "$merged"
+        continue
+      fi
+      if ! cmp -s "$merged" "$file"; then
+        say "$app: updating $file"
+        cp "$merged" "$file"
+        changed
+      fi
+      rm -f "$merged"
+    else
+      say "$app: writing $file"
+      mkdir -p "$(dirname "$file")"
+      cp "$tmp" "$file"
+      changed
+    fi
+    rm -f "$tmp"
+  done
+}
+
+# The theme, through `patina theme set`: PATINA_THEME, else the one already recorded,
+# else the default of defaults/settings.yaml. Counts as a change unless the renderer
+# says it had nothing to do.
+install_theme() {
+  local theme out
+  theme="${PATINA_THEME:-}"
+  [[ -n "$theme" ]] || theme="$(current_theme || yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")"
+  out="$(mktemp)"
+  if ! "$PATINA_PATH/bin/patina-theme" set "$theme" | tee "$out"; then
+    warn "theme: '$theme' failed to apply"
+    failed=1
+  fi
+  grep -q 'theme: nothing to do' "$out" || changed
+  rm -f "$out"
+}
+
+record_state() {
+  local first=0 m
+  mkdir -p "$PATINA_STATE/migrations"
+  [[ -e "$PATINA_STATE/installed-at" ]] || first=1
+  # Nothing is ever removed, so the record is every bundle installed so far; doctor
+  # checks them all.
+  { [[ -f "$PATINA_STATE/bundles" ]] && cat "$PATINA_STATE/bundles"; printf '%s\n' "${bundles[@]}"; } |
+    awk 'NF && !seen[$0]++' > "$PATINA_STATE/bundles.new"
+  mv "$PATINA_STATE/bundles.new" "$PATINA_STATE/bundles"
+  if [[ $first -eq 1 ]]; then
+    # A fresh install is the end state every migration leads to, so none is pending.
+    for m in "$PATINA_PATH"/migrations/[0-9]*.sh; do
+      [[ -e "$m" ]] || continue
+      date -u +%FT%TZ > "$PATINA_STATE/migrations/$(basename "$m")"
+    done
+    date -u +%FT%TZ > "$PATINA_STATE/installed-at"
+  fi
+}
+
+main() {
+  local chosen="" all=0 list=0 b
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --bundles)
+        [[ $# -ge 2 ]] || die "--bundles needs a list"
+        chosen="$2"
+        shift 2
+        ;;
+      --bundles=*)
+        chosen="${1#*=}"
+        shift
+        ;;
+      --all)
+        all=1
+        shift
+        ;;
+      --list)
+        list=1
+        shift
+        ;;
+      --unattended)
+        PATINA_UNATTENDED=1
+        shift
+        ;;
+      -h | --help)
+        usage
+        exit 0
+        ;;
+      *)
+        usage >&2
+        die "unknown option '$1'"
+        ;;
+    esac
+  done
+  export PATINA_UNATTENDED="${PATINA_UNATTENDED:-}"
+
+  bootstrap_yq
+  if [[ $list -eq 1 ]]; then
+    list_bundles
+    exit 0
+  fi
+  BACKEND="$(backend_file)"
+  UPSTREAM="$PATINA_PATH/manifest/upstream.yaml"
+
+  bundles=()
+  if [[ $all -eq 1 ]]; then
+    mapfile -t bundles < <(all_bundles)
+  elif [[ -n "$chosen" ]]; then
+    mapfile -t bundles < <(printf 'base\n%s\n' "${chosen//,/$'\n'}" | awk 'NF && !seen[$0]++')
+    for b in "${bundles[@]}"; do
+      [[ -f "$PATINA_PATH/manifest/bundles/$b.yaml" ]] || die "no bundle '$b' (try --list)"
+    done
+  else
+    mapfile -t bundles < <(default_bundles)
+    if [[ -t 0 && -t 1 && -z "$PATINA_UNATTENDED" ]] && command -v gum > /dev/null; then
+      ask
+    fi
+  fi
+  say "bundles: ${bundles[*]} ($(basename "$BACKEND" .yaml) backend, $(uname -m))"
+
+  mapfile -t packages < <(bundle_items packages "${bundles[@]}")
+  mapfile -t flatpaks < <(bundle_items flatpaks "${bundles[@]}")
+  mapfile -t upstream < <(bundle_items upstream "${bundles[@]}")
+
+  section packages
+  install_packages
+  section flatpaks
+  install_flatpaks
+  section upstream
+  for b in "${upstream[@]}"; do
+    install_upstream "$b"
+  done
+  section system
+  install_system
+  install_apps
+  record_state
+  section theme
+  install_theme
+
+  if [[ $failed -ne 0 ]]; then
+    die "finished with errors (see above)"
+  fi
+  if [[ $changes -eq 0 ]]; then
+    say "nothing to do"
+  else
+    say "done: $changes changes"
+  fi
+}
+
+main "$@"

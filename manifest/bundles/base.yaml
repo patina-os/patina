@@ -1,7 +1,7 @@
 # Always installed. Keep this list short: everything else is a bundle the user picks.
-# Package names are illustrative until Phase 1 verifies them against Debian 13.
+# Package names are Debian 13's; the smoke test installs them on amd64 and arm64.
 name: base
-description: What patina21 itself needs to run, and the system tuning every install gets
+description: What patina21 itself needs to run and the system tuning every install gets
 default: true
 required: true
 packages:
@@ -10,9 +10,12 @@ packages:
   - ca-certificates
   - sudo             # every backend command that needs root goes through sudo
   - flatpak          # Flathub is the source for GUI apps we do not track
+  - librsvg2-bin     # rsvg-convert renders a theme's SVG wallpapers (desktops/plasma/apply.sh)
+  - gum              # the questions `patina install` asks on a terminal; unattended runs skip it
   # System tuning for every install (docs/roadmap.md, Phase 1); the files are data under
-  # defaults/system/. systemd-oomd ships with Debian's systemd and needs no package.
+  # defaults/system/.
   - systemd-zram-generator   # zram swap with zstd
+  - systemd-oomd             # Debian packages it apart from systemd
   - irqbalance               # spreads interrupts over cores
 flatpaks: []
 upstream:

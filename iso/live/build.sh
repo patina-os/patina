@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Build the patina21 live image with live-build: assemble the build directory from the
-# committed configuration plus what is generated from branding/ and iso/firstboot/, then
-# run lb. Needs root (debootstrap), live-build and yq; see iso/README.md.
+# committed configuration, what assets.sh renders from branding/ and the theme, and
+# iso/firstboot/, then run lb. Needs root (debootstrap), live-build, yq, rsvg-convert and
+# the fonts; see iso/README.md.
 set -euo pipefail
 
 here="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
@@ -14,7 +15,7 @@ case "$arch" in
   amd64 | arm64) ;;
   *) echo "build.sh: architecture must be amd64 or arm64, not '$arch'" >&2; exit 64 ;;
 esac
-for tool in lb yq git; do
+for tool in lb yq git rsvg-convert; do
   command -v "$tool" > /dev/null || { echo "build.sh: $tool missing" >&2; exit 69; }
 done
 [[ "$(id -u)" -eq 0 ]] || { echo "build.sh: run as root; live-build needs it" >&2; exit 77; }
@@ -31,30 +32,9 @@ install -D -m 0755 "$repo/iso/firstboot/patina21-firstboot.sh" \
 install -D -m 0644 "$repo/iso/firstboot/patina21-firstboot.service" \
   "$chroot/etc/systemd/system/patina21-firstboot.service"
 
-# The logo from its only copy: the console mark, and an SVG of the same text for the
-# installer's sidebar and welcome page. agetty reads backslashes in /etc/issue as
-# escape sequences, so the console copy doubles them.
-install -d -m 0755 "$chroot/etc/issue.d"
-sed 's/\\/\\\\/g' "$repo/branding/logo.txt" > "$chroot/etc/issue.d/10-patina21.issue"
-branding="$chroot/etc/calamares/branding/patina21"
-{
-  echo '<svg xmlns="http://www.w3.org/2000/svg" width="520" height="120" viewBox="0 0 520 120">'
-  # Absolute sizes: Qt's SVG renderer, which Calamares uses, misreads percentages
-  # here and drew a square that stopped short of the text.
-  echo '  <rect x="0" y="0" width="520" height="120" fill="#1e1e1e"/>'
-  y=20
-  # The wordmark is plain text, not YAML, so sed may escape it for XML.
-  while IFS= read -r line; do
-    printf '  <text x="12" y="%d" font-family="monospace" font-size="14" fill="#d0d0d0" xml:space="preserve">%s</text>\n' \
-      "$y" "$line"
-    y=$((y + 16))
-  done < <(sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' "$repo/branding/logo.txt")
-  echo '</svg>'
-} > "$branding/logo.svg"
-
-version="$(git -C "$repo" describe --tags --always --dirty 2> /dev/null || echo 0.0.0-unknown)"
-yq -i ".strings.version = \"$version\" | .strings.shortVersion = \"$version\"" \
-  "$branding/branding.desc"
+# Everything the image shows, rendered from branding/ and the default theme: the console
+# mark, the installer's marks, artwork and stylesheet, the boot menu's theme.
+"$here/assets.sh" "$out"
 
 cd "$out"
 PATINA_ARCH="$arch" lb config
