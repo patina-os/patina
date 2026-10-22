@@ -30,6 +30,8 @@ changed() { changes=$((changes + 1)); }
 # hex (BASE00) and as the r,g,b decimals KDE's files want (BASE00_RGB).
 theme_vars "$theme_yaml" "$settings"
 tpl[CONFIG_HOME]="$config"
+tpl[DATA_HOME]="$data"
+tpl[ACCENT_SGR]="38;2;${tpl[BASE0E_RGB]//,/;}"   # the accent as an ANSI colour, for fastfetch
 tpl[WALLPAPER]=""
 tpl[WALLPAPER_PACKAGE]=""
 tpl[AGENT_COMMAND]=""
@@ -178,7 +180,23 @@ render "$templates/look-and-feel-metadata.json" "$tmp/lnf.json"
 put "$tmp/lnf.json" "$lnf/metadata.json"
 render "$templates/look-and-feel-defaults" "$tmp/lnf.defaults"
 put "$tmp/lnf.defaults" "$lnf/contents/defaults"
+# The splash: the wordmark on the theme's background, one accent line (templates/splash.qml).
+put "$PATINA_PATH/branding/wordmark.svg" "$lnf/contents/splash/images/logo.svg"
+render "$templates/splash.qml" "$tmp/Splash.qml"
+put "$tmp/Splash.qml" "$lnf/contents/splash/Splash.qml"
 drop_other_themes "$data/plasma/look-and-feel/org.patina21.*" "$lnf"
+
+# fastfetch greets a new terminal with the mark: a gradient copy of branding/logo.txt
+# (the file itself stays plain) and a configuration that points at it. The
+# configuration is written while its first line is ours; a user who removes that line
+# keeps their own.
+print_logo always > "$tmp/logo.txt"
+put "$tmp/logo.txt" "$data/patina21/logo.txt"
+fastfetch="$config/fastfetch/config.jsonc"
+if [[ ! -e "$fastfetch" || "$(head -n 1 "$fastfetch")" == "// patina21:"* ]]; then
+  render "$templates/fastfetch.jsonc" "$tmp/fastfetch.jsonc"
+  put "$tmp/fastfetch.jsonc" "$fastfetch"
+fi
 
 # The agent terminal profile and launcher, only with the agents bundle installed.
 agent_desktop="$data/applications/patina21-agent.desktop"
@@ -229,6 +247,8 @@ kset kdeglobals Theme "${tpl[ICONS]}" Icons
 kset kcminputrc cursorTheme "${tpl[CURSORS]}" Mouse
 kset plasmarc name "${tpl[DESKTOP_THEME]}" Theme
 kset konsolerc DefaultProfile "patina21-$theme.profile" "Desktop Entry"
+kset ksplashrc Theme "org.patina21.$theme" KSplash
+kset ksplashrc Engine KSplashQML KSplash
 if [[ -n "$wallpaper_dir" ]]; then
   kset kscreenlockerrc Image "$wallpaper_dir/" Greeter Wallpaper org.kde.image General
 fi
