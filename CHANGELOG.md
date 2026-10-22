@@ -93,8 +93,8 @@ All notable changes to patina21 are documented here. The format follows
 - The desktop's shape as data (`defaults/settings.yaml`, `windows` and `panel`): a
   centred bar with the launcher and the task icons in the middle as on Windows 11, the
   files, browser and terminal pinned, written as the look-and-feel package's layout
-  script so a fresh login starts with it; `patina theme set <name> --layout` replaces an
-  existing desktop's panels with it. New windows open centred, and a KWin rule gives
+  script so a fresh login starts with it; the first `patina install` inside a session
+  applies it, and `patina theme set <name> --layout` brings it back later. New windows open centred, and a KWin rule gives
   every new main window 70% of the screen at its first appearance.
 - The smoke test checks the rendered theme, that setting it again changes nothing, and
   that a copy of the theme pack renders and switches back cleanly.

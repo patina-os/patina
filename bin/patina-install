@@ -29,6 +29,7 @@ EOU
 changes=0
 failed=0
 tui=0
+first_install=0
 
 changed() {
   changes=$((changes + 1))
@@ -334,14 +335,17 @@ install_apps() {
 }
 
 # The theme, through `patina theme set`: PATINA_THEME, else the one already recorded,
-# else the default of defaults/settings.yaml. Counts as a change unless the renderer
-# says it had nothing to do.
+# else the default of defaults/settings.yaml. The first install also gives the desktop
+# the theme's panel layout (Plasma's stock bar is all that exists then); later runs
+# leave the panels alone. Counts as a change unless the renderer had nothing to do.
 install_theme() {
   local theme out
+  local -a flags=()
   theme="${PATINA_THEME:-}"
   [[ -n "$theme" ]] || theme="$(current_theme || yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")"
+  [[ $first_install -eq 0 ]] || flags+=(--layout)
   out="$(mktemp)"
-  if ! "$PATINA_PATH/bin/patina-theme" set "$theme" | tee "$out"; then
+  if ! "$PATINA_PATH/bin/patina-theme" set "$theme" "${flags[@]}" | tee "$out"; then
     warn "theme: '$theme' failed to apply"
     failed=1
   fi
@@ -350,15 +354,14 @@ install_theme() {
 }
 
 record_state() {
-  local first=0 m
+  local m
   mkdir -p "$PATINA_STATE/migrations"
-  [[ -e "$PATINA_STATE/installed-at" ]] || first=1
   # Nothing is ever removed, so the record is every bundle installed so far; doctor
   # checks them all.
   { [[ -f "$PATINA_STATE/bundles" ]] && cat "$PATINA_STATE/bundles"; printf '%s\n' "${bundles[@]}"; } |
     awk 'NF && !seen[$0]++' > "$PATINA_STATE/bundles.new"
   mv "$PATINA_STATE/bundles.new" "$PATINA_STATE/bundles"
-  if [[ $first -eq 1 ]]; then
+  if [[ $first_install -eq 1 ]]; then
     # A fresh install is the end state every migration leads to, so none is pending.
     for m in "$PATINA_PATH"/migrations/[0-9]*.sh; do
       [[ -e "$m" ]] || continue
@@ -405,6 +408,7 @@ main() {
   done
   export PATINA_UNATTENDED="${PATINA_UNATTENDED:-}"
 
+  [[ -e "$PATINA_STATE/installed-at" ]] || first_install=1
   bootstrap_yq
   if [[ $list -eq 1 ]]; then
     list_bundles

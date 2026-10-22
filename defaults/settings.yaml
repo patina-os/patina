@@ -12,3 +12,12 @@ speed:
   animation_speed: 0.5       # factor on the animation length; 1 is Plasma's default, 0 none
   latency: lowest            # compositor latency: lowest | low | balanced | smooth | smoothest
   file_indexing: names       # off | names | content; names means file names under home only
+# Windows and the panel (the look of a Windows 11 desktop: new windows the same size in
+# the middle, the launcher and the task icons in the centre of the bar).
+windows:
+  placement: centered        # where a new window opens: centered | smart (Plasma's own)
+  size: 70                   # percent of the screen a new main window takes; 0 keeps the app's size
+panel:
+  layout: centered           # centered: launcher and task icons in the middle; plasma: stock bar
+  floating: false            # false: edge to edge; true: Plasma's floating bar
+  pinned: [files, browser, terminal]   # actions of keybindings.yaml pinned to the bar, in order
