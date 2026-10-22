@@ -115,13 +115,13 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `branding/` | the marks as data: `logo.txt` is the ASCII wordmark scripts print, `wordmark.svg` and `wave.svg` the marks screens show |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
 | `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `system/` the system tuning files |
-| `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, one `apply.sh`); `plasma/` first |
+| `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, one `apply.sh`) and the session the desktop workflow screenshots (`screenshot.sh`); `plasma/` first |
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
 | `devices/` | the only place for device- or architecture-specific files |
 | `iso/` | live-build configuration, Calamares configuration and branding, the templates `iso/live/assets.sh` renders from the theme (installer artwork and stylesheet, boot menu theme), first-boot unit, QEMU boot test (Phase 3) |
-| `docs/` | roadmap, branding and trademark rules, tested hardware; `screenshots/` holds the installer and desktop screenshots the README shows, taken by the image's boot test and by the manual install check, refreshed per release |
-| `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), iso (build, boot test, release) |
+| `docs/` | roadmap, branding and trademark rules, tested hardware; `screenshots/` holds the installer and desktop screenshots the README shows, taken by the image's boot test and by the desktop workflow's headless Plasma session, refreshed per release |
+| `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), desktop (Path A plus a Plasma session on a virtual screen, screenshot), iso (build, boot test, release) |
 
 Each directory's README is the authority on its file format.
 
@@ -161,8 +161,7 @@ Each directory's README is the authority on its file format.
   directories, never into the repository checkout.
 - Short, obvious code beats clever code. A function used once is not a function.
 - One data file per concern; no generated files committed. The one exception is
-  `docs/screenshots/`: images CI and the manual install check produce, committed as
-  they come, never edited.
+  `docs/screenshots/`: images CI produces, committed as they come, never edited.
 
 ## Data formats
 

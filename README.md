@@ -24,8 +24,7 @@ QEMU, Calamares as Debian 13 ships it, branded through data):
 
 ![The patina21 installer's welcome page](docs/screenshots/installer-amd64.png)
 
-The desktop screenshot comes with the manual install check (roadmap, Phase 3). The
-screenshots are taken by CI and by that check, never edited; see `iso/README.md`.
+The screenshots are taken by CI, never edited; see `iso/README.md`.
 
 ## What it is
 
