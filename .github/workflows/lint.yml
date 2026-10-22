@@ -62,6 +62,14 @@ jobs:
             echo "bin/patina-install does not fetch $url"
             exit 1
           }
+      - name: The login screen's font is the font of defaults/settings.yaml
+        run: |
+          # SDDM reads a static file under /etc, so the font name is copied once, here.
+          font="$(yq eval '.fonts.ui' defaults/settings.yaml)"
+          grep -q "^Font=$font," defaults/system/sddm.conf.d/patina21.conf || {
+            echo "defaults/system/sddm.conf.d/patina21.conf does not set Font=$font"
+            exit 1
+          }
       - name: The logo has exactly one copy
         run: |
           # The image build renders branding/logo.txt at build time; nothing else may

@@ -138,7 +138,9 @@ Each directory's README is the authority on its file format.
 - Idempotent: every script may run twice without harm. Check before changing.
 - `sudo` appears only in backend commands from `manifest/backends/`, never elsewhere.
   System files are written only through that path (`system.write`), only from
-  `defaults/system/` and for the keyring and sources file of an `apt-source` recipe.
+  `defaults/system/`, for the keyring and sources file of an `apt-source` recipe, and
+  for the login screen's wallpaper and the Breeze SDDM theme's `theme.conf.user`
+  (`/usr/local/share/patina21/login.png`, written by the desktop renderer).
   The scripts drop the `sudo` when they already run as root (a container, first boot).
 - Desktop configuration is written only by `desktops/<desktop>/apply.sh`, through the
   desktop's own tool (`kwriteconfig6` on Plasma) and only when a value differs, so a
