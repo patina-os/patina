@@ -146,11 +146,15 @@ real Plasma desktop, which the same VM run gives.
   emulation), on every pull request that touches the image
 - [x] the boot test takes a screenshot of the installer screen; the README shows it
   from `docs/screenshots/`
+- [x] the `desktop` workflow takes a screenshot of the finished desktop: Path A in a
+  Debian 13 container, then a Plasma X11 session on a virtual framebuffer
+  (`desktops/plasma/screenshot.sh`) with the theme applied inside it and kitty with
+  the greeting; the README shows it from `docs/screenshots/`
 - [x] branding within Debian's trademark policy (`docs/branding.md`, the logo)
 - [ ] one manual install in a VM per release, until Calamares can be driven unattended
   (upstream has no unattended mode; see `iso/README.md`): boot, answer the installer,
-  first boot ends in `patina21 firstboot: done`, and a screenshot of the finished
-  desktop goes to `docs/screenshots/`
+  first boot ends in `patina21 firstboot: done`, and the desktop looks like the
+  screenshot in `docs/screenshots/`
 - Done when: boot, answer the installer, finished desktop identical to Path A, in a VM
   on both architectures.
 

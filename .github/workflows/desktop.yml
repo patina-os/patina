@@ -1,0 +1,77 @@
+name: desktop
+
+# The finished desktop as a picture, from Path A: `patina install` as a user in a stock
+# Debian 13 container with Plasma, then desktops/plasma/screenshot.sh runs a Plasma X11
+# session on a virtual framebuffer (Xvfb, software OpenGL, no GPU and no login), applies
+# the theme inside it, opens kitty with the greeting and grabs the screen. The picture
+# is uploaded as an artifact; the one under docs/screenshots/ is copied from there,
+# never edited. amd64 only: the smoke workflow proves the layer on arm64 as well, and
+# the desktop looks the same.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'desktops/**'
+      - 'themes/**'
+      - 'defaults/**'
+      - 'branding/**'
+      - 'manifest/bundles/desktop.yaml'
+      - '.github/workflows/desktop.yml'
+
+# A newer push to the same branch cancels the run it supersedes.
+concurrency:
+  group: desktop-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  screenshot:
+    name: screenshot (amd64, Plasma on a virtual framebuffer)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    container:
+      image: debian:13
+      options: --privileged   # flatpak's bubblewrap sandbox, as in the smoke workflow
+    steps:
+      - name: Install Plasma and what Path A starts from
+        # Plasma as Debian ships it (the X11 session and its window manager) with the
+        # apps the bar pins (Dolphin, Firefox), the virtual framebuffer and Mesa's
+        # software renderer a session needs without a GPU or a login manager, and scrot
+        # for the grab. git and curl are what the README asks for; sudo is the user's
+        # way to apt.
+        run: |
+          apt-get update -q
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
+            plasma-desktop plasma-workspace kwin-x11 xvfb scrot \
+            dolphin firefox-esr dbus libgl1-mesa-dri libegl-mesa0 \
+            git ca-certificates curl sudo
+      - uses: actions/checkout@v5
+      - name: A user for the layer, with sudo for apt
+        run: |
+          useradd --create-home --shell /bin/bash patina
+          echo 'patina ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/patina
+          chown -R patina:patina "$GITHUB_WORKSPACE"
+          # No systemd here, so no system bus. flatpak asks AccountsService over it
+          # whether a user may install an app, and skips the check only when the bus
+          # answers that no such service exists; root (the smoke workflow) is not asked.
+          mkdir -p /run/dbus
+          dbus-daemon --system --fork
+      - name: patina install, as that user
+        # Path A as on a laptop: the backend's sudo is used, not dropped. The agents
+        # bundle stays out, as by default.
+        run: sudo -u patina -H bin/patina install --unattended
+      - name: The desktop as a picture
+        # Into the user's home: a path the upload step reads unchanged inside the
+        # container, which the runner's temp directory is not.
+        run: sudo -u patina -H desktops/plasma/screenshot.sh /home/patina/desktop-amd64.png
+      - name: Keep the screenshot and the session's log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-amd64
+          path: /home/patina/desktop-amd64.png*
+          if-no-files-found: error

@@ -131,16 +131,18 @@ files.
   install page with the gradient progress bar and the three slides; at first boot the
   mark on tty1 and the questions; then the login screen with the theme's wallpaper,
   the splash with the wordmark and the accent line, and the desktop in Inter and
-  JetBrains Mono. That run also takes the screenshot of the
-  finished desktop for `docs/screenshots/`.
+  JetBrains Mono, as `docs/screenshots/desktop-amd64.png` shows it.
 - A failing build or test is simply not published; Path A users are never affected.
 
 ## Screenshots
 
 `docs/screenshots/` holds the screenshots the README shows: the installer screen is
 the boot test's own screenshot, copied from the `boot-test-amd64` artifact of the `iso`
-workflow run that built the release; the desktop comes from the manual install. They
-are the one generated thing committed, refreshed for every release, never edited.
+workflow run that built the release; the desktop is the `desktop` workflow's, copied
+from its `desktop-amd64` artifact (Path A in a Debian 13 container, then
+`desktops/plasma/screenshot.sh`: a Plasma X11 session on a virtual framebuffer with
+kitty and the greeting in it). They are the one generated thing committed, refreshed for every
+release, never edited.
 
 ## Rules
 

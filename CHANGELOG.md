@@ -10,8 +10,13 @@ All notable changes to patina21 are documented here. The format follows
 
 - The image's boot test takes a screenshot of the installer screen through QEMU's
   monitor and the `iso` workflow uploads it with the serial log. The README shows the
-  amd64 one from `docs/screenshots/`; the desktop screenshot comes with the manual
-  install check (roadmap, Phase 3).
+  amd64 one from `docs/screenshots/`.
+- The `desktop` workflow takes a screenshot of the finished desktop: `patina install`
+  as a user in a Debian 13 container with Plasma, then `desktops/plasma/screenshot.sh`
+  runs a Plasma X11 session on a virtual framebuffer (Xvfb, software OpenGL), applies
+  the theme inside it, opens kitty with the fastfetch greeting and grabs the screen.
+  It runs on pull requests that change the look and by hand; the README shows its amd64
+  picture from `docs/screenshots/`.
 
 ### Changed
 
