@@ -45,7 +45,7 @@ jobs:
         run: |
           apt-get update -q
           DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
-            plasma-desktop plasma-workspace kwin-wayland kscreen spectacle \
+            plasma-desktop plasma-workspace kwin-wayland libkscreen-bin kde-spectacle \
             dolphin firefox-esr dbus libgl1-mesa-dri libegl-mesa0 \
             git ca-certificates curl sudo
       - uses: actions/checkout@v5
