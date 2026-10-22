@@ -54,8 +54,6 @@ jobs:
           useradd --create-home --shell /bin/bash patina
           echo 'patina ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/patina
           chown -R patina:patina "$GITHUB_WORKSPACE"
-          mkdir -p "$RUNNER_TEMP/desktop"
-          chown patina:patina "$RUNNER_TEMP/desktop"
           # No systemd here, so no system bus. flatpak asks AccountsService over it
           # whether a user may install an app, and skips the check only when the bus
           # answers that no such service exists; root (the smoke workflow) is not asked.
@@ -66,14 +64,13 @@ jobs:
         # bundle stays out, as by default.
         run: sudo -u patina -H bin/patina install --unattended
       - name: The desktop as a picture
-        run: |
-          sudo -u patina -H desktops/plasma/screenshot.sh "$RUNNER_TEMP/desktop/desktop-amd64.png"
+        # Into the user's home: a path the upload step reads unchanged inside the
+        # container, which the runner's temp directory is not.
+        run: sudo -u patina -H desktops/plasma/screenshot.sh /home/patina/desktop-amd64.png
       - name: Keep the screenshot and the session's log
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: desktop-amd64
-          path: |
-            ${{ runner.temp }}/desktop/desktop-amd64.png
-            ${{ runner.temp }}/desktop/desktop-amd64.png.log
+          path: /home/patina/desktop-amd64.png*
           if-no-files-found: error

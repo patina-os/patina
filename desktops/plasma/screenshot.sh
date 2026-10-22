@@ -108,6 +108,7 @@ dbus-run-session -- kwin_wayland --virtual --width "$width" --height "$height" \
 if [[ -s "$out" ]]; then
   echo "screenshot: $out"
 else
-  echo "screenshot: no picture (exit $status); see $log" >&2
+  echo "screenshot: no picture (exit $status); the end of $log:" >&2
+  tail -n 60 "$log" >&2
   exit 1
 fi
