@@ -1,7 +1,7 @@
 # The polished-desktop bundle: the app stack from the README, all free software. The
 # package names are Debian 13's; the smoke test installs the bundle on amd64 and arm64.
 name: desktop
-description: Curated desktop apps, kitty and the developer tools
+description: Curated desktop apps with kitty and the developer tools
 default: true
 packages:
   - fonts-inter          # fonts.ui of defaults/settings.yaml

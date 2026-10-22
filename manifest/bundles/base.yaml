@@ -1,7 +1,7 @@
 # Always installed. Keep this list short: everything else is a bundle the user picks.
 # Package names are Debian 13's; the smoke test installs them on amd64 and arm64.
 name: base
-description: What patina21 itself needs to run, and the system tuning every install gets
+description: What patina21 itself needs to run and the system tuning every install gets
 default: true
 required: true
 packages:
