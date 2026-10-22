@@ -121,7 +121,10 @@ jobs:
         run: |
           data="$HOME/.local/share"
           theme="$(yq eval '.theme' defaults/settings.yaml)"
-          bin/patina keys | grep -q 'Show these keys'
+          # Output is captured before grep: grep -q stops at the first match, and with
+          # pipefail the writer's SIGPIPE would fail the step.
+          out="$(bin/patina keys)"
+          grep -q 'Show these keys' <<< "$out"
           test -s "$data/applications/patina21-keys.desktop"
           launch="$(kreadconfig6 --file kglobalshortcutsrc --group services \
             --group patina21-keys.desktop --key _launch)"
@@ -136,8 +139,10 @@ jobs:
           bin/patina theme install "file://$repo"
           test -s "$data/patina21/themes/dusk/theme.yaml"
           test ! -e "$data/patina21/themes/dusk/run.sh"
-          bin/patina theme list | grep -q '^  dusk .*installed'
-          bin/patina theme install "file://$repo" | grep -q 'up to date'
+          out="$(bin/patina theme list)"
+          grep -q '^  dusk .*installed' <<< "$out"
+          out="$(bin/patina theme install "file://$repo")"
+          grep -q 'up to date' <<< "$out"
           bin/patina theme set dusk
           if bin/patina theme remove dusk; then exit 1; fi
           bin/patina theme set "$theme"
