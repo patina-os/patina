@@ -80,6 +80,9 @@ jobs:
           test -s "$data/color-schemes/patina21-$theme.colors"
           test -s "$data/wallpapers/patina21-$theme-drift/contents/images/3840x2160.png"
           test -s "$data/plasma/look-and-feel/org.patina21.$theme/contents/defaults"
+          grep -q 'org.kde.plasma.icontasks' \
+            "$data/plasma/look-and-feel/org.patina21.$theme/contents/layouts/org.kde.plasma.desktop-layout.js"
+          [[ "$(kreadconfig6 --file kwinrc --group Windows --key Placement)" == Centered ]]
           [[ "$(scheme)" == "patina21-$theme" ]]
           launch="$(kreadconfig6 --file kglobalshortcutsrc --group services \
             --group kitty.desktop --key _launch)"

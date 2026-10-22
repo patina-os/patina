@@ -104,6 +104,12 @@ real Plasma desktop, which the same VM run gives.
   halved animation factor, Baloo limited to file names under home, the Wayland session
   as the login screen's default (`defaults/system/sddm.conf.d/`), and no autostart
   entries beyond Plasma's own
+- [x] the desktop's shape as data: a centred bar with the launcher and the task icons in
+  the middle (as on Windows 11) through the look-and-feel package's layout script, so a
+  fresh login and the first `patina install` start with it and `patina theme set
+  --layout` brings it back; new windows centred at one share of the screen through KWin's placement and
+  one window rule. No automatic tiling: Plasma has none and a KWin script from the
+  store is code we would maintain; the tiling desktop is Phase 7
 - [x] CI: the smoke test checks the rendered files and settings, that setting the theme
   again changes nothing, and that a copy of the theme under another name renders and
   switches back without leftovers
