@@ -98,10 +98,10 @@ packs. Audience: developers and privacy-minded users in the EU.
 
 | Directory | Holds |
 |---|---|
-| `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash |
+| `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash; `lib.sh` holds the few functions they share |
 | `branding/` | the marks as data: `logo.txt` is the ASCII wordmark scripts print |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
-| `defaults/` | desktop-agnostic keybindings and curated settings; `system/` holds the system tuning files |
+| `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `system/` the system tuning files |
 | `desktops/` | per-desktop renderers (templates plus one `apply.sh`); `plasma/` first |
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
@@ -120,7 +120,9 @@ Each directory's README is the authority on its file format.
 - Scripts in `bin/`: `patina-<cmd>`, no extension. Other scripts: `.sh`.
 - Data files end in `.yaml`; GitHub workflows keep GitHub's `.yml`; Calamares keeps its
   `.conf` and `branding.desc` names and live-build its `.list.chroot` names, because the
-  tools require them. They are YAML all the same and are linted as such.
+  tools require them. They are YAML all the same and are linted as such. The files under
+  `defaults/system/` are the exception: sysctl, udev and systemd files named by their
+  destination, excluded from the YAML checks.
 - Entries starting with `_` are templates; tools skip them.
 
 ## Coding conventions
@@ -133,7 +135,9 @@ Each directory's README is the authority on its file format.
   `eval`, no `curl | sh` except an upstream installer listed in `manifest/upstream.yaml`.
 - Idempotent: every script may run twice without harm. Check before changing.
 - `sudo` appears only in backend commands from `manifest/backends/`, never elsewhere.
-  System files are written only through that path, only from `defaults/system/`.
+  System files are written only through that path (`system.write`), only from
+  `defaults/system/` and for the keyring and sources file of an `apt-source` recipe.
+  The scripts drop the `sudo` when they already run as root (a container, first boot).
 - Read YAML with `yq`; never parse it with grep or sed. Write user config under XDG
   directories, never into the repository checkout.
 - Short, obvious code beats clever code. A function used once is not a function.

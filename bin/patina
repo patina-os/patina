@@ -34,7 +34,8 @@ usage() {
 usage: patina <command> [args]
 
 commands:
-  install   Set up patina21 on this machine (theme, app bundles, Nextcloud, agent CLIs)
+  install   Set up patina21 on this machine: app bundles, system tuning, app settings
+            (patina install --help for the flags; theme and TUI come with later phases)
   update    Pull the latest patina21 and run pending migrations
   theme     List, preview or switch themes
   doctor    Check the base system and report what patina21 would change

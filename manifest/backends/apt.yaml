@@ -1,9 +1,29 @@
 # Backend for Debian (apt). The reference backend: canonical names are Debian's, so the
-# map below should stay empty or nearly so.
+# map below should stay empty or nearly so. Every command that needs root starts with
+# sudo; the scripts drop it when they already run as root (a container, first boot).
 name: apt
 os_ids:   # ID= values from /etc/os-release this backend serves
   - debian
 refresh: sudo apt-get --quiet update
-install: sudo apt-get --quiet --yes install   # package names are appended
-installed: dpkg-query --status                # exit 0 when the package is installed
+install: sudo env DEBIAN_FRONTEND=noninteractive apt-get --quiet --yes install   # names appended
+# Exit 0 only when the package is installed; --status also says yes for leftover config files.
+installed: dpkg-query --listfiles
 map: {}   # canonical name -> apt name, only where they differ
+system:
+  # The one path that writes under /etc: the files of defaults/system/, the keyrings and
+  # sources of apt-source recipes. Arguments: source file, destination.
+  write: sudo install -D -m 0644
+  # Run once, in this order, after a defaults/system/ file changed, only on a machine
+  # booted with systemd; a command that is not installed is skipped (no GRUB on a Pi).
+  apply:
+    - sudo systemctl daemon-reload                 # picks up the zram and oomd drop-ins
+    - sudo sysctl --system
+    - sudo udevadm control --reload
+    - sudo udevadm trigger --subsystem-match=block --action=change
+    - sudo systemd-tmpfiles --create
+    - sudo systemctl enable --now systemd-oomd.service
+    - sudo systemctl start systemd-zram-setup@zram0.service
+    - sudo update-initramfs -u
+    - sudo update-grub
+apt_source:
+  sources_dir: /etc/apt/sources.list.d   # <name>.sources in deb822 form, one per recipe

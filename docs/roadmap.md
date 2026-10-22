@@ -7,8 +7,10 @@ finished in, not the order they were prepared in: the image and the device entri
 written as data before the layer's own commands existed, so Phases 3 and 4 already carry
 ticked items while Phase 1 is open.
 
-Status: pre-alpha. The live image builds and boots to the installer in CI on both
-architectures; nothing is installable yet, because Phases 1 to 3 are open.
+Status: pre-alpha. The core commands exist and the smoke test runs `patina install`
+twice in Debian 13 containers on both architectures; the live image builds and boots to
+the installer in CI. Phase 1's last step, the run on a fresh Debian 13 VM with Plasma,
+is open, and so are Phases 2 and 3.
 
 Settled on this roadmap: the TUI helper is `gum` (Debian 13 ships 0.14 on both
 architectures); the office suite is Euro-Office; the terminal is kitty until Debian
@@ -22,24 +24,27 @@ name of the first theme.
 ## Phase 1: the core commands on x86_64 (Debian 13)
 
 `patina install` without a TUI yet: it installs what the manifest says, through the apt
-backend, Flathub and the upstream recipes, plus the commands around it.
+backend, Flathub and the upstream recipes, plus the commands around it. The code is in;
+what the ticks below still owe is the "done when" run on a real VM.
 
-- [ ] `patina install`: the `base` and `desktop` bundles, the Flathub remote and the
+- [x] `patina install`: the `base` and `desktop` bundles, the Flathub remote and the
   flatpaks, the upstream recipes (npm, uv, the Go `yq` release binary); bundles chosen
-  by flags, no prompts; honours `PATINA_UNATTENDED=1` (defaults for everything)
-- [ ] the extended desktop bundle, from Debian 13's archive on both architectures:
+  by flags, no prompts; honours `PATINA_UNATTENDED=1` (defaults for everything).
+  Flatpaks are installed per user, like the layer itself; nothing needs sudo except the
+  backend's commands
+- [x] the extended desktop bundle, from Debian 13's archive on both architectures:
   kitty as the terminal (Ghostty is in neither Debian's archive nor Flathub; it takes
   kitty's place in Phase 6 if Debian 14 carries it) and the developer tools fish,
   starship, bat, eza, fzf, ripgrep, lazygit, btop, zoxide, atuin, git-delta, neovim and
   fastfetch; the Zed editor from Flathub (`dev.zed.Zed`, free licences, listing not
-  verified by its publisher) with its telemetry and cloud AI off in `defaults/`. Not in
+  verified by its publisher) with its telemetry and AI off through `defaults/apps.yaml`. Not in
   Debian 13 and therefore not shipped: helix, yazi, zellij, difftastic, wezterm
-- [ ] the opt-in `agents` bundle: Claude Code, Codex CLI, opencode and Ollama from their
+- [x] the opt-in `agents` bundle: Claude Code, Codex CLI, opencode and Ollama from their
   upstream installers, Claude Desktop from Anthropic's signed apt repository. Ollama is
   the local backend: its installer sets up the service, `patina install` points
   opencode at `localhost:11434`, and the office suite too if Euro-Office kept
   ONLYOFFICE's AI plugin (to verify), so documents never leave the machine
-- [ ] the office suite: Euro-Office, the AGPL-3.0 fork of ONLYOFFICE by a European
+- [x] the office suite: Euro-Office, the AGPL-3.0 fork of ONLYOFFICE by a European
   consortium (IONOS, Nextcloud, XWiki, OpenProject and others; first stable release
   June 2026), desktop editors for amd64 and arm64. Debian does not package it and
   Flathub does not carry it yet (an upstream issue is open), so it comes from
@@ -48,7 +53,7 @@ backend, Flathub and the upstream recipes, plus the commands around it.
   `manifest/upstream.yaml`, moved to Flathub as soon as Flathub carries it. This is the
   one default that comes from an upstream apt repository; the rule in `manifest/` says
   when that is allowed
-- [ ] the system tuning, in the `base` bundle for every install, after what CachyOS
+- [x] the system tuning, in the `base` bundle for every install, after what CachyOS
   ships as configuration (its `cachyos-settings` package, GPL-3.0): zram with zstd
   through `systemd-zram-generator`, I/O scheduler udev rules (bfq for disks,
   mq-deadline for SATA SSDs, none for NVMe), the memory sysctls for zram, a journald
@@ -58,11 +63,15 @@ backend, Flathub and the upstream recipes, plus the commands around it.
   place the layer touches `/etc`; `patina doctor` reports them. Not copied: the kernel,
   the rebuilt packages, the disabled NMI watchdog and relaxed pointer restrictions, the
   US NTP servers, the Nvidia options
-- [ ] `patina update` (git pull plus pending migrations), `patina migrate`,
+- [x] `patina update` (git pull plus pending migrations), `patina migrate`,
   `patina doctor` (base and architecture, `yq`, missing packages, state directory)
-- [ ] verified package names: the "illustrative" notes in `manifest/` go away
-- [ ] CI: the smoke job runs `patina install` unattended, twice, in the Debian 13
+- [x] verified package names: the "illustrative" notes in `manifest/` go away
+- [x] CI: the smoke job runs `patina install` unattended, twice, in the Debian 13
   containers on x86_64 and aarch64 (the ARM plan's first step happens here)
+- [ ] the run that closes the phase: a fresh Debian 13 VM with Plasma, `git clone`,
+  `patina install`, a second run, `patina doctor`; what it shows missing goes back into
+  the data. The CI containers prove everything but the systemd side (zram, oomd, the
+  schedulers, GRUB and the initramfs) and the sudo path as a user
 - Done when: a fresh Debian 13 VM with Plasma gets the whole app stack with one command,
   a second run changes nothing, and `patina doctor` reports clean.
 

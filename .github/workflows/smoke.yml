@@ -1,9 +1,9 @@
 name: smoke
 
-# Runs the patina21 entry point inside a stock Debian 13 container on both architectures
-# the layer targets, and checks that every package the manifest, the devices and the image name
-# exists in Debian's archive. This job grows into the Path A bootstrap test
-# (docs/roadmap.md, Phase 1) once `patina install` exists.
+# Path A in a stock Debian 13 container on both architectures the layer targets:
+# `patina install` unattended, twice (the second run must change nothing), then
+# `patina doctor`. Also checks that every package the manifest, the devices and the
+# image name exists in Debian's archive.
 
 on:
   push:
@@ -28,20 +28,19 @@ jobs:
             runner: ubuntu-24.04-arm
             deb_arch: arm64
     runs-on: ${{ matrix.runner }}
-    container: debian:13
+    timeout-minutes: 90
+    container:
+      image: debian:13
+      # flatpak runs its post-install triggers in a bubblewrap sandbox, which needs
+      # namespaces the default container profile forbids.
+      options: --privileged
     steps:
-      - name: Install what checkout and the smoke test need
+      - name: Install what Path A starts from
+        # The README asks for git and curl; a stock Debian desktop has them, the bare
+        # container does not.
         run: |
           apt-get update -q
           apt-get install -y -q git ca-certificates curl
-      - name: Install the Go yq the way manifest/upstream.yaml describes
-        # Debian's yq package is the Python jq wrapper; the data format needs the Go one.
-        env:
-          YQ_URL: https://github.com/mikefarah/yq/releases/latest/download
-        run: |
-          curl -fsSL --retry 4 -o /usr/local/bin/yq "$YQ_URL/yq_linux_${{ matrix.deb_arch }}"
-          chmod +x /usr/local/bin/yq
-          yq --version
       - uses: actions/checkout@v5
       - name: Show the base
         run: |
@@ -52,14 +51,30 @@ jobs:
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           bin/patina version
           bin/patina help
-          set +e
-          bin/patina install
-          rc=$?
-          set -e
-          test "$rc" -eq 2
+          bin/patina install --list
+      - name: patina install, first run
+        # As root: the backend's sudo is dropped; curl, flatpak and the rest come from
+        # the base bundle; yq is fetched by the installer itself.
+        run: |
+          bin/patina install --unattended
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: patina install, second run changes nothing
+        run: |
+          bin/patina install --unattended | tee second-run.txt
+          grep -q 'patina: nothing to do' second-run.txt
+      - name: patina doctor reports clean
+        run: |
+          bin/patina doctor
+          bin/patina migrate --list
+      - name: What landed
+        run: |
+          yq --version
+          flatpak list --user --columns=application,version
+          ls -l /etc/apt/sources.list.d /etc/apt/keyrings
+          cat "$HOME/.local/state/patina21/bundles"
       - name: Every YAML file parses
         run: |
-          git ls-files '*.yaml' '*.yml' '*.conf' '*.desc' | while read -r f; do
+          git ls-files '*.yaml' '*.yml' '*.conf' '*.desc' ':!defaults/system/' | while read -r f; do
             yq eval '.' "$f" > /dev/null || { echo "invalid YAML: $f"; exit 1; }
           done
       - name: Every package the bundles, the devices and the image name exists in Debian

@@ -47,6 +47,29 @@ All notable changes to patina21 are documented here. The format follows
 
 ### Added
 
+- The core commands (roadmap, Phase 1). `patina install` installs the chosen bundles
+  (`--bundles`, `--all`, `--list`; `--unattended` or `PATINA_UNATTENDED=1` for the
+  first-boot contract): Debian packages through the apt backend, flatpaks per user from
+  Flathub, the upstream recipes (the Go `yq` binary, npm and uv tools, install scripts,
+  signed upstream apt repositories in deb822 form), the system tuning files from
+  `defaults/system/` and the app settings from `defaults/apps.yaml`. It fetches `yq`
+  itself, drops `sudo` when already root, runs twice without changes and records the
+  install under `~/.local/state/patina21/`. `patina doctor` reports the base, the tools,
+  missing packages, flatpaks and upstream tools, the tuning files and pending migrations;
+  `patina migrate` runs pending migrations, `patina update` pulls and then migrates.
+- Euro-Office joins the desktop bundle, from Nextcloud's signed apt repository (the
+  signed builds are published as Nextcloud Office, amd64 and arm64). Claude Desktop's
+  recipe is verified against Anthropic's repository. Every upstream recipe names the
+  command or package it leaves behind.
+- `defaults/system/`: the tuning after CachyOS's configuration, as the files `patina
+  install` writes under `/etc`: zram with zstd, I/O schedulers per device type, the
+  memory sysctls, a journald cap, shorter stop timeouts, systemd-oomd, background THP
+  defragmentation, a one-second GRUB menu, a `MODULES=dep` initramfs. The base bundle
+  names `systemd-oomd`, which Debian packages apart from systemd.
+- `defaults/apps.yaml`: Zed with telemetry and AI off, opencode pointed at Ollama on
+  this machine.
+- The smoke workflow runs `patina install` unattended, twice, then `patina doctor`, in
+  the Debian 13 containers on both architectures.
 - `devices/snapdragon-x-elite/`: the first ARM laptop entry (roadmap, Phase 4), data
   only and untested: the models with their device trees, the firmware packages from
   Debian's archive, and the manual validation procedure after the Debian wiki. The

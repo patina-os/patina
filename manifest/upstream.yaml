@@ -1,46 +1,77 @@
 # Tools installed from their upstream installers, used only when no packaged version is
-# worth using. Methods:
-#   npm         global package via the base's nodejs and npm
-#   uv          Python tool via `uv tool install`
+# worth using. Every entry names its `method` and, for the is-installed check, the
+# `command` it puts on PATH (binary, script) or the `package` it installs (npm, uv,
+# apt-source). Methods:
+#   npm         global package via the base's nodejs and npm, into ~/.local
+#   uv          Python tool via `uv tool install` (uv itself is the `uv` recipe)
 #   script      the upstream's documented install script (the only `curl | sh` allowed)
 #   binary      a single static binary from the upstream's release page, installed to
 #               ~/.local/bin; `arch` maps uname -m to the upstream's file name
-#   apt-source  the upstream's own signed apt repository, added as a source and installed
-#               with apt; for opt-in tools, and for a default only when the software is
-#               free and neither Debian's archive nor Flathub carries it (Euro-Office)
-# Names and methods are illustrative until Phase 1 verifies them.
+#   apt-source  the upstream's own signed apt repository, written as <name>.sources in
+#               deb822 form with the key at `keyring`, through the backend's sudo path,
+#               then installed with apt; for opt-in tools, and for a default only when
+#               the software is free and neither Debian's archive nor Flathub carries it
+#               (Euro-Office). Only an apt base can run it.
+# Checked against the upstreams in Phase 1 (docs/roadmap.md).
 yq:
   # Debian's `yq` package is the Python jq wrapper, not the Go yq the data format is
-  # written for, so the Go release binary is the only option on Debian.
+  # written for, so the Go release binary is the only option on Debian. bin/patina-install
+  # fetches it before it can read this file; its copy of this URL must stay identical.
   method: binary
   url: https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${arch}
   arch:
     x86_64: amd64
     aarch64: arm64
+  command: yq
 uv:
-  # Debian 13 does not package uv; the Python-based agent tools need it.
+  # Debian 13 does not package uv; a Python-based agent tool would need it.
   method: script
   url: https://astral.sh/uv/install.sh
+  command: uv
+euro-office:
+  # Euro-Office, the AGPL fork of ONLYOFFICE by a European consortium. Debian does not
+  # package it and Flathub does not carry it yet, so the signed builds come from
+  # Nextcloud's apt repository, where they are published as Nextcloud Office (amd64 and
+  # arm64). The one default from an upstream repository; it moves to Flathub as soon as
+  # Flathub carries it.
+  method: apt-source
+  name: nextcloud-office
+  key: https://download.nextcloud.com/office/repo/nextcloud-office.asc
+  keyring: /etc/apt/keyrings/nextcloud-office.asc
+  source:   # one deb822 stanza: URIs, Suites, Components, signed by the keyring above
+    url: https://download.nextcloud.com/office/repo/deb
+    suite: stable
+    components: main
+  package: nextcloud-office-nextcloudoffice
 claude-code:
   method: npm
   package: "@anthropic-ai/claude-code"
+  command: claude
 codex:
   method: npm
   package: "@openai/codex"
+  command: codex
 opencode:
   method: npm
   package: opencode-ai
+  command: opencode
 claude-desktop:
   # Anthropic ships Claude Desktop for Linux only as a Debian package, from its own
-  # signed apt repository. apt then keeps it updated like any other package.
+  # signed apt repository (amd64 and arm64). apt then keeps it updated like any other
+  # package.
   method: apt-source
+  name: claude-desktop
   key: https://downloads.claude.ai/claude-desktop/key.asc
-  keyring: /usr/share/keyrings/claude-desktop-archive-keyring.asc
-  source:   # one deb line: url suite components, signed by the keyring above
+  keyring: /etc/apt/keyrings/claude-desktop.asc
+  source:
     url: https://downloads.claude.ai/claude-desktop/apt/stable
     suite: stable
     components: main
   package: claude-desktop
+  command: claude-desktop
 ollama:
+  # Its installer sets up the ollama service; it asks for sudo itself. Ollama is the
+  # local backend the agent tools point at (defaults/apps.yaml).
   method: script
   url: https://ollama.com/install.sh
+  command: ollama

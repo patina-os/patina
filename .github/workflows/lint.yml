@@ -24,7 +24,8 @@ jobs:
             fi
           done < <(git ls-files)
           printf 'checking: %s\n' "${files[@]}"
-          shellcheck --shell=bash "${files[@]}"
+          # -x follows the `source` of bin/lib.sh (the scripts carry a source= directive).
+          shellcheck -x --shell=bash "${files[@]}"
 
   yamllint:
     runs-on: ubuntu-24.04
@@ -53,6 +54,14 @@ jobs:
             fi
           done
           exit "$missing"
+      - name: The installer's yq bootstrap matches the recipe in manifest/upstream.yaml
+        run: |
+          # yq cannot read its own recipe, so bin/patina-install carries the URL once more.
+          url="$(yq eval '.yq.url' manifest/upstream.yaml)"
+          grep -qF "\"$url\"" bin/patina-install || {
+            echo "bin/patina-install does not fetch $url"
+            exit 1
+          }
       - name: The logo has exactly one copy
         run: |
           # The image build renders branding/logo.txt at build time; nothing else may
