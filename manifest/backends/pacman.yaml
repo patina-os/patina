@@ -11,7 +11,8 @@ installed: pacman --query                          # exit 0 when the package is 
 map:      # canonical (Debian) name -> pacman name, only where they differ
   nextcloud-desktop: nextcloud-client
   librsvg2-bin: librsvg
-  fonts-inter: inter-font
+  fonts-adobe-sourcesans3: adobe-source-sans-fonts
+  # fonts-sora: not in the Arch repositories; to settle when this base is scheduled
   fonts-jetbrains-mono: ttf-jetbrains-mono
 system:   # untested, like the rest of this file; the files under defaults/system/ that name
           # initramfs-tools and /etc/default/grub.d are Debian's and need a map here later

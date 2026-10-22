@@ -11,7 +11,8 @@ map:      # canonical (Debian) name -> dnf name, only where they differ
   nextcloud-desktop: nextcloud-client
   npm: nodejs-npm
   librsvg2-bin: librsvg2-tools
-  fonts-inter: rsms-inter-fonts
+  fonts-adobe-sourcesans3: adobe-source-sans-pro-fonts   # ships Source Sans 3; unverified
+  # fonts-sora: not packaged for Fedora; to settle when this base is scheduled
   fonts-jetbrains-mono: jetbrains-mono-fonts
 system:   # untested, like the rest of this file; the files under defaults/system/ that name
           # initramfs-tools and /etc/default/grub.d are Debian's and need a map here later

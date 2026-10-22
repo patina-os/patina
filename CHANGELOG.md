@@ -8,6 +8,14 @@ All notable changes to patina21 are documented here. The format follows
 
 ### Added
 
+- The datum theme, the new default: graphite, the ice blue of contour lines and one
+  coral accent (`base0E`), with a contour map around a survey point as its wallpaper,
+  drawn once and kept as SVG artwork (CC-BY-SA-4.0). amethyst stays as an option.
+- `docs/design/futures.html`: the eight directions of the October 2026 redesign
+  (Perigee, Sodium, Phosphor, Nacre, Sirocco, Canopy, Cascade, Datum) with mockups,
+  palettes, type and what each would cost to ship, kept as candidates for more themes.
+- A migration for installed machines: `patina update` runs `patina install` once more,
+  which installs the new fonts and renders the theme already set again.
 - The image's boot test takes a screenshot of the installer screen through QEMU's
   monitor and the `iso` workflow uploads it with the serial log. The README shows the
   amd64 one from `docs/screenshots/`.
@@ -20,6 +28,19 @@ All notable changes to patina21 are documented here. The format follows
 
 ### Changed
 
+- The brand is redesigned. The mark is text: a summit drawn as contour rings and shaded
+  with the letters of patina, the word as the summit line and the survey point ▲ in
+  coral (`branding/logo.txt`, now UTF-8 for that one character). `patina help` and the
+  fastfetch greeting print it in the brand's colours instead of the pink-to-purple
+  gradient. `branding/wordmark.svg` sets the same characters beside patina²¹ in Sora
+  ExtraBold; `branding/icon.svg`, the summit as dots, replaces `wave.svg` as the square
+  mark.
+- The interface font is Source Sans 3 instead of Inter (`fonts-adobe-sourcesans3`), in
+  Plasma, GTK, the login screen, the installer and its window manager; the wordmark
+  needs Sora (`fonts-sora`). Both join the desktop bundle, the live image and the
+  packages the installer adds. The bar floats by default (`panel.floating: true`).
+- The smoke test finds the default theme's wallpaper by name instead of expecting
+  amethyst's, and the lint check for copies of the mark leaves `docs/design/` alone.
 - The roadmap is renumbered into seven phases in the order they are finished: core
   commands, theming, the branded install (TUI, first boot, image), ARM hardware, the 0.1
   release, Debian 14, the Hyprland add-on. Two open decisions are settled: the TUI helper

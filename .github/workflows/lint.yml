@@ -73,9 +73,11 @@ jobs:
       - name: The logo has exactly one copy
         run: |
           # The image build renders branding/logo.txt at build time; nothing else may
-          # carry the wordmark (CLAUDE.md, "Never").
+          # carry the wordmark (CLAUDE.md, "Never"). docs/design/ keeps design pages
+          # as they were shown, the marks they proposed included.
           line="$(sed -n 2p branding/logo.txt)"
-          copies="$(git grep -l -F "$line" -- . ':!branding/' ':!README.md' || true)"
+          copies="$(git grep -l -F "$line" -- . ':!branding/' ':!README.md' ':!docs/design/' \
+            || true)"
           if [[ -n "$copies" ]]; then
             echo "logo copied into: $copies"
             exit 1

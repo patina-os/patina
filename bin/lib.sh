@@ -176,29 +176,34 @@ render() {
   printf '%s\n' "$text" > "$2"
 }
 
-# The ASCII mark, branding/logo.txt, which stays plain 7-bit ASCII (serial console,
-# /etc/issue.d, README). The pink-to-purple gradient is added here, at print time:
-# `print_logo auto` only for an interactive 24-bit terminal, `print_logo always` in any
-# case (the file fastfetch shows). The gradient is the brand's, not the theme's: a green
-# theme still prints it pink.
+# The text mark, branding/logo.txt, which stays plain text without colour codes (serial
+# console, /etc/issue.d, README). The colours are added here, at print time: `print_logo
+# auto` only for an interactive 24-bit terminal, `print_logo always` in any case (the
+# file fastfetch shows). They are the brand's, not the theme's, the same as in
+# branding/wordmark.svg: the rings shade from slate (i) through ice (t) to pale ice (n),
+# the word patina is bold white, the survey point coral.
 print_logo() {
   local mode="$1" logo="$PATINA_PATH/branding/logo.txt"
   [[ -r "$logo" ]] || return 0
   if [[ "$mode" == always ]] || [[ -t 1 && -z "${NO_COLOR:-}" && "${TERM:-dumb}" != "dumb" &&
         ( "${COLORTERM:-}" == "truecolor" || "${COLORTERM:-}" == "24bit" ) ]]; then
-    local -a lines
-    mapfile -t lines < "$logo"
-    local n=${#lines[@]} i r g b
-    for i in "${!lines[@]}"; do
-      if (( n > 1 )); then
-        r=$(( 255 + (139 - 255) * i / (n - 1) ))
-        g=$(( 95 + (92 - 95) * i / (n - 1) ))
-        b=$(( 208 + (246 - 208) * i / (n - 1) ))
-      else
-        r=255 g=95 b=208
+    local line head word tail part reset=$'\033[0m'
+    local -a parts
+    while IFS= read -r line; do
+      head="$line" word="" tail=""
+      if [[ "$line" == *patina* ]]; then
+        head="${line%%patina*}" word=patina tail="${line#*patina}"
       fi
-      printf '\033[38;2;%d;%d;%dm%s\033[0m\n' "$r" "$g" "$b" "${lines[i]}"
-    done
+      parts=()
+      for part in "$head" "$tail"; do
+        # The escape codes hold no i, t or n, so each pass leaves the earlier ones alone.
+        part="${part//i/$'\033[38;2;79;115;148m'i$reset}"
+        part="${part//t/$'\033[38;2;106;184;255m't$reset}"
+        part="${part//n/$'\033[38;2;169;215;255m'n$reset}"
+        parts+=("${part//▲/$'\033[38;2;255;95;109m'▲$reset}")
+      done
+      printf '%s%s%s\n' "${parts[0]}" "${word:+$'\033[1;38;2;245;247;249m'$word$reset}" "${parts[1]}"
+    done < "$logo"
   else
     cat "$logo"
   fi

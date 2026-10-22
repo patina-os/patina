@@ -29,8 +29,8 @@ Files, from `templates/`, each named after the theme:
   what it has and the run goes on with a warning; `patina doctor` reports it.
   `defaults/system/sddm.conf.d/patina21.conf` selects Breeze with the layer's font and
   cursor
-- the fastfetch greeting: `~/.local/share/patina21/logo.txt`, the ASCII mark with its
-  gradient (`print_logo always`), and `~/.config/fastfetch/config.jsonc` pointing at it
+- the fastfetch greeting: `~/.local/share/patina21/logo.txt`, the text mark in the
+  brand's colours (`print_logo always`), and `~/.config/fastfetch/config.jsonc` pointing at it
   with the theme's accent for the labels, rewritten only while its first line is ours
 - the panel layout in that package (`contents/layouts/org.kde.plasma.desktop-layout.js`)
   when `panel.layout` is `centered`: one bar at the bottom with the launcher and the
