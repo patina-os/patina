@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <!-- productWallpaper: the theme's first wallpaper under a veil, behind every installer page -->
+  <image xlink:href="wallpaper.png" width="1920" height="1080"/>
+  <rect width="1920" height="1080" fill="${BASE00}" fill-opacity="0.68"/>
+</svg>

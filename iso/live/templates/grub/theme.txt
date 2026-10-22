@@ -1,0 +1,61 @@
+# GRUB theme of the live image's boot menu, after live-build's stock live-theme, in the
+# default theme's palette; iso/live/assets.sh renders it and the splash next to it.
+# Unifont is GRUB's own font: the menu is the one surface the layer's fonts do not reach.
+# @KEYMAP_SHORT@ and @TIMEOUT_NOTIFICATION_LONG@ are GRUB's, filled at boot.
+desktop-image: "../splash.png"
+desktop-image-scale-method: "crop"   # live-build boots GRUB at 800x600; keep the aspect
+desktop-image-h-align: "center"
+desktop-image-v-align: "center"
+desktop-color: "${BASE00}"
+title-color: "${BASE05}"
+title-font: "Unifont Regular 16"
+title-text: ""
+message-font: "Unifont Regular 16"
+message-color: "${BASE05}"
+message-bg-color: "${BASE01}"
+terminal-font: "Unifont Regular 16"
+
+# help bar at the bottom
++ label {
+  top = 100%-50
+  left = 0
+  width = 100%
+  height = 20
+  text = "@KEYMAP_SHORT@"
+  align = "center"
+  color = "${BASE04}"
+  font = "Unifont Regular 16"
+}
+
+# boot menu
++ boot_menu {
+  left = 10%
+  width = 80%
+  top = 52%
+  height = 48%-80
+  item_color = "${BASE05}"
+  item_font = "Unifont Regular 16"
+  selected_item_color = "${BASE0F}"
+  selected_item_font = "Unifont Regular 16"
+  item_height = 20
+  item_padding = 2
+  item_spacing = 6
+  icon_width = 0
+  icon_height = 0
+  item_icon_space = 0
+}
+
+# the timeout: one thin accent line
++ progress_bar {
+  id = "__timeout__"
+  left = 15%
+  top = 100%-80
+  height = 16
+  width = 70%
+  font = "Unifont Regular 16"
+  text_color = "${BASE00}"
+  fg_color = "${BASE0E}"
+  bg_color = "${BASE01}"
+  border_color = "${BASE0E}"
+  text = "@TIMEOUT_NOTIFICATION_LONG@"
+}
