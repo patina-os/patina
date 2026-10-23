@@ -17,7 +17,7 @@ templates="$here/templates"
 
 config="${XDG_CONFIG_HOME:-$HOME/.config}"
 data="${XDG_DATA_HOME:-$HOME/.local/share}"
-agent_desktop="$data/applications/patina21-agent.desktop"
+agent_desktop="$data/applications/patina-agent.desktop"
 changes=0
 
 # shellcheck source=bin/lib.sh
@@ -91,7 +91,7 @@ service_for_action() {
   if [[ -z "$service" ]]; then
     return
   fi
-  if [[ "$service" == patina21-agent.desktop && ! -f "$agent_desktop" ]]; then
+  if [[ "$service" == patina-agent.desktop && ! -f "$agent_desktop" ]]; then
     return   # the agents bundle is not installed
   fi
   if ! service_installed "$service"; then
@@ -106,14 +106,14 @@ tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
 render "$templates/color-scheme.colors" "$tmp/colors"
-put "$tmp/colors" "$data/color-schemes/patina21-$theme.colors"
-drop_other_themes "$data/color-schemes/patina21-*.colors" "$data/color-schemes/patina21-$theme."
+put "$tmp/colors" "$data/color-schemes/patina-$theme.colors"
+drop_other_themes "$data/color-schemes/patina-*.colors" "$data/color-schemes/patina-$theme."
 
 render "$templates/konsole.colorscheme" "$tmp/konsole.colorscheme"
-put "$tmp/konsole.colorscheme" "$data/konsole/patina21-$theme.colorscheme"
+put "$tmp/konsole.colorscheme" "$data/konsole/patina-$theme.colorscheme"
 render "$templates/konsole.profile" "$tmp/konsole.profile"
-put "$tmp/konsole.profile" "$data/konsole/patina21-$theme.profile"
-drop_other_themes "$data/konsole/patina21-*" "$data/konsole/patina21-$theme."
+put "$tmp/konsole.profile" "$data/konsole/patina-$theme.profile"
+drop_other_themes "$data/konsole/patina-*" "$data/konsole/patina-$theme."
 
 # Wallpapers: one Plasma wallpaper package per image. An SVG is rendered once, at 4K,
 # and again only when the theme's file is newer than the rendering (a git pull sets
@@ -123,7 +123,7 @@ wallpaper_pkgs=" "
 while IFS= read -r rel; do
   src="$theme_dir/$rel"
   name="$(basename "${rel%.*}")"
-  pkg="$data/wallpapers/patina21-$theme-$name"
+  pkg="$data/wallpapers/patina-$theme-$name"
   png="$pkg/contents/images/3840x2160.png"
   wallpaper_pkgs="$wallpaper_pkgs$pkg "
   if [[ ! -f "$src" ]]; then
@@ -152,7 +152,7 @@ while IFS= read -r rel; do
   put "$tmp/wallpaper.json" "$pkg/metadata.json"
   [[ -n "$wallpaper_dir" ]] || wallpaper_dir="$pkg"   # the first one is the default
 done < <(yq eval '.wallpapers[]?' "$theme_yaml")
-for pkg in "$data"/wallpapers/patina21-*; do
+for pkg in "$data"/wallpapers/patina-*; do
   [[ -d "$pkg" ]] || continue
   if [[ "$wallpaper_pkgs" != *" $pkg "* ]]; then
     say "removing $pkg (not in this theme)"
@@ -165,7 +165,7 @@ done
 # home. The first wallpaper's rendering and the Breeze theme's override file are written
 # through the backend's one sudo path (CLAUDE.md names this case), each only when it
 # differs; without sudo the login screen keeps what it has and the run goes on.
-login_png=/usr/local/share/patina21/login.png
+login_png=/usr/local/share/patina/login.png
 sddm_breeze=/usr/share/sddm/themes/breeze
 if [[ -n "$wallpaper_dir" && -f "$wallpaper_dir/contents/images/3840x2160.png" ]]; then
   render "$templates/sddm-theme.conf.user" "$tmp/theme.conf.user"
@@ -191,7 +191,7 @@ fi
 # The look-and-feel package: Plasma's own way to hand a new session its colours,
 # icons, cursors and wallpaper at once, so a fresh user gets the theme at first login.
 tpl[WALLPAPER_PACKAGE]="${wallpaper_dir:+$wallpaper_dir/}"
-lnf="$data/plasma/look-and-feel/org.patina21.$theme"
+lnf="$data/plasma/look-and-feel/org.patina.$theme"
 render "$templates/look-and-feel-metadata.json" "$tmp/lnf.json"
 put "$tmp/lnf.json" "$lnf/metadata.json"
 render "$templates/look-and-feel-defaults" "$tmp/lnf.defaults"
@@ -200,7 +200,7 @@ put "$tmp/lnf.defaults" "$lnf/contents/defaults"
 put "$PATINA_PATH/branding/wordmark.svg" "$lnf/contents/splash/images/logo.svg"
 render "$templates/splash.qml" "$tmp/Splash.qml"
 put "$tmp/Splash.qml" "$lnf/contents/splash/Splash.qml"
-drop_other_themes "$data/plasma/look-and-feel/org.patina21.*" "$lnf"
+drop_other_themes "$data/plasma/look-and-feel/org.patina.*" "$lnf"
 
 # The agent launcher, only with the agents bundle installed. It opens the agent CLI in
 # the kitty profile desktops/terminal/ writes.
@@ -218,7 +218,7 @@ fi
 # `patina keys` until a key is pressed.
 tpl[PATINA_PATH]="$PATINA_PATH"
 render "$templates/keys.desktop" "$tmp/keys.desktop"
-put "$tmp/keys.desktop" "$data/applications/patina21-keys.desktop"
+put "$tmp/keys.desktop" "$data/applications/patina-keys.desktop"
 
 finish() {
   if [[ $changes -eq 0 ]]; then
@@ -256,7 +256,7 @@ if ! command -v kwriteconfig6 > /dev/null || ! command -v kreadconfig6 > /dev/nu
 fi
 
 font="${tpl[UI_FONT]},10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
-kset kdeglobals ColorScheme "patina21-$theme" General
+kset kdeglobals ColorScheme "patina-$theme" General
 kset kdeglobals AccentColor "${tpl[BASE0E_RGB]}" General
 kset kdeglobals accentColorFromWallpaper false General
 kset kdeglobals font "$font" General
@@ -265,13 +265,13 @@ kset kdeglobals toolBarFont "$font" General
 kset kdeglobals smallestReadableFont "${tpl[UI_FONT]},8,-1,5,400,0,0,0,0,0,0,0,0,0,0,1" General
 kset kdeglobals fixed "${tpl[MONO_FONT]},10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1" General
 kset kdeglobals activeFont "$font" WM
-kset kdeglobals LookAndFeelPackage "org.patina21.$theme" KDE
+kset kdeglobals LookAndFeelPackage "org.patina.$theme" KDE
 kset kdeglobals widgetStyle Breeze KDE
 kset kdeglobals Theme "${tpl[ICONS]}" Icons
 kset kcminputrc cursorTheme "${tpl[CURSORS]}" Mouse
 kset plasmarc name "${tpl[DESKTOP_THEME]}" Theme
-kset konsolerc DefaultProfile "patina21-$theme.profile" "Desktop Entry"
-kset ksplashrc Theme "org.patina21.$theme" KSplash
+kset konsolerc DefaultProfile "patina-$theme.profile" "Desktop Entry"
+kset ksplashrc Theme "org.patina.$theme" KSplash
 kset ksplashrc Engine KSplashQML KSplash
 if [[ -n "$wallpaper_dir" ]]; then
   kset kscreenlockerrc Image "$wallpaper_dir/" Greeter Wallpaper org.kde.image General
@@ -313,7 +313,7 @@ case "$(yq eval '.windows.placement' "$settings")" in
   centered) kset kwinrc Placement Centered Windows ;;
   smart) kset kwinrc Placement Smart Windows ;;
 esac
-rule=patina21-new-windows
+rule=patina-new-windows
 percent="$(yq eval '.windows.size // 0' "$settings")"
 rules="$(kreadconfig6 --file kwinrulesrc --group General --key rules)"
 if [[ "$percent" -gt 0 ]]; then
@@ -328,7 +328,7 @@ if [[ "$percent" -gt 0 ]]; then
            END { if (!first && fallback) print fallback }')"
   fi
   if [[ "$screen" =~ ^([0-9]+)x([0-9]+)$ ]]; then
-    kset kwinrulesrc Description "patina21: a new window opens at $percent% of the screen" "$rule"
+    kset kwinrulesrc Description "patina: a new window opens at $percent% of the screen" "$rule"
     kset kwinrulesrc types 1 "$rule"
     kset kwinrulesrc size "$(( BASH_REMATCH[1] * percent / 100 )),$(( BASH_REMATCH[2] * percent / 100 ))" "$rule"
     kset kwinrulesrc sizerule 3 "$rule"
@@ -357,8 +357,8 @@ while IFS= read -r action; do
   component="$(yq eval ".actions[\"$action\"].component // \"\"" "$actions")"
   label="$(yq eval ".actions[\"$action\"].label // \"$action\"" "$actions")"
   if yq eval -e ".actions[\"$action\"].service" "$actions" > /dev/null 2>&1; then
-    if [[ "$(yq eval ".actions[\"$action\"].service" "$actions")" == patina21-agent.desktop && ! -f "$agent_desktop" ]]; then
-      kdel kglobalshortcutsrc _launch services patina21-agent.desktop   # the agents bundle is not installed
+    if [[ "$(yq eval ".actions[\"$action\"].service" "$actions")" == patina-agent.desktop && ! -f "$agent_desktop" ]]; then
+      kdel kglobalshortcutsrc _launch services patina-agent.desktop   # the agents bundle is not installed
       continue
     fi
     service="$(service_for_action "$action")"
@@ -401,10 +401,10 @@ if [[ $in_session -eq 1 ]]; then
     if [[ "${PATINA_LAYOUT:-}" == 1 ]]; then
       # Replaces this user's panels with the layout script above.
       say "resetting the panels to the theme's layout"
-      plasma-apply-lookandfeel --apply "org.patina21.$theme" --resetLayout > /dev/null ||
+      plasma-apply-lookandfeel --apply "org.patina.$theme" --resetLayout > /dev/null ||
         warn "plasma-apply-lookandfeel --resetLayout failed"
     else
-      plasma-apply-lookandfeel --apply "org.patina21.$theme" > /dev/null || warn "plasma-apply-lookandfeel failed"
+      plasma-apply-lookandfeel --apply "org.patina.$theme" > /dev/null || warn "plasma-apply-lookandfeel failed"
     fi
   fi
   if [[ $changes -gt 0 ]] && command -v dbus-send > /dev/null; then
@@ -412,7 +412,7 @@ if [[ $in_session -eq 1 ]]; then
       warn "KWin did not reload its settings; they apply at the next login"
   fi
   command -v plasma-apply-colorscheme > /dev/null &&
-    { plasma-apply-colorscheme "patina21-$theme" > /dev/null || warn "plasma-apply-colorscheme failed"; }
+    { plasma-apply-colorscheme "patina-$theme" > /dev/null || warn "plasma-apply-colorscheme failed"; }
   command -v plasma-apply-cursortheme > /dev/null &&
     { plasma-apply-cursortheme "${tpl[CURSORS]}" > /dev/null || warn "plasma-apply-cursortheme failed"; }
   if [[ -n "$wallpaper_dir" ]] && command -v plasma-apply-wallpaperimage > /dev/null; then

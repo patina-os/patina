@@ -23,7 +23,7 @@ efibootmgr
 squashfs-tools
 rsync
 os-prober
-# the installer screen (patina21-ui.service): X, a bare window manager, a session bus
+# the installer screen (patina-ui.service): X, a bare window manager, a session bus
 xserver-xorg
 xinit
 openbox

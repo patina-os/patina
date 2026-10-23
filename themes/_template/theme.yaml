@@ -1,4 +1,4 @@
-# patina21 theme. Copy this directory to themes/<name>/ and edit every field.
+# patina theme. Copy this directory to themes/<name>/ and edit every field.
 # Colours are desktop-agnostic data; desktops/<desktop>/ renders them.
 name: template                 # directory name: lowercase, kebab-case
 display_name: Template

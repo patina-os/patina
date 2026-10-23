@@ -13,7 +13,7 @@ usage() {
 usage: patina theme list | current | set <name> [--layout]
        patina theme install <git-url> | update [<name>] | remove <name>
 
-  list       the themes of patina21 and the installed ones (* marks the current one)
+  list       the themes of patina and the installed ones (* marks the current one)
   current    the theme the last 'patina theme set' or 'patina install' applied
   set NAME   render NAME for this user's terminal and desktop and make it current.
              Re-running it changes nothing; switching back leaves nothing of the
@@ -23,11 +23,11 @@ usage: patina theme list | current | set <name> [--layout]
              'patina install' and a fresh login get the layout anyway; afterwards the
              panels are only touched with this
   install URL  fetch a theme from a git repository (by convention named
-             patina21-<name>-theme) into $PATINA_THEMES. Only data is kept:
+             patina-<name>-theme) into $PATINA_THEMES. Only data is kept:
              theme.yaml, README.md, LICENSE and the wallpapers theme.yaml lists.
              Installing again updates it
   update     fetch every installed theme again from where it came from, or only NAME
-  remove NAME  delete an installed theme; not one of patina21's, not the current one
+  remove NAME  delete an installed theme; not one of patina's, not the current one
 EOU
 }
 
@@ -81,7 +81,7 @@ install_theme() {
   [[ "$name" =~ ^[a-z0-9][a-z0-9-]{0,39}$ ]] ||
     die "the theme's name '$name' is not lowercase kebab-case (letters, digits, -)"
   [[ ! -e "$PATINA_PATH/themes/$name" ]] ||
-    die "'$name' is a theme of patina21 itself; the installed one needs another name"
+    die "'$name' is a theme of patina itself; the installed one needs another name"
   for key in display_name author; do
     value="$(yq eval ".$key // \"\"" "$src/theme.yaml")"
     [[ "$value" =~ ^[[:alnum:][:space:].,\'()+_-]{1,60}$ && "$value" != *$'\n'* ]] ||
@@ -151,7 +151,7 @@ update_themes() {
 remove_theme() {
   local name="$1"
   [[ "$name" =~ ^[a-z0-9][a-z0-9-]*$ && -f "$PATINA_THEMES/$name/theme.yaml" ]] ||
-    die "no installed theme '$name'; the themes of patina21 itself cannot be removed"
+    die "no installed theme '$name'; the themes of patina itself cannot be removed"
   [[ "$(current_theme || true)" != "$name" ]] ||
     die "'$name' is the current theme; switch to another first (patina theme set <name>)"
   rm -rf "${PATINA_THEMES:?}/$name"

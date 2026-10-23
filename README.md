@@ -1,4 +1,4 @@
-# patina21
+# patina
 
 ```text
             █▌  ▲
@@ -26,20 +26,20 @@ still to come. See the [roadmap](docs/roadmap.md).
 The installer's welcome page, as the live image's boot test captures it in CI (amd64,
 QEMU, Calamares as Debian 13 ships it, branded through data):
 
-![The patina21 installer's welcome page](docs/screenshots/installer-amd64.png)
+![The patina installer's welcome page](docs/screenshots/installer-amd64.png)
 
 The finished desktop, as the `desktop` workflow captures it in CI (amd64, a Plasma X11
 session on a virtual framebuffer after `patina install`): the centred bar and kitty with
 the fastfetch greeting. This picture still shows amethyst, the first theme; the next one
 CI takes shows datum.
 
-![The patina21 desktop with the amethyst theme](docs/screenshots/desktop-amd64.png)
+![The patina desktop with the amethyst theme](docs/screenshots/desktop-amd64.png)
 
 The screenshots are taken by CI, never edited; see `iso/README.md`.
 
 ## What it is
 
-patina21 takes a stock Debian with Plasma and finishes it: one consistent theme across
+patina takes a stock Debian with Plasma and finishes it: one consistent theme across
 Plasma, terminal and editors, sane defaults, the apps a privacy-minded developer in the
 EU wants, and the agent tools (Claude Code, Codex CLI, opencode, Claude Desktop, Ollama
 for local models) installed the way their upstreams intend.
@@ -72,20 +72,20 @@ Two paths, one layer. If they ever diverge, Path A wins.
 | Path | What you do | Status |
 |---|---|---|
 | A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (it asks the theme and the app bundles on a terminal; flags or `--unattended` skip the questions) | pre-alpha: installs the app stack, the system tuning and the theme, checked in CI containers, not yet on a real desktop |
-| B: the patina21 image | Boot a small live image, answer the installer (disk, user, locale), get the finished desktop. Plasma and the base are downloaded from Debian's mirrors during the install; first boot runs Path A | pre-alpha: the image builds and boots to the installer in CI (x86_64 and aarch64), not released yet; the first boot waits for Path A |
+| B: the patina image | Boot a small live image, answer the installer (disk, user, locale), get the finished desktop. Plasma and the base are downloaded from Debian's mirrors during the install; first boot runs Path A | pre-alpha: the image builds and boots to the installer in CI (x86_64 and aarch64), not released yet; the first boot waits for Path A |
 
 ```sh
 sudo apt install git curl
-git clone https://github.com/patina21/patina21.git ~/.local/share/patina21
-~/.local/share/patina21/bin/patina install            # the default bundles: base, desktop
-~/.local/share/patina21/bin/patina install --all      # plus the opt-in agent tools
+git clone https://github.com/patina21/patina.git ~/.local/share/patina
+~/.local/share/patina/bin/patina install            # the default bundles: base, desktop
+~/.local/share/patina/bin/patina install --all      # plus the opt-in agent tools
 ```
 
 `patina install --list` shows the bundles, `patina doctor` checks the result,
 `patina theme list` and `patina theme set <name>` switch the theme (`PATINA_THEME=<name>`
 picks one for the install), and `patina update` runs `git pull` and then any pending
 migrations. Put `~/.local/bin` on
-your PATH and link `patina` there (`ln -s ~/.local/share/patina21/bin/patina
+your PATH and link `patina` there (`ln -s ~/.local/share/patina/bin/patina
 ~/.local/bin/patina`).
 
 ## Supported bases
@@ -140,10 +140,8 @@ the local backend the agent tools point at.
 
 ## FAQ
 
-**What does the 21 stand for?** The maintainer's personal secret.
-
 **Is this a new distribution?** No. It is a layer on Debian and a live image that only
-automates installing that layer. There is no patina21 kernel, package repository or
+automates installing that layer. There is no patina kernel, package repository or
 rebuilt package, and there never will be.
 
 **Is it Omarchy for KDE?** It borrows Omarchy's polish, quick branded install and update
@@ -161,7 +159,7 @@ backend stays as data for a possible later flavour.
 
 **Is it fast like CachyOS?** It copies what makes CachyOS feel fast and is configuration:
 zram, I/O schedulers, memory and systemd settings, a lean boot, low-latency Plasma
-defaults. It does not copy the custom kernel or the rebuilt packages, because patina21
+defaults. It does not copy the custom kernel or the rebuilt packages, because patina
 owns nothing that gets CVEs.
 
 **Why Plasma?** The most complete free desktop, and it already handles the cross-app

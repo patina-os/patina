@@ -1,7 +1,7 @@
 # Snapdragon X Elite laptops
 
 The first ARM laptops on the roadmap (Phase 4). Debian runs on them with caveats, from
-Debian's own kernel and firmware packages, so the entry exists; nobody has run patina21
+Debian's own kernel and firmware packages, so the entry exists; nobody has run patina
 on one yet, so the status is untested. `device.yaml` holds the facts, `docs/hardware.md`
 records results. The reference is Debian's own page for the ThinkPad T14s Gen 6:
 <https://wiki.debian.org/InstallingDebianOn/Thinkpad/T14s_Gen6_Snapdragon>.
@@ -10,7 +10,7 @@ records results. The reference is Debian's own page for the ThinkPad T14s Gen 6:
 
 - No usable ACPI tables and no device-tree partition: the boot loader must load the
   model's device tree (`models` in `device.yaml`) from the ESP and pass it to the
-  kernel. Debian's installer and the patina21 live image do not do that, so Path B is
+  kernel. Debian's installer and the patina live image do not do that, so Path B is
   not an option and Path A starts from a manual install.
 - Debian 13's release kernel (6.12) is older than the laptop support upstream. The Debian
   wiki installs the kernel and firmware from `trixie-backports` (7.2 at the time of
@@ -21,7 +21,7 @@ records results. The reference is Debian's own page for the ThinkPad T14s Gen 6:
   Windows partition. The devices rules allow a helper that copies them from the user's
   own machine, but it is written only after a run shows exactly which files are missing.
 - Everything that works upstream works from Debian's archive. Bluetooth and the camera
-  need an out-of-tree kernel branch, which patina21 will never ship (no own kernel, no
+  need an out-of-tree kernel branch, which patina will never ship (no own kernel, no
   out-of-tree modules): they wait for upstream.
 
 ## The run
@@ -44,8 +44,8 @@ Same rule as the Raspberry Pi 4: a clean install per attempt, correctness over U
 3. Path A, as that user:
 
    ```sh
-   git clone https://github.com/patina21/patina21 ~/.local/share/patina21
-   mkdir -p ~/.local/bin && ln -s ~/.local/share/patina21/bin/patina ~/.local/bin/patina
+   git clone https://github.com/patina21/patina ~/.local/share/patina
+   mkdir -p ~/.local/bin && ln -s ~/.local/share/patina/bin/patina ~/.local/bin/patina
    patina install
    ```
 

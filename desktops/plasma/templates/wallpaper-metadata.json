@@ -1,8 +1,8 @@
 {
   "KPackageStructure": "Plasma/Wallpaper",
   "KPlugin": {
-    "Id": "patina21-${THEME}-${WALLPAPER}",
-    "Name": "patina21 ${DISPLAY_NAME}: ${WALLPAPER}",
+    "Id": "patina-${THEME}-${WALLPAPER}",
+    "Name": "patina ${DISPLAY_NAME}: ${WALLPAPER}",
     "Authors": [{"Name": "${AUTHOR}"}],
     "License": "${ARTWORK_LICENSE}"
   }

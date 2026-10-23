@@ -2,7 +2,7 @@
 
 Curated defaults as desktop-agnostic data. Nothing here is specific to Plasma; the
 renderers under `desktops/` translate it. Users keep their own overrides outside the
-repository (planned: `~/.config/patina21/`), so `git pull` never clobbers them.
+repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
 
 - `keybindings.yaml`: named actions mapped to key chords, and under `names` what each
   does in words. A desktop renderer knows how to bind each action (which command to

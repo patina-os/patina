@@ -1,7 +1,7 @@
 # Tested hardware
 
 The layer has no architecture; the base provides the hardware support. This list records
-what has been tested with patina21, how far it got, and where the device glue lives. An
+what has been tested with patina, how far it got, and where the device glue lives. An
 "ARM version" is this list plus `devices/`, never a separate release.
 
 Status values: untested, boots, works-with-caveats, supported.

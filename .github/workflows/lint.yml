@@ -66,8 +66,8 @@ jobs:
         run: |
           # SDDM reads a static file under /etc, so the font name is copied once, here.
           font="$(yq eval '.fonts.ui' defaults/settings.yaml)"
-          grep -q "^Font=$font," defaults/system/sddm.conf.d/patina21.conf || {
-            echo "defaults/system/sddm.conf.d/patina21.conf does not set Font=$font"
+          grep -q "^Font=$font," defaults/system/sddm.conf.d/patina.conf || {
+            echo "defaults/system/sddm.conf.d/patina.conf does not set Font=$font"
             exit 1
           }
       - name: The mark and the wordmark have exactly one copy each

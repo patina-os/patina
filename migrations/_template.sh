@@ -5,8 +5,8 @@
 set -euo pipefail
 
 # Example: move a state file to its new location, only if the old one still exists.
-# old="$HOME/.local/state/patina21/theme"
-# new="$HOME/.local/state/patina21/current-theme"
+# old="$HOME/.local/state/patina/theme"
+# new="$HOME/.local/state/patina/current-theme"
 # if [[ -f "$old" && ! -e "$new" ]]; then
 #   mv "$old" "$new"
 # fi

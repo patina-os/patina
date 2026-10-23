@@ -1,6 +1,6 @@
 # Raspberry Pi 4
 
-The first aarch64 target. Nothing here is specific to patina21 beyond the fact list in
+The first aarch64 target. Nothing here is specific to patina beyond the fact list in
 `device.yaml`: Debian's official Raspberry Pi image carries the firmware, kernel and
 device tree, and the layer has no architecture. This page is the manual validation
 procedure from the roadmap's Phase 4; `docs/hardware.md` records the result.
@@ -40,8 +40,8 @@ leftovers from the previous attempt.
 4. Path A, as that user:
 
    ```sh
-   git clone https://github.com/patina21/patina21 ~/.local/share/patina21
-   mkdir -p ~/.local/bin && ln -s ~/.local/share/patina21/bin/patina ~/.local/bin/patina
+   git clone https://github.com/patina21/patina ~/.local/share/patina
+   mkdir -p ~/.local/bin && ln -s ~/.local/share/patina/bin/patina ~/.local/bin/patina
    patina install
    ```
 
@@ -55,8 +55,8 @@ is a pass, however long it took.
 
 ## The generic arm64 live image
 
-The patina21 arm64 image targets machines that boot a generic UEFI Debian; the Pi 4
+The patina arm64 image targets machines that boot a generic UEFI Debian; the Pi 4
 does not, out of the box. The community UEFI firmware from <https://github.com/pftf/RPi4>
-makes it one, but it is a third-party binary that patina21 neither ships nor tests.
+makes it one, but it is a third-party binary that patina neither ships nor tests.
 If you use it, the image's boot test (QEMU `virt` machine) is the closest thing to a
 reference, and a successful install is worth a row in `docs/hardware.md` too.

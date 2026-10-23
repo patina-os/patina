@@ -137,23 +137,23 @@ check_theme() {
     bad "theme '$theme' is recorded but not under themes/"
     return
   fi
-  if [[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/color-schemes/patina21-$theme.colors" ]]; then
+  if [[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/color-schemes/patina-$theme.colors" ]]; then
     ok "$theme: colour scheme in place"
   else
     bad "$theme: colour scheme missing (run patina theme set $theme)"
   fi
-  if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/kitty/patina21.conf" ]]; then
+  if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/kitty/patina.conf" ]]; then
     ok "$theme: terminal colours in place"
   else
     bad "$theme: terminal colours missing (run patina theme set $theme)"
   fi
-  if [[ -f /usr/local/share/patina21/login.png ]]; then
+  if [[ -f /usr/local/share/patina/login.png ]]; then
     ok "login screen: wallpaper in place"
   else
-    note "login screen: /usr/local/share/patina21/login.png not written (run patina theme set $theme where sudo works)"
+    note "login screen: /usr/local/share/patina/login.png not written (run patina theme set $theme where sudo works)"
   fi
   if [[ -d /usr/share/sddm/themes/breeze ]] &&
-      ! grep -qsx 'background=/usr/local/share/patina21/login.png' /usr/share/sddm/themes/breeze/theme.conf.user; then
+      ! grep -qsx 'background=/usr/local/share/patina/login.png' /usr/share/sddm/themes/breeze/theme.conf.user; then
     bad "login screen: the Breeze theme does not point at the wallpaper (run patina theme set $theme)"
   fi
   if ! command -v kwriteconfig6 > /dev/null; then

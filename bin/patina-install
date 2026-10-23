@@ -56,7 +56,7 @@ ask() {
   print_wordmark auto
   echo
   gum style --foreground "${tpl[BASE04]}" \
-    "patina21 $("$PATINA_PATH/bin/patina" version) · $(basename "$BACKEND" .yaml) · $(uname -m)"
+    "patina $("$PATINA_PATH/bin/patina" version) · $(basename "$BACKEND" .yaml) · $(uname -m)"
   echo
   if [[ -z "${PATINA_THEME:-}" ]]; then
     mapfile -t theme_lines < <("$PATINA_PATH/bin/patina-theme" list | sed 's/^[* ] //')

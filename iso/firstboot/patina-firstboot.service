@@ -1,12 +1,12 @@
-# First boot of a system installed from the patina21 image: runs Path A (git clone, then
+# First boot of a system installed from the patina image: runs Path A (git clone, then
 # `patina install`) on the console before the login screen appears. Installed into
 # the image by iso/live/build.sh and enabled in the installed system by Calamares
 # (modules/shellprocess-firstboot.conf). Runs once: the script writes
-# /var/lib/patina21/firstboot-done.
+# /var/lib/patina/firstboot-done.
 [Unit]
-Description=patina21 first boot: install the layer (Path A)
-Documentation=https://github.com/patina21/patina21/tree/main/iso
-ConditionPathExists=!/var/lib/patina21/firstboot-done
+Description=patina first boot: install the layer (Path A)
+Documentation=https://github.com/patina21/patina/tree/main/iso
+ConditionPathExists=!/var/lib/patina/firstboot-done
 After=network-online.target systemd-user-sessions.service
 Wants=network-online.target
 Before=display-manager.service getty@tty1.service
@@ -15,7 +15,7 @@ Conflicts=getty@tty1.service
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/local/lib/patina21/firstboot.sh
+ExecStart=/usr/local/lib/patina/firstboot.sh
 StandardInput=tty
 StandardOutput=tty
 StandardError=journal+console

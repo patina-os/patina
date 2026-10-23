@@ -3,7 +3,7 @@
 Context and rules for anyone, human or Claude, working in this repository. Read it fully
 before changing anything. The README is for users; this file is for contributors.
 
-## What patina21 is
+## What patina is
 
 A polish layer for KDE Plasma on Debian: themes, cross-app consistency, curated defaults,
 agent CLIs and a free-software, EU-sovereign app stack. Delivered as a layer on stock
@@ -56,7 +56,7 @@ packs. Audience: developers and privacy-minded users in the EU.
   line and the survey point ▲. `branding/logo.txt` holds it for fastfetch and the
   console, `branding/wordmark.txt` the name in block letters for `patina help`, the
   install questions and the README; `branding/wordmark.svg` sets the mark beside
-  patina²¹ for screens, `icon.svg` and `icon-small.svg` are the mark as large and
+  patina for screens, `icon.svg` and `icon-small.svg` are the mark as large and
   small icons. The brand's colours (slate, ice, white, coral) do not follow a theme.
   The desktop's shape is a floating centred bar as on Windows 11 and new windows
   centred at one size; all are knobs in `defaults/settings.yaml`. No automatic tiling
@@ -66,8 +66,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   sysctls, journald and systemd limits, boot) is copied as data for every install, kept
   under `defaults/system/`; its kernel, rebuilt packages and own repository are not.
   Plasma-side speed settings are curated defaults like any other.
-- Install model: per user, Omarchy-style. Clone at `~/.local/share/patina21`, symlink
-  `~/.local/bin/patina`, state in `~/.local/state/patina21/`. `PATINA_PATH` overrides.
+- Install model: per user, Omarchy-style. Clone at `~/.local/share/patina`, symlink
+  `~/.local/bin/patina`, state in `~/.local/state/patina/`. `PATINA_PATH` overrides.
 - Updates: `git pull` plus versioned migrations (`migrations/`).
 - Image: a small live image built with Debian's live-build, with Calamares as the branded
   installer. The live system carries only the installer; Plasma and the base packages
@@ -81,7 +81,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 - License: GPL-3.0-or-later. Theme artwork may carry its own license (`artwork_license`).
 - Data format: YAML, parsed with the Go `yq` (mikefarah). Debian's `yq` package is the
   Python jq wrapper and must not be used.
-- The name is final. The 21 is not explained anywhere except by the README FAQ answer.
+- The name is final: patina. The 21 it once carried was dropped in October 2026.
 
 ## Principles (non-negotiable)
 
@@ -109,20 +109,19 @@ packs. Audience: developers and privacy-minded users in the EU.
 - add a dependency beyond bash, coreutils, git, `yq` and what the base ships without a
   line in `manifest/` and a reason in the commit message
 - add abstraction layers, plugin systems, frameworks or a second language for the tooling
-- write "Debian patina21", "patina21 Linux" or `Patina21`
+- write "Debian patina", "patina Linux" or `Patina`
 - paste the logo into a script or redraw it; `branding/logo.txt` is the only copy of the
   mark, `branding/wordmark.txt` of the text wordmark and `branding/wordmark.svg` of the
   typeset one (it and `icon.svg` repeat the mark's characters, changed together with
   `logo.txt`); scripts print or copy them (`print_logo` and `print_wordmark` in
   `lib.sh`, the image build and the renderer copy the SVG)
-- explain the 21
 
 ## Repository map
 
 | Directory | Holds |
 |---|---|
 | `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash; `lib.sh` holds the few functions they share, among them the theme loader and template filler the renderers and the image build use |
-| `branding/` | the marks as data: `logo.txt` (the mark) and `wordmark.txt` (the name in block letters) are what scripts print, `wordmark.svg` (the mark typeset beside patina²¹), `icon.svg` and `icon-small.svg` what screens show |
+| `branding/` | the marks as data: `logo.txt` (the mark) and `wordmark.txt` (the name in block letters) are what scripts print, `wordmark.svg` (the mark typeset beside patina), `icon.svg` and `icon-small.svg` what screens show |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
 | `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `system/` the system tuning files |
 | `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, one `apply.sh`) and the headless session the desktop workflow screenshots (`screenshot.sh`); `plasma/` first; `terminal/` renders the terminal and its tools for every desktop |
@@ -137,8 +136,8 @@ Each directory's README is the authority on its file format.
 
 ## Naming
 
-- `patina21`: always lowercase, also at the start of a sentence. Command: `patina`.
-- Environment variables: `PATINA_` prefix. State and config directories: `patina21`.
+- `patina`: always lowercase, also at the start of a sentence. Command: `patina`.
+- Environment variables: `PATINA_` prefix. State and config directories: `patina`.
 - Files, directories, themes, devices, bundles: lowercase kebab-case.
 - Scripts in `bin/`: `patina-<cmd>`, no extension. Other scripts: `.sh`.
 - Data files end in `.yaml`; GitHub workflows keep GitHub's `.yml`; Calamares keeps its
@@ -161,7 +160,7 @@ Each directory's README is the authority on its file format.
   System files are written only through that path (`system.write`), only from
   `defaults/system/`, for the keyring and sources file of an `apt-source` recipe, and
   for the login screen's wallpaper and the Breeze SDDM theme's `theme.conf.user`
-  (`/usr/local/share/patina21/login.png`, written by the desktop renderer).
+  (`/usr/local/share/patina/login.png`, written by the desktop renderer).
   The scripts drop the `sudo` when they already run as root (a container, first boot).
 - Desktop configuration is written only by `desktops/<desktop>/apply.sh` (the
   terminal's by `desktops/terminal/apply.sh`), through the desktop's own tool
@@ -193,7 +192,7 @@ Each directory's README is the authority on its file format.
 4. No scripts in a theme. If a theme needs code, the renderer is missing a feature: add it
    to `desktops/<desktop>/` for all themes.
 5. Validate the YAML, add a `CHANGELOG.md` line, open a pull request. A theme kept in a
-   repository of its own (`patina21-<name>-theme`) installs with `patina theme install
+   repository of its own (`patina-<name>-theme`) installs with `patina theme install
    <git-url>`, which keeps only its data (`themes/README.md`).
 
 ## How to add a base backend

@@ -1,4 +1,4 @@
--- patina21: the ${DISPLAY_NAME} theme for neovim, from its base16 palette. `patina theme
+-- patina: the ${DISPLAY_NAME} theme for neovim, from its base16 palette. `patina theme
 -- set` overwrites this file; copy it under another name to change it.
 vim.cmd("highlight clear")
 if vim.fn.exists("syntax_on") == 1 then
@@ -6,7 +6,7 @@ if vim.fn.exists("syntax_on") == 1 then
 end
 vim.o.background = "${VARIANT}"
 vim.o.termguicolors = true
-vim.g.colors_name = "patina21-${THEME}"
+vim.g.colors_name = "patina-${THEME}"
 
 local c = {
   base00 = "${BASE00}", base01 = "${BASE01}", base02 = "${BASE02}", base03 = "${BASE03}",

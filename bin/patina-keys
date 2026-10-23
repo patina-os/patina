@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# The cheat sheet: patina21's keys from defaults/keybindings.yaml and the desktop's own
+# The cheat sheet: patina's keys from defaults/keybindings.yaml and the desktop's own
 # essentials from desktops/<desktop>/actions.yaml, as a table. Meta+K shows it in kitty.
 set -euo pipefail
 
@@ -37,7 +37,7 @@ if logo_colour auto; then
 fi
 
 echo
-echo "  patina21"
+echo "  patina"
 # shellcheck disable=SC2016 # $a is a yq variable inside the expression, not a shell one
 while IFS=$'\t' read -r chord name; do
   printf '  %s%-34s%s %s\n' "$on" "$chord" "$off" "$name"

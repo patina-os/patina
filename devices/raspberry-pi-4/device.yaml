@@ -13,5 +13,5 @@ notes: >
   firmware-brcm80211, already in that image. The image is console-only, so the Plasma
   desktop Path A expects is installed from Debian's archive first (devices/raspberry-pi-4/
   README.md). With the community UEFI firmware (pftf/RPi4, a third-party binary not from
-  Debian) the Pi 4 also boots the generic arm64 live image; patina21 does not ship or
+  Debian) the Pi 4 also boots the generic arm64 live image; patina does not ship or
   test that firmware. 4 GiB of RAM is the smallest model worth using with Plasma.

@@ -1,10 +1,10 @@
-# Calamares branding for the patina21 installer: the strings, and the names of the files
+# Calamares branding for the patina installer: the strings, and the names of the files
 # iso/live/assets.sh renders next to this one from branding/ and the default theme
 # (logo.svg, logo-square.svg, wallpaper.png, the slides, stylesheet.qss). assets.sh also
 # fills the version from git and the sidebar colours (style) from the palette, so no
 # colour is typed here. Nothing rendered is committed.
 ---
-componentName: patina21
+componentName: patina
 
 welcomeStyleCalamares: false
 welcomeExpandingLogo: true
@@ -14,17 +14,17 @@ sidebar: widget
 navigation: widget
 
 strings:
-  productName: patina21
-  shortProductName: patina21
+  productName: patina
+  shortProductName: patina
   version: "0.0.0"
   shortVersion: "0.0.0"
-  versionedName: patina21
-  shortVersionedName: patina21
+  versionedName: patina
+  shortVersionedName: patina
   bootloaderEntryName: Debian GNU/Linux
-  productUrl: https://github.com/patina21/patina21
-  supportUrl: https://github.com/patina21/patina21/issues
-  knownIssuesUrl: https://github.com/patina21/patina21/issues
-  releaseNotesUrl: https://github.com/patina21/patina21/blob/main/CHANGELOG.md
+  productUrl: https://github.com/patina21/patina
+  supportUrl: https://github.com/patina21/patina/issues
+  knownIssuesUrl: https://github.com/patina21/patina/issues
+  releaseNotesUrl: https://github.com/patina21/patina/blob/main/CHANGELOG.md
 
 images:
   productLogo: logo-square.svg      # the square mark: Calamares shows this one at 80x80

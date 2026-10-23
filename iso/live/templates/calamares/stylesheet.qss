@@ -1,4 +1,4 @@
-/* Calamares stylesheet for the patina21 installer, rendered by iso/live/assets.sh from
+/* Calamares stylesheet for the patina installer, rendered by iso/live/assets.sh from
    the default theme's palette and the fonts of defaults/settings.yaml; nothing here is
    typed by hand. Written against Qt's Fusion style (root/.xinitrc sets it). The sidebar's
    step list reads its colours from branding.desc's style keys, which assets.sh fills

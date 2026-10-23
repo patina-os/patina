@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to patina21 are documented here. The format follows
+All notable changes to patina are documented here. The format follows
 [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/), and the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
@@ -16,15 +16,15 @@ All notable changes to patina21 are documented here. The format follows
   lazygit and atuin already did). A btop theme or neovim colour scheme you picked
   stays. `patina doctor` checks the terminal colours.
 - The Hyprland add-on's contract records what Omarchy shows power users and where
-  patina21 differs: the same theme and the same chords as on Plasma, an agent
+  patina differs: the same theme and the same chords as on Plasma, an agent
   workspace, a `patina menu` over the system's terminal tools from Debian's archive.
   It still waits for Debian 14 (roadmap, Phase 7).
 
-- A cheat sheet: `patina keys` lists patina21's keys from `defaults/keybindings.yaml`
+- A cheat sheet: `patina keys` lists patina's keys from `defaults/keybindings.yaml`
   (now with a `names` map in words) and Plasma's own essentials (`cheatsheet` in
   `desktops/plasma/actions.yaml`). The new `keys` action, Meta+K, opens it in kitty.
 - Themes from git: `patina theme install <git-url>` fetches a theme kept in a repository
-  of its own (`patina21-<name>-theme`) into `~/.local/share/patina21/themes/`, keeping
+  of its own (`patina-<name>-theme`) into `~/.local/share/patina/themes/`, keeping
   only data and checking the name, the palette and every value that reaches
   configuration; `patina theme update` fetches installed themes anew, `patina theme
   remove <name>` deletes one. `patina theme list` and the install questions show them.
@@ -48,6 +48,12 @@ All notable changes to patina21 are documented here. The format follows
 
 ### Changed
 
+- The name is patina, without the 21. Everything follows: the clone at
+  `~/.local/share/patina`, state in `~/.local/state/patina`, the system files, units
+  and generated files named `patina-*`, the installer's branding, and the screen
+  wordmark, where the coral survey point ▲ is now the one accent. Theme repositories
+  are named `patina-<name>-theme`. No migration moves an existing install: reinstall,
+  and remove the files still named `patina21` by hand.
 - The brand is redesigned, as a mark and a name. The mark is text: a summit drawn as
   contour rings shaded with the letters of patina (i, t, n, a), the word as the summit
   line and the survey point ▲ in coral (`branding/logo.txt`, 23x9, ASCII plus that one
@@ -55,7 +61,7 @@ All notable changes to patina21 are documented here. The format follows
   colours where the terminal has them. The name is `branding/wordmark.txt`: patina in
   block letters traced from Sora with the ▲ as the dot of the i and two contour lines in
   braille, shown by `patina help`, the install questions and the README.
-  `branding/wordmark.svg` sets the mark beside patina²¹ in Sora ExtraBold for screens;
+  `branding/wordmark.svg` sets the mark beside patina in Sora ExtraBold for screens;
   `icon.svg` is the mark as a large icon and `icon-small.svg` as dots, which replaces
   `wave.svg` as the square mark.
 - The interface font is Source Sans 3 instead of Inter (`fonts-adobe-sourcesans3`), in
@@ -91,7 +97,7 @@ All notable changes to patina21 are documented here. The format follows
   backend, `zypper.yaml` stays as untested data. README, CLAUDE.md, roadmap, branding
   and hardware notes, the logo tagline and every README follow.
 - The image is a small live image built with Debian's live-build, installed by
-  Calamares with patina21 branding; Plasma and the base bundle are fetched from Debian's
+  Calamares with patina branding; Plasma and the base bundle are fetched from Debian's
   mirrors during the install. It replaces the KIWI description, Agama profile and Open
   Build Service plan under `iso/`. Built and boot-tested by the new `iso` workflow,
   attached to a tag's GitHub release only when the boot test passed.
@@ -110,7 +116,7 @@ All notable changes to patina21 are documented here. The format follows
   every page down to the partition editor, the wordmark on the welcome page, the wave in
   the sidebar, the theme's wallpaper veiled behind every page, three still slides while
   it installs, an openbox theme for its dialogs), the SDDM login screen (the theme's
-  first wallpaper, written to `/usr/local/share/patina21/login.png` with the Breeze
+  first wallpaper, written to `/usr/local/share/patina/login.png` with the Breeze
   theme's override through the backend's one sudo path; Breeze with Inter and the
   theme's cursor from `defaults/system/sddm.conf.d/`), the Plasma splash (the wordmark
   and one accent line, `templates/splash.qml` in the look-and-feel package) and the
@@ -118,7 +124,7 @@ All notable changes to patina21 are documented here. The format follows
   live under `iso/live/templates/` and `desktops/plasma/templates/`, filled by the
   theme loader and template filler now shared in `bin/lib.sh`; `iso/live/assets.sh`
   renders the image's files, and the smoke test runs it and checks them.
-- The typeset wordmark, patina²¹ in Inter with the wave under it (`branding/wordmark.svg`,
+- The typeset wordmark, patina in Inter with the wave under it (`branding/wordmark.svg`,
   and `wave.svg` for a square icon), the mark of every screen; the ASCII mark in
   `branding/logo.txt` stays the mark of every terminal surface. Inter and JetBrains Mono
   become the layer's fonts (`defaults/settings.yaml`), from Debian's archive through the
@@ -161,7 +167,7 @@ All notable changes to patina21 are documented here. The format follows
   signed upstream apt repositories in deb822 form), the system tuning files from
   `defaults/system/` and the app settings from `defaults/apps.yaml`. It fetches `yq`
   itself, drops `sudo` when already root, runs twice without changes and records the
-  install under `~/.local/state/patina21/`. `patina doctor` reports the base, the tools,
+  install under `~/.local/state/patina/`. `patina doctor` reports the base, the tools,
   missing packages, flatpaks and upstream tools, the tuning files and pending migrations;
   `patina migrate` runs pending migrations, `patina update` pulls and then migrates.
 - Euro-Office joins the desktop bundle, from Nextcloud's signed apt repository (the
@@ -205,7 +211,7 @@ All notable changes to patina21 are documented here. The format follows
 - The openSUSE ISO scaffold (`iso/agama/`, `iso/kiwi/`, the OBS-based `iso-test`
   workflow and the Agama install test).
 
-- The patina21 logo: an ASCII wordmark in `branding/logo.txt`, shown by `patina help`,
+- The patina logo: an ASCII wordmark in `branding/logo.txt`, shown by `patina help`,
   in the README, on the ISO console and at first boot.
 - Image scaffold under `iso/` (roadmap, Phase 2): first-boot unit and script that run
   Path A, and the live image configuration. Nothing is built yet.
@@ -218,4 +224,4 @@ All notable changes to patina21 are documented here. The format follows
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina21/patina21/commits/main
+[Unreleased]: https://github.com/patina21/patina/commits/main

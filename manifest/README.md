@@ -1,6 +1,6 @@
 # manifest/
 
-Everything patina21 installs is listed here as data. Scripts read these files; they never
+Everything patina installs is listed here as data. Scripts read these files; they never
 contain package names themselves. The one exception is the Go `yq` download in
 `bin/patina-install`, because `yq` cannot read its own recipe; CI checks it equals the
 recipe here.

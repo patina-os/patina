@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Openbox on the live image: the patina21 theme (rendered into
-     /usr/share/themes/patina21 by iso/live/assets.sh) for the dialogs Calamares opens.
+<!-- Openbox on the live image: the patina theme (rendered into
+     /usr/share/themes/patina by iso/live/assets.sh) for the dialogs Calamares opens.
      Everything not set here keeps openbox's default. -->
 <openbox_config xmlns="http://openbox.org/3.4/rc">
   <theme>
-    <name>patina21</name>
+    <name>patina</name>
     <titleLayout>LC</titleLayout>
     <keepBorder>no</keepBorder>
     <animateIconify>no</animateIconify>

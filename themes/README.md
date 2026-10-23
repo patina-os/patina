@@ -40,11 +40,11 @@ copying its `palette` block.
 ## Sharing a theme from its own repository
 
 A theme can also live in a git repository of its own, by convention named
-`patina21-<name>-theme`, with `theme.yaml` at its top and the wallpapers under
+`patina-<name>-theme`, with `theme.yaml` at its top and the wallpapers under
 `wallpapers/`. Anyone installs it with
 
 ```sh
-patina theme install https://example.org/you/patina21-<name>-theme.git
+patina theme install https://example.org/you/patina-<name>-theme.git
 patina theme set <name>
 ```
 
@@ -54,7 +54,7 @@ under `wallpapers/`). Scripts, other files and links never leave the clone. The 
 must be lowercase kebab-case and may not be one of the themes here; the palette must be
 complete; the names and hints that end up in configuration (`display_name`, `author`,
 the licenses, the `plasma:` hints) must be plain words. The theme lands in
-`~/.local/share/patina21/themes/<name>/`, outside the checkout, with a `.source.yaml`
+`~/.local/share/patina/themes/<name>/`, outside the checkout, with a `.source.yaml`
 that records where it came from. `patina theme install` again, or `patina theme
 update`, fetches it anew; `patina theme remove <name>` deletes it (never the current
 theme, never one of the themes here).

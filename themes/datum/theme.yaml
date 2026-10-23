@@ -1,9 +1,9 @@
-# datum: the default patina21 theme. A contour map around a survey point: graphite,
+# datum: the default patina theme. A contour map around a survey point: graphite,
 # ice-blue lines and one coral accent, with JetBrains Mono for the details.
 # Desktop-agnostic data; desktops/<desktop>/ renders it.
 name: datum
 display_name: Datum
-author: patina21 contributors
+author: patina contributors
 license: GPL-3.0-or-later      # the theme data
 artwork_license: CC-BY-SA-4.0  # the wallpaper under wallpapers/
 variant: dark
