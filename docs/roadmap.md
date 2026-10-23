@@ -22,7 +22,7 @@ integrate through a shortcut, a terminal profile and Ollama as the local backend
 (Phases 1 and 2); the system tuning CachyOS ships as configuration is copied as data for
 every install, its kernel and rebuilt packages are not (Phases 1 and 2); the first theme
 is called amethyst and the agent shortcut opens opencode, the free one, by default
-(Phase 2); the fonts are Inter and JetBrains Mono, and the installer, the boot menu, the
+(Phase 2); the first fonts were Inter and JetBrains Mono, and the installer, the boot menu, the
 login screen and the splash share the theme's look, rendered from its palette (Phase 3).
 The redesign of October 2026 replaced the first look: datum (graphite, ice, coral, a
 contour map) is the default theme and amethyst an option, the words are set in Source
@@ -79,7 +79,8 @@ what the ticks below still owe is the "done when" run on a real VM.
 - [ ] the run that closes the phase: a fresh Debian 13 VM with Plasma, `git clone`,
   `patina install`, a second run, `patina doctor`; what it shows missing goes back into
   the data. The CI containers prove everything but the systemd side (zram, oomd, the
-  schedulers, GRUB and the initramfs) and the sudo path as a user
+  schedulers, GRUB and the initramfs) and the sudo path as a user; the steps are in
+  `docs/vm-run.md`
 - Done when: a fresh Debian 13 VM with Plasma gets the whole app stack with one command,
   a second run changes nothing, and `patina doctor` reports clean.
 
@@ -133,7 +134,8 @@ real Plasma desktop, which the same VM run gives.
   switches back without leftovers
 - [ ] the run that closes the phase: the theme on a real Plasma desktop, the live
   reload inside a session and the wallpaper through the look-and-feel package at a
-  first login; what looks wrong goes back into the data
+  first login; what looks wrong goes back into the data (the same VM run,
+  `docs/vm-run.md`)
 - Done when: one theme renders the whole desktop from data, `patina theme set` switches
   and switches back without leftovers, and a theme pack made by copying
   `themes/_template` renders without a code change.
@@ -147,9 +149,9 @@ real Plasma desktop, which the same VM run gives.
 - [x] one look from the boot menu to the desktop, every colour from the default theme's
   palette: the live image's GRUB menu (theme and splash), the installer (a stylesheet
   down to the partition page, the wordmark, a veiled wallpaper, three still slides), the
-  login screen (the theme's wallpaper through the backend's sudo path, Inter), the
+  login screen (the theme's wallpaper through the backend's sudo path, Source Sans 3), the
   Plasma splash (the wordmark and one accent line), the install TUI and the fastfetch
-  greeting. Inter and JetBrains Mono are the layer's fonts; the typeset wordmark
+  greeting. Source Sans 3, Sora and JetBrains Mono are the layer's fonts; the typeset wordmark
   patina is the mark of screens, the ASCII mark the mark of terminals
 - [x] live-build configuration: a small live system that carries only Calamares, the
   network stack and firmware; Plasma and the base bundle are fetched from Debian's
