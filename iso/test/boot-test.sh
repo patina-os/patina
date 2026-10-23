@@ -7,7 +7,7 @@ set -euo pipefail
 
 usage() {
   cat <<USAGE
-usage: boot-test.sh <patina21.iso> [work-dir]
+usage: boot-test.sh <patina.iso> [work-dir]
 
 Needs qemu-system-x86_64 or qemu-system-aarch64 (matching the image), the OVMF or
 AAVMF firmware and bsdtar. KVM is used when /dev/kvm is writable; otherwise QEMU
@@ -105,7 +105,7 @@ echo "boot-test: booting $iso ($arch, $accel, ${cpus} cpus, timeout ${timeout_s}
   -cdrom "$iso" \
   -drive "file=$disk,format=raw,if=virtio" \
   -kernel "$kernel" -initrd "$initrd" \
-  -append "boot=live components quiet hostname=patina21-live username=live noautologin console=$serial,115200n8" \
+  -append "boot=live components quiet hostname=patina-live username=live noautologin console=$serial,115200n8" \
   -netdev user,id=net0 -device virtio-net-pci,netdev=net0 \
   -serial "file:$log" \
   -monitor "tcp:127.0.0.1:$monitor_port,server,nowait" &
@@ -113,7 +113,7 @@ qemu_pid=$!
 trap 'kill "$qemu_pid" 2>/dev/null || true' EXIT
 
 waited=0
-until grep -q 'patina21 installer: ready' "$log"; do
+until grep -q 'patina installer: ready' "$log"; do
   if ! kill -0 "$qemu_pid" 2> /dev/null; then
     echo "boot-test: the VM exited before the installer came up; see $log" >&2
     exit 1

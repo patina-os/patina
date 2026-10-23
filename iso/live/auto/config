@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# live-build options for the patina21 live image. `lb config` runs this file itself when
+# live-build options for the patina live image. `lb config` runs this file itself when
 # it sits in auto/ of the build directory (iso/live/build.sh puts it there).
 set -euo pipefail
 
@@ -24,9 +24,9 @@ lb config noauto \
   --uefi-secure-boot enable \
   --debian-installer none \
   --memtest none \
-  --image-name patina21 \
-  --iso-volume patina21-installer \
-  --iso-application "patina21 installer" \
-  --iso-publisher patina21 \
-  --bootappend-live "boot=live components quiet hostname=patina21-live username=live noautologin" \
+  --image-name patina \
+  --iso-volume patina-installer \
+  --iso-application "patina installer" \
+  --iso-publisher patina \
+  --bootappend-live "boot=live components quiet hostname=patina-live username=live noautologin" \
   "$@"

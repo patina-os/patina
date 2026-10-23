@@ -1,4 +1,4 @@
-// patina21 panel layout for Plasma 6, generated into the look-and-feel package from
+// patina panel layout for Plasma 6, generated into the look-and-feel package from
 // desktops/plasma/templates/layout.js. Plasma runs it for a session that has no panels
 // yet (the first login) and on `patina theme set --layout`. One bar at the bottom, the
 // launcher and the task icons in the centre, the tray and the clock at the right.

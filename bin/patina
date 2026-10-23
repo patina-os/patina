@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# patina21 command-line entry point. Dispatches to bin/patina-<command>; no logic here.
+# patina command-line entry point. Dispatches to bin/patina-<command>; no logic here.
 set -euo pipefail
 
 PATINA_PATH="${PATINA_PATH:-$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)}"
@@ -15,14 +15,14 @@ usage() {
 usage: patina <command> [args]
 
 commands:
-  install   Set up patina21 on this machine: app bundles, system tuning, app settings
+  install   Set up patina on this machine: app bundles, system tuning, app settings
             and the theme (patina install --help for the flags; asks on a terminal)
-  update    Pull the latest patina21 and run pending migrations
+  update    Pull the latest patina and run pending migrations
   theme     List, switch, install or remove themes (patina theme --help)
   keys      Show the keyboard shortcuts (Meta+K opens the same in a window)
-  doctor    Check the base system and report what patina21 would change
+  doctor    Check the base system and report what patina would change
   migrate   Run pending migrations without pulling
-  version   Print the patina21 version
+  version   Print the patina version
   help      Show this help
 
 A command without a bin/patina-<command> file is planned, not implemented yet.

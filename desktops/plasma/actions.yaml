@@ -26,12 +26,12 @@ actions:
   agent:
     # apply.sh writes this desktop file when the agents bundle is installed; otherwise
     # the action is skipped.
-    service: patina21-agent.desktop
+    service: patina-agent.desktop
     label: Agent
   keys:
     # apply.sh writes this desktop file: kitty showing `patina keys`.
-    service: patina21-keys.desktop
-    label: patina21 keys
+    service: patina-keys.desktop
+    label: patina keys
   close-window:
     component: kwin
     key: Window Close
@@ -60,7 +60,7 @@ unbind:
     label: Walk through activities
 
 # Plasma's own chords worth knowing, for the cheat sheet (`patina keys`, Meta+K): the
-# defaults of Plasma 6 that patina21 leaves as they are. Words only; nothing is bound here.
+# defaults of Plasma 6 that patina leaves as they are. Words only; nothing is bound here.
 cheatsheet:
   - {chord: "Meta", name: "Open the application menu"}
   - {chord: "Alt+Tab", name: "Switch between windows"}

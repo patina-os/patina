@@ -1,6 +1,6 @@
 # iso/
 
-The patina21 live image: Debian's live-build and the Calamares installer, driven by our
+The patina live image: Debian's live-build and the Calamares installer, driven by our
 data. The image contains no logic of its own; it automates the stock-Debian path
 (Path A) and nothing else. If Path A and the image ever diverge, Path A wins and the
 image is fixed.
@@ -28,11 +28,11 @@ iso/
     etc/calamares/modules/*.conf       one file per step; packages.conf is the list the
                             installer fetches from Debian's mirrors (Plasma and the base
                             bundle) and the live tooling it removes afterwards
-    etc/calamares/branding/patina21/   the strings; the marks, artwork, stylesheet and
+    etc/calamares/branding/patina/   the strings; the marks, artwork, stylesheet and
                             colours next to them are rendered by assets.sh
-    etc/systemd/system/patina21-ui.service  the installer screen (X, openbox, Calamares)
+    etc/systemd/system/patina-ui.service  the installer screen (X, openbox, Calamares)
     root/.xinitrc                      that session
-    root/.config/openbox/rc.xml        openbox with the patina21 theme for the dialogs
+    root/.config/openbox/rc.xml        openbox with the patina theme for the dialogs
   live/templates/           what assets.sh fills from the theme's palette and the fonts:
                             calamares/ (stylesheet.qss, the wallpaper and the slides as
                             SVG compositions), grub/ (theme.txt, splash.svg), openbox/
@@ -52,7 +52,7 @@ iso/
 ## How an install works
 
 1. Boot the image. The GRUB menu shows the theme's wallpaper and the wordmark. The live
-   system starts `patina21-ui.service`: an X session on tty7 with Calamares full screen
+   system starts `patina-ui.service`: an X session on tty7 with Calamares full screen
    in the theme's palette and fonts, the wordmark on the welcome page, the square mark in
    the sidebar, the wallpaper veiled behind every page, three still slides while it
    installs. The console shows `branding/logo.txt`.
@@ -65,10 +65,10 @@ iso/
    first-boot unit is enabled (`shellprocess-firstboot.conf`), GRUB is installed with
    Debian's signed shim.
 4. First boot: the service takes tty1 before the login screen, clones this repository
-   into the user's `~/.local/share/patina21`, links `~/.local/bin/patina` and runs
+   into the user's `~/.local/share/patina`, links `~/.local/bin/patina` and runs
    `patina install`, which asks the remaining questions on tty1 (the theme and the app
-   bundles, with `gum`; `/etc/patina21/firstboot.env` can answer them). Then it writes
-   `/var/lib/patina21/firstboot-done` and never runs again. A failed clone or install
+   bundles, with `gum`; `/etc/patina/firstboot.env` can answer them). Then it writes
+   `/var/lib/patina/firstboot-done` and never runs again. A failed clone or install
    prints the Path A command to run by hand and still marks the boot done, so a machine
    never loops on first boot.
 
@@ -91,7 +91,7 @@ hand on a Debian machine of the target architecture:
 ```sh
 sudo apt-get install live-build debootstrap librsvg2-bin fonts-adobe-sourcesans3 \
   fonts-jetbrains-mono fonts-sora
-sudo iso/live/build.sh amd64            # writes iso/build/live/patina21-amd64.hybrid.iso
+sudo iso/live/build.sh amd64            # writes iso/build/live/patina-amd64.hybrid.iso
 sudo iso/live/build.sh arm64            # on an arm64 machine
 ```
 
@@ -110,7 +110,7 @@ files.
 ## The release gate
 
 - Automated: `test/boot-test.sh <iso>` boots the image in QEMU with the serial console
-  attached and waits for `patina21 installer: ready`, which `.xinitrc` prints once
+  attached and waits for `patina installer: ready`, which `.xinitrc` prints once
   Calamares is running. It proves the image, the kernel, the initrd and the installer
   session; the workflow runs it before any upload. It uses KVM where the runner has it
   and falls back to emulation (TCG) where it does not, with a longer timeout; GitHub's
@@ -123,12 +123,12 @@ files.
   log as `installer-<arch>.png`; the workflow uploads both in the `boot-test-<arch>`
   artifact. A missing screenshot is reported, not a failure: the gate is the boot.
 - Manual, once per release: one real install in a VM through the installer, then a first
-  boot that ends in `patina21 firstboot: done`. Calamares has no unattended mode, so
+  boot that ends in `patina firstboot: done`. Calamares has no unattended mode, so
   this part is not automated; the roadmap keeps it as an open Phase 3 item. The look is
   part of this check, since the boot test skips GRUB and shows no screen: the boot menu
   in the palette over the splash, readable; the installer's welcome page (the square
   mark in the sidebar, the wordmark on the page, the wallpaper behind, Source Sans 3), the partition
-  page with the manual partition editor's dialog (openbox's patina21 frame), the
+  page with the manual partition editor's dialog (openbox's patina frame), the
   install page with the gradient progress bar and the three slides; at first boot the
   mark on tty1 and the questions; then the login screen with the theme's wallpaper,
   the splash with the wordmark and the accent line, and the desktop in Source Sans 3
@@ -194,5 +194,5 @@ release, never edited.
   (`live/arch/<arch>.list.chroot`) and must survive the `remove` list. The manual
   install on a Secure Boot machine is the check.
 - Whether the package set the installer fetches is complete for first boot: the first
-  boot of an installed system tells (`patina21 firstboot: done`).
+  boot of an installed system tells (`patina firstboot: done`).
 - The arm64 image on real hardware: the boot test covers the QEMU `virt` machine only.

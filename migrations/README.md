@@ -2,7 +2,7 @@
 
 Versioned update steps, Omarchy-style. `patina update` runs `git pull`, then every
 migration that has not run yet, in filename order, and records each one as a marker file
-in `~/.local/state/patina21/migrations/`.
+in `~/.local/state/patina/migrations/`.
 
 Naming: `YYYYMMDDHHMM-<slug>.sh`, for example `202611031400-move-theme-state.sh`. The
 timestamp is when the migration was written (UTC); the slug says what it does.

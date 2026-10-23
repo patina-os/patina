@@ -1,10 +1,10 @@
 [Desktop Entry]
 Type=Application
-Name=patina21 keys
+Name=patina keys
 Comment=The keyboard shortcuts of this desktop at a glance
-Exec=kitty --class patina21-keys --title "patina21 keys" "${PATINA_PATH}/bin/patina" keys --wait
+Exec=kitty --class patina-keys --title "patina keys" "${PATINA_PATH}/bin/patina" keys --wait
 Icon=preferences-desktop-keyboard-shortcuts
 Terminal=false
 Categories=Utility;
 Keywords=keys;shortcuts;hotkeys;cheat sheet;
-StartupWMClass=patina21-keys
+StartupWMClass=patina-keys

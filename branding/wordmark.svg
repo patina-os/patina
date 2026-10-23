@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- The patina21 wordmark for screens: the mark of logo.txt typeset in JetBrains Mono
-     beside patina²¹ in Sora ExtraBold, the 21 set small and raised, in coral. The colours
-     are the brand's, not a theme's: the rings shade from slate (i) through ice (t) to
-     pale ice (n, a), the word and the survey point stand out. Every character here is the
+<!-- The patina wordmark for screens: the mark of logo.txt typeset in JetBrains Mono
+     beside patina in Sora ExtraBold. The colours are the brand's, not a theme's: the
+     rings shade from slate (i) through ice (t) to pale ice (n, a), the word stands out
+     in white and the survey point in coral, the lockup's one accent. Every character here is the
      character of logo.txt in the same place; change both together (branding/README.md).
      wordmark.txt is the terminal form of the word. GPL-3.0-or-later. -->
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="160" viewBox="0 0 600 160">
+<svg xmlns="http://www.w3.org/2000/svg" width="540" height="160" viewBox="0 0 540 160">
  <g font-family="JetBrains Mono, monospace" font-weight="500" font-size="12.6" xml:space="preserve">
   <text x="61.4" y="23.7" fill="#4f7394">iiiiiiiiiii</text>
   <text x="38.7" y="38.9" fill="#4f7394">iiii</text>
@@ -51,6 +51,4 @@
  </g>
   <text x="213.9" y="106" font-family="Sora, sans-serif" font-weight="800" font-size="96"
     letter-spacing="-2.5" fill="#f5f7f9">patina</text>
-  <text x="527.7" y="66" font-family="Sora, sans-serif" font-weight="800" font-size="42"
-    letter-spacing="-1" fill="#ff5f6d">21</text>
 </svg>

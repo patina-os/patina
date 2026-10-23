@@ -7,14 +7,14 @@ change under `themes/` to render on Hyprland is a renderer bug, not a theme bug.
 
 ## Who it is for
 
-Plasma is the on-ramp for everyone. Hyprland is for the power users patina21 also wants:
+Plasma is the on-ramp for everyone. Hyprland is for the power users patina also wants:
 developers who live in a terminal and work with agents, and people who rice their
 desktop. Omarchy shows what draws them: a tiled screen of terminal apps (neovim, btop,
 nvtop, a package picker, Wi-Fi and Bluetooth TUIs, an agent CLI with a model picker), a
 thin bar, gaps and coloured borders, one palette across all of it, and a logo in
 fastfetch that makes every screenshot an advertisement.
 
-What patina21 takes from that:
+What patina takes from that:
 
 - One palette everywhere, and most of it is the terminal, which every desktop shares:
   `desktops/terminal/` already renders kitty, fastfetch, btop, neovim, bat and fzf from
@@ -29,7 +29,7 @@ What patina21 takes from that:
   the agent CLI in its kitty profile (opencode by default, pointed at the local
   Ollama), and `nvtop` (in Debian's archive) shows what the local model costs the GPU
 
-Where patina21 stays different:
+Where patina stays different:
 
 - Plasma and Hyprland side by side, from one theme and one set of chords: start on
   Plasma, pick the Hyprland session at the login screen when ready, keep the colours,
@@ -52,10 +52,10 @@ stack is in Debian 13 already: `waybar`, `fuzzel`, `swaybg`, `mako-notifier`,
 
 ## What it will produce from a theme and `defaults/`
 
-- `~/.config/hypr/patina21-theme.conf` with the window border (the accent fading into
+- `~/.config/hypr/patina-theme.conf` with the window border (the accent fading into
   `base0F`), shadow, gap and group colours from the base16 palette, sourced by
   the user's `hyprland.conf`
-- `~/.config/hypr/patina21-binds.conf` with the actions from `defaults/keybindings.yaml`
+- `~/.config/hypr/patina-binds.conf` with the actions from `defaults/keybindings.yaml`
   translated to `bind` lines through an `actions.yaml`, the same chords as on Plasma;
   the tiling actions only a tiling desktop has (focus and move by direction,
   workspaces 1 to 9, the agent's special workspace) are added there as data. Unknown

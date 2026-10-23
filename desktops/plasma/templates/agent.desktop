@@ -1,10 +1,10 @@
 [Desktop Entry]
 Type=Application
 Name=Agent (${AGENT})
-Comment=The agent CLI in its own patina21 terminal profile
-Exec=kitty --config "${CONFIG_HOME}/kitty/patina21-agent.conf" --class patina21-agent --title agent ${AGENT_COMMAND}
+Comment=The agent CLI in its own patina terminal profile
+Exec=kitty --config "${CONFIG_HOME}/kitty/patina-agent.conf" --class patina-agent --title agent ${AGENT_COMMAND}
 Icon=utilities-terminal
 Terminal=false
 Categories=Development;
 Keywords=agent;ai;terminal;
-StartupWMClass=patina21-agent
+StartupWMClass=patina-agent

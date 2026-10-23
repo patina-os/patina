@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Build the patina21 live image with live-build: assemble the build directory from the
+# Build the patina live image with live-build: assemble the build directory from the
 # committed configuration, what assets.sh renders from branding/ and the theme, and
 # iso/firstboot/, then run lb. Needs root (debootstrap), live-build, yq, rsvg-convert and
 # the fonts; see iso/README.md.
@@ -27,10 +27,10 @@ cp "$here/arch/$arch.list.chroot" "$out/config/package-lists/"
 chroot="$out/config/includes.chroot"
 
 # First boot: the same unit and script Path A is run by (iso/firstboot/).
-install -D -m 0755 "$repo/iso/firstboot/patina21-firstboot.sh" \
-  "$chroot/usr/local/lib/patina21/firstboot.sh"
-install -D -m 0644 "$repo/iso/firstboot/patina21-firstboot.service" \
-  "$chroot/etc/systemd/system/patina21-firstboot.service"
+install -D -m 0755 "$repo/iso/firstboot/patina-firstboot.sh" \
+  "$chroot/usr/local/lib/patina/firstboot.sh"
+install -D -m 0644 "$repo/iso/firstboot/patina-firstboot.service" \
+  "$chroot/etc/systemd/system/patina-firstboot.service"
 
 # Everything the image shows, rendered from branding/ and the default theme: the console
 # mark, the installer's marks, artwork and stylesheet, the boot menu's theme.

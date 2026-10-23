@@ -5,5 +5,5 @@
 # but stays disabled here; Calamares enables it in the installed system.
 set -euo pipefail
 
-systemctl enable patina21-ui.service
+systemctl enable patina-ui.service
 systemctl set-default graphical.target

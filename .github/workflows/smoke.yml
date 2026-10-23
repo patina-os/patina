@@ -79,13 +79,13 @@ jobs:
           scheme() { kreadconfig6 --file kdeglobals --group General --key ColorScheme; }
           [[ "$(bin/patina theme current)" == "$theme" ]]
           bin/patina theme list
-          test -s "$data/color-schemes/patina21-$theme.colors"
-          test -s "$data/wallpapers/patina21-$theme-$wallpaper/contents/images/3840x2160.png"
-          test -s "$data/plasma/look-and-feel/org.patina21.$theme/contents/defaults"
+          test -s "$data/color-schemes/patina-$theme.colors"
+          test -s "$data/wallpapers/patina-$theme-$wallpaper/contents/images/3840x2160.png"
+          test -s "$data/plasma/look-and-feel/org.patina.$theme/contents/defaults"
           grep -q 'org.kde.plasma.icontasks' \
-            "$data/plasma/look-and-feel/org.patina21.$theme/contents/layouts/org.kde.plasma.desktop-layout.js"
+            "$data/plasma/look-and-feel/org.patina.$theme/contents/layouts/org.kde.plasma.desktop-layout.js"
           [[ "$(kreadconfig6 --file kwinrc --group Windows --key Placement)" == Centered ]]
-          [[ "$(scheme)" == "patina21-$theme" ]]
+          [[ "$(scheme)" == "patina-$theme" ]]
           launch="$(kreadconfig6 --file kglobalshortcutsrc --group services \
             --group kitty.desktop --key _launch)"
           [[ "$launch" == Meta+Return,* ]]
@@ -95,48 +95,48 @@ jobs:
           cp -r "themes/$theme" themes/zz-copy
           sed -i "s/^name: $theme/name: zz-copy/" themes/zz-copy/theme.yaml
           bin/patina theme set zz-copy
-          test -s "$data/color-schemes/patina21-zz-copy.colors"
-          test ! -e "$data/color-schemes/patina21-$theme.colors"
-          test ! -e "$HOME/.config/btop/themes/patina21-$theme.theme"
-          [[ "$(scheme)" == "patina21-zz-copy" ]]
+          test -s "$data/color-schemes/patina-zz-copy.colors"
+          test ! -e "$data/color-schemes/patina-$theme.colors"
+          test ! -e "$HOME/.config/btop/themes/patina-$theme.theme"
+          [[ "$(scheme)" == "patina-zz-copy" ]]
           bin/patina theme set "$theme"
           rm -r themes/zz-copy
-          test ! -e "$data/color-schemes/patina21-zz-copy.colors"
-          test ! -e "$data/wallpapers/patina21-zz-copy-$wallpaper"
-          test ! -e "$HOME/.config/nvim/colors/patina21-zz-copy.lua"
-          [[ "$(scheme)" == "patina21-$theme" ]]
+          test ! -e "$data/color-schemes/patina-zz-copy.colors"
+          test ! -e "$data/wallpapers/patina-zz-copy-$wallpaper"
+          test ! -e "$HOME/.config/nvim/colors/patina-zz-copy.lua"
+          [[ "$(scheme)" == "patina-$theme" ]]
       - name: The terminal and its tools rendered
         # desktops/terminal/: kitty carries the palette, btop and neovim get their own
         # files, and neovim loads the colour scheme when nothing else chose one.
         run: |
           theme="$(yq eval '.theme' defaults/settings.yaml)"
           config="$HOME/.config"
-          grep -qxF 'include patina21.conf' "$config/kitty/kitty.conf"
+          grep -qxF 'include patina.conf' "$config/kitty/kitty.conf"
           grep -q "^color13 $(yq eval '.palette.base0E' "themes/$theme/theme.yaml")" \
-            "$config/kitty/patina21.conf"
-          test -s "$config/btop/themes/patina21-$theme.theme"
-          btop_theme="$config/btop/themes/patina21-$theme.theme"
+            "$config/kitty/patina.conf"
+          test -s "$config/btop/themes/patina-$theme.theme"
+          btop_theme="$config/btop/themes/patina-$theme.theme"
           test -s "$btop_theme"
           grep -qxF "color_theme = \"$btop_theme\"" "$config/btop/btop.conf"
           test -s "$config/bat/config"
-          test -s "$config/environment.d/60-patina21.conf"
+          test -s "$config/environment.d/60-patina.conf"
           if grep -rq '\${' "$config/kitty" "$config/btop/themes" "$config/nvim"; then
             exit 1   # a placeholder the renderer did not fill
           fi
           colors="$(nvim --headless +'lua io.write(vim.g.colors_name)' +qa 2>&1)"
-          [[ "$colors" == "patina21-$theme" ]]
+          [[ "$colors" == "patina-$theme" ]]
       - name: The login screen, the splash and the terminal greeting rendered
         run: |
           theme="$(yq eval '.theme' defaults/settings.yaml)"
           data="$HOME/.local/share"
-          test -s /usr/local/share/patina21/login.png
-          splash="$data/plasma/look-and-feel/org.patina21.$theme/contents/splash"
+          test -s /usr/local/share/patina/login.png
+          splash="$data/plasma/look-and-feel/org.patina.$theme/contents/splash"
           test -s "$splash/Splash.qml"
           test -s "$splash/images/logo.svg"
           ! grep -q '\${' "$splash/Splash.qml"
           ksplash="$(kreadconfig6 --file ksplashrc --group KSplash --key Theme)"
-          [[ "$ksplash" == "org.patina21.$theme" ]]
-          test -s "$data/patina21/logo.txt"
+          [[ "$ksplash" == "org.patina.$theme" ]]
+          test -s "$data/patina/logo.txt"
           test -s "$HOME/.config/fastfetch/config.jsonc"
       - name: The cheat sheet, and a theme installed from git
         # A local repository stands in for a community theme: install keeps only its
@@ -148,20 +148,20 @@ jobs:
           # pipefail the writer's SIGPIPE would fail the step.
           out="$(bin/patina keys)"
           grep -q 'Show these keys' <<< "$out"
-          test -s "$data/applications/patina21-keys.desktop"
+          test -s "$data/applications/patina-keys.desktop"
           launch="$(kreadconfig6 --file kglobalshortcutsrc --group services \
-            --group patina21-keys.desktop --key _launch)"
+            --group patina-keys.desktop --key _launch)"
           [[ "$launch" == Meta+K,* ]]
-          repo="$(mktemp -d)/patina21-dusk-theme"
+          repo="$(mktemp -d)/patina-dusk-theme"
           cp -r themes/amethyst "$repo"
           sed -i 's/^name: amethyst/name: dusk/' "$repo/theme.yaml"
           echo 'echo not data' > "$repo/run.sh"
           git -C "$repo" init -q
           git -C "$repo" add -A
-          git -C "$repo" -c user.email=ci@patina21 -c user.name=ci commit -qm theme
+          git -C "$repo" -c user.email=ci@patina -c user.name=ci commit -qm theme
           bin/patina theme install "file://$repo"
-          test -s "$data/patina21/themes/dusk/theme.yaml"
-          test ! -e "$data/patina21/themes/dusk/run.sh"
+          test -s "$data/patina/themes/dusk/theme.yaml"
+          test ! -e "$data/patina/themes/dusk/run.sh"
           out="$(bin/patina theme list)"
           grep -q '^  dusk .*installed' <<< "$out"
           out="$(bin/patina theme install "file://$repo")"
@@ -170,7 +170,7 @@ jobs:
           if bin/patina theme remove dusk; then exit 1; fi
           bin/patina theme set "$theme"
           bin/patina theme remove dusk
-          test ! -e "$data/patina21/themes/dusk"
+          test ! -e "$data/patina/themes/dusk"
       - name: The image's assets render from the theme
         # What iso/live/build.sh renders before lb, without root or live-build: the
         # installer's marks, artwork and stylesheet, the boot menu's theme and splash.
@@ -179,15 +179,15 @@ jobs:
           build="$(mktemp -d)"
           cp -r iso/live/config "$build/"
           iso/live/assets.sh "$build"
-          b="$build/config/includes.chroot/etc/calamares/branding/patina21"
+          b="$build/config/includes.chroot/etc/calamares/branding/patina"
           for f in logo.svg logo-square.svg wallpaper.png slide-1.png slide-2.png slide-3.png \
               stylesheet.qss; do
             test -s "$b/$f"
           done
           test -s "$build/config/bootloaders/grub-pc/splash.png"
           test -s "$build/config/bootloaders/grub-pc/live-theme/theme.txt"
-          test -s "$build/config/includes.chroot/usr/share/themes/patina21/openbox-3/themerc"
-          test -s "$build/config/includes.chroot/etc/issue.d/10-patina21.issue"
+          test -s "$build/config/includes.chroot/usr/share/themes/patina/openbox-3/themerc"
+          test -s "$build/config/includes.chroot/etc/issue.d/10-patina.issue"
           sidebar="$(yq eval '.style.SidebarBackground' "$b/branding.desc")"
           [[ "$sidebar" == "$(yq eval '.palette.base00' "themes/$theme/theme.yaml")" ]]
       - name: What landed
@@ -195,8 +195,8 @@ jobs:
           yq --version
           flatpak list --user --columns=application,version
           ls -l /etc/apt/sources.list.d /etc/apt/keyrings
-          cat "$HOME/.local/state/patina21/bundles"
-          cat "$HOME/.local/state/patina21/theme"
+          cat "$HOME/.local/state/patina/bundles"
+          cat "$HOME/.local/state/patina/theme"
       - name: Every YAML file parses
         run: |
           git ls-files '*.yaml' '*.yml' '*.conf' '*.desc' \

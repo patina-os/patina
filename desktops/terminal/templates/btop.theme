@@ -1,4 +1,4 @@
-# patina21: the ${DISPLAY_NAME} theme for btop, from its base16 palette. `patina theme set`
+# patina: the ${DISPLAY_NAME} theme for btop, from its base16 palette. `patina theme set`
 # overwrites this file; copy it under another name to change it.
 theme[main_bg]="${BASE00}"
 theme[main_fg]="${BASE05}"

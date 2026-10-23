@@ -32,7 +32,7 @@ trap 'rm -rf "$tmp"' EXIT
 # Write a user's configuration file only while its first line is ours, so a user who
 # removes that line keeps their own: ours <template> <dest>.
 ours() {
-  if [[ ! -e "$2" || "$(head -n 1 "$2")" == *"patina21:"* ]]; then
+  if [[ ! -e "$2" || "$(head -n 1 "$2")" == *"patina:"* ]]; then
     render "$1" "$tmp/ours"
     put "$tmp/ours" "$2"
   fi
@@ -42,13 +42,13 @@ ours() {
 # tool that draws with the terminal's colours follows the theme. The include line is
 # added once, above whatever the user keeps in kitty.conf.
 render "$templates/kitty.conf" "$tmp/kitty.conf"
-put "$tmp/kitty.conf" "$config/kitty/patina21.conf"
-if ! grep -qxF 'include patina21.conf' "$config/kitty/kitty.conf" 2> /dev/null; then
+put "$tmp/kitty.conf" "$config/kitty/patina.conf"
+if ! grep -qxF 'include patina.conf' "$config/kitty/kitty.conf" 2> /dev/null; then
   say "kitty.conf: adding the include line"
   mkdir -p "$config/kitty"
   {
-    printf '# patina21: the theme and fonts; keep your own settings below this line.\n'
-    printf 'include patina21.conf\n'
+    printf '# patina: the theme and fonts; keep your own settings below this line.\n'
+    printf 'include patina.conf\n'
     if [[ -f "$config/kitty/kitty.conf" ]]; then
       cat "$config/kitty/kitty.conf"
     fi
@@ -61,31 +61,31 @@ fi
 # binds the `agent` action to it.
 if [[ " ${PATINA_BUNDLES:-} " == *" agents "* ]]; then
   render "$templates/kitty-agent.conf" "$tmp/kitty-agent.conf"
-  put "$tmp/kitty-agent.conf" "$config/kitty/patina21-agent.conf"
-elif [[ -e "$config/kitty/patina21-agent.conf" ]]; then
-  say "removing $config/kitty/patina21-agent.conf (the agents bundle is not installed)"
-  rm -f "$config/kitty/patina21-agent.conf"
+  put "$tmp/kitty-agent.conf" "$config/kitty/patina-agent.conf"
+elif [[ -e "$config/kitty/patina-agent.conf" ]]; then
+  say "removing $config/kitty/patina-agent.conf (the agents bundle is not installed)"
+  rm -f "$config/kitty/patina-agent.conf"
   changed
 fi
 
 # fastfetch greets a new terminal with the mark: a coloured copy of branding/logo.txt
 # (the file itself stays plain) and a configuration that points at it.
 print_logo always > "$tmp/logo.txt"
-put "$tmp/logo.txt" "$data/patina21/logo.txt"
+put "$tmp/logo.txt" "$data/patina/logo.txt"
 ours "$templates/fastfetch.jsonc" "$config/fastfetch/config.jsonc"
 
 # btop: a theme file from the palette, made btop's colour theme unless the user picked
 # another one. btop rewrites btop.conf itself and keeps the key; a btop.conf that does
 # not exist yet gets just this key, and btop adds its defaults on the first exit.
-btop_theme="$config/btop/themes/patina21-$theme.theme"
+btop_theme="$config/btop/themes/patina-$theme.theme"
 render "$templates/btop.theme" "$tmp/btop.theme"
 put "$tmp/btop.theme" "$btop_theme"
-drop_other_themes "$config/btop/themes/patina21-*.theme" "$btop_theme"
+drop_other_themes "$config/btop/themes/patina-*.theme" "$btop_theme"
 btop_conf="$config/btop/btop.conf"
 btop_now="$(sed -n 's/^color_theme *= *"\(.*\)"$/\1/p' "$btop_conf" 2> /dev/null || true)"
 case "$btop_now" in
   "$btop_theme") ;;
-  "" | Default | */btop/themes/patina21-*.theme)
+  "" | Default | */btop/themes/patina-*.theme)
     if grep -q '^color_theme *=' "$btop_conf" 2> /dev/null; then
       sed "s|^color_theme *=.*|color_theme = \"$btop_theme\"|" "$btop_conf" > "$tmp/btop.conf"
     else
@@ -99,15 +99,15 @@ esac
 # neovim: a colour scheme from the palette, and a plugin file that turns it on when the
 # user's own configuration chose none.
 render "$templates/nvim-colors.lua" "$tmp/nvim-colors.lua"
-put "$tmp/nvim-colors.lua" "$config/nvim/colors/patina21-$theme.lua"
-drop_other_themes "$config/nvim/colors/patina21-*.lua" "$config/nvim/colors/patina21-$theme."
-ours "$templates/nvim-plugin.lua" "$config/nvim/plugin/patina21.lua"
+put "$tmp/nvim-colors.lua" "$config/nvim/colors/patina-$theme.lua"
+drop_other_themes "$config/nvim/colors/patina-*.lua" "$config/nvim/colors/patina-$theme."
+ours "$templates/nvim-plugin.lua" "$config/nvim/plugin/patina.lua"
 
 # bat, git-delta and fzf draw with the terminal's colours, so they follow every theme
 # without a file per theme: bat through its own configuration, delta (which reads
 # BAT_THEME) and fzf through the session's environment, read by systemd at login.
 ours "$templates/bat-config" "$config/bat/config"
-ours "$templates/environment.conf" "$config/environment.d/60-patina21.conf"
+ours "$templates/environment.conf" "$config/environment.d/60-patina.conf"
 
 if [[ $changes -eq 0 ]]; then
   say "nothing to do"

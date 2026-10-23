@@ -1,5 +1,5 @@
-# patina21: I/O schedulers by device type, after the configuration CachyOS ships.
-# Source: defaults/system/ in the patina21 checkout; `patina install` writes it here.
+# patina: I/O schedulers by device type, after the configuration CachyOS ships.
+# Source: defaults/system/ in the patina checkout; `patina install` writes it here.
 # Spinning disks: bfq, for interactive fairness.
 ACTION=="add|change", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
 # SATA and MMC solid-state: mq-deadline.

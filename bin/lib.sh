@@ -5,7 +5,7 @@
 set -euo pipefail
 
 PATINA_PATH="${PATINA_PATH:?set by bin/patina}"
-PATINA_STATE="${XDG_STATE_HOME:-$HOME/.local/state}/patina21"
+PATINA_STATE="${XDG_STATE_HOME:-$HOME/.local/state}/patina"
 export PATINA_STATE
 export PATH="$HOME/.local/bin:$PATH"   # where yq and the upstream tools land
 
@@ -123,7 +123,7 @@ booted_with_systemd() {
 }
 
 # Themes installed with `patina theme install`, outside the checkout.
-PATINA_THEMES="${XDG_DATA_HOME:-$HOME/.local/share}/patina21/themes"
+PATINA_THEMES="${XDG_DATA_HOME:-$HOME/.local/share}/patina/themes"
 
 # The directory of a theme: the repository's themes/ first, then the installed ones.
 # Entries starting with _ are templates.

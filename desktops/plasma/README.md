@@ -9,25 +9,25 @@ for every desktop.
 
 Files, from `templates/`, each named after the theme:
 
-- a Plasma colour scheme, `~/.local/share/color-schemes/patina21-<theme>.colors`, with
+- a Plasma colour scheme, `~/.local/share/color-schemes/patina-<theme>.colors`, with
   the theme's `base0E` as the accent and selection colour
 - a Konsole colour scheme and profile under `~/.local/share/konsole/`, made the default
   profile in `konsolerc`
 - one Plasma wallpaper package per image under `~/.local/share/wallpapers/`; an SVG is
   rendered with `rsvg-convert` at 3840x2160 and only again when the theme's file is newer
-- a look-and-feel package, `~/.local/share/plasma/look-and-feel/org.patina21.<theme>/`,
+- a look-and-feel package, `~/.local/share/plasma/look-and-feel/org.patina.<theme>/`,
   whose `defaults` name the colour scheme, icons, cursors, desktop theme, decoration,
   splash and wallpaper, so a fresh session (the image's first login) starts in the
   theme; its `contents/splash/Splash.qml`, from `templates/splash.qml`, is the Plasma
   splash: the wordmark (`branding/wordmark.svg`) on the theme's background and one
   accent line that grows as Plasma starts, the one piece of code a theme renders
 - the login screen: SDDM runs as its own user, so the theme's first wallpaper is written
-  to `/usr/local/share/patina21/login.png` and the Breeze SDDM theme's
+  to `/usr/local/share/patina/login.png` and the Breeze SDDM theme's
   `theme.conf.user` (from `templates/sddm-theme.conf.user`) next to Plasma's own theme,
   both through the backend's one sudo path (`system.write`), only when they differ.
   Without sudo (no terminal, no cached credentials, not root) the login screen keeps
   what it has and the run goes on with a warning; `patina doctor` reports it.
-  `defaults/system/sddm.conf.d/patina21.conf` selects Breeze with the layer's font and
+  `defaults/system/sddm.conf.d/patina.conf` selects Breeze with the layer's font and
   cursor
 - the panel layout in that package (`contents/layouts/org.kde.plasma.desktop-layout.js`)
   when `panel.layout` is `centered`: one bar at the bottom with the launcher and the
@@ -36,10 +36,10 @@ Files, from `templates/`, each named after the theme:
   the image's first login starts with it; the first `patina install` inside a session
   applies it too (Path A finds Plasma's stock bar there). Afterwards the panels are the
   user's: only `patina theme set <name> --layout` replaces them again
-- with the agents bundle: `~/.local/share/applications/patina21-agent.desktop`, which
+- with the agents bundle: `~/.local/share/applications/patina-agent.desktop`, which
   opens the command `agent` of `defaults/settings.yaml` in the agent's kitty profile;
   removed again when the bundle is not installed
-- the cheat sheet's launcher, `~/.local/share/applications/patina21-keys.desktop` (from
+- the cheat sheet's launcher, `~/.local/share/applications/patina-keys.desktop` (from
   `templates/keys.desktop`): kitty showing `patina keys` until a key is pressed, bound
   to the `keys` action (Meta+K). The sheet lists the actions of
   `defaults/keybindings.yaml` and Plasma's own chords worth knowing, kept as words under

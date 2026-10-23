@@ -3,7 +3,7 @@
 The only place where architecture- or device-specific files may live. Everything else in
 the repository is architecture-free; the base (Debian) carries the hardware support.
 
-An "ARM version" of patina21 is never a separate release or branch. It is the tested
+An "ARM version" of patina is never a separate release or branch. It is the tested
 hardware list in `docs/hardware.md` plus, where a device needs it, a directory here.
 
 ```text

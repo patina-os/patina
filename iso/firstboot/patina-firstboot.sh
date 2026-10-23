@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# First boot after the patina21 image: do exactly what Path A does for the user Calamares
+# First boot after the patina image: do exactly what Path A does for the user Calamares
 # created, then get out of the way. Idempotent and safe to re-run by hand.
 set -euo pipefail
 
-state_dir=/var/lib/patina21
+state_dir=/var/lib/patina
 done_marker="$state_dir/firstboot-done"
-repo_url="${PATINA_REPO_URL:-https://github.com/patina21/patina21.git}"
+repo_url="${PATINA_REPO_URL:-https://github.com/patina21/patina.git}"
 repo_ref="${PATINA_REPO_REF:-main}"
 
 # Optional answers for unattended runs (written by hand, nothing in the image creates it):
 # PATINA_THEME, PATINA_UNATTENDED=1. `patina install` honours them (roadmap, Phases 1 and 2).
 # shellcheck disable=SC1091  # optional, written by hand for unattended runs
-[[ -r /etc/patina21/firstboot.env ]] && source /etc/patina21/firstboot.env
+[[ -r /etc/patina/firstboot.env ]] && source /etc/patina/firstboot.env
 
 say() {
   # The console (tty1 here) and, with console=ttyS0, the serial line the test watches.
-  printf 'patina21 firstboot: %s\n' "$*" | tee /dev/console >/dev/null 2>&1 || true
+  printf 'patina firstboot: %s\n' "$*" | tee /dev/console >/dev/null 2>&1 || true
 }
 
 finish() {
@@ -33,7 +33,7 @@ if [[ -z "$user" ]]; then
   exit 0
 fi
 home="$(getent passwd "$user" | cut -d: -f6)"
-clone="$home/.local/share/patina21"
+clone="$home/.local/share/patina"
 
 if [[ ! -d "$clone/.git" ]]; then
   say "cloning $repo_url ($repo_ref) for $user"

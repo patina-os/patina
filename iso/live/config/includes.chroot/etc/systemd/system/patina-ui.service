@@ -2,8 +2,8 @@
 # screen. Enabled on the live system by the build hook; removed from the installed
 # system by Calamares (modules/shellprocess-firstboot.conf).
 [Unit]
-Description=patina21 installer screen (Calamares)
-Documentation=https://github.com/patina21/patina21/tree/main/iso
+Description=patina installer screen (Calamares)
+Documentation=https://github.com/patina21/patina/tree/main/iso
 After=systemd-user-sessions.service network-online.target
 Wants=network-online.target
 Conflicts=getty@tty7.service

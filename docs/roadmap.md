@@ -1,6 +1,6 @@
 # Roadmap
 
-patina21 ships in phases. Each phase ends with something a user can run, and nothing in a
+patina ships in phases. Each phase ends with something a user can run, and nothing in a
 later phase may break an earlier one. Path A (stock Debian plus `patina install`) is the
 reference path and must work at every point. The numbers give the order the phases are
 finished in, not the order they were prepared in: the image and the device entries were
@@ -110,7 +110,7 @@ real Plasma desktop, which the same VM run gives.
 - [x] `patina theme list|set|current`; `patina install` applies the default theme and
   honours `PATINA_THEME=<name>`
 - [x] themes from git: `patina theme install <git-url>|update|remove`, data only, into
-  `~/.local/share/patina21/themes/`, after Omarchy's theme installs
+  `~/.local/share/patina/themes/`, after Omarchy's theme installs
 - [x] a cheat sheet: `patina keys` and Meta+K, from `defaults/keybindings.yaml` and
   Plasma's essentials as data
 - [x] curated keybindings and settings: the placeholders in `defaults/` became the real
@@ -150,7 +150,7 @@ real Plasma desktop, which the same VM run gives.
   login screen (the theme's wallpaper through the backend's sudo path, Inter), the
   Plasma splash (the wordmark and one accent line), the install TUI and the fastfetch
   greeting. Inter and JetBrains Mono are the layer's fonts; the typeset wordmark
-  patina²¹ is the mark of screens, the ASCII mark the mark of terminals
+  patina is the mark of screens, the ASCII mark the mark of terminals
 - [x] live-build configuration: a small live system that carries only Calamares, the
   network stack and firmware; Plasma and the base bundle are fetched from Debian's
   mirrors during the install
@@ -170,7 +170,7 @@ real Plasma desktop, which the same VM run gives.
 - [x] branding within Debian's trademark policy (`docs/branding.md`, the logo)
 - [ ] one manual install in a VM per release, until Calamares can be driven unattended
   (upstream has no unattended mode; see `iso/README.md`): boot, answer the installer,
-  first boot ends in `patina21 firstboot: done`, and the desktop looks like the
+  first boot ends in `patina firstboot: done`, and the desktop looks like the
   screenshot in `docs/screenshots/`
 - Done when: boot, answer the installer, finished desktop identical to Path A, in a VM
   on both architectures.

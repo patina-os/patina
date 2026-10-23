@@ -133,8 +133,8 @@ ForegroundPositive=${BASE0B_RGB}
 ForegroundVisited=${BASE0F_RGB}
 
 [General]
-ColorScheme=patina21-${THEME}
-Name=patina21 ${DISPLAY_NAME}
+ColorScheme=patina-${THEME}
+Name=patina ${DISPLAY_NAME}
 shadeSortColumn=true
 
 [KDE]

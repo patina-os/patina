@@ -5,10 +5,10 @@ Verify this page against Debian's current trademark policy before the first imag
 
 ## Our name
 
-- The project is `patina21`, always lowercase, also at the start of a sentence. The
-  command is `patina`. The number is never explained; the README FAQ has the only answer.
-- Never "Debian patina21", "patina21 Linux" or anything that reads as a distribution or
-  as a Debian product. Say "patina21, a polish layer for KDE Plasma on Debian" or "based
+- The project is `patina`, always lowercase, also at the start of a sentence. The
+  command is `patina`.
+- Never "Debian patina", "patina Linux" or anything that reads as a distribution or
+  as a Debian product. Say "patina, a polish layer for KDE Plasma on Debian" or "based
   on Debian".
 
 ## The logo
@@ -18,7 +18,7 @@ foot, then t, n and a, the word itself as the summit line and the survey point �
 it. `logo.txt` holds it as plain text for the fastfetch greeting, the live image's and
 the installed system's console and the first-boot screen. `wordmark.txt` holds the name
 in block letters for `patina help`, the install questions and the README.
-`wordmark.svg` sets the mark's characters in JetBrains Mono beside patina²¹ in Sora
+`wordmark.svg` sets the mark's characters in JetBrains Mono beside patina in Sora
 ExtraBold; that lockup is what screens show: the live image's boot menu, the installer,
 the login screen and the Plasma splash. `icon.svg` is the mark in a square for large
 icons, `icon-small.svg` the mark as dots for small ones (the installer's sidebar, a
@@ -34,9 +34,9 @@ Debian". Never the swirl, never "Debian" in a larger type than our own name.
 - "Debian" and the swirl belong to Software in the Public Interest, Inc. Debian's policy
   allows true factual statements such as "based on Debian"; we may not imply endorsement
   or use the swirl as ours.
-- The image is branded as patina21 through the live image's boot menu (a GRUB theme and
+- The image is branded as patina through the live image's boot menu (a GRUB theme and
   splash rendered from the theme), the installer (Calamares branding in
-  `iso/live/config/includes.chroot/etc/calamares/branding/patina21/`, rendered by
+  `iso/live/config/includes.chroot/etc/calamares/branding/patina/`, rendered by
   `iso/live/assets.sh`), the text mark on the console (`/etc/issue.d`), and on the
   installed system the login screen, the Plasma splash, the look-and-feel and the
   wallpaper. Stock Debian branding packages stay installed and unmodified; package

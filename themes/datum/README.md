@@ -1,6 +1,6 @@
 # datum
 
-The default patina21 theme: a contour map around a survey point. Graphite surfaces,
+The default patina theme: a contour map around a survey point. Graphite surfaces,
 ice-blue lines and one coral accent; the brand's own colours, so the desktop and the
 marks read as one. Dark variant.
 

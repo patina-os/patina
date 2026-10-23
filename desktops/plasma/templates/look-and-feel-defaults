@@ -2,7 +2,7 @@
 widgetStyle=Breeze
 
 [kdeglobals][General]
-ColorScheme=patina21-${THEME}
+ColorScheme=patina-${THEME}
 
 [kdeglobals][Icons]
 Theme=${ICONS}
@@ -23,7 +23,7 @@ LayoutName=org.kde.breeze.desktop
 LayoutName=org.kde.breeze.desktop
 
 [ksplashrc][KSplash]
-Theme=org.patina21.${THEME}
+Theme=org.patina.${THEME}
 Engine=KSplashQML
 
 [Wallpaper]

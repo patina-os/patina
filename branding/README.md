@@ -1,13 +1,13 @@
 # branding/
 
-The patina21 marks as data. Scripts print these files; they never contain the artwork
+The patina marks as data. Scripts print these files; they never contain the artwork
 themselves.
 
 ```text
 branding/
   logo.txt        the mark, in text: fastfetch, the console, the first-boot screen
   wordmark.txt    the name in block letters: patina help, the install questions, README
-  wordmark.svg    the mark typeset beside patina²¹, the mark of screens
+  wordmark.svg    the mark typeset beside patina, the mark of screens
   icon.svg        the mark typeset in a square, for icons of 96 px and up
   icon-small.svg  the mark as dots, for 80 px and below
 ```
@@ -15,8 +15,7 @@ branding/
 The mark is the summit; the wordmark is the name. Terminals show the mark where there is
 room beside other text (the fastfetch greeting) or no font to trust (the console), and
 the wordmark where the name leads (`patina help`, the install questions, the README).
-Screens show the lockup of mark and name. In running text the name stays `patina21`;
-the superscript figures are the wordmark's typographic form only.
+Screens show the lockup of mark and name. In running text the name stays `patina`.
 
 ## logo.txt, the mark
 
@@ -82,7 +81,7 @@ columns and 10 lines.
 `wordmark.svg` is the lockup for screens: the characters of `logo.txt` set in JetBrains
 Mono in their colours (slate `#4f7394`, ice `#6ab8ff`, pale ice `#a9d7ff` and `#d6ecff`,
 white `#f5f7f9`, the survey point coral `#ff5f6d`), and beside them the word `patina`
-lowercase in Sora ExtraBold with the `21` small and raised in coral. Each run of
+lowercase in Sora ExtraBold, white, so the ▲ is the lockup's one coral. Each run of
 characters is its own `<text>` with an explicit x, so the grid survives renderers that
 collapse spaces. `icon.svg` sets the same characters in a square for icons of 96 px and
 up. Below that the letters blur, so `icon-small.svg` reduces the rings to a 9x5 grid of

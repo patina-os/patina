@@ -1,9 +1,9 @@
-# amethyst: the first patina21 theme. A purple signature palette that continues the
+# amethyst: the first patina theme. A purple signature palette that continues the
 # logo's pink-to-purple gradient on a deep aubergine background. Desktop-agnostic data;
 # desktops/<desktop>/ renders it.
 name: amethyst
 display_name: Amethyst
-author: patina21 contributors
+author: patina contributors
 license: GPL-3.0-or-later      # the theme data
 artwork_license: CC-BY-SA-4.0  # the wallpapers under wallpapers/
 variant: dark

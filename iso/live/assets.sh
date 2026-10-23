@@ -27,7 +27,7 @@ theme_dir="$repo/themes/$(yq eval '.theme' "$settings")"
 theme_vars "$theme_dir/theme.yaml" "$settings"
 tpl[VERSION]="$(git -C "$repo" describe --tags --always --dirty 2> /dev/null || echo 0.0.0-unknown)"
 chroot="$config/includes.chroot"
-branding="$chroot/etc/calamares/branding/patina21"
+branding="$chroot/etc/calamares/branding/patina"
 grub="$config/bootloaders/grub-pc"
 templates="$here/templates"
 tmp="$(mktemp -d)"
@@ -36,7 +36,7 @@ trap 'rm -rf "$tmp"' EXIT
 # The console mark, plain: agetty reads backslashes in /etc/issue as escapes, so they
 # are doubled.
 install -d -m 0755 "$chroot/etc/issue.d" "$branding" "$grub/live-theme"
-sed 's/\\/\\\\/g' "$repo/branding/logo.txt" > "$chroot/etc/issue.d/10-patina21.issue"
+sed 's/\\/\\\\/g' "$repo/branding/logo.txt" > "$chroot/etc/issue.d/10-patina.issue"
 
 # The pieces the compositions are made of, rendered next to them so an SVG may reference
 # them: the theme's first two wallpapers at 1920x1080 and the wordmark rasterised.
@@ -84,7 +84,7 @@ render "$templates/grub/theme.txt" "$grub/live-theme/theme.txt"
 compose grub/splash.svg "$grub/splash.png"
 
 # Openbox, for the dialogs the installer opens.
-openbox="$chroot/usr/share/themes/patina21/openbox-3"
+openbox="$chroot/usr/share/themes/patina/openbox-3"
 install -d -m 0755 "$openbox"
 render "$templates/openbox/themerc" "$openbox/themerc"
 

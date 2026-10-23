@@ -37,10 +37,10 @@ models:
 notes: >
   Boots Debian 13 with the kernel and firmware from trixie-backports (the Debian wiki
   documents a manual debootstrap plus systemd-boot install on the ThinkPad T14s Gen 6;
-  Debian's installer and the patina21 live image do not boot here, because the firmware
+  Debian's installer and the patina live image do not boot here, because the firmware
   offers no usable ACPI tables and the device tree must be handed to the kernel by the
   boot loader). Upstream, NVMe, keyboard, touchpad, display including external outputs,
   GPU and wifi work; audio has no speaker protection; suspend drains the battery within
   a day; bluetooth and the camera still need an out-of-tree branch. Debian 13's own
   firmware package covers the two Lenovo models; the others need firmware from the
-  machine's Windows partition, which patina21 neither ships nor has a helper for yet.
+  machine's Windows partition, which patina neither ships nor has a helper for yet.
