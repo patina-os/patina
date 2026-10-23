@@ -79,7 +79,8 @@ what the ticks below still owe is the "done when" run on a real VM.
 - [ ] the run that closes the phase: a fresh Debian 13 VM with Plasma, `git clone`,
   `patina install`, a second run, `patina doctor`; what it shows missing goes back into
   the data. The CI containers prove everything but the systemd side (zram, oomd, the
-  schedulers, GRUB and the initramfs) and the sudo path as a user
+  schedulers, GRUB and the initramfs) and the sudo path as a user; the steps are in
+  `docs/vm-run.md`
 - Done when: a fresh Debian 13 VM with Plasma gets the whole app stack with one command,
   a second run changes nothing, and `patina doctor` reports clean.
 
@@ -133,7 +134,8 @@ real Plasma desktop, which the same VM run gives.
   switches back without leftovers
 - [ ] the run that closes the phase: the theme on a real Plasma desktop, the live
   reload inside a session and the wallpaper through the look-and-feel package at a
-  first login; what looks wrong goes back into the data
+  first login; what looks wrong goes back into the data (the same VM run,
+  `docs/vm-run.md`)
 - Done when: one theme renders the whole desktop from data, `patina theme set` switches
   and switches back without leftovers, and a theme pack made by copying
   `themes/_template` renders without a code change.
