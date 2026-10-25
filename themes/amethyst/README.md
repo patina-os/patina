@@ -2,8 +2,8 @@
 
 The first patina theme: a purple signature palette on a deep aubergine background,
 continuing the pink-to-purple gradient of the first logo. Since the redesign of October
-2026 it is an option beside the default, datum (`patina theme set amethyst`). Dark
-variant.
+2026 it is an option beside the default, aurora, and datum (`patina theme set
+amethyst`). Dark variant.
 
 ## Palette
 

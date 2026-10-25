@@ -7,6 +7,12 @@ license: GPL-3.0-or-later      # the theme data; SPDX identifier
 artwork_license: CC-BY-SA-4.0  # wallpapers and other images; SPDX identifier
 variant: dark                  # dark or light; tells renderers which base styles to start from
 
+# Optional: the palette keys the desktop's accent (selections, focus, the active
+# window) and its second colour (hover, glows, the end of gradients) come from.
+# Left out, they are base0E and base0F.
+accent: base0E
+accent_alt: base0F
+
 # base16 palette: https://github.com/tinted-theming/home/blob/main/styling.md
 # Copy the palette block of an existing scheme or define your own. The values below
 # are placeholders. base10..base17 (base24) are optional extras.
@@ -40,3 +46,15 @@ plasma:
   icons: breeze-dark             # icon theme as packaged by Debian
   cursors: breeze_cursors
   desktop_theme: default         # the panel and widget style; default follows the colour scheme
+
+# Optional: the theme's other mode, named after it (light: in a dark theme, dark: in a
+# light one), which `patina theme mode` switches to. The palette is complete on its
+# own; wallpapers and plasma hints left out come from above. themes/aurora has one.
+# light:
+#   palette:
+#     base00: "#f5f5f5"
+#     ...                        # base01..base0F as above
+#   wallpapers:
+#     - wallpapers/template-light.svg
+#   plasma:
+#     icons: breeze

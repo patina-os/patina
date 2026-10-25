@@ -1,0 +1,70 @@
+# aurora: the default patina theme, made for OLED. True black, neon green as the accent
+# and violet as the second colour, with a contour map that glows green at the summit and
+# turns violet towards the edges. Dark by default, with a light mode (`light:` below).
+# Desktop-agnostic data; desktops/<desktop>/ renders it.
+name: aurora
+display_name: Aurora
+author: patina contributors
+license: GPL-3.0-or-later      # the theme data
+artwork_license: CC-BY-SA-4.0  # the wallpapers under wallpapers/
+variant: dark
+
+# The desktop's accent and its second colour, as palette keys: green for selections,
+# focus and the active window, violet for hover, glows and the end of gradients.
+accent: base0B
+accent_alt: base0E
+
+# base16 palette: https://github.com/tinted-theming/home/blob/main/styling.md
+palette:
+  base00: "#000000"  # default background: true black, the pixels of an OLED panel stay off
+  base01: "#0b0a10"  # lighter background: panels, title bars, menus; one step above black
+  base02: "#17141f"  # selection background in editors, buttons; a violet tint
+  base03: "#524a6b"  # comments, invisibles
+  base04: "#8a83a3"  # dark foreground: status bars
+  base05: "#d8d4e6"  # default foreground: lavender white
+  base06: "#ebe8f4"  # light foreground
+  base07: "#f7f6fb"  # lightest
+  base08: "#ff5c7a"  # red: errors, deleted
+  base09: "#ffa45c"  # orange: constants
+  base0A: "#f2e15c"  # yellow: classes, search
+  base0B: "#3cff9d"  # green: strings, added; the accent, the summit's glow and the ▲
+  base0C: "#4de8d4"  # cyan: regular expressions, escapes; between the green and the blue
+  base0D: "#7aa2ff"  # blue: functions, links
+  base0E: "#b77dff"  # magenta: keywords; the violet of the second colour and the mark's rings
+  base0F: "#e27bff"  # orchid: deprecated, embedded tags
+
+# Images relative to this directory; the first one is the default. SVG files are
+# rendered by the desktop renderer at apply time; nothing rendered is committed.
+wallpapers:
+  - wallpapers/contour.svg
+
+# Per-desktop hints, still data.
+plasma:
+  icons: breeze-dark             # icon theme as packaged by Debian
+  cursors: breeze_cursors
+  desktop_theme: default         # the panel and widget style; default follows the colour scheme
+
+# The light mode, `patina theme mode light`: the same roles on lavender white. Keys left
+# out here (accent, accent_alt, cursors) come from above.
+light:
+  palette:
+    base00: "#f7f6fb"  # default background: lavender white
+    base01: "#eeecf5"  # lighter background: panels, title bars, menus
+    base02: "#e0dcec"  # selection background in editors, buttons
+    base03: "#a9a3bd"  # comments, invisibles
+    base04: "#6b6585"  # dark foreground: status bars
+    base05: "#2a2638"  # default foreground
+    base06: "#1a1726"  # light foreground (darker in a light palette)
+    base07: "#0d0b14"  # lightest slot, darkest ink
+    base08: "#d1264a"  # red: errors, deleted
+    base09: "#c4620f"  # orange: constants
+    base0A: "#957600"  # yellow: classes, search
+    base0B: "#087a46"  # green: strings, added; the accent, deep enough for white text on it
+    base0C: "#0e8277"  # cyan: regular expressions, escapes
+    base0D: "#3559d6"  # blue: functions, links
+    base0E: "#7c3aed"  # magenta: keywords; the violet of the second colour
+    base0F: "#a21caf"  # orchid: deprecated, embedded tags
+  wallpapers:
+    - wallpapers/contour-light.svg
+  plasma:
+    icons: breeze

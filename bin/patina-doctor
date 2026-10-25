@@ -138,7 +138,7 @@ check_theme() {
     return
   fi
   if [[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/color-schemes/patina-$theme.colors" ]]; then
-    ok "$theme: colour scheme in place"
+    ok "$theme: colour scheme in place ($(current_mode) mode)"
   else
     bad "$theme: colour scheme missing (run patina theme set $theme)"
   fi

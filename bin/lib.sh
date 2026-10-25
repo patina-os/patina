@@ -144,34 +144,70 @@ current_theme() {
   [[ -s "$PATINA_STATE/theme" ]] && cat "$PATINA_STATE/theme"
 }
 
+# The mode, dark or light: PATINA_MODE, else what `patina theme mode` recorded, else
+# the `mode` of defaults/settings.yaml.
+current_mode() {
+  local mode="${PATINA_MODE:-}"
+  [[ -n "$mode" ]] || mode="$(cat "$PATINA_STATE/mode" 2> /dev/null || true)"
+  [[ -n "$mode" ]] || mode="$(yq eval '.mode // "dark"' "$PATINA_PATH/defaults/settings.yaml")"
+  [[ "$mode" =~ ^(dark|light)$ ]] || die "the mode is dark or light, not '$mode'"
+  echo "$mode"
+}
+
+# Does a theme have this mode: its own variant, or a block named after the other one
+# (`light:` in a dark theme) with a palette? theme_has_mode <theme.yaml> <mode>
+theme_has_mode() {
+  [[ "$2" =~ ^(dark|light)$ ]] || return 1
+  [[ "$(yq eval '.variant' "$1")" == "$2" ]] || yq eval -e ".$2.palette" "$1" > /dev/null 2>&1
+}
+
 # ---- a theme as template variables ----------------------------------------------------
 # Load a theme and defaults/settings.yaml into the global tpl[] array: the metadata, the
 # Plasma hints, the fonts, the agent, and every palette colour as hex (BASE00) and as the
-# r,g,b decimals KDE's files want (BASE00_RGB). WALLPAPER_FIRST is the absolute path of
-# the theme's default wallpaper. The desktop renderer and the image build fill their
-# templates from the same array, so no colour is ever copied by hand.
+# r,g,b decimals KDE's files want (BASE00_RGB). ACCENT and ACCENT_ALT are the palette
+# keys the theme names as `accent` and `accent_alt` (base0E and base0F when it names
+# none). WALLPAPER_FIRST is the absolute path of the theme's default wallpaper. The
+# optional mode picks the theme's other palette: in a dark theme with a `light:` block,
+# `light` takes that block's palette (complete on its own) and its wallpapers and
+# Plasma hints where it has them; VARIANT says which mode the palette is. Without a
+# mode, or for one the theme does not have, the theme's own palette stays. The desktop
+# renderer and the image build fill their templates from the same array, so no colour
+# is ever copied by hand.
+# theme_vars <theme.yaml> <settings.yaml> [dark|light]
 theme_vars() {
-  local theme_yaml="$1" settings="$2" key hex first
+  local theme_yaml="$1" settings="$2" mode="${3:-}" b pal=.palette key hex first role ref
   declare -gA tpl=()
+  tpl[VARIANT]="$(yq eval '.variant' "$theme_yaml")"
+  if [[ -n "$mode" && "$mode" != "${tpl[VARIANT]}" ]] && theme_has_mode "$theme_yaml" "$mode"; then
+    tpl[VARIANT]="$mode"
+    pal=".$mode.palette"   # the other mode's palette is complete on its own
+  fi
+  b=".${tpl[VARIANT]}"   # the mode's block; absent for the theme's own variant
   tpl[THEME]="$(yq eval '.name' "$theme_yaml")"
   tpl[DISPLAY_NAME]="$(yq eval '.display_name' "$theme_yaml")"
   tpl[AUTHOR]="$(yq eval '.author' "$theme_yaml")"
   tpl[LICENSE]="$(yq eval '.license' "$theme_yaml")"
   tpl[ARTWORK_LICENSE]="$(yq eval '.artwork_license' "$theme_yaml")"
-  tpl[VARIANT]="$(yq eval '.variant' "$theme_yaml")"
-  tpl[ICONS]="$(yq eval '.plasma.icons // "breeze"' "$theme_yaml")"
-  tpl[CURSORS]="$(yq eval '.plasma.cursors // "breeze_cursors"' "$theme_yaml")"
-  tpl[DESKTOP_THEME]="$(yq eval '.plasma.desktop_theme // "default"' "$theme_yaml")"
+  tpl[ICONS]="$(yq eval "$b.plasma.icons // .plasma.icons // \"breeze\"" "$theme_yaml")"
+  tpl[CURSORS]="$(yq eval "$b.plasma.cursors // .plasma.cursors // \"breeze_cursors\"" "$theme_yaml")"
+  tpl[DESKTOP_THEME]="$(yq eval "$b.plasma.desktop_theme // .plasma.desktop_theme // \"default\"" "$theme_yaml")"
   tpl[UI_FONT]="$(yq eval '.fonts.ui' "$settings")"
   tpl[MONO_FONT]="$(yq eval '.fonts.monospace' "$settings")"
   tpl[AGENT]="$(yq eval '.agent // "opencode"' "$settings")"
-  first="$(yq eval '.wallpapers[0] // ""' "$theme_yaml")"
+  first="$(yq eval "($b.wallpapers // .wallpapers)[0] // \"\"" "$theme_yaml")"
   tpl[WALLPAPER_FIRST]="${first:+$(cd "$(dirname "$theme_yaml")" && pwd)/$first}"
   for key in 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F; do
-    hex="$(yq eval -e ".palette.base$key" "$theme_yaml")" || die "palette has no base$key"
+    hex="$(yq eval -e "$pal.base$key" "$theme_yaml")" || die "$pal has no base$key"
     [[ "$hex" =~ ^#[0-9a-fA-F]{6}$ ]] || die "base$key is not a #rrggbb colour: $hex"
     tpl[BASE$key]="$hex"
     tpl[BASE${key}_RGB]="$(printf '%d,%d,%d' "0x${hex:1:2}" "0x${hex:3:2}" "0x${hex:5:2}")"
+  done
+  for role in accent:base0E accent_alt:base0F; do
+    ref="$(yq eval ".${role%%:*} // \"${role#*:}\"" "$theme_yaml")"
+    [[ "$ref" =~ ^base0[0-9A-F]$ ]] || die "${role%%:*} must name a palette key (base00..base0F), not '$ref'"
+    key="${role%%:*}"
+    tpl[${key^^}]="${tpl[BASE${ref:4}]}"
+    tpl[${key^^}_RGB]="${tpl[BASE${ref:4}_RGB]}"
   done
 }
 
@@ -220,8 +256,8 @@ logo_colour() {
 # The mark, branding/logo.txt, which stays plain text without colour codes (serial
 # console, /etc/issue.d). The colours are added here, at print time, and are the
 # brand's, not the theme's, the same as in branding/wordmark.svg: the rings shade from
-# slate (i) through ice (t) to pale ice (n, a), the word patina is bold white, the
-# survey point coral. `print_logo auto|always`.
+# deep violet (i) through violet (t) to lavender (n, a), the word patina is bold white,
+# the survey point green. `print_logo auto|always`.
 print_logo() {
   local logo="$PATINA_PATH/branding/logo.txt"
   [[ -r "$logo" ]] || return 0
@@ -236,11 +272,11 @@ print_logo() {
       parts=()
       for part in "$head" "$tail"; do
         # The escape codes hold no i, t or n, so each pass leaves the earlier ones alone.
-        part="${part//i/$'\033[38;2;79;115;148m'i$reset}"
-        part="${part//t/$'\033[38;2;106;184;255m't$reset}"
-        part="${part//n/$'\033[38;2;169;215;255m'n$reset}"
-        part="${part//a/$'\033[38;2;214;236;255m'a$reset}"
-        parts+=("${part//▲/$'\033[38;2;255;95;109m'▲$reset}")
+        part="${part//i/$'\033[38;2;109;79;194m'i$reset}"
+        part="${part//t/$'\033[38;2;155;107;255m't$reset}"
+        part="${part//n/$'\033[38;2;195;162;255m'n$reset}"
+        part="${part//a/$'\033[38;2;228;214;255m'a$reset}"
+        parts+=("${part//▲/$'\033[38;2;60;255;157m'▲$reset}")
       done
       printf '%s%s%s\n' "${parts[0]}" "${word:+$'\033[1;38;2;245;247;249m'$word$reset}" "${parts[1]}"
     done < "$logo"
@@ -251,7 +287,8 @@ print_logo() {
 
 # The wordmark, branding/wordmark.txt: patina in block letters over two contour lines,
 # for the terminal surfaces that show the name (`patina help`, the install questions).
-# The letters print white, the dot of the i (the ▲) coral, the lines ice and slate.
+# The letters print white, the dot of the i (the ▲) green, the lines violet and deep
+# violet.
 # `print_wordmark auto|always`.
 print_wordmark() {
   local file="$PATINA_PATH/branding/wordmark.txt" reset=$'\033[0m' i colour
@@ -261,9 +298,9 @@ print_wordmark() {
     mapfile -t lines < "$file"
     for i in "${!lines[@]}"; do
       colour=$'\033[38;2;245;247;249m'
-      (( i == ${#lines[@]} - 2 )) && colour=$'\033[38;2;106;184;255m'
-      (( i == ${#lines[@]} - 1 )) && colour=$'\033[38;2;79;115;148m'
-      printf '%s%s%s\n' "$colour" "${lines[i]//▲/$'\033[38;2;255;95;109m'▲$colour}" "$reset"
+      (( i == ${#lines[@]} - 2 )) && colour=$'\033[38;2;155;107;255m'
+      (( i == ${#lines[@]} - 1 )) && colour=$'\033[38;2;109;79;194m'
+      printf '%s%s%s\n' "$colour" "${lines[i]//▲/$'\033[38;2;60;255;157m'▲$colour}" "$reset"
     done
   else
     cat "$file"
@@ -279,12 +316,12 @@ system_writable() {
 # gum's styles from the palette, for the install TUI; call after theme_vars. Flags
 # override these, and gum degrades the hex colours on a 16-colour console.
 tui_colors() {
-  export GUM_CHOOSE_CURSOR_FOREGROUND="${tpl[BASE0F]}"
-  export GUM_CHOOSE_HEADER_FOREGROUND="${tpl[BASE0E]}"
-  export GUM_CHOOSE_SELECTED_FOREGROUND="${tpl[BASE0F]}"
+  export GUM_CHOOSE_CURSOR_FOREGROUND="${tpl[ACCENT_ALT]}"
+  export GUM_CHOOSE_HEADER_FOREGROUND="${tpl[ACCENT]}"
+  export GUM_CHOOSE_SELECTED_FOREGROUND="${tpl[ACCENT_ALT]}"
   export GUM_CHOOSE_ITEM_FOREGROUND="${tpl[BASE05]}"
   export GUM_CONFIRM_PROMPT_FOREGROUND="${tpl[BASE05]}"
-  export GUM_CONFIRM_SELECTED_BACKGROUND="${tpl[BASE0E]}"
+  export GUM_CONFIRM_SELECTED_BACKGROUND="${tpl[ACCENT]}"
   export GUM_CONFIRM_SELECTED_FOREGROUND="${tpl[BASE00]}"
   export GUM_CONFIRM_UNSELECTED_BACKGROUND="${tpl[BASE02]}"
   export GUM_CONFIRM_UNSELECTED_FOREGROUND="${tpl[BASE05]}"

@@ -27,7 +27,8 @@ neovim.
   brand's colours (`print_logo always`), and `~/.config/fastfetch/config.jsonc`
   pointing at it with the theme's accent for the labels
 - btop: `~/.config/btop/themes/patina-<theme>.theme`, its load gradients running
-  from `base0D` through the accent (`base0E`) to `base0F`, made `color_theme` in
+  from `base0D` through the accent to its second colour (`accent` and `accent_alt`
+  of the theme), made `color_theme` in
   `btop.conf` while that is btop's `Default` or a patina theme; a theme the user
   picked stays. btop rewrites `btop.conf` itself and keeps the key
 - neovim: the colour scheme `~/.config/nvim/colors/patina-<theme>.lua` (editor, syntax

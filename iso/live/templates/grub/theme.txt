@@ -35,7 +35,7 @@ terminal-font: "Unifont Regular 16"
   height = 48%-80
   item_color = "${BASE05}"
   item_font = "Unifont Regular 16"
-  selected_item_color = "${BASE0F}"
+  selected_item_color = "${ACCENT_ALT}"
   selected_item_font = "Unifont Regular 16"
   item_height = 20
   item_padding = 2
@@ -54,8 +54,8 @@ terminal-font: "Unifont Regular 16"
   width = 70%
   font = "Unifont Regular 16"
   text_color = "${BASE00}"
-  fg_color = "${BASE0E}"
+  fg_color = "${ACCENT}"
   bg_color = "${BASE01}"
-  border_color = "${BASE0E}"
+  border_color = "${ACCENT}"
   text = "@TIMEOUT_NOTIFICATION_LONG@"
 }

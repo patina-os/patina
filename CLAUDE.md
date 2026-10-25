@@ -40,11 +40,15 @@ packs. Audience: developers and privacy-minded users in the EU.
   bundle. Agent tools (Claude Code, Codex CLI, opencode, Claude Desktop, Ollama) are an
   opt-in bundle because most of them are proprietary; Ollama is the local backend they
   point at, and their desktop integration is a shortcut and a terminal profile, as data.
-- Look: the default theme is datum, chosen in the October 2026 redesign
-  (`docs/design/futures.html` keeps the eight directions it came from): graphite, the
-  ice blue of contour lines and one coral accent, with a contour map as artwork (SVG
-  in the theme, rendered at apply time) licensed with the repository. amethyst, the
-  first theme, stays as an option. No third-party wallpapers. Artwork drawn by a
+- Look: the default theme is aurora, made for OLED screens (October 2026, after the
+  redesign whose eight directions `docs/design/futures.html` keeps): true black with
+  panels one step above it, neon green as the accent and violet as the second colour,
+  with a contour map that glows green at the summit and turns violet at the edges as
+  artwork (SVG in the theme, rendered at apply time) licensed with the repository.
+  Dark is the default mode; aurora carries a light mode as data (a `light:` block),
+  switched with `patina theme mode`, and the boot menu, the installer, the splash and
+  the login screen stay dark in either. datum (graphite, ice, coral) and amethyst, the
+  first theme, stay as options. No third-party wallpapers. Artwork drawn by a
   script is committed as the SVG it produced, never with the script. The `agent`
   shortcut opens opencode by default (`defaults/settings.yaml`), the free one of the
   agent CLIs. One look from the boot menu to the desktop: the installer, the boot
@@ -57,7 +61,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   console, `branding/wordmark.txt` the name in block letters for `patina help`, the
   install questions and the README; `branding/wordmark.svg` sets the mark beside
   patina for screens, `icon.svg` and `icon-small.svg` are the mark as large and
-  small icons. The brand's colours (slate, ice, white, coral) do not follow a theme.
+  small icons. The brand's colours (deep violet, violet, lavender, white, and green
+  for the ▲) are aurora's and do not follow a theme.
   The desktop's shape is a floating centred bar as on Windows 11 and new windows
   centred at one size; all are knobs in `defaults/settings.yaml`. No automatic tiling
   on Plasma: that would need a KWin script Debian does not package; a tiling desktop
@@ -175,7 +180,8 @@ Each directory's README is the authority on its file format.
 
 ## Data formats
 
-- Theme: `themes/<name>/theme.yaml`, base16 palette keys. See `themes/README.md`.
+- Theme: `themes/<name>/theme.yaml`, base16 palette keys, optionally `accent` and
+  `accent_alt` and a block for the other mode (`light:`). See `themes/README.md`.
 - Keybindings and settings: `defaults/*.yaml`. See `defaults/README.md`.
 - Packages: `manifest/bundles/*.yaml`, `manifest/backends/*.yaml`, `manifest/upstream.yaml`.
   Canonical package names are Debian's. See `manifest/README.md`.

@@ -33,8 +33,8 @@ ii  tt nnnaaaaaaannttii
 
 A summit drawn as contour rings, steeper on one side, and shaded with the letters of
 its own name: i at the foot, then t, n and a as it gets denser. The word patina is the
-summit line; the ▲ beside it is the survey point, the datum the default theme is named
-after. 23 columns and 9 lines: about as tall as it is wide on screen, since a terminal
+summit line; the ▲ beside it is the survey point, the summit of the default theme's
+contour map. 23 columns and 9 lines: about as tall as it is wide on screen, since a terminal
 cell is twice as tall as it is wide.
 
 - Plain text without colour codes: ASCII letters and spaces, and the ▲ (U+25B2). A
@@ -47,8 +47,8 @@ cell is twice as tall as it is wide.
   image and of the installed system (`/etc/issue.d`), the first-boot screen.
 - Print it with `print_logo` from `bin/lib.sh` (`auto`: colours only on an interactive
   24-bit terminal; `always`: colours in any case, for the file fastfetch shows). The
-  colours are the brand's: slate for i, ice for t, pale ice for n and a, bold white for
-  the word, coral for the ▲.
+  colours are the brand's: deep violet for i, violet for t, lavender for n and a, bold
+  white for the word, green for the ▲.
 
 ## wordmark.txt, the name
 
@@ -74,18 +74,20 @@ columns and 10 lines.
   `logo.txt` instead.
 - Where it appears: `patina help`, the install questions, the README header.
 - Print it with `print_wordmark` from `bin/lib.sh` (same `auto` and `always`): the
-  letters white, the ▲ coral, the upper line ice and the lower one slate.
+  letters white, the ▲ green, the upper line violet and the lower one deep violet.
 
 ## wordmark.svg, icon.svg and icon-small.svg
 
 `wordmark.svg` is the lockup for screens: the characters of `logo.txt` set in JetBrains
-Mono in their colours (slate `#4f7394`, ice `#6ab8ff`, pale ice `#a9d7ff` and `#d6ecff`,
-white `#f5f7f9`, the survey point coral `#ff5f6d`), and beside them the word `patina`
-lowercase in Sora ExtraBold, white, so the ▲ is the lockup's one coral. Each run of
+Mono in their colours (deep violet `#6d4fc2`, violet `#9b6bff`, lavender `#c3a2ff` and
+`#e4d6ff`, white `#f5f7f9`, the survey point green `#3cff9d`), and beside them the word
+`patina` lowercase in Sora ExtraBold, white, so the ▲ is the lockup's one green. The
+violet and the green are those of the default theme, aurora, so the desktop and the
+marks read as one; they stay fixed when another theme is set. Each run of
 characters is its own `<text>` with an explicit x, so the grid survives renderers that
 collapse spaces. `icon.svg` sets the same characters in a square for icons of 96 px and
 up. Below that the letters blur, so `icon-small.svg` reduces the rings to a 9x5 grid of
-dots around the coral ▲, for the installer's sidebar and window icons.
+dots around the green ▲, for the installer's sidebar and window icons.
 
 The SVG files with `<text>` need JetBrains Mono and Sora where they are rendered: the
 image build, the live system and the desktop bundle install `fonts-jetbrains-mono` and

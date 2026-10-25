@@ -105,6 +105,33 @@ jobs:
           test ! -e "$data/wallpapers/patina-zz-copy-$wallpaper"
           test ! -e "$HOME/.config/nvim/colors/patina-zz-copy.lua"
           [[ "$(scheme)" == "patina-$theme" ]]
+      - name: The light mode switches and switches back
+        # The default theme carries a light palette: the mode turns the terminal and the
+        # wallpaper light, the splash and the login screen stay dark, a second run
+        # changes nothing, and the dark mode leaves no light wallpaper behind.
+        run: |
+          theme="$(yq eval '.theme' defaults/settings.yaml)"
+          t="themes/$theme/theme.yaml"
+          data="$HOME/.local/share"
+          dark_bg="$(yq eval -e '.palette.base00' "$t")"
+          light_bg="$(yq eval -e '.light.palette.base00' "$t")"
+          light_wp="$(basename "$(yq eval -e '.light.wallpapers[0]' "$t")")"
+          light_wp="$data/wallpapers/patina-$theme-${light_wp%.*}"
+          splash="$data/plasma/look-and-feel/org.patina.$theme/contents/splash/Splash.qml"
+          login="$(sha256sum < /usr/local/share/patina/login.png)"
+          [[ "$(bin/patina theme mode)" == dark ]]
+          bin/patina theme mode light
+          [[ "$(bin/patina theme mode)" == light ]]
+          grep -qx "background $light_bg" "$HOME/.config/kitty/patina.conf"
+          test -s "$light_wp/contents/images/3840x2160.png"
+          grep -q "color: \"$dark_bg\"" "$splash"
+          [[ "$(sha256sum < /usr/local/share/patina/login.png)" == "$login" ]]
+          out="$(bin/patina theme mode light)"
+          grep -q 'terminal: nothing to do' <<< "$out"
+          grep -q 'theme: nothing to do' <<< "$out"
+          bin/patina theme mode dark
+          grep -qx "background $dark_bg" "$HOME/.config/kitty/patina.conf"
+          test ! -e "$light_wp"
       - name: The terminal and its tools rendered
         # desktops/terminal/: kitty carries the palette, btop and neovim get their own
         # files, and neovim loads the colour scheme when nothing else chose one.

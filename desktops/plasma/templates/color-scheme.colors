@@ -23,8 +23,8 @@ IntensityEffect=0
 [Colors:Button]
 BackgroundAlternate=${BASE01_RGB}
 BackgroundNormal=${BASE02_RGB}
-DecorationFocus=${BASE0E_RGB}
-DecorationHover=${BASE0E_RGB}
+DecorationFocus=${ACCENT_RGB}
+DecorationHover=${ACCENT_ALT_RGB}
 ForegroundActive=${BASE0C_RGB}
 ForegroundInactive=${BASE04_RGB}
 ForegroundLink=${BASE0D_RGB}
@@ -37,8 +37,8 @@ ForegroundVisited=${BASE0F_RGB}
 [Colors:Complementary]
 BackgroundAlternate=${BASE01_RGB}
 BackgroundNormal=${BASE00_RGB}
-DecorationFocus=${BASE0E_RGB}
-DecorationHover=${BASE0E_RGB}
+DecorationFocus=${ACCENT_RGB}
+DecorationHover=${ACCENT_ALT_RGB}
 ForegroundActive=${BASE0C_RGB}
 ForegroundInactive=${BASE04_RGB}
 ForegroundLink=${BASE0D_RGB}
@@ -51,8 +51,8 @@ ForegroundVisited=${BASE0F_RGB}
 [Colors:Header]
 BackgroundAlternate=${BASE00_RGB}
 BackgroundNormal=${BASE01_RGB}
-DecorationFocus=${BASE0E_RGB}
-DecorationHover=${BASE0E_RGB}
+DecorationFocus=${ACCENT_RGB}
+DecorationHover=${ACCENT_ALT_RGB}
 ForegroundActive=${BASE0C_RGB}
 ForegroundInactive=${BASE04_RGB}
 ForegroundLink=${BASE0D_RGB}
@@ -65,8 +65,8 @@ ForegroundVisited=${BASE0F_RGB}
 [Colors:Header][Inactive]
 BackgroundAlternate=${BASE01_RGB}
 BackgroundNormal=${BASE00_RGB}
-DecorationFocus=${BASE0E_RGB}
-DecorationHover=${BASE0E_RGB}
+DecorationFocus=${ACCENT_RGB}
+DecorationHover=${ACCENT_ALT_RGB}
 ForegroundActive=${BASE0C_RGB}
 ForegroundInactive=${BASE03_RGB}
 ForegroundLink=${BASE0D_RGB}
@@ -77,10 +77,10 @@ ForegroundPositive=${BASE0B_RGB}
 ForegroundVisited=${BASE0F_RGB}
 
 [Colors:Selection]
-BackgroundAlternate=${BASE0E_RGB}
-BackgroundNormal=${BASE0E_RGB}
-DecorationFocus=${BASE0E_RGB}
-DecorationHover=${BASE0E_RGB}
+BackgroundAlternate=${ACCENT_RGB}
+BackgroundNormal=${ACCENT_RGB}
+DecorationFocus=${ACCENT_RGB}
+DecorationHover=${ACCENT_ALT_RGB}
 ForegroundActive=${BASE00_RGB}
 ForegroundInactive=${BASE02_RGB}
 ForegroundLink=${BASE00_RGB}
@@ -93,8 +93,8 @@ ForegroundVisited=${BASE00_RGB}
 [Colors:Tooltip]
 BackgroundAlternate=${BASE02_RGB}
 BackgroundNormal=${BASE01_RGB}
-DecorationFocus=${BASE0E_RGB}
-DecorationHover=${BASE0E_RGB}
+DecorationFocus=${ACCENT_RGB}
+DecorationHover=${ACCENT_ALT_RGB}
 ForegroundActive=${BASE0C_RGB}
 ForegroundInactive=${BASE04_RGB}
 ForegroundLink=${BASE0D_RGB}
@@ -107,8 +107,8 @@ ForegroundVisited=${BASE0F_RGB}
 [Colors:View]
 BackgroundAlternate=${BASE01_RGB}
 BackgroundNormal=${BASE00_RGB}
-DecorationFocus=${BASE0E_RGB}
-DecorationHover=${BASE0E_RGB}
+DecorationFocus=${ACCENT_RGB}
+DecorationHover=${ACCENT_ALT_RGB}
 ForegroundActive=${BASE0C_RGB}
 ForegroundInactive=${BASE04_RGB}
 ForegroundLink=${BASE0D_RGB}
@@ -121,8 +121,8 @@ ForegroundVisited=${BASE0F_RGB}
 [Colors:Window]
 BackgroundAlternate=${BASE02_RGB}
 BackgroundNormal=${BASE01_RGB}
-DecorationFocus=${BASE0E_RGB}
-DecorationHover=${BASE0E_RGB}
+DecorationFocus=${ACCENT_RGB}
+DecorationHover=${ACCENT_ALT_RGB}
 ForegroundActive=${BASE0C_RGB}
 ForegroundInactive=${BASE04_RGB}
 ForegroundLink=${BASE0D_RGB}

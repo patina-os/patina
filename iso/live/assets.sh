@@ -74,7 +74,7 @@ yq -i "
   .style.SidebarBackground = \"${tpl[BASE00]}\" |
   .style.SidebarText = \"${tpl[BASE05]}\" |
   .style.SidebarTextCurrent = \"${tpl[BASE00]}\" |
-  .style.SidebarBackgroundCurrent = \"${tpl[BASE0E]}\"
+  .style.SidebarBackgroundCurrent = \"${tpl[ACCENT]}\"
 " "$branding/branding.desc"
 
 # The boot menu: live-build takes these two files over its stock ones, and its theme.cfg

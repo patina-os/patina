@@ -48,7 +48,7 @@ Rectangle {
             width: line.width
             height: 8
             radius: 4
-            color: "${BASE0F}"
+            color: "${ACCENT_ALT}"
             opacity: 0.35
         }
 
@@ -58,7 +58,7 @@ Rectangle {
             anchors.verticalCenter: track.verticalCenter
             width: track.width * Math.min(Math.max(root.stage, 1), 5) / 5
             height: 2
-            color: "${BASE0E}"
+            color: "${ACCENT}"
             Behavior on width {
                 NumberAnimation { duration: 250; easing.type: Easing.InOutQuad }
             }

@@ -4,7 +4,7 @@
   <image xlink:href="wallpaper.png" width="1920" height="1080"/>
   <rect width="1920" height="1080" fill="${BASE00}" fill-opacity="0.7"/>
   <rect x="440" y="290" width="1040" height="500" rx="24" fill="${BASE01}" fill-opacity="0.75"
-    stroke="${BASE0E}" stroke-opacity="0.5" stroke-width="2"/>
+    stroke="${ACCENT}" stroke-opacity="0.5" stroke-width="2"/>
   <image xlink:href="logo.png" x="680" y="400" width="560" height="160"/>
   <text x="960" y="660" text-anchor="middle" font-family="${MONO_FONT}, monospace" font-size="30"
     fill="${BASE04}">patina ${VERSION}</text>

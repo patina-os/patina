@@ -17,7 +17,7 @@ Themes, consistency across apps, curated defaults, agent CLIs and a free-softwar
 EU-sovereign app stack on top of Debian stable with Plasma. Not a distribution.
 
 **Status: pre-alpha.** `patina install` installs the app stack and the system tuning on
-Debian 13 and renders the default theme, datum, into Plasma's configuration (checked in
+Debian 13 and renders the default theme, aurora, into Plasma's configuration (checked in
 CI containers on x86_64 and aarch64, not yet on a real desktop); the branded install is
 still to come. See the [roadmap](docs/roadmap.md).
 
@@ -31,7 +31,7 @@ QEMU, Calamares as Debian 13 ships it, branded through data):
 The finished desktop, as the `desktop` workflow captures it in CI (amd64, a Plasma X11
 session on a virtual framebuffer after `patina install`): the centred bar and kitty with
 the fastfetch greeting. This picture still shows amethyst, the first theme; the next one
-CI takes shows datum.
+CI takes shows aurora.
 
 ![The patina desktop with the amethyst theme](docs/screenshots/desktop-amd64.png)
 
@@ -109,11 +109,15 @@ menu, the installer, the login screen, the Plasma splash, Plasma itself, Konsole
 GTK and Flatpak apps, the install questions, the terminal greeting and the tools in the
 terminal (btop, neovim, bat, fzf, lazygit, eza, starship) all take their colours from
 the theme's palette; the words are set in Source Sans 3, the details in
-JetBrains Mono, the wordmark in Sora. The default theme is datum: graphite, the ice blue
-of contour lines and one coral accent, with a contour map around a survey point as its
-wallpaper. The mark is text, a summit shaded with the letters of patina, so the
-terminal and the screens show the same one. amethyst, the first theme, a purple palette
-with two abstract wallpapers, stays as an option (`patina theme set amethyst`).
+JetBrains Mono, the wordmark in Sora. The default theme is aurora, made for OLED
+screens: true black, neon green as the accent and violet as the second colour, with a
+contour map that glows green at its summit and turns violet towards the edges. It is
+dark by default; `patina theme mode light` switches it to its light palette and
+`patina theme mode dark` back. The mark is text, a summit shaded with the letters of
+patina in violet with a green survey point, so the terminal and the screens show the
+same one. datum (graphite, ice and coral around a contour map) and amethyst, the first
+theme, a purple palette with two abstract wallpapers, stay as options (`patina theme
+set datum`).
 Meta plus
 one key opens the terminal (Return), the search (Space), the browser (B), the files (E)
 and, with the agent tools installed, the agent CLI in its own terminal profile (A);

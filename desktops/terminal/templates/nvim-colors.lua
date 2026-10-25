@@ -13,6 +13,7 @@ local c = {
   base04 = "${BASE04}", base05 = "${BASE05}", base06 = "${BASE06}", base07 = "${BASE07}",
   base08 = "${BASE08}", base09 = "${BASE09}", base0A = "${BASE0A}", base0B = "${BASE0B}",
   base0C = "${BASE0C}", base0D = "${BASE0D}", base0E = "${BASE0E}", base0F = "${BASE0F}",
+  accent = "${ACCENT}",
 }
 
 -- The terminal inside neovim gets the same sixteen colours as kitty.
@@ -30,7 +31,7 @@ local groups = {
   CursorLine = { bg = c.base01 },
   CursorColumn = { bg = c.base01 },
   ColorColumn = { bg = c.base01 },
-  CursorLineNr = { fg = c.base0E, bg = c.base01, bold = true },
+  CursorLineNr = { fg = c.accent, bg = c.base01, bold = true },
   LineNr = { fg = c.base03 },
   SignColumn = { fg = c.base03 },
   FoldColumn = { fg = c.base03 },
@@ -42,10 +43,10 @@ local groups = {
   Substitute = { fg = c.base00, bg = c.base0A },
   MatchParen = { bg = c.base02, bold = true },
   Pmenu = { fg = c.base05, bg = c.base01 },
-  PmenuSel = { fg = c.base00, bg = c.base0E },
+  PmenuSel = { fg = c.base00, bg = c.accent },
   PmenuSbar = { bg = c.base02 },
   PmenuThumb = { bg = c.base04 },
-  WildMenu = { fg = c.base00, bg = c.base0E },
+  WildMenu = { fg = c.base00, bg = c.accent },
   StatusLine = { fg = c.base05, bg = c.base02 },
   StatusLineNC = { fg = c.base04, bg = c.base01 },
   TabLine = { fg = c.base04, bg = c.base01 },
