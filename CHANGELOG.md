@@ -8,6 +8,32 @@ All notable changes to patina are documented here. The format follows
 
 ### Added
 
+- The aurora theme, the new default, made for OLED screens: true black, so those pixels
+  stay off, with panels one step above it; neon green as the accent (selections,
+  focus, the active window, the cursor, the splash line) and violet as the second
+  colour (hover, glows, the end of gradients); a contour map that glows green at its
+  summit and turns violet towards the edges, drawn once and kept as SVG artwork
+  (CC-BY-SA-4.0). datum and amethyst stay as options.
+- A light mode. `patina theme mode light` switches the current theme to its light
+  palette, `patina theme mode dark` back, and the choice holds for every theme set
+  later (`mode: dark` in `defaults/settings.yaml` is the default, `PATINA_MODE`
+  overrides). A theme carries its other mode as data, a `light:` block with its own
+  palette, wallpapers and Plasma hints; aurora has one. The boot menu, the installer,
+  the splash and the login screen stay dark in either mode. `patina theme list` shows
+  which themes have both.
+- Themes name their accent: `accent` and `accent_alt` in `theme.yaml` point at palette
+  keys (`base0E` and `base0F` when left out), so a green accent keeps green strings and
+  violet keywords in the terminal and in code. A migration renders the theme already
+  set once more.
+
+### Changed
+
+- The marks take aurora's colours: the rings deep violet, violet and lavender, the
+  word white, the survey point ▲ green, in `wordmark.svg`, the icons, the terminal
+  greeting and `patina help`.
+- The cursor and the active tab in kitty, focus and hover in Plasma's colour scheme
+  follow the theme's accent and second colour in every theme.
+
 - The terminal tools follow the theme. A new renderer, `desktops/terminal/`, runs for
   every desktop before the desktop's own: kitty and the fastfetch greeting move there
   from the Plasma renderer, btop gets a theme file from the palette, neovim a colour

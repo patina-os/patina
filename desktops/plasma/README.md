@@ -3,24 +3,28 @@
 Renderer for KDE Plasma 6 as Debian 13 ships it (Plasma 6.3). `patina theme set <name>`
 and `patina install` run `apply.sh <theme-dir>` for the current user, after
 `desktops/terminal/`, which renders kitty, the fastfetch greeting and the terminal tools
-for every desktop.
+for every desktop. Both render the palette of the mode in use, dark or light
+(`patina theme mode`, `current_mode` in `bin/lib.sh`), for a theme that has both.
 
 ## What it produces
 
 Files, from `templates/`, each named after the theme:
 
 - a Plasma colour scheme, `~/.local/share/color-schemes/patina-<theme>.colors`, with
-  the theme's `base0E` as the accent and selection colour
+  the theme's accent (`accent`, `base0E` by default) as the accent, selection and
+  focus colour and its second colour (`accent_alt`) for hover
 - a Konsole colour scheme and profile under `~/.local/share/konsole/`, made the default
   profile in `konsolerc`
 - one Plasma wallpaper package per image under `~/.local/share/wallpapers/`; an SVG is
-  rendered with `rsvg-convert` at 3840x2160 and only again when the theme's file is newer
+  rendered with `rsvg-convert` at 3840x2160 and only again when the theme's file is newer;
+  in the theme's other mode that mode's wallpapers come first and the theme's own follow
 - a look-and-feel package, `~/.local/share/plasma/look-and-feel/org.patina.<theme>/`,
   whose `defaults` name the colour scheme, icons, cursors, desktop theme, decoration,
   splash and wallpaper, so a fresh session (the image's first login) starts in the
   theme; its `contents/splash/Splash.qml`, from `templates/splash.qml`, is the Plasma
   splash: the wordmark (`branding/wordmark.svg`) on the theme's background and one
-  accent line that grows as Plasma starts, the one piece of code a theme renders
+  accent line that grows as Plasma starts, the one piece of code a theme renders; it
+  takes the dark palette in either mode, since the wordmark is made for a dark ground
 - the login screen: SDDM runs as its own user, so the theme's first wallpaper is written
   to `/usr/local/share/patina/login.png` and the Breeze SDDM theme's
   `theme.conf.user` (from `templates/sddm-theme.conf.user`) next to Plasma's own theme,
@@ -65,7 +69,7 @@ Settings, through `kwriteconfig6`, each written only when it differs:
   ksmserver or plasmashell action. A service that is not installed is skipped with a
   warning; Plasma's own chords that collide are unbound (`unbind` in `actions.yaml`)
 - GTK 3 and 4 `settings.ini`: Breeze, the icon and cursor theme, the font, dark or light
-  after the theme's `variant`; Plasma's own bridge (`kde-config-gtk-style`) syncs the
+  after the mode in use (`patina theme mode`); Plasma's own bridge (`kde-config-gtk-style`) syncs the
   colours from there. A Flatpak override lets apps read `kdeglobals`, so Qt apps from
   Flathub follow too
 

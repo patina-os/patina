@@ -40,18 +40,19 @@ changed() {
 section() {
   [[ $tui -eq 1 ]] || return 0
   echo
-  gum style --bold --foreground "${tpl[BASE0E]}" "── $1 ──"
+  gum style --bold --foreground "${tpl[ACCENT]}" "── $1 ──"
 }
 
 # The questions, on a terminal: the theme, the app bundles, a summary and a yes. Sets
 # PATINA_THEME and bundles. Esc or Cancel leaves without a change. Bundle descriptions
 # carry no comma: gum takes the preselected lines as a comma-separated list.
 ask() {
-  local current d name kind lines choice chosen_lines
+  local current d mode name kind lines choice chosen_lines
   local -a theme_lines=() bundle_lines=() preselected=()
   current="${PATINA_THEME:-$(current_theme || yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")}"
   d="$(theme_dir "$current")" || die "no theme '$current' under themes/ (try patina theme list)"
-  theme_vars "$d/theme.yaml" "$PATINA_PATH/defaults/settings.yaml"
+  mode="$(current_mode)"
+  theme_vars "$d/theme.yaml" "$PATINA_PATH/defaults/settings.yaml" "$mode"
   tui_colors
   print_wordmark auto
   echo
@@ -78,7 +79,7 @@ ask() {
     --selected "$(IFS=,; echo "${preselected[*]}")" "${bundle_lines[@]}")" || exit 0
   mapfile -t bundles < <(printf 'base\n%s\n' "$(printf '%s\n' "$chosen_lines" | awk 'NF { print $1 }')" | awk 'NF && !seen[$0]++')
   echo
-  gum style --border rounded --border-foreground "${tpl[BASE0E]}" --padding "1 3" \
+  gum style --border rounded --border-foreground "${tpl[ACCENT]}" --padding "1 3" \
     "$(printf 'theme    %s\nbundles  %s\nbackend  %s (%s)' "$PATINA_THEME" "${bundles[*]}" \
       "$(basename "$BACKEND" .yaml)" "$(uname -m)")"
   echo

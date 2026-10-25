@@ -1,6 +1,7 @@
 # Defaults applied by `patina install` unless the user picks otherwise. Keep this file
 # small: one knob per line, desktop-agnostic; the renderer under desktops/ translates.
-theme: datum                 # a directory under themes/; PATINA_THEME=<name> overrides
+theme: aurora                # a directory under themes/; PATINA_THEME=<name> overrides
+mode: dark                   # dark | light, for themes that have both; patina theme mode switches
 desktop: plasma              # the renderer: desktops/<desktop>/apply.sh
 flatpak_remote: https://dl.flathub.org/repo/flathub.flatpakrepo
 fonts:                       # font names only; the desktop bundle installs the packages

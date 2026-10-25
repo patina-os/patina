@@ -21,9 +21,10 @@ say() { printf 'patina: terminal: %s\n' "$*"; }
 warn() { printf 'patina: terminal: %s\n' "$*" >&2; }
 changed() { changes=$((changes + 1)); }
 
-theme_vars "$theme_yaml" "$PATINA_PATH/defaults/settings.yaml"
+mode="$(current_mode)"
+theme_vars "$theme_yaml" "$PATINA_PATH/defaults/settings.yaml" "$mode"
 tpl[DATA_HOME]="$data"
-tpl[ACCENT_SGR]="38;2;${tpl[BASE0E_RGB]//,/;}"   # the accent as an ANSI colour, for fastfetch
+tpl[ACCENT_SGR]="38;2;${tpl[ACCENT_RGB]//,/;}"   # the accent as an ANSI colour, for fastfetch
 theme="${tpl[THEME]}"
 
 tmp="$(mktemp -d)"

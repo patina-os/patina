@@ -8,7 +8,7 @@ window.handle.width: 0
 window.client.padding.width: 0
 window.label.text.justify: left
 
-window.active.border.color: ${BASE0E}
+window.active.border.color: ${ACCENT}
 window.inactive.border.color: ${BASE02}
 window.active.title.separator.color: ${BASE01}
 window.inactive.title.separator.color: ${BASE01}
@@ -34,22 +34,22 @@ window.inactive.grip.bg.color: ${BASE01}
 window.active.button.unpressed.bg: parentrelative
 window.active.button.unpressed.image.color: ${BASE04}
 window.active.button.hover.bg: parentrelative
-window.active.button.hover.image.color: ${BASE0F}
+window.active.button.hover.image.color: ${ACCENT_ALT}
 window.active.button.pressed.bg: parentrelative
-window.active.button.pressed.image.color: ${BASE0E}
+window.active.button.pressed.image.color: ${ACCENT}
 window.active.button.disabled.bg: parentrelative
 window.active.button.disabled.image.color: ${BASE03}
 window.inactive.button.unpressed.bg: parentrelative
 window.inactive.button.unpressed.image.color: ${BASE03}
 window.inactive.button.hover.bg: parentrelative
-window.inactive.button.hover.image.color: ${BASE0F}
+window.inactive.button.hover.image.color: ${ACCENT_ALT}
 window.inactive.button.pressed.bg: parentrelative
-window.inactive.button.pressed.image.color: ${BASE0E}
+window.inactive.button.pressed.image.color: ${ACCENT}
 window.inactive.button.disabled.bg: parentrelative
 window.inactive.button.disabled.image.color: ${BASE02}
 
 menu.border.width: 1
-menu.border.color: ${BASE0E}
+menu.border.color: ${ACCENT}
 menu.title.bg: flat solid
 menu.title.bg.color: ${BASE01}
 menu.title.text.color: ${BASE05}
@@ -58,11 +58,11 @@ menu.items.bg.color: ${BASE00}
 menu.items.text.color: ${BASE05}
 menu.items.disabled.text.color: ${BASE03}
 menu.items.active.bg: flat solid
-menu.items.active.bg.color: ${BASE0E}
+menu.items.active.bg.color: ${ACCENT}
 menu.items.active.text.color: ${BASE00}
 
 osd.border.width: 1
-osd.border.color: ${BASE0E}
+osd.border.color: ${ACCENT}
 osd.bg: flat solid
 osd.bg.color: ${BASE00}
 osd.label.text.color: ${BASE05}

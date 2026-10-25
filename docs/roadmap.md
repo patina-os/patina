@@ -9,7 +9,7 @@ ticked items while Phase 1 is open.
 
 Status: pre-alpha. The core commands exist and the smoke test runs `patina install`
 twice in Debian 13 containers on both architectures; the live image builds and boots to
-the installer in CI; the Plasma renderer and the themes, datum by default, render from data
+the installer in CI; the Plasma renderer and the themes, aurora by default, render from data
 and switch without leftovers in the same containers. Phase 1's last step, the run on a
 fresh Debian 13 VM with Plasma, is open; Phase 2 waits for the same run to see the
 theme on a real desktop; Phase 3 is open.
@@ -27,7 +27,10 @@ login screen and the splash share the theme's look, rendered from its palette (P
 The redesign of October 2026 replaced the first look: datum (graphite, ice, coral, a
 contour map) is the default theme and amethyst an option, the words are set in Source
 Sans 3 and the wordmark in Sora, and the mark is text, a summit shaded with the letters
-of patina (Phase 2; `docs/design/futures.html` keeps the eight directions).
+of patina (Phase 2; `docs/design/futures.html` keeps the eight directions). Later that
+month aurora, made for OLED screens (true black, green accent, violet second colour, a
+glowing contour map), became the default with a light mode beside its dark one, and the
+marks moved to its violet and green; datum and amethyst are options (Phase 2).
 
 ## Phase 1: the core commands on x86_64 (Debian 13)
 
@@ -104,6 +107,10 @@ real Plasma desktop, which the same VM run gives.
   (`branding/logo.txt`, typeset in `wordmark.svg` and `icon.svg`, dots in
   `icon-small.svg`), the name in block letters (`wordmark.txt`); Source Sans 3
   and Sora join JetBrains Mono; the bar floats. amethyst stays as an option
+- [x] aurora, the OLED theme: true black with lifted panels, a green accent and violet
+  as the second colour (`accent` and `accent_alt` name them in any theme), a glowing
+  contour map; a light mode beside the dark one (`patina theme mode`, a `light:` block
+  in the theme); the marks in violet and green; datum stays as an option
 - [x] the agent shortcut: the `agent` action in `defaults/keybindings.yaml` (Meta+A)
   opens the agent CLI of `defaults/settings.yaml` (opencode by default) in a dedicated
   kitty profile the renderer writes from the palette; the action is skipped when the

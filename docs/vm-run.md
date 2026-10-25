@@ -58,7 +58,7 @@ script -q -c 'patina install' ~/run1.log
 
 `script` keeps a log without hiding the terminal from the questions.
 
-- [ ] the questions appear: the wordmark, the version line, the theme (datum offered
+- [ ] the questions appear: the wordmark, the version line, the theme (aurora offered
   first), the app bundles (desktop preselected, agents not), a summary, a yes
 - [ ] sudo asks for the password and nothing else does; no command fails
 - [ ] it ends with `done: N changes`, and `git -C ~/.local/share/patina status --short` is
@@ -138,7 +138,8 @@ Log out and back in once, then:
 
 - [ ] the splash: the wordmark and one accent line, on the theme's background
 - [ ] the login screen: the contour map wallpaper, the words in Source Sans 3
-- [ ] the desktop: the contour map, datum's colour scheme, a floating bar centred at the
+- [ ] the desktop: the glowing contour map on black, aurora's colour scheme (green
+  selections and focus, violet hover), a floating bar centred at the
   bottom with the launcher and the pinned files, browser and terminal in the middle
 - [ ] fonts: Source Sans 3 in menus and titles, JetBrains Mono in terminals
 - [ ] a new window (Dolphin, Thunderbird) opens centred at about 70% of the screen
@@ -154,17 +155,23 @@ Log out and back in once, then:
 
 ```sh
 patina theme set amethyst
-patina theme set datum
-patina theme set datum
+patina theme set aurora
+patina theme set aurora
+patina theme mode light
+patina theme mode dark
 ```
 
 - [ ] the switch to amethyst applies live: colours, wallpaper, kitty, Konsole, without
   logging out; write down anything that waits for the next login
-- [ ] the switch back to datum leaves nothing of amethyst:
+- [ ] the switch back to aurora leaves nothing of amethyst:
   `ls ~/.local/share/color-schemes ~/.local/share/konsole ~/.local/share/wallpapers
-  ~/.local/share/plasma/look-and-feel` shows only datum's `patina-datum*` and
-  `org.patina.datum` entries, and kitty's colours are datum's again
+  ~/.local/share/plasma/look-and-feel` shows only aurora's `patina-aurora*` and
+  `org.patina.aurora` entries, and kitty's colours are aurora's again
 - [ ] the third command reports no change
+- [ ] `patina theme mode light` turns the desktop, kitty and Konsole light and the
+  wallpaper to the light contour map, live; the login screen stays dark;
+  `patina theme mode dark` brings the black back and removes the light wallpaper
+  package
 
 ## 11. The first login of a new user
 

@@ -28,8 +28,10 @@ changed() { changes=$((changes + 1)); }
 
 # ---- the theme as template variables ------------------------------------------------
 # tpl[NAME] fills ${NAME} in a template (theme_vars and render in bin/lib.sh): colours as
-# hex (BASE00) and as the r,g,b decimals KDE's files want (BASE00_RGB).
-theme_vars "$theme_yaml" "$settings"
+# hex (BASE00) and as the r,g,b decimals KDE's files want (BASE00_RGB), in the palette
+# of the mode (`patina theme mode`).
+mode="$(current_mode)"
+theme_vars "$theme_yaml" "$settings" "$mode"
 tpl[CONFIG_HOME]="$config"
 tpl[WALLPAPER]=""
 tpl[WALLPAPER_PACKAGE]=""
@@ -117,8 +119,12 @@ drop_other_themes "$data/konsole/patina-*" "$data/konsole/patina-$theme."
 
 # Wallpapers: one Plasma wallpaper package per image. An SVG is rendered once, at 4K,
 # and again only when the theme's file is newer than the rendering (a git pull sets
-# the time); a PNG is copied as it is.
+# the time); a PNG is copied as it is. In a theme's other mode its own wallpapers come
+# first, so the first is the desktop's, and the theme's own follow; the theme's own
+# first one stays the login screen's, which is made for a dark ground.
 wallpaper_dir=""
+login_dir=""
+login_rel="$(yq eval '.wallpapers[0] // ""' "$theme_yaml")"
 wallpaper_pkgs=" "
 while IFS= read -r rel; do
   src="$theme_dir/$rel"
@@ -151,27 +157,29 @@ while IFS= read -r rel; do
   render "$templates/wallpaper-metadata.json" "$tmp/wallpaper.json"
   put "$tmp/wallpaper.json" "$pkg/metadata.json"
   [[ -n "$wallpaper_dir" ]] || wallpaper_dir="$pkg"   # the first one is the default
-done < <(yq eval '.wallpapers[]?' "$theme_yaml")
+  [[ "$rel" != "$login_rel" ]] || login_dir="$pkg"
+done < <(yq eval "(.${tpl[VARIANT]}.wallpapers // [])[], .wallpapers[]" "$theme_yaml" | awk '!seen[$0]++')
 for pkg in "$data"/wallpapers/patina-*; do
   [[ -d "$pkg" ]] || continue
   if [[ "$wallpaper_pkgs" != *" $pkg "* ]]; then
-    say "removing $pkg (not in this theme)"
+    say "removing $pkg (not in this theme or mode)"
     rm -rf "$pkg"
     changed
   fi
 done
 
 # The login screen: SDDM runs as its own user, so the wallpaper has to live outside
-# home. The first wallpaper's rendering and the Breeze theme's override file are written
-# through the backend's one sudo path (CLAUDE.md names this case), each only when it
-# differs; without sudo the login screen keeps what it has and the run goes on.
+# home. The rendering of the theme's own first wallpaper and the Breeze theme's override
+# file are written through the backend's one sudo path (CLAUDE.md names this case),
+# each only when it differs; without sudo the login screen keeps what it has and the
+# run goes on.
 login_png=/usr/local/share/patina/login.png
 sddm_breeze=/usr/share/sddm/themes/breeze
-if [[ -n "$wallpaper_dir" && -f "$wallpaper_dir/contents/images/3840x2160.png" ]]; then
+if [[ -n "$login_dir" && -f "$login_dir/contents/images/3840x2160.png" ]]; then
   render "$templates/sddm-theme.conf.user" "$tmp/theme.conf.user"
   login_todo=()
-  cmp -s "$wallpaper_dir/contents/images/3840x2160.png" "$login_png" ||
-    login_todo+=("$wallpaper_dir/contents/images/3840x2160.png:$login_png")
+  cmp -s "$login_dir/contents/images/3840x2160.png" "$login_png" ||
+    login_todo+=("$login_dir/contents/images/3840x2160.png:$login_png")
   if [[ -d "$sddm_breeze" ]] && ! cmp -s "$tmp/theme.conf.user" "$sddm_breeze/theme.conf.user"; then
     login_todo+=("$tmp/theme.conf.user:$sddm_breeze/theme.conf.user")
   fi
@@ -197,8 +205,10 @@ put "$tmp/lnf.json" "$lnf/metadata.json"
 render "$templates/look-and-feel-defaults" "$tmp/lnf.defaults"
 put "$tmp/lnf.defaults" "$lnf/contents/defaults"
 # The splash: the wordmark on the theme's background, one accent line (templates/splash.qml).
+# Always in the dark palette where the theme has one, like the boot menu and the login
+# screen before it: the wordmark is made for a dark ground. A subshell keeps tpl[].
 put "$PATINA_PATH/branding/wordmark.svg" "$lnf/contents/splash/images/logo.svg"
-render "$templates/splash.qml" "$tmp/Splash.qml"
+( theme_vars "$theme_yaml" "$settings" dark && render "$templates/splash.qml" "$tmp/Splash.qml" )
 put "$tmp/Splash.qml" "$lnf/contents/splash/Splash.qml"
 drop_other_themes "$data/plasma/look-and-feel/org.patina.*" "$lnf"
 
@@ -257,7 +267,7 @@ fi
 
 font="${tpl[UI_FONT]},10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
 kset kdeglobals ColorScheme "patina-$theme" General
-kset kdeglobals AccentColor "${tpl[BASE0E_RGB]}" General
+kset kdeglobals AccentColor "${tpl[ACCENT_RGB]}" General
 kset kdeglobals accentColorFromWallpaper false General
 kset kdeglobals font "$font" General
 kset kdeglobals menuFont "$font" General

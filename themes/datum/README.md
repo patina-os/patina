@@ -1,8 +1,8 @@
 # datum
 
-The default patina theme: a contour map around a survey point. Graphite surfaces,
-ice-blue lines and one coral accent; the brand's own colours, so the desktop and the
-marks read as one. Dark variant.
+A contour map around a survey point. Graphite surfaces, ice-blue lines and one coral
+accent; the brand's colours until the marks moved to aurora's violet and green. Dark
+variant. `patina theme set datum` picks it.
 
 ## Palette
 
@@ -29,4 +29,5 @@ image build install `fonts-jetbrains-mono`.
 
 Datum was chosen in the redesign of October 2026 from eight directions;
 `docs/design/futures.html` keeps all of them, and the others may become themes of their
-own.
+own. aurora, the OLED theme in green and violet, replaced it as the default later that
+month.

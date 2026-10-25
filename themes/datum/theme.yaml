@@ -1,5 +1,6 @@
-# datum: the default patina theme. A contour map around a survey point: graphite,
-# ice-blue lines and one coral accent, with JetBrains Mono for the details.
+# datum: a contour map around a survey point: graphite, ice-blue lines and one coral
+# accent, with JetBrains Mono for the details. The default from the October 2026
+# redesign until aurora.
 # Desktop-agnostic data; desktops/<desktop>/ renders it.
 name: datum
 display_name: Datum

@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # List, switch, install and remove themes: render a theme for the terminal
 # (desktops/terminal/apply.sh) and through the desktop's renderer
-# (desktops/<desktop>/apply.sh) and record it; fetch a community theme from git as data.
+# (desktops/<desktop>/apply.sh) and record it; switch between dark and light; fetch a
+# community theme from git as data.
 set -euo pipefail
 
 # shellcheck source=bin/lib.sh
@@ -10,7 +11,7 @@ source "$PATINA_PATH/bin/lib.sh"
 
 usage() {
   cat << EOU
-usage: patina theme list | current | set <name> [--layout]
+usage: patina theme list | current | set <name> [--layout] | mode [dark|light]
        patina theme install <git-url> | update [<name>] | remove <name>
 
   list       the themes of patina and the installed ones (* marks the current one)
@@ -22,42 +23,69 @@ usage: patina theme list | current | set <name> [--layout]
              bar of defaults/settings.yaml); needs a running Plasma session. The first
              'patina install' and a fresh login get the layout anyway; afterwards the
              panels are only touched with this
+  mode       say whether the desktop is dark or light
+  mode dark|light  switch the current theme to its dark or light palette and keep that
+             for every theme set later; a theme without that mode stays as it is.
+             The default is the mode of defaults/settings.yaml
   install URL  fetch a theme from a git repository (by convention named
              patina-<name>-theme) into $PATINA_THEMES. Only data is kept:
-             theme.yaml, README.md, LICENSE and the wallpapers theme.yaml lists.
-             Installing again updates it
+             theme.yaml, README.md, LICENSE and the wallpapers theme.yaml lists
+             (those of its light: or dark: block too). Installing again updates it
   update     fetch every installed theme again from where it came from, or only NAME
   remove NAME  delete an installed theme; not one of patina's, not the current one
 EOU
 }
 
 list_themes() {
-  local current d name note
+  local current d name note modes
   current="$(current_theme || true)"
   for d in "$PATINA_PATH"/themes/[a-z0-9]*/ "$PATINA_THEMES"/[a-z0-9]*/; do
     [[ -f "$d/theme.yaml" ]] || continue
     name="$(basename "$d")"
     note=""
     [[ "$d" == "$PATINA_THEMES"/* ]] && note=" · installed"
+    modes="$(yq eval '.variant' "$d/theme.yaml")"
+    if theme_has_mode "$d/theme.yaml" dark && theme_has_mode "$d/theme.yaml" light; then
+      modes="dark + light"
+    fi
     printf '%s %-12s %s (%s)%s\n' "$([[ "$name" == "$current" ]] && echo '*' || echo ' ')" \
-      "$name" "$(yq eval '.display_name' "$d/theme.yaml")" "$(yq eval '.variant' "$d/theme.yaml")" "$note"
+      "$name" "$(yq eval '.display_name' "$d/theme.yaml")" "$modes" "$note"
   done
 }
 
 set_theme() {
-  local name="$1" dir desktop renderer
+  local name="$1" dir desktop renderer mode
   dir="$(theme_dir "$name")" || die "no theme '$name' (try patina theme list)"
   desktop="$(yq eval '.desktop' "$PATINA_PATH/defaults/settings.yaml")"
   renderer="$PATINA_PATH/desktops/$desktop/apply.sh"
   [[ -x "$renderer" ]] || die "no renderer for '$desktop' (desktops/$desktop/apply.sh)"
   PATINA_BUNDLES="$(recorded_bundles | paste -sd ' ')"
   export PATINA_BUNDLES
-  say "theme: $name on $desktop"
+  mode="$(current_mode)"
+  say "theme: $name ($mode) on $desktop"
+  theme_has_mode "$dir/theme.yaml" "$mode" ||
+    say "theme: $name has no $mode mode; it stays $(yq eval '.variant' "$dir/theme.yaml")"
   "$PATINA_PATH/desktops/terminal/apply.sh" "$dir"
   "$renderer" "$dir"
   mkdir -p "$PATINA_STATE"
   if [[ "$(cat "$PATINA_STATE/theme" 2> /dev/null)" != "$name" ]]; then
     echo "$name" > "$PATINA_STATE/theme"
+  fi
+}
+
+# Record the mode and render the current theme in it; without a theme yet, the next
+# `patina theme set` or `patina install` takes it.
+set_mode() {
+  local mode="$1" name
+  [[ "$mode" =~ ^(dark|light)$ ]] || die "the mode is dark or light, not '$mode'"
+  mkdir -p "$PATINA_STATE"
+  if [[ "$(cat "$PATINA_STATE/mode" 2> /dev/null)" != "$mode" ]]; then
+    echo "$mode" > "$PATINA_STATE/mode"
+  fi
+  if name="$(current_theme)"; then
+    PATINA_MODE="$mode" set_theme "$name"
+  else
+    say "theme: mode $mode; it applies with the next 'patina theme set <name>'"
   fi
 }
 
@@ -67,7 +95,7 @@ set_theme() {
 # every wallpaper must be an SVG or PNG under wallpapers/, and nothing may be a link.
 # Anything else in the repository (scripts, configs, hidden files) never leaves the clone.
 install_theme() {
-  local url="$1" tmp src out name key value rel f commit dest
+  local url="$1" tmp src out name key value rel f commit dest mode
   tmp="$(mktemp -d)"
   # shellcheck disable=SC2064 # expand $tmp now: it is local to this function
   trap "rm -rf '$tmp'" EXIT
@@ -87,15 +115,18 @@ install_theme() {
     [[ "$value" =~ ^[[:alnum:][:space:].,\'()+_-]{1,60}$ && "$value" != *$'\n'* ]] ||
       die "$key '$value' must be 1-60 letters, digits, spaces and . , ' ( ) + _ -"
   done
-  for key in license artwork_license plasma.icons plasma.cursors plasma.desktop_theme; do
+  for key in license artwork_license accent accent_alt \
+      {,dark.,light.}plasma.{icons,cursors,desktop_theme}; do
     value="$(yq eval ".$key // \"x\"" "$src/theme.yaml")"
     [[ "$value" =~ ^[A-Za-z0-9._+-]{1,60}$ ]] || die "$key '$value' must be a plain identifier"
   done
   [[ "$(yq eval '.variant' "$src/theme.yaml")" =~ ^(dark|light)$ ]] || die "variant must be dark or light"
-  # The palette: theme_vars dies on a missing or malformed colour; a subshell keeps its
-  # tpl[] out of this one.
-  ( theme_vars "$src/theme.yaml" "$PATINA_PATH/defaults/settings.yaml" ) ||
-    die "the palette of '$name' is incomplete (base00..base0F as #rrggbb)"
+  # The palettes, the theme's own and its other mode's: theme_vars dies on a missing or
+  # malformed colour or accent; a subshell keeps its tpl[] out of this one.
+  for mode in dark light; do
+    ( theme_vars "$src/theme.yaml" "$PATINA_PATH/defaults/settings.yaml" "$mode" ) ||
+      die "a palette of '$name' is incomplete (base00..base0F as #rrggbb)"
+  done
 
   mkdir -p "$out/wallpapers"
   cp "$src/theme.yaml" "$out/theme.yaml"
@@ -109,7 +140,7 @@ install_theme() {
       die "wallpaper '$rel' must be an .svg or .png directly under wallpapers/"
     [[ -f "$src/$rel" && ! -L "$src/$rel" ]] || die "wallpaper '$rel' is not in $url"
     cp "$src/$rel" "$out/$rel"
-  done < <(yq eval '.wallpapers[]?' "$src/theme.yaml")
+  done < <(yq eval '.wallpapers[]?, .dark.wallpapers[]?, .light.wallpapers[]?' "$src/theme.yaml")
 
   commit="$(git -C "$src" rev-parse --short HEAD)"
   printf 'url: "%s"\ncommit: "%s"\n' "${url//\"/}" "$commit" > "$out/.source.yaml"
@@ -164,6 +195,14 @@ main() {
     list) list_themes ;;
     current)
       current_theme || { echo "none (patina theme set <name>)"; exit 1; }
+      ;;
+    mode)
+      [[ $# -le 2 ]] || { usage >&2; exit 1; }
+      if [[ $# -eq 1 ]]; then
+        current_mode
+      else
+        set_mode "$2"
+      fi
       ;;
     set)
       shift

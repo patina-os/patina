@@ -18,7 +18,7 @@ commands:
   install   Set up patina on this machine: app bundles, system tuning, app settings
             and the theme (patina install --help for the flags; asks on a terminal)
   update    Pull the latest patina and run pending migrations
-  theme     List, switch, install or remove themes (patina theme --help)
+  theme     List, switch, install or remove themes; dark or light (patina theme --help)
   keys      Show the keyboard shortcuts (Meta+K opens the same in a window)
   doctor    Check the base system and report what patina would change
   migrate   Run pending migrations without pulling

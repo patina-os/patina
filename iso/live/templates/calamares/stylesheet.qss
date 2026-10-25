@@ -10,7 +10,7 @@ QWidget {
   font-size: 11pt;
   color: ${BASE05};
   background: transparent;
-  selection-background-color: ${BASE0E};
+  selection-background-color: ${ACCENT};
   selection-color: ${BASE00};
 }
 
@@ -19,17 +19,17 @@ QWidget {
 }
 #sidebarApp {
   background-color: ${BASE00};
-  border-right: 1px solid rgba(${BASE0E_RGB}, 60);
+  border-right: 1px solid rgba(${ACCENT_RGB}, 60);
 }
 #navigationApp {
   background-color: rgba(${BASE00_RGB}, 220);
-  border-top: 1px solid rgba(${BASE0E_RGB}, 60);
+  border-top: 1px solid rgba(${ACCENT_RGB}, 60);
 }
 
 /* the glass panels: the groups a page puts its controls in */
 QGroupBox, QFrame[frameShape="4"], QFrame[frameShape="6"], #scrollAreaWidgetContents {
   background-color: rgba(${BASE01_RGB}, 200);
-  border: 1px solid rgba(${BASE0E_RGB}, 90);
+  border: 1px solid rgba(${ACCENT_RGB}, 90);
   border-radius: 8px;
 }
 QGroupBox {
@@ -60,7 +60,7 @@ QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox, QTextEdit, QPlainTextEdit {
   padding: 5px 9px;
 }
 QLineEdit:focus, QComboBox:focus, QSpinBox:focus, QDoubleSpinBox:focus, QTextEdit:focus {
-  border-color: ${BASE0E};
+  border-color: ${ACCENT};
 }
 QLineEdit:disabled, QComboBox:disabled, QSpinBox:disabled {
   color: ${BASE03};
@@ -72,33 +72,33 @@ QComboBox::drop-down {
 }
 QComboBox QAbstractItemView {
   background-color: ${BASE01};
-  border: 1px solid ${BASE0E};
-  selection-background-color: ${BASE0E};
+  border: 1px solid ${ACCENT};
+  selection-background-color: ${ACCENT};
   selection-color: ${BASE00};
 }
 
 /* buttons: one solid (the default action), the rest outlined */
 QPushButton, QToolButton {
   background-color: rgba(${BASE02_RGB}, 200);
-  border: 1px solid ${BASE0E};
+  border: 1px solid ${ACCENT};
   border-radius: 6px;
   padding: 6px 16px;
   min-height: 1.4em;
 }
 QPushButton:hover, QToolButton:hover {
-  border-color: ${BASE0F};
+  border-color: ${ACCENT_ALT};
 }
 QPushButton:pressed, QPushButton:checked, QToolButton:checked {
   background-color: ${BASE02};
-  border-color: ${BASE0F};
+  border-color: ${ACCENT_ALT};
 }
 QPushButton:default {
-  background-color: ${BASE0E};
+  background-color: ${ACCENT};
   color: ${BASE00};
   font-weight: 600;
 }
 QPushButton:default:hover {
-  background-color: ${BASE0F};
+  background-color: ${ACCENT_ALT};
 }
 QPushButton:disabled, QToolButton:disabled {
   color: ${BASE03};
@@ -116,7 +116,7 @@ QTreeView, QListView, QTableView, QListWidget, QTreeWidget {
   alternate-background-color: rgba(${BASE02_RGB}, 120);
   border: 1px solid ${BASE02};
   border-radius: 6px;
-  selection-background-color: ${BASE0E};
+  selection-background-color: ${ACCENT};
   selection-color: ${BASE00};
   outline: none;
 }
@@ -124,11 +124,11 @@ QTreeView::item, QListView::item, QTableView::item {
   padding: 4px;
 }
 QTreeView::item:selected, QListView::item:selected, QTableView::item:selected {
-  background-color: ${BASE0E};
+  background-color: ${ACCENT};
   color: ${BASE00};
 }
 QTreeView::item:hover, QListView::item:hover {
-  background-color: rgba(${BASE0E_RGB}, 50);
+  background-color: rgba(${ACCENT_RGB}, 50);
 }
 QHeaderView::section {
   background-color: ${BASE02};
@@ -144,7 +144,7 @@ QHeaderView::section {
 /* the one glowing line: progress */
 QProgressBar {
   background-color: ${BASE01};
-  border: 1px solid ${BASE0E};
+  border: 1px solid ${ACCENT};
   border-radius: 4px;
   text-align: center;
   font-family: "${MONO_FONT}";
@@ -152,7 +152,7 @@ QProgressBar {
   min-height: 1.2em;
 }
 QProgressBar::chunk {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 ${BASE0F}, stop: 1 ${BASE0E});
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 ${ACCENT_ALT}, stop: 1 ${ACCENT});
   border-radius: 3px;
 }
 
@@ -171,11 +171,11 @@ QRadioButton::indicator {
   border-radius: 8px;
 }
 QCheckBox::indicator:hover, QRadioButton::indicator:hover {
-  border-color: ${BASE0E};
+  border-color: ${ACCENT};
 }
 QCheckBox::indicator:checked, QRadioButton::indicator:checked {
-  background-color: ${BASE0E};
-  border-color: ${BASE0E};
+  background-color: ${ACCENT};
+  border-color: ${ACCENT};
 }
 QCheckBox::indicator:disabled, QRadioButton::indicator:disabled {
   border-color: ${BASE02};
@@ -194,7 +194,7 @@ QTabBar::tab {
 }
 QTabBar::tab:selected {
   color: ${BASE05};
-  border-bottom-color: ${BASE0E};
+  border-bottom-color: ${ACCENT};
 }
 QScrollBar:vertical, QScrollBar:horizontal {
   background: ${BASE01};
@@ -209,7 +209,7 @@ QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
   min-width: 24px;
 }
 QScrollBar::handle:hover {
-  background: ${BASE0E};
+  background: ${ACCENT};
 }
 QScrollBar::add-line, QScrollBar::sub-line, QScrollBar::add-page, QScrollBar::sub-page {
   background: none;
@@ -220,14 +220,14 @@ QScrollBar::add-line, QScrollBar::sub-line, QScrollBar::add-page, QScrollBar::su
 QToolTip {
   background-color: ${BASE01};
   color: ${BASE05};
-  border: 1px solid ${BASE0E};
+  border: 1px solid ${ACCENT};
   padding: 4px;
 }
 QMenu::item {
   padding: 6px 20px;
 }
 QMenu::item:selected {
-  background-color: ${BASE0E};
+  background-color: ${ACCENT};
   color: ${BASE00};
 }
 QSlider::groove:horizontal {
@@ -238,10 +238,10 @@ QSlider::groove:horizontal {
 QSlider::handle:horizontal {
   width: 14px;
   margin: -6px 0;
-  background: ${BASE0E};
+  background: ${ACCENT};
   border-radius: 7px;
 }
 QSlider::sub-page:horizontal {
-  background: ${BASE0E};
+  background: ${ACCENT};
   border-radius: 2px;
 }

@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- The patina mark for small squares, 80 px and below (the installer's sidebar, a
      window icon): the rings of logo.txt reduced to a 9x5 grid of dots, the survey point
-     in coral. icon.svg is the mark itself, for larger sizes. Same colours as
+     in green. icon.svg is the mark itself, for larger sizes. Same colours as
      wordmark.svg. GPL-3.0-or-later. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
-  <circle cx="13.3" cy="12.4" r="2.9" fill="#4f7394"/>
-  <circle cx="22.2" cy="12.4" r="2.9" fill="#4f7394"/>
-  <circle cx="31.1" cy="12.4" r="2.9" fill="#4f7394"/>
-  <circle cx="40" cy="12.4" r="2.9" fill="#4f7394"/>
-  <circle cx="48.9" cy="12.4" r="2.9" fill="#4f7394"/>
-  <circle cx="57.8" cy="12.4" r="2.9" fill="#4f7394"/>
-  <circle cx="66.7" cy="12.4" r="2.9" fill="#4f7394"/>
-  <circle cx="4.4" cy="26.2" r="2.9" fill="#4f7394"/>
-  <circle cx="13.3" cy="26.2" r="2.9" fill="#4f7394"/>
-  <circle cx="31.1" cy="26.2" r="3.8" fill="#6ab8ff"/>
-  <circle cx="40" cy="26.2" r="3.8" fill="#6ab8ff"/>
-  <circle cx="48.9" cy="26.2" r="3.8" fill="#6ab8ff"/>
-  <circle cx="57.8" cy="26.2" r="3.8" fill="#6ab8ff"/>
-  <circle cx="66.7" cy="26.2" r="3.8" fill="#6ab8ff"/>
-  <circle cx="75.6" cy="26.2" r="2.9" fill="#4f7394"/>
-  <circle cx="4.4" cy="40" r="2.9" fill="#4f7394"/>
-  <circle cx="31.1" cy="40" r="3.8" fill="#6ab8ff"/>
-  <path d="M48.9 34.4l6 10.4h-12z" fill="#ff5f6d"/>
-  <circle cx="66.7" cy="40" r="3.8" fill="#6ab8ff"/>
-  <circle cx="75.6" cy="40" r="2.9" fill="#4f7394"/>
-  <circle cx="4.4" cy="53.8" r="2.9" fill="#4f7394"/>
-  <circle cx="13.3" cy="53.8" r="2.9" fill="#4f7394"/>
-  <circle cx="31.1" cy="53.8" r="3.8" fill="#6ab8ff"/>
-  <circle cx="40" cy="53.8" r="3.8" fill="#6ab8ff"/>
-  <circle cx="48.9" cy="53.8" r="3.8" fill="#6ab8ff"/>
-  <circle cx="57.8" cy="53.8" r="3.8" fill="#6ab8ff"/>
-  <circle cx="66.7" cy="53.8" r="3.8" fill="#6ab8ff"/>
-  <circle cx="75.6" cy="53.8" r="2.9" fill="#4f7394"/>
-  <circle cx="13.3" cy="67.6" r="2.9" fill="#4f7394"/>
-  <circle cx="22.2" cy="67.6" r="2.9" fill="#4f7394"/>
-  <circle cx="31.1" cy="67.6" r="2.9" fill="#4f7394"/>
-  <circle cx="40" cy="67.6" r="2.9" fill="#4f7394"/>
-  <circle cx="48.9" cy="67.6" r="2.9" fill="#4f7394"/>
-  <circle cx="57.8" cy="67.6" r="2.9" fill="#4f7394"/>
-  <circle cx="66.7" cy="67.6" r="2.9" fill="#4f7394"/>
+  <circle cx="13.3" cy="12.4" r="2.9" fill="#6d4fc2"/>
+  <circle cx="22.2" cy="12.4" r="2.9" fill="#6d4fc2"/>
+  <circle cx="31.1" cy="12.4" r="2.9" fill="#6d4fc2"/>
+  <circle cx="40" cy="12.4" r="2.9" fill="#6d4fc2"/>
+  <circle cx="48.9" cy="12.4" r="2.9" fill="#6d4fc2"/>
+  <circle cx="57.8" cy="12.4" r="2.9" fill="#6d4fc2"/>
+  <circle cx="66.7" cy="12.4" r="2.9" fill="#6d4fc2"/>
+  <circle cx="4.4" cy="26.2" r="2.9" fill="#6d4fc2"/>
+  <circle cx="13.3" cy="26.2" r="2.9" fill="#6d4fc2"/>
+  <circle cx="31.1" cy="26.2" r="3.8" fill="#9b6bff"/>
+  <circle cx="40" cy="26.2" r="3.8" fill="#9b6bff"/>
+  <circle cx="48.9" cy="26.2" r="3.8" fill="#9b6bff"/>
+  <circle cx="57.8" cy="26.2" r="3.8" fill="#9b6bff"/>
+  <circle cx="66.7" cy="26.2" r="3.8" fill="#9b6bff"/>
+  <circle cx="75.6" cy="26.2" r="2.9" fill="#6d4fc2"/>
+  <circle cx="4.4" cy="40" r="2.9" fill="#6d4fc2"/>
+  <circle cx="31.1" cy="40" r="3.8" fill="#9b6bff"/>
+  <path d="M48.9 34.4l6 10.4h-12z" fill="#3cff9d"/>
+  <circle cx="66.7" cy="40" r="3.8" fill="#9b6bff"/>
+  <circle cx="75.6" cy="40" r="2.9" fill="#6d4fc2"/>
+  <circle cx="4.4" cy="53.8" r="2.9" fill="#6d4fc2"/>
+  <circle cx="13.3" cy="53.8" r="2.9" fill="#6d4fc2"/>
+  <circle cx="31.1" cy="53.8" r="3.8" fill="#9b6bff"/>
+  <circle cx="40" cy="53.8" r="3.8" fill="#9b6bff"/>
+  <circle cx="48.9" cy="53.8" r="3.8" fill="#9b6bff"/>
+  <circle cx="57.8" cy="53.8" r="3.8" fill="#9b6bff"/>
+  <circle cx="66.7" cy="53.8" r="3.8" fill="#9b6bff"/>
+  <circle cx="75.6" cy="53.8" r="2.9" fill="#6d4fc2"/>
+  <circle cx="13.3" cy="67.6" r="2.9" fill="#6d4fc2"/>
+  <circle cx="22.2" cy="67.6" r="2.9" fill="#6d4fc2"/>
+  <circle cx="31.1" cy="67.6" r="2.9" fill="#6d4fc2"/>
+  <circle cx="40" cy="67.6" r="2.9" fill="#6d4fc2"/>
+  <circle cx="48.9" cy="67.6" r="2.9" fill="#6d4fc2"/>
+  <circle cx="57.8" cy="67.6" r="2.9" fill="#6d4fc2"/>
+  <circle cx="66.7" cy="67.6" r="2.9" fill="#6d4fc2"/>
 </svg>
