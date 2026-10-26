@@ -28,6 +28,8 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- The README's screenshots show aurora: the installer's welcome page and the desktop,
+  taken by CI from the commit that made it the default.
 - The marks take aurora's colours: the rings deep violet, violet and lavender, the
   word white, the survey point ▲ green, in `wordmark.svg`, the icons, the terminal
   greeting and `patina help`.

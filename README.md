@@ -30,10 +30,9 @@ QEMU, Calamares as Debian 13 ships it, branded through data):
 
 The finished desktop, as the `desktop` workflow captures it in CI (amd64, a Plasma X11
 session on a virtual framebuffer after `patina install`): the centred bar and kitty with
-the fastfetch greeting. This picture still shows amethyst, the first theme; the next one
-CI takes shows aurora.
+the fastfetch greeting, in aurora, the default theme.
 
-![The patina desktop with the amethyst theme](docs/screenshots/desktop-amd64.png)
+![The patina desktop with the aurora theme](docs/screenshots/desktop-amd64.png)
 
 The screenshots are taken by CI, never edited; see `iso/README.md`.
 
