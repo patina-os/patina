@@ -144,6 +144,9 @@ Log out and back in once, then:
 - [ ] the start menu: the patina dots as its button; the AI and Self-hosting folders
   among the categories; the favourites start with Nextcloud, Element, Euro-Office,
   Thunderbird, KeePassXC (and the agent and Claude Desktop with the agents bundle)
+- [ ] the wallpaper is the DeepMind waves; every icon in the bar, the start menu and
+  the title bars is a single-colour glyph; the start menu and the calendar show a
+  faint grain
 - [ ] no Breeze blue or light grey anywhere: title bars and the bar dark, Dolphin's
   folders and its own icon green, tray and toolbar icons in the palette's colours
   (Papirus)

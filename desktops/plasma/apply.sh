@@ -77,10 +77,11 @@ kdel() {
 
 # The .desktop file an action of defaults/keybindings.yaml launches, through
 # actions.yaml; empty (with a warning) when the action has none or it is not installed.
+app_dirs=("$data/applications" /usr/share/applications /usr/local/share/applications
+  "$data/flatpak/exports/share/applications" /var/lib/flatpak/exports/share/applications)
 service_installed() {
   local d
-  for d in "$data/applications" /usr/share/applications /usr/local/share/applications \
-      "$data/flatpak/exports/share/applications" /var/lib/flatpak/exports/share/applications; do
+  for d in "${app_dirs[@]}"; do
     [[ -f "$d/$1" ]] && return 0
   done
   return 1
@@ -142,12 +143,20 @@ while IFS= read -r rel; do
     continue
   fi
   case "$src" in
-    *.svg)
+    *.svg | *.jpg)
       if [[ ! -e "$png" || "$src" -nt "$png" ]]; then
         if command -v rsvg-convert > /dev/null; then
           say "rendering $rel"
           mkdir -p "$(dirname "$png")"
-          rsvg-convert --width 3840 --height 2160 --output "$tmp/wallpaper.png" "$src"
+          input="$src"
+          if [[ "$src" == *.jpg ]]; then
+            # A photograph becomes a PNG too, through an SVG that holds it (rsvg reads
+            # no file outside the SVG's own directory, so it is embedded).
+            printf '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="3840" height="2160"><image width="3840" height="2160" preserveAspectRatio="xMidYMid slice" xlink:href="data:image/jpeg;base64,%s"/></svg>\n' \
+              "$(base64 -w0 "$src")" > "$tmp/photo.svg"
+            input="$tmp/photo.svg"
+          fi
+          rsvg-convert --width 3840 --height 2160 --output "$tmp/wallpaper.png" "$input"
           mv "$tmp/wallpaper.png" "$png"
           changed
         else
@@ -201,90 +210,8 @@ if [[ -n "$login_dir" && -f "$login_dir/contents/images/3840x2160.png" ]]; then
   fi
 fi
 
-# Icons: an icon theme of desktops/plasma/icons.yaml gets its folders in the accent. The
-# renderer writes a small icon theme, patina-<theme>, that inherits it and holds only
-# its folder icons, recoloured; the session then uses that one. The icon theme's
-# monochrome icons follow the colour scheme already (FollowsColorScheme).
-icons_base="${tpl[ICONS]}"
-icons_dir="$data/icons/patina-$theme"
-variant="$(yq eval ".[\"$icons_base\"].variant // \"\"" "$here/icons.yaml")"
-if [[ -n "$variant" && -f "/usr/share/icons/$icons_base/index.theme" ]]; then
-  # The sed expressions that swap the colours of a map in icons.yaml (a yq path) for
-  # shades of the accent: the accent, 80 % of it, 35 % of it.
-  recolour_args() {
-    local from role p hex="${tpl[ACCENT]}"
-    sed_args=()
-    while IFS=$'\t' read -r from role; do
-      case "$role" in
-        accent) p=100 ;;
-        shade) p=80 ;;
-        deep) p=35 ;;
-        *) warn "icons.yaml: unknown role '$role'"; continue ;;
-      esac
-      sed_args+=(-e "s/$from/$(printf '#%02x%02x%02x' $((0x${hex:1:2} * p / 100)) \
-        $((0x${hex:3:2} * p / 100)) $((0x${hex:5:2} * p / 100)))/gI")
-    done < <(yq eval "$1 | to_entries | .[] | [.key, .value] | @tsv" "$here/icons.yaml")
-  }
-  out="$tmp/icons"
-  # Every folder icon of the icon theme that points at the variant, under its own name,
-  # with the variant's colours swapped for the accent's.
-  recolour_args ".[\"$icons_base\"].colors"
-  for places in /usr/share/icons/"$icons_base"/*/places; do
-    mapfile -t links < <(find -H "$places" -maxdepth 1 -type l \
-      \( -lname "folder-$variant*.svg" -o -lname "user-$variant*.svg" \))
-    [[ ${#links[@]} -gt 0 ]] || continue
-    size="$(basename "$(dirname "$places")")"
-    mkdir -p "$out/$size/places"
-    cp -L "${links[@]}" "$out/$size/places/"
-    sed -i "${sed_args[@]}" "$out/$size/places"/*.svg
-  done
-  # The other folder drawings icons.yaml names, in every size, with their own colours.
-  while IFS= read -r icon; do
-    recolour_args ".[\"$icons_base\"].icons[\"$icon\"]"
-    for f in /usr/share/icons/"$icons_base"/*/"$icon".svg; do
-      [[ -e "$f" ]] || continue
-      rel="${f#/usr/share/icons/"$icons_base"/}"
-      mkdir -p "$out/$(dirname "$rel")"
-      sed "${sed_args[@]}" "$f" > "$out/$rel"
-    done
-  done < <(yq eval ".[\"$icons_base\"].icons // {} | keys | .[]" "$here/icons.yaml")
-  # Its index: the icon theme's own directories, its name, and the icon theme first in
-  # line for everything that is not a folder.
-  sed -e "s/^Name=.*/Name=patina ${tpl[DISPLAY_NAME]}/" \
-    -e "s/^Comment=.*/Comment=$icons_base with folders in the accent of ${tpl[DISPLAY_NAME]}/" \
-    -e "s/^Inherits=/Inherits=$icons_base,/" "/usr/share/icons/$icons_base/index.theme" > "$out/index.theme"
-  if ! diff -rq "$out" "$icons_dir" > /dev/null 2>&1; then
-    say "writing $icons_dir ($icons_base, folders in the accent)"
-    rm -rf "$icons_dir"
-    mkdir -p "$(dirname "$icons_dir")"
-    mv "$out" "$icons_dir"
-    changed
-  fi
-  tpl[ICONS]="patina-$theme"
-elif [[ -n "$variant" ]]; then
-  warn "icon theme $icons_base is not installed (papirus-icon-theme in the desktop bundle); using breeze-dark"
-  tpl[ICONS]=breeze-dark
-  [[ "${tpl[VARIANT]}" == light ]] && tpl[ICONS]=breeze
-fi
-drop_other_themes "$data/icons/patina-*" "$icons_dir"
-
-# The look-and-feel package: Plasma's own way to hand a new session its colours,
-# icons, cursors and wallpaper at once, so a fresh user gets the theme at first login.
-tpl[WALLPAPER_PACKAGE]="${wallpaper_dir:+$wallpaper_dir/}"
-lnf="$data/plasma/look-and-feel/org.patina.$theme"
-render "$templates/look-and-feel-metadata.json" "$tmp/lnf.json"
-put "$tmp/lnf.json" "$lnf/metadata.json"
-render "$templates/look-and-feel-defaults" "$tmp/lnf.defaults"
-put "$tmp/lnf.defaults" "$lnf/contents/defaults"
-# The splash: the wordmark on the theme's background, one accent line (templates/splash.qml).
-# Always in the dark palette where the theme has one, like the boot menu and the login
-# screen before it: the wordmark is made for a dark ground. A subshell keeps tpl[].
-put "$PATINA_PATH/branding/wordmark.svg" "$lnf/contents/splash/images/logo.svg"
-( theme_vars "$theme_yaml" "$settings" dark && render "$templates/splash.qml" "$tmp/Splash.qml" )
-put "$tmp/Splash.qml" "$lnf/contents/splash/Splash.qml"
-drop_other_themes "$data/plasma/look-and-feel/org.patina.*" "$lnf"
-
-# The agent launcher, only with the agents bundle installed. It opens the agent CLI in
+# The agent launcher, only with the agents bundle installed. It and the cheat sheet's
+# launcher come before the icons, which give every app's desktop entry its glyph. It opens the agent CLI in
 # the kitty profile desktops/terminal/ writes.
 if [[ " ${PATINA_BUNDLES:-} " == *" agents "* ]]; then
   tpl[AGENT_COMMAND]="$(command -v "${tpl[AGENT]}" 2> /dev/null || echo "${tpl[AGENT]}")"
@@ -301,6 +228,180 @@ fi
 tpl[PATINA_PATH]="$PATINA_PATH"
 render "$templates/keys.desktop" "$tmp/keys.desktop"
 put "$tmp/keys.desktop" "$data/applications/patina-keys.desktop"
+
+# Icons: an icon theme of desktops/plasma/icons.yaml gets its folders in the accent and
+# every app in one colour. The renderer writes a small icon theme, patina-<theme>, that
+# inherits it and holds only those icons; the session then uses that one. The icon
+# theme's monochrome icons follow the colour scheme already (FollowsColorScheme).
+icons_base="${tpl[ICONS]}"
+icons_dir="$data/icons/patina-$theme"
+variant="$(yq eval ".[\"$icons_base\"].variant // \"\"" "$here/icons.yaml")"
+if [[ -n "$variant" && -f "/usr/share/icons/$icons_base/index.theme" ]]; then
+  # The variant's colours swapped for shades of the accent: the accent, 80 % and 35 %.
+  sed_args=()
+  hex="${tpl[ACCENT]}"
+  while IFS=$'\t' read -r from role; do
+    case "$role" in
+      accent) p=100 ;;
+      shade) p=80 ;;
+      deep) p=35 ;;
+      *) warn "icons.yaml: unknown role '$role'"; continue ;;
+    esac
+    sed_args+=(-e "s/$from/$(printf '#%02x%02x%02x' $((0x${hex:1:2} * p / 100)) \
+      $((0x${hex:3:2} * p / 100)) $((0x${hex:5:2} * p / 100)))/gI")
+  done < <(yq eval ".[\"$icons_base\"].colors | to_entries | .[] | [.key, .value] | @tsv" "$here/icons.yaml")
+  out="$tmp/icons"
+  # Every folder icon of the icon theme that ends at the variant, under its own name:
+  # folder.svg -> folder-blue.svg, and inode-directory.svg -> folder.svg -> folder-blue.svg.
+  for places in /usr/share/icons/"$icons_base"/*/places; do
+    declare -A target=()
+    while IFS=$'\t' read -r name to; do
+      target["$name"]="${to##*/}"
+    done < <(find -H "$places" -maxdepth 1 -type l -printf '%f\t%l\n')
+    links=()
+    for name in "${!target[@]}"; do
+      to="${target[$name]}"
+      to="${target[$to]:-$to}"
+      case "$to" in
+        folder-"$variant"*.svg | user-"$variant"*.svg) links+=("$places/$name") ;;
+      esac
+    done
+    unset target
+    [[ ${#links[@]} -gt 0 ]] || continue
+    size="$(basename "$(dirname "$places")")"
+    mkdir -p "$out/$size/places"
+    cp -L "${links[@]}" "$out/$size/places/"
+    sed -i "${sed_args[@]}" "$out/$size/places"/*.svg
+  done
+  # Every app in one colour (mono in icons.yaml): the icon each installed desktop entry
+  # names becomes a glyph of the icon theme, which takes the colour scheme's text
+  # colour. A name the icon theme also uses outside its apps (a folder, a file type) is
+  # left alone; an app installed later gets its glyph at the next `patina theme set`.
+  other="$(yq eval ".[\"$icons_base\"].mono.other // \"\"" "$here/icons.yaml")"
+  if [[ -n "$other" ]]; then
+    declare -A glyph=() taken=()
+    while IFS=$'\t' read -r icon g; do
+      glyph["$icon"]="$g"
+    done < <(yq eval ".[\"$icons_base\"].mono.apps | to_entries | .[] | [.key, .value] | @tsv" "$here/icons.yaml")
+    while IFS= read -r name; do
+      taken["${name%.svg}"]=1
+    done < <(find -L /usr/share/icons/"$icons_base"/{16x16,22x22,24x24,32x32,48x48,64x64}/{places,mimetypes,devices,actions,status,emblems} \
+      -maxdepth 1 -name '*.svg' -printf '%f\n' 2> /dev/null)
+    mkdir -p "$out/32x32/symbolic/apps"
+    while IFS= read -r icon; do
+      [[ "$icon" =~ ^[A-Za-z0-9._+-]+$ && "$icon" != *.png && "$icon" != *.svg* && "$icon" != *-symbolic &&
+        -z "${taken[$icon]:-}" ]] || continue
+      g="${glyph[$icon]:-$other}"
+      src="$(find -L /usr/share/icons/"$icons_base"/32x32/symbolic -name "$g.svg" -print -quit)"
+      if [[ -z "$src" ]]; then
+        warn "icons.yaml: $icons_base has no glyph $g"
+        continue
+      fi
+      cp -L "$src" "$out/32x32/symbolic/apps/$icon.svg"
+    done < <(for d in "${app_dirs[@]}"; do
+        # the icons of the apps a menu shows: Type=Application, neither NoDisplay nor Hidden
+        [[ -d "$d" ]] && awk -F= '
+          function flush() {
+            if (icon != "" && type == "Application" && hide != "true") print icon
+            icon = type = hide = ""
+          }
+          FNR == 1 { flush() }
+          /^\[/ { s = $0 }
+          s == "[Desktop Entry]" && $1 == "Icon" && icon == "" { icon = $2 }
+          s == "[Desktop Entry]" && $1 == "Type" { type = $2 }
+          s == "[Desktop Entry]" && ($1 == "NoDisplay" || $1 == "Hidden") && $2 == "true" { hide = "true" }
+          END { flush() }' "$d"/*.desktop
+      done 2> /dev/null | sort -u)
+  fi
+  # Its index: the icon theme's own directories, its name, and the icon theme first in
+  # line for everything that is not a folder.
+  sed -e "s/^Name=.*/Name=patina ${tpl[DISPLAY_NAME]}/" \
+    -e "s/^Comment=.*/Comment=$icons_base with folders in the accent of ${tpl[DISPLAY_NAME]}/" \
+    -e "s/^Inherits=/Inherits=$icons_base,/" "/usr/share/icons/$icons_base/index.theme" > "$out/index.theme"
+  if ! diff -rq "$out" "$icons_dir" > /dev/null 2>&1; then
+    say "writing $icons_dir ($icons_base, folders in the accent)"
+    rm -rf "$icons_dir"
+    mkdir -p "$(dirname "$icons_dir")"
+    mv "$out" "$icons_dir"
+    changed
+  fi
+  tpl[ICONS]="patina-$theme"
+elif [[ -n "$variant" ]]; then
+  warn "icon theme $icons_base is not installed (papirus-icon-theme in the desktop bundle); using breeze-dark"
+  tpl[ICONS]="breeze-dark"
+  [[ "${tpl[VARIANT]}" == light ]] && tpl[ICONS]="breeze"
+fi
+drop_other_themes "$data/icons/patina-*" "$icons_dir"
+
+# Grain on the start menu (start_menu.grain): Plasma draws every panel popup from one
+# background, so it goes on all of them. A Plasma desktop theme of the theme's own,
+# patina-<theme>, holds Breeze's popup backgrounds with a fine noise tile laid into
+# their centre tile, which Plasma repeats; every other element comes from Breeze, the
+# default theme. Only over the default desktop theme.
+grain="$(yq eval '.start_menu.grain // 0' "$settings")"
+breeze=/usr/share/plasma/desktoptheme/default
+desktoptheme="$data/plasma/desktoptheme/patina-$theme"
+if [[ "${tpl[DESKTOP_THEME]}" == default && "$grain" -gt 0 && -d "$breeze" ]] && command -v rsvg-convert > /dev/null; then
+  out="$tmp/desktoptheme"
+  render "$templates/grain.svg" "$tmp/grain.svg"
+  rsvg-convert --width 32 --height 32 --output "$tmp/grain.png" "$tmp/grain.svg"
+  printf -v opacity '%d.%02d' $((grain / 100)) $((grain % 100))
+  for variant in dialogs translucent/dialogs opaque/dialogs solid/dialogs; do
+    [[ -f "$breeze/$variant/background.svgz" ]] || continue
+    mkdir -p "$out/$variant"
+    # After the centre's background rect (rect4138 in every variant), an image of the
+    # noise at the same place and size; the root gets the xlink namespace it needs.
+    zcat "$breeze/$variant/background.svgz" | awk -v img="$(base64 -w0 "$tmp/grain.png")" -v op="$opacity" '
+      function attr(tag, name,   m) {
+        if (match(tag, "[ \t\n]" name "=\"[^\"]*\"")) {
+          m = substr(tag, RSTART + 1, RLENGTH - 1)
+          sub("^" name "=\"", "", m); sub("\"$", "", m); return m
+        }
+        return "0"
+      }
+      BEGIN { RS = "\001" }
+      {
+        doc = $0
+        if (doc !~ /xmlns:xlink=/) sub(/<svg/, "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\"", doc)
+        if (match(doc, /<rect[^>]*id="rect4138"[^>]*\/>/)) {
+          at = RSTART + RLENGTH   # attr() matches again, so the place is kept first
+          tag = substr(doc, RSTART, RLENGTH)
+          image = "<image x=\"" attr(tag, "x") "\" y=\"" attr(tag, "y") "\" width=\"" attr(tag, "width") \
+            "\" height=\"" attr(tag, "height") "\" opacity=\"" op "\" preserveAspectRatio=\"none\"" \
+            " xlink:href=\"data:image/png;base64," img "\"/>"
+          doc = substr(doc, 1, at - 1) image substr(doc, at)
+        }
+        printf "%s", doc
+      }' | gzip -n > "$out/$variant/background.svgz"
+  done
+  cp "$breeze/plasmarc" "$out/plasmarc"
+  render "$templates/desktoptheme-metadata.json" "$out/metadata.json"
+  if ! diff -rq "$out" "$desktoptheme" > /dev/null 2>&1; then
+    say "writing $desktoptheme (Breeze with grain on the popups)"
+    rm -rf "$desktoptheme"
+    mkdir -p "$(dirname "$desktoptheme")"
+    mv "$out" "$desktoptheme"
+    changed
+  fi
+  tpl[DESKTOP_THEME]="patina-$theme"
+fi
+drop_other_themes "$data/plasma/desktoptheme/patina-*" "$desktoptheme"
+
+# The look-and-feel package: Plasma's own way to hand a new session its colours,
+# icons, cursors and wallpaper at once, so a fresh user gets the theme at first login.
+tpl[WALLPAPER_PACKAGE]="${wallpaper_dir:+$wallpaper_dir/}"
+lnf="$data/plasma/look-and-feel/org.patina.$theme"
+render "$templates/look-and-feel-metadata.json" "$tmp/lnf.json"
+put "$tmp/lnf.json" "$lnf/metadata.json"
+render "$templates/look-and-feel-defaults" "$tmp/lnf.defaults"
+put "$tmp/lnf.defaults" "$lnf/contents/defaults"
+# The splash: the wordmark on the theme's background, one accent line (templates/splash.qml).
+# Always in the dark palette where the theme has one, like the boot menu and the login
+# screen before it: the wordmark is made for a dark ground. A subshell keeps tpl[].
+put "$PATINA_PATH/branding/wordmark.svg" "$lnf/contents/splash/images/logo.svg"
+( theme_vars "$theme_yaml" "$settings" dark && render "$templates/splash.qml" "$tmp/Splash.qml" )
+put "$tmp/Splash.qml" "$lnf/contents/splash/Splash.qml"
+drop_other_themes "$data/plasma/look-and-feel/org.patina.*" "$lnf"
 
 # The start menu's folders (start_menu in defaults/settings.yaml): one directory entry
 # each and a menu file merged into the applications menu that fills them. Its button is

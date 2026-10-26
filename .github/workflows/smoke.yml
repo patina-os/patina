@@ -38,10 +38,11 @@ jobs:
       - name: Install what Path A starts from
         # The README asks for git and curl; a stock Debian desktop has them, the bare
         # container does not. A Plasma desktop also has kwriteconfig6 (every KDE app
-        # depends on it), which the theme renderer writes settings with.
+        # depends on it), which the theme renderer writes settings with, and Breeze's
+        # desktop theme (plasma-desktoptheme), whose popups the renderer grains.
         run: |
           apt-get update -q
-          apt-get install -y -q git ca-certificates curl libkf6config-bin
+          apt-get install -y -q git ca-certificates curl libkf6config-bin plasma-desktoptheme
       - uses: actions/checkout@v5
       - name: Show the base
         run: |
@@ -105,7 +106,7 @@ jobs:
           test ! -e "$data/wallpapers/patina-zz-copy-$wallpaper"
           test ! -e "$HOME/.config/nvim/colors/patina-zz-copy.lua"
           [[ "$(scheme)" == "patina-$theme" ]]
-      - name: The colours, the icons and the start menu rendered
+      - name: The colours, the icons, the start menu and its grain rendered
         # The scheme's colours are in kdeglobals (where Plasma reads them, not only in
         # the scheme file), the icon theme of the theme carries its folders in the
         # accent, and the start menu has its button, folders and favourites.
@@ -130,6 +131,13 @@ jobs:
           done
           prepend="$(kreadconfig6 --file kicker-extra-favoritesrc --group General --key Prepend)"
           [[ "$prepend" == *thunderbird.desktop* ]]
+          test -s "$data/icons/patina-$theme/32x32/symbolic/apps/kitty.svg"
+          [[ "$(kreadconfig6 --file plasmarc --group Theme --key name)" == "patina-$theme" ]]
+          # Captured before grep: grep -q stops at the first match, and with pipefail
+          # zcat's SIGPIPE would fail the step.
+          background="$(zcat "$data/plasma/desktoptheme/patina-$theme/dialogs/background.svgz")"
+          grep -q '<image' <<< "$background"
+          test -s "$data/plasma/desktoptheme/patina-$theme/metadata.json"
       - name: The light mode switches and switches back
         # The default theme carries a light palette: the mode turns the terminal and the
         # wallpaper light, the splash and the login screen stay dark, a second run

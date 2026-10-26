@@ -14,8 +14,8 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   `agent` action opens, the speed settings (animation factor, compositor latency,
   file indexing), and the window and panel defaults (where a new window opens and how
   big, a centred or the desktop's own bar, which actions' apps are pinned to it), the
-  start menu (its folders, AI and self-hosting, and its favourites, as desktop
-  entries), all as desktop-agnostic words the renderer translates.
+  start menu (its folders, AI and self-hosting, its favourites as desktop entries,
+  and the grain on it and the other popups), all as desktop-agnostic words the renderer translates.
 - `apps.yaml`: settings `patina install` merges into applications' own configuration
   files (Zed with telemetry and AI off, opencode pointed at Ollama), each with the file
   it owns and the bundle item that must be installed for it to apply.

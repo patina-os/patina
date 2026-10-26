@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+ <!-- patina: the grain of the panel popups, a 32 px tile that repeats seamlessly: fine
+      noise in the ${DISPLAY_NAME} theme's text colour, rendered to PNG at apply time. -->
+ <filter id="noise" x="0" y="0" width="100%" height="100%">
+  <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" stitchTiles="stitch" result="turbulence"/>
+  <feColorMatrix in="turbulence" type="matrix" result="grain"
+    values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.4 0 0 0 -0.7"/>
+  <feFlood flood-color="${BASE05}"/>
+  <feComposite in2="grain" operator="in"/>
+ </filter>
+ <rect width="32" height="32" filter="url(#noise)"/>
+</svg>

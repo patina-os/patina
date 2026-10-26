@@ -6,8 +6,8 @@ scripts. The renderers under `desktops/` turn a theme into real configuration.
 ```text
 themes/<name>/
   theme.yaml        metadata and palette (required)
-  wallpapers/       images listed in theme.yaml (optional): SVG, rendered when the
-                    theme is applied, or PNG, used as it is
+  wallpapers/       images listed in theme.yaml (optional): SVG or JPEG, rendered to
+                    PNG when the theme is applied, or PNG, used as it is
   README.md         credits and screenshots (optional)
 ```
 
@@ -71,7 +71,8 @@ patina theme set <name>
 
 `install` clones it into a temporary directory and keeps only data: `theme.yaml`, a
 `README.md`, a `LICENSE` and the wallpapers `theme.yaml` lists, its `light:` or
-`dark:` block included (SVG or PNG, directly under `wallpapers/`). Scripts, other files and links never leave the clone. The name
+`dark:` block included (SVG, PNG or JPEG, directly under `wallpapers/`). Scripts,
+other files and links never leave the clone. The name
 must be lowercase kebab-case and may not be one of the themes here; every palette must
 be complete and `accent` and `accent_alt` must name palette keys; the names and hints that end up in configuration (`display_name`, `author`,
 the licenses, the `plasma:` hints) must be plain words. The theme lands in

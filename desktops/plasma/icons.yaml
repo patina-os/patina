@@ -3,19 +3,39 @@
 # (Papirus: folder.svg -> folder-blue.svg, user-home.svg -> user-blue-home.svg);
 # `colors` maps that variant's colours to shades of the accent: `accent` itself,
 # `shade` (the back of a folder, 80 %) and `deep` (the pictograms on it, 35 %).
-# `icons` names other icons that are folders drawn in the same blue (context/name),
-# each with its own colours; other apps' artwork is left alone. The renderer writes
-# ~/.local/share/icons/patina-<theme>/, which inherits the icon theme and holds only
-# the recoloured icons; an icon theme not named here is used as it is.
+# `mono` puts every app in one colour: each app's icon (the Icon= of its desktop entry)
+# becomes a monochrome glyph of the icon theme, which takes the colour scheme's text
+# colour; `apps` names the glyph for an icon, every other app gets `other`. The
+# renderer writes ~/.local/share/icons/patina-<theme>/, which inherits the icon theme
+# and holds only the recoloured folders and the glyphs; an icon theme not named here
+# is used as it is.
 Papirus-Dark: &papirus
   variant: blue
   colors:
     "#5294e2": accent
     "#4877b1": shade
     "#1d344f": deep
-  icons:
-    apps/org.kde.dolphin:     # the file manager's own icon, a blue folder
-      "#127bdc": accent
-      "#1f6394": shade
+  mono:
+    other: application-x-executable-symbolic
+    apps:
+      kitty: utilities-terminal-symbolic
+      utilities-terminal: utilities-terminal-symbolic      # the agent, Konsole
+      firefox-esr: firefox-symbolic
+      firefox: firefox-symbolic
+      org.kde.dolphin: system-file-manager-symbolic
+      thunderbird: internet-mail-symbolic
+      Nextcloud: weather-overcast-symbolic                 # a cloud
+      im.riot.Riot: chat-message-new-symbolic              # Element
+      nextcloud-office-nextcloudoffice: x-office-document-symbolic   # Euro-Office
+      keepassxc: dialog-password-symbolic
+      dev.zed.Zed: text-editor-symbolic
+      claude-desktop: weather-clear-symbolic               # a spark
+      preferences-system: preferences-system-symbolic      # System Settings
+      plasmadiscover: system-software-install-symbolic
+      help-browser: help-browser-symbolic
+      preferences-desktop-keyboard-shortcuts: input-keyboard-symbolic   # patina keys
+      spectacle: camera-photo-symbolic
+      utilities-system-monitor: utilities-system-monitor-symbolic
+      kdeconnect: phone-symbolic
 Papirus-Light: *papirus
 Papirus: *papirus

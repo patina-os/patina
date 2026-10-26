@@ -1,9 +1,9 @@
 # aurora
 
 The default patina theme, made for OLED panels: true black, neon green as the accent,
-violet as the second colour, and a contour map that glows green at its summit and
-turns violet towards the edges. Dark by default, with a light mode
-(`patina theme mode light`).
+violet as the second colour, a Google DeepMind visualisation as the wallpaper and a
+contour map that glows green to violet as the second. Dark by default, with a light
+mode (`patina theme mode light`).
 
 ## Palette
 
@@ -25,9 +25,14 @@ between the green and the blue, an orchid for `base0F`.
 Papirus (`papirus-icon-theme` from Debian's archive): Papirus Dark, and Papirus Light
 in the light mode. The renderer recolours its folders and the file manager's icon to
 the accent, green at the front and darker greens behind and on the pictograms
-(`desktops/plasma/icons.yaml`); its monochrome icons in menus, toolbars and the tray
-take the palette's text and accent colours from the colour scheme. Other apps' icons
-keep their own artwork in Papirus's flat style.
+(`desktops/plasma/icons.yaml`). Every app's icon becomes a monochrome glyph of Papirus
+(a terminal for kitty, a cloud for Nextcloud, a key for KeePassXC, a generic one for
+apps without a glyph of their own), so the bar, the start menu and the title bars are
+one colour, the palette's text colour; Papirus's own monochrome icons in menus,
+toolbars and the tray take the same colour from the colour scheme.
+
+The start menu and the other panel popups carry a slight grain (6 %,
+`start_menu.grain` in `defaults/settings.yaml`).
 
 ## Light mode
 
@@ -40,14 +45,23 @@ either mode: the marks are made for a dark ground.
 
 ## Wallpapers
 
-`contour.svg`: height lines around a summit, every 20 m, every 100 m brighter with a
-soft glow and labelled in JetBrains Mono, drawn in one gradient from green at the summit
-through cyan to violet at the edges; the survey point ▲ glows green with its height. A
-faint violet grid carries map references along the edges. The ground is black, so most
-of the screen stays dark. `contour-light.svg` is the same map on lavender white for the
-light mode. Both are drawn once from a height field and kept as artwork, rendered at
-3840x2160 when the theme is applied; the script that drew them is not part of the
-repository. Licensed CC-BY-SA-4.0 (`artwork_license`); the theme data is
+`deepmind.jpg`, the default: an abstract visualisation of flowing digital waves in
+blue and violet, by Google DeepMind (credited on Pexels also to the artist Domhnall
+Malone), [photo 17483910 on Pexels](https://www.pexels.com/photo/17483910/), resized
+to 3840x2160. It is the one third-party file of the theme, under the
+[Pexels licence](https://www.pexels.com/license/): free to use and to change, with no
+attribution required (given here anyway), but not to be sold unaltered or offered on
+other stock-photo sites. It is not a free-culture licence; the maintainer chose the
+picture in October 2026 knowing that. The renderer turns it into a PNG at apply time.
+
+`contour.svg`, the second: height lines around a summit, every 20 m, every 100 m
+brighter with a soft glow and labelled in JetBrains Mono, drawn in one gradient from
+green at the summit through cyan to violet at the edges; the survey point ▲ glows green
+with its height. The ground is black, so most of the screen stays dark on OLED.
+`contour-light.svg` is the same map on lavender white, the light mode's wallpaper. Both
+are drawn once from a height field and kept as artwork, rendered at 3840x2160 when the
+theme is applied; the script that drew them is not part of the repository. Licensed
+CC-BY-SA-4.0. `artwork_license` names both licences; the theme data is
 GPL-3.0-or-later like the rest of the repository.
 
 The labels need JetBrains Mono where the SVG is rendered; the desktop bundle and the

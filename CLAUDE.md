@@ -42,13 +42,16 @@ packs. Audience: developers and privacy-minded users in the EU.
   point at, and their desktop integration is a shortcut and a terminal profile, as data.
 - Look: the default theme is aurora, made for OLED screens (October 2026, after the
   redesign whose eight directions `docs/design/futures.html` keeps): true black with
-  panels one step above it, neon green as the accent and violet as the second colour,
-  with a contour map that glows green at the summit and turns violet at the edges as
-  artwork (SVG in the theme, rendered at apply time) licensed with the repository.
+  panels one step above it, neon green as the accent and violet as the second colour.
+  Its wallpaper is a Google DeepMind visualisation from Pexels (`deepmind.jpg`, under
+  the Pexels licence, credited in `themes/aurora/README.md`), the one third-party
+  wallpaper, chosen by the maintainer in October 2026; a contour map that glows green
+  at the summit and turns violet at the edges is the second (SVG in the theme,
+  rendered at apply time, licensed with the repository).
   Dark is the default mode; aurora carries a light mode as data (a `light:` block),
   switched with `patina theme mode`, and the boot menu, the installer, the splash and
   the login screen stay dark in either. datum (graphite, ice, coral) and amethyst, the
-  first theme, stay as options. No third-party wallpapers. Artwork drawn by a
+  first theme, stay as options. No other third-party artwork. Artwork drawn by a
   script is committed as the SVG it produced, never with the script. The `agent`
   shortcut opens opencode by default (`defaults/settings.yaml`), the free one of the
   agent CLIs. One look from the boot menu to the desktop: the installer, the boot
@@ -62,7 +65,9 @@ packs. Audience: developers and privacy-minded users in the EU.
   the install questions; `branding/wordmark.svg` sets the mark beside patina for
   screens and the README's header, `icon.svg` and `icon-small.svg` are the mark as
   large and small icons. The desktop's icons are Papirus as Debian ships it, its
-  folders recoloured to the theme's accent by the renderer. The brand's colours (deep violet, violet, lavender, white, and green
+  folders recoloured to the theme's accent and every app's icon a monochrome glyph in
+  the text colour, by the renderer; the start menu and the other panel popups carry a
+  slight grain. The brand's colours (deep violet, violet, lavender, white, and green
   for the ▲) are aurora's and do not follow a theme.
   The desktop's shape is a floating centred bar as on Windows 11 and new windows
   centred at one size; all are knobs in `defaults/settings.yaml`. No automatic tiling
