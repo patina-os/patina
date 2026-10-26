@@ -210,6 +210,25 @@ if [[ -n "$login_dir" && -f "$login_dir/contents/images/3840x2160.png" ]]; then
   fi
 fi
 
+# The agent launcher, only with the agents bundle installed. It and the cheat sheet's
+# launcher come before the icons, which give every app's desktop entry its glyph. It opens the agent CLI in
+# the kitty profile desktops/terminal/ writes.
+if [[ " ${PATINA_BUNDLES:-} " == *" agents "* ]]; then
+  tpl[AGENT_COMMAND]="$(command -v "${tpl[AGENT]}" 2> /dev/null || echo "${tpl[AGENT]}")"
+  render "$templates/agent.desktop" "$tmp/agent.desktop"
+  put "$tmp/agent.desktop" "$agent_desktop"
+elif [[ -e "$agent_desktop" ]]; then
+  say "removing $agent_desktop (the agents bundle is not installed)"
+  rm -f "$agent_desktop"
+  changed
+fi
+
+# The cheat sheet's launcher, which the keys action (Meta+K) starts: kitty showing
+# `patina keys` until a key is pressed.
+tpl[PATINA_PATH]="$PATINA_PATH"
+render "$templates/keys.desktop" "$tmp/keys.desktop"
+put "$tmp/keys.desktop" "$data/applications/patina-keys.desktop"
+
 # Icons: an icon theme of desktops/plasma/icons.yaml gets its folders in the accent and
 # every app in one colour. The renderer writes a small icon theme, patina-<theme>, that
 # inherits it and holds only those icons; the session then uses that one. The icon
@@ -383,24 +402,6 @@ put "$PATINA_PATH/branding/wordmark.svg" "$lnf/contents/splash/images/logo.svg"
 ( theme_vars "$theme_yaml" "$settings" dark && render "$templates/splash.qml" "$tmp/Splash.qml" )
 put "$tmp/Splash.qml" "$lnf/contents/splash/Splash.qml"
 drop_other_themes "$data/plasma/look-and-feel/org.patina.*" "$lnf"
-
-# The agent launcher, only with the agents bundle installed. It opens the agent CLI in
-# the kitty profile desktops/terminal/ writes.
-if [[ " ${PATINA_BUNDLES:-} " == *" agents "* ]]; then
-  tpl[AGENT_COMMAND]="$(command -v "${tpl[AGENT]}" 2> /dev/null || echo "${tpl[AGENT]}")"
-  render "$templates/agent.desktop" "$tmp/agent.desktop"
-  put "$tmp/agent.desktop" "$agent_desktop"
-elif [[ -e "$agent_desktop" ]]; then
-  say "removing $agent_desktop (the agents bundle is not installed)"
-  rm -f "$agent_desktop"
-  changed
-fi
-
-# The cheat sheet's launcher, which the keys action (Meta+K) starts: kitty showing
-# `patina keys` until a key is pressed.
-tpl[PATINA_PATH]="$PATINA_PATH"
-render "$templates/keys.desktop" "$tmp/keys.desktop"
-put "$tmp/keys.desktop" "$data/applications/patina-keys.desktop"
 
 # The start menu's folders (start_menu in defaults/settings.yaml): one directory entry
 # each and a menu file merged into the applications menu that fills them. Its button is
