@@ -78,6 +78,9 @@ All notable changes to patina are documented here. The format follows
   by default), from a small Plasma desktop theme over Breeze that replaces only the
   popup backgrounds.
 - Wallpapers may be JPEG; the renderer and the image build turn them into PNG.
+- The block-letter name as a picture: `branding/export/` holds `wordmark.txt` drawn as
+  outlines, as SVG and PNG (512 and 1024 px), transparent and on aurora's black, so
+  it looks the same where its characters or fonts are missing.
 
 ### Fixed
 

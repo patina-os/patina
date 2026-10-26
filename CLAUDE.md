@@ -125,14 +125,16 @@ packs. Audience: developers and privacy-minded users in the EU.
   mark, `branding/wordmark.txt` of the text wordmark and `branding/wordmark.svg` of the
   typeset one (it and `icon.svg` repeat the mark's characters, changed together with
   `logo.txt`); scripts print or copy them (`print_logo` and `print_wordmark` in
-  `lib.sh`, the image build and the renderer copy the SVG)
+  `lib.sh`, the image build and the renderer copy the SVG). `branding/export/` holds
+  `wordmark.txt` drawn as outlines (SVG and PNG, for places without its fonts),
+  derived from it and drawn again when it changes
 
 ## Repository map
 
 | Directory | Holds |
 |---|---|
 | `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash; `lib.sh` holds the few functions they share, among them the theme loader and template filler the renderers and the image build use |
-| `branding/` | the marks as data: `logo.txt` (the mark) and `wordmark.txt` (the name in block letters) are what scripts print, `wordmark.svg` (the mark typeset beside patina), `icon.svg` and `icon-small.svg` what screens show |
+| `branding/` | the marks as data: `logo.txt` (the mark) and `wordmark.txt` (the name in block letters) are what scripts print, `wordmark.svg` (the mark typeset beside patina), `icon.svg` and `icon-small.svg` what screens show; `export/` the block-letter name as outlined SVG and PNG |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
 | `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `system/` the system tuning files |
 | `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, Plasma's `icons.yaml` for the folder colours of an icon theme, one `apply.sh`) and the headless session the desktop workflow screenshots (`screenshot.sh`); `plasma/` first; `terminal/` renders the terminal and its tools for every desktop |
