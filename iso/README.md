@@ -82,11 +82,14 @@ stable at install time, and an old image installs today's layer.
 `.github/workflows/iso-build.yml` does it for both architectures: `iso/live/build.sh
 <arch>` in a privileged Debian 13 container on an x86_64 and on an aarch64 runner (a
 native build on each, no emulation), then the boot test on a plain runner of the same
-architecture, then, for a `v*` tag, the upload of both images to that tag's GitHub
-release (created as a draft when missing). The workflow also runs on every pull request
-that touches `iso/`, `branding/`, the base bundle or the workflow itself, so an image
-change is built and booted before it is merged; it publishes only from a tag. To build by
-hand on a Debian machine of the target architecture:
+architecture, then, for a `v*` tag, the upload of both images and their `SHA256SUMS` to
+that tag's GitHub release (created as a draft when missing, its notes the tag's section
+of `CHANGELOG.md`, a pre-release when the version has a pre-release part). An alpha tag
+(`v0.1.0-alpha.1`) gets the release without images: the alphas are Path A only, and the
+image is handed out once its manual install check has passed. The workflow also runs on
+every pull request that touches `iso/`, `branding/`, the base bundle or the workflow
+itself, so an image change is built and booted before it is merged; it publishes only
+from a tag. To build by hand on a Debian machine of the target architecture:
 
 ```sh
 sudo apt-get install live-build debootstrap librsvg2-bin fonts-adobe-sourcesans3 \

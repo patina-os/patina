@@ -17,10 +17,11 @@
   EU-sovereign app stack on top of Debian stable with Plasma. Not a distribution.
 </p>
 
-**Status: pre-alpha.** `patina install` installs the app stack and the system tuning on
-Debian 13 and renders the default theme, aurora, into Plasma's configuration (checked in
-CI containers on x86_64 and aarch64, not yet on a real desktop); the branded install is
-still to come. See the [roadmap](docs/roadmap.md).
+**Status: alpha, for testers.** `patina install` installs the app stack and the system
+tuning on Debian 13 and renders the default theme, aurora, into Plasma's configuration
+(checked in CI containers on x86_64 and aarch64, not yet on a real desktop); the
+branded install is still to come. [Testing the alpha](#testing-the-alpha) says how to
+help; see the [roadmap](docs/roadmap.md).
 
 ## Screenshots
 
@@ -72,8 +73,8 @@ Two paths, one layer. If they ever diverge, Path A wins.
 
 | Path | What you do | Status |
 |---|---|---|
-| A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (it asks the theme and the app bundles on a terminal; flags or `--unattended` skip the questions) | pre-alpha: installs the app stack, the system tuning and the theme, checked in CI containers, not yet on a real desktop |
-| B: the patina image | Boot a small live image, answer the installer (disk, user, locale), get the finished desktop. Plasma and the base are downloaded from Debian's mirrors during the install; first boot runs Path A | pre-alpha: the image builds and boots to the installer in CI (x86_64 and aarch64), not released yet; the first boot waits for Path A |
+| A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (it asks the theme and the app bundles on a terminal; flags or `--unattended` skip the questions) | alpha (`v0.1.0-alpha.1`): installs the app stack, the system tuning and the theme, checked in CI containers; testers run it on real desktops |
+| B: the patina image | Boot a small live image, answer the installer (disk, user, locale), get the finished desktop. Plasma and the base are downloaded from Debian's mirrors during the install; first boot runs Path A | pre-alpha: the image builds and boots to the installer in CI (x86_64 and aarch64), not handed out yet; the first boot waits for Path A |
 
 ```sh
 sudo apt install git curl
@@ -89,11 +90,32 @@ migrations. Put `~/.local/bin` on
 your PATH and link `patina` there (`ln -s ~/.local/share/patina/bin/patina
 ~/.local/bin/patina`).
 
+## Testing the alpha
+
+`v0.1.0-alpha.1` is the first release, for people willing to try patina on a fresh
+Debian 13 with Plasma and report what they see. It is Path A only; the image is not
+handed out yet. Everything has run in CI containers and a headless Plasma session, never
+on a real desktop, so expect rough edges, and use a VM with a snapshot or a machine you
+can reinstall.
+
+1. Follow [docs/vm-run.md](docs/vm-run.md): the VM, Debian 13, then `patina install`
+   twice, the reboot, the apps and the look, ticking each check. The agents bundle
+   (step 8) is optional.
+2. Open a [test report](https://github.com/patina21/patina/issues/new?template=test-report.yml)
+   with what passed and what did not, `patina version` and the output of
+   `patina doctor`, failing or not. One report per run.
+3. `patina update` brings fixes as they land on `main`; a second run on a later version
+   is welcome.
+
+What the alpha does not cover yet: the live image (Path B), aarch64 hardware beyond CI
+(a Raspberry Pi 4 or a Snapdragon X Elite laptop is welcome, see
+[docs/hardware.md](docs/hardware.md)), and an update from one release to the next.
+
 ## Supported bases
 
 | Base | Architectures | Status |
 |---|---|---|
-| Debian 13 (trixie) | x86_64, aarch64 | reference base, pre-alpha |
+| Debian 13 (trixie) | x86_64, aarch64 | reference base, alpha |
 | Debian 14 | x86_64, aarch64 | follows when it becomes stable |
 | openSUSE Tumbleweed | | possible later; backend file kept, untested |
 | Fedora | | possible later, not a priority; backend file kept, untested |

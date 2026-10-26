@@ -6,8 +6,18 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.1] - 2026-10-26
+
+The first alpha, for testers. It covers Path A only: Debian 13 with Plasma, `git clone`
+and `patina install`; the live image is built and boot-tested in CI but not handed out.
+patina has run in CI containers and a headless Plasma session, not yet on a real
+desktop: that run, `docs/vm-run.md`, is what testers do. "Testing the alpha" in the
+README says how, and the test report form on GitHub takes the results.
+
 ### Added
 
+- A test report form for the alpha's testers (`.github/ISSUE_TEMPLATE/`), following
+  the steps of `docs/vm-run.md`.
 - The aurora theme, the new default, made for OLED screens: true black, so those pixels
   stay off, with panels one step above it; neon green as the accent (selections,
   focus, the active window, the cursor, the splash line) and violet as the second
@@ -302,4 +312,5 @@ All notable changes to patina are documented here. The format follows
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina21/patina/commits/main
+[Unreleased]: https://github.com/patina21/patina/compare/v0.1.0-alpha.1...main
+[0.1.0-alpha.1]: https://github.com/patina21/patina/releases/tag/v0.1.0-alpha.1

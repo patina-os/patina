@@ -5,7 +5,8 @@ VM with Plasma, then the theme on that real desktop. CI containers prove the pac
 the rendered files; this run proves what they cannot: the systemd side of the tuning, the
 sudo path as a normal user, and the look on a running Plasma session. Tick the boxes in a
 copy of this file or in an issue; what fails or looks wrong goes back into the data, and
-the roadmap's two open items are ticked once a run passes end to end.
+the roadmap's two open items are ticked once a run passes end to end. Testers of an
+alpha report their run with the test report form on GitHub (New issue, "Test report").
 
 Any hypervisor works. The commands below run inside the VM.
 
@@ -202,6 +203,8 @@ sudo -iu patina-test bash -c '
 
 ## 12. After the run
 
+- [ ] a tester: open a test report on GitHub with what passed and what did not, the
+  output of `patina version` and `patina doctor`, and the failing part of the logs
 - [ ] every failure or wrong look is a fix in the data or the renderer, or an issue
 - [ ] `docs/hardware.md`: the "Generic PC or VM (UEFI)" row gets the status the run
   earned and the date
