@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # The finished desktop as a picture: a Plasma X11 session on a virtual framebuffer (Xvfb,
-# software OpenGL), the theme applied inside it, kitty with the greeting, one grab of the
-# whole screen. No GPU and no login needed. The source of the desktop image in
+# software OpenGL), the theme applied inside it, kitty split in two with the greeting
+# and btop, one grab of the whole screen. No GPU and no login needed. The source of the desktop image in
 # docs/screenshots/.
 set -euo pipefail
 
@@ -11,7 +11,7 @@ usage() {
 usage: screenshot.sh <out.png>
 
 Run as the user the layer is installed for (patina install), on a machine or in a
-container with Plasma: Xvfb, startplasma-x11, scrot, kitty, fastfetch, fish,
+container with Plasma: Xvfb, startplasma-x11, scrot, kitty, fastfetch, fish, btop,
 dbus-run-session and dbus-send. No display or login is needed. Environment:
   PATINA_SHOT_SIZE     the virtual screen, WIDTHxHEIGHT (default 1920x1080)
   PATINA_SHOT_SETTLE   seconds for the shell, then the terminal, to be drawn (default 25)
@@ -37,7 +37,7 @@ on_bus() {
 # screen. The environment is the one a Plasma login sets, so the renderer sees a session
 # (XDG_CURRENT_DESKTOP, the bus) and Qt draws on X.
 session() {
-  local out="$1" waited=0 theme session_pid
+  local out="$1" waited=0 theme session_pid split
   export XDG_SESSION_TYPE=x11 XDG_CURRENT_DESKTOP=KDE KDE_FULL_SESSION=true \
     KDE_SESSION_VERSION=6 DESKTOP_SESSION=plasmax11 QT_QPA_PLATFORM=xcb
   startplasma-x11 &
@@ -61,11 +61,19 @@ session() {
   theme="$("$PATINA_PATH/bin/patina" theme current)"
   "$PATINA_PATH/bin/patina" theme set "$theme" || true
   sleep 5
-  # fastfetch asks kitty for its version and reads the reply itself; give kitty a moment
-  # to finish its own startup first, or a late reply lands on the shell's prompt line.
-  kitty fish -C 'sleep 3; fastfetch' &
+  # The Welcome Center a first login opens would show through the windows.
+  pkill -u "$(id -u)" -x plasma-welcome || true
+  # One kitty window split in two: the greeting on the left, btop on the right, its
+  # graphs refreshed four times a second so they fill before the grab. fastfetch asks
+  # kitty for its version and reads the reply itself; give kitty a moment to finish its
+  # own startup first, or a late reply lands on the shell's prompt line.
+  split="$(mktemp)"
+  printf '%s\n' 'layout splits' "launch fish -C 'sleep 3; fastfetch'" \
+    'launch --location=vsplit --bias=58 btop --update 250' > "$split"
+  kitty --session "$split" &
   sleep "$settle"
   scrot --overwrite "$out"
+  rm -f "$split"
   [[ -s "$out" ]] || { echo "screenshot: scrot wrote nothing to $out" >&2; return 1; }
   echo "screenshot: written to $out"
 }
@@ -83,7 +91,7 @@ size="${PATINA_SHOT_SIZE:-1920x1080}"
 [[ "$size" =~ ^([0-9]+)x([0-9]+)$ ]] || { echo "screenshot: PATINA_SHOT_SIZE is not WIDTHxHEIGHT: $size" >&2; exit 64; }
 width="${BASH_REMATCH[1]}"
 height="${BASH_REMATCH[2]}"
-for tool in Xvfb startplasma-x11 scrot kitty fastfetch fish dbus-run-session dbus-send; do
+for tool in Xvfb startplasma-x11 scrot kitty fastfetch fish btop dbus-run-session dbus-send; do
   command -v "$tool" > /dev/null || { echo "screenshot: $tool missing" >&2; exit 69; }
 done
 # A runtime directory of this user's own; a login gives one, a container does not.

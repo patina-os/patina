@@ -106,10 +106,11 @@ jobs:
           test ! -e "$data/wallpapers/patina-zz-copy-$wallpaper"
           test ! -e "$HOME/.config/nvim/colors/patina-zz-copy.lua"
           [[ "$(scheme)" == "patina-$theme" ]]
-      - name: The colours, the icons, the start menu and its grain rendered
+      - name: The colours, the icons, the start menu, its grain and the windows rendered
         # The scheme's colours are in kdeglobals (where Plasma reads them, not only in
         # the scheme file), the icon theme of the theme carries its folders in the
-        # accent, and the start menu has its button, folders and favourites.
+        # accent and its glyphs at one height, the start menu has its button, folders
+        # and favourites, and the windows their opacity rule.
         run: |
           theme="$(yq eval '.theme' defaults/settings.yaml)"
           t="themes/$theme/theme.yaml"
@@ -132,6 +133,12 @@ jobs:
           prepend="$(kreadconfig6 --file kicker-extra-favoritesrc --group General --key Prepend)"
           [[ "$prepend" == *thunderbird.desktop* ]]
           test -s "$data/icons/patina-$theme/32x32/symbolic/apps/kitty.svg"
+          grep -q '<svg viewBox=' "$data/icons/patina-$theme/32x32/symbolic/apps/kitty.svg"
+          grep -q '<svg viewBox=' "$data/patina/launcher.svg"
+          rule=patina-window-opacity
+          opacity="$(kreadconfig6 --file kwinrulesrc --group "$rule" --key opacityinactive)"
+          [[ "$opacity" == "$(yq eval '.windows.opacity.inactive' defaults/settings.yaml)" ]]
+          [[ "$(kreadconfig6 --file kwinrulesrc --group General --key rules)" == *"$rule"* ]]
           [[ "$(kreadconfig6 --file plasmarc --group Theme --key name)" == "patina-$theme" ]]
           # Captured before grep: grep -q stops at the first match, and with pipefail
           # zcat's SIGPIPE would fail the step.
@@ -240,8 +247,8 @@ jobs:
           cp -r iso/live/config "$build/"
           iso/live/assets.sh "$build"
           b="$build/config/includes.chroot/etc/calamares/branding/patina"
-          for f in logo.png logo-square.svg wallpaper.png slide-1.png slide-2.png slide-3.png \
-              stylesheet.qss; do
+          for f in logo.png welcome.png logo-square.svg wallpaper.png slide-1.png slide-2.png \
+              slide-3.png stylesheet.qss; do
             test -s "$b/$f"
           done
           test -s "$build/config/bootloaders/grub-pc/splash.png"

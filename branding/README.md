@@ -15,8 +15,9 @@ branding/
 
 The mark is the summit; the wordmark is the name. Terminals show the mark where there is
 room beside other text (the fastfetch greeting) or no font to trust (the console), and
-the wordmark where the name leads (`patina help`, the install questions). Screens and
-the README's header show the lockup of mark and name. In running text the name stays
+the wordmark where the name leads (`patina help`, the install questions), outlined from
+`export/` where the name leads on a screen (the README's header, the installer's welcome
+page). The other screens show the lockup of mark and name. In running text the name stays
 `patina`.
 
 ## logo.txt, the mark

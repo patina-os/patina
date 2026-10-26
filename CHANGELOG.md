@@ -82,6 +82,10 @@ All notable changes to patina are documented here. The format follows
   outlines, as SVG and PNG (512 and 1024 px), transparent and on aurora's black, so
   it looks the same where its characters or fonts are missing.
 
+- Windows are a touch see-through: 97 % opaque while active, 92 % while not, as a
+  KWin rule the renderer writes (`windows.opacity` in `defaults/settings.yaml`; 100 for
+  both turns it off). A migration renders the theme again.
+
 ### Fixed
 
 - A first login shows the theme's wallpaper: the panel layout sets it, since Plasma
@@ -99,6 +103,13 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- The bar's icons stand equally tall: the renderer crops each app's glyph and the
+  start menu's mark to what they draw and sets them at one height, so a circle, a
+  cabinet and a row of dots no longer differ in size.
+- The desktop screenshot shows kitty split in two, the fastfetch greeting beside btop.
+- The installer's welcome page and the README's header show the name in block letters
+  (`branding/export/`); the boot menu, the slides and the splash keep the typeset
+  wordmark.
 - aurora's wallpaper is a Google DeepMind visualisation from Pexels (`deepmind.jpg`,
   under the Pexels licence, credited in the theme's README), the one third-party
   wallpaper; the glowing contour map is the second.

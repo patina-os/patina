@@ -18,6 +18,9 @@ speed:
 windows:
   placement: centered        # where a new window opens: centered | smart (Plasma's own)
   size: 70                   # percent of the screen a new main window takes; 0 keeps the app's size
+  opacity:                   # percent opacity of every window; 100 for both: fully opaque
+    active: 97
+    inactive: 92
 panel:
   layout: centered           # centered: launcher and task icons in the middle; plasma: stock bar
   floating: true             # true: Plasma's floating bar; false: edge to edge
