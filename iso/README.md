@@ -53,7 +53,7 @@ iso/
 
 1. Boot the image. The GRUB menu shows the theme's wallpaper and the wordmark. The live
    system starts `patina-ui.service`: an X session on tty7 with Calamares full screen
-   in the theme's palette and fonts, the wordmark on the welcome page, the square mark in
+   in the theme's palette and fonts, the block-letter name on the welcome page, the square mark in
    the sidebar, the wallpaper veiled behind every page, three still slides while it
    installs. The console shows `branding/logo.txt`.
 2. Calamares asks what it must: time zone and keyboard (pre-filled), disk (erase is
@@ -180,8 +180,8 @@ release, never edited.
 ## Still to verify
 
 - The look on a screen, listed under the release gate above: Calamares scales
-  `logo-square.svg` to 80x80 and `logo.png` (the wordmark rendered with `rsvg-convert`,
-  since Qt's SVG renderer lacks its fonts and spacing) on the welcome page; `productWallpaper`
+  `logo-square.svg` to 80x80 and `welcome.png` (the block-letter name of
+  `branding/export/` rendered with `rsvg-convert`) on the welcome page; `productWallpaper`
   tiles on screens larger than 1920x1080 (if it looks wrong, the veiled wallpaper goes
   and `#mainApp`'s background stays); the stylesheet over Fusion on Calamares' own
   widgets (the partition bars keep Calamares' colours by design); GRUB's `crop` scaling

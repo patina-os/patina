@@ -23,7 +23,9 @@ Files, from `templates/`, each named after the theme:
   (`mono`: the Icon= of each installed desktop entry a menu shows, mapped to a glyph,
   `other` for the rest; names the icon theme uses for folders or file types are left
   alone), so the bar, the menu and the title bars are one colour, the colour scheme's
-  text colour. An app installed later gets its glyph at the next `patina theme set`.
+  text colour. Each glyph, and the start menu's mark, gets a viewBox cut to what it
+  draws, 7/8 of the icon high and centred (the extent from the bounding box of an EPS
+  `rsvg-convert` writes), so they stand equally tall in the bar. An app installed later gets its glyph at the next `patina theme set`.
   The session uses this icon theme. Without the icon theme installed the renderer
   falls back to Breeze and says so
 - with `start_menu.grain` above 0, a Plasma desktop theme of the theme's own,
@@ -98,7 +100,8 @@ Settings, through `kwriteconfig6`, each written only when it differs:
   that share of the screen when it first appears (apps that remember their size keep
   it afterwards). The rule needs the screen, so it is written inside a session, from
   `kscreen-doctor` (the output with priority 1); outside one it waits for the next
-  `patina theme set` in a session
+  `patina theme set` in a session; for `windows.opacity` a second rule that forces
+  every normal window to that opacity, one share while active and one while not
 - global shortcuts in `kglobalshortcutsrc` from `defaults/keybindings.yaml`, each action
   through `actions.yaml`: a `.desktop` file's `_launch` (kitty, KRunner, Dolphin,
   Spectacle, the default web browser from `xdg-settings`, the agent launcher, the cheat
@@ -133,7 +136,8 @@ applies at the next login through the look-and-feel package.
 to: a Plasma X11 session on a virtual framebuffer (`Xvfb`, Mesa's software OpenGL, no
 GPU and no login), `plasmashell` in it, which runs the layout script as a first login
 does, then `patina theme set` once more inside that session (the live reload and the
-window rule, which needs a screen), kitty with the fastfetch greeting, and one grab of
+window rule, which needs a screen), the Welcome Center closed, kitty split in two with
+the fastfetch greeting and btop, and one grab of
 the whole screen (`scrot`). It is the X11 session, not Wayland, because KWin's Wayland
 backend needs a DRM render node a GPU-less container does not have. Run it as the user
 the layer is installed for, on anything with Plasma installed; the `desktop` workflow

@@ -18,10 +18,10 @@ foot, then t, n and a, the word itself as the summit line and the survey point â
 it. `logo.txt` holds it as plain text for the fastfetch greeting, the live image's and
 the installed system's console and the first-boot screen. `wordmark.txt` holds the name
 in block letters for `patina help` and the install questions; the README's header
-shows `wordmark.svg`.
+and the installer's welcome page show it outlined (`branding/export/`).
 `wordmark.svg` sets the mark's characters in JetBrains Mono beside patina in Sora
-ExtraBold; that lockup is what screens show: the live image's boot menu, the installer,
-the login screen and the Plasma splash. `icon.svg` is the mark in a square for large
+ExtraBold; that lockup is what screens show: the live image's boot menu, the installer's
+slides, the login screen and the Plasma splash. `icon.svg` is the mark in a square for large
 icons, `icon-small.svg` the mark as dots for small ones (the installer's sidebar, a
 window icon). `branding/README.md` has the rules for changing them. There is no bitmap
 logo: the image build and the desktop renderer copy or rasterise the SVG. The marks are

@@ -1,5 +1,8 @@
 <h1 align="center">
-  <img src="branding/wordmark.svg" alt="patina" width="540">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="branding/export/wordmark-blocks.svg">
+    <img src="branding/export/wordmark-blocks-dark.svg" alt="patina" width="360">
+  </picture>
 </h1>
 
 <p align="center">
@@ -28,8 +31,8 @@ QEMU, Calamares as Debian 13 ships it, branded through data):
 
 The finished desktop, as the `desktop` workflow captures it in CI (amd64, a Plasma X11
 session on a virtual framebuffer after `patina install`): aurora, the default theme,
-with its wallpaper, the centred bar of one-colour icons, and kitty with the fastfetch
-greeting.
+with its wallpaper, the centred bar of one-colour icons and slightly see-through
+windows: kitty split in two, the fastfetch greeting beside btop.
 
 ![The patina desktop with the aurora theme](docs/screenshots/desktop-amd64.png)
 

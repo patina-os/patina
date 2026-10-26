@@ -75,6 +75,39 @@ kdel() {
   changed
 }
 
+# Set a square icon's drawing at one height, in place: even_glyph <svg>. Its viewBox
+# becomes a square around what it draws, the drawing 7/8 of the square high, as wide
+# as its shape (at most the whole square), centred. So a circle, a cabinet and a row of
+# dots stand equally tall in the bar. The extent is the bounding box cairo writes into
+# an EPS (rsvg-convert, at 1600 px: 1200 pt for the whole icon, y counted upwards).
+even_glyph() {
+  local file="$1" box
+  box="$(rsvg-convert --format eps --width 1600 --height 1600 "$file" |
+    awk '/^%%BoundingBox:/ { print $2, $3, $4, $5; exit }')"
+  [[ -n "$box" ]] || return 0
+  LC_ALL=C awk -v box="$box" 'BEGIN { RS = "\001"; split(box, b, " ") }
+    {
+      s = index($0, "<svg"); e = s + index(substr($0, s), ">") - 1
+      tag = substr($0, s, e - s + 1)
+      if (match(tag, /viewBox="[^"]*"/)) {
+        split(substr(tag, RSTART + 9, RLENGTH - 10), v, /[ ,]+/)
+      } else {
+        v[1] = v[2] = 0
+        match(tag, /width="[0-9.]+/); v[3] = substr(tag, RSTART + 7, RLENGTH - 7)
+        match(tag, /height="[0-9.]+/); v[4] = substr(tag, RSTART + 8, RLENGTH - 8)
+      }
+      x1 = v[1] + v[3] * b[1] / 1200; x2 = v[1] + v[3] * b[3] / 1200
+      y1 = v[2] + v[4] * (1200 - b[4]) / 1200; y2 = v[2] + v[4] * (1200 - b[2]) / 1200
+      side = (y2 - y1) * 8 / 7
+      if (x2 - x1 > side) side = x2 - x1
+      gsub(/ viewBox="[^"]*"/, "", tag)
+      sub(/^<svg/, sprintf("<svg viewBox=\"%.3f %.3f %.3f %.3f\"", (x1 + x2 - side) / 2,
+        (y1 + y2 - side) / 2, side, side), tag)
+      printf "%s%s%s", substr($0, 1, s - 1), tag, substr($0, e + 1)
+    }' "$file" > "$file.even"
+  mv "$file.even" "$file"
+}
+
 # The .desktop file an action of defaults/keybindings.yaml launches, through
 # actions.yaml; empty (with a warning) when the action has none or it is not installed.
 app_dirs=("$data/applications" /usr/share/applications /usr/local/share/applications
@@ -298,6 +331,7 @@ if [[ -n "$variant" && -f "/usr/share/icons/$icons_base/index.theme" ]]; then
         continue
       fi
       cp -L "$src" "$out/32x32/symbolic/apps/$icon.svg"
+      even_glyph "$out/32x32/symbolic/apps/$icon.svg"
     done < <(for d in "${app_dirs[@]}"; do
         # the icons of the apps a menu shows: Type=Application, neither NoDisplay nor Hidden
         [[ -d "$d" ]] && awk -F= '
@@ -405,9 +439,11 @@ drop_other_themes "$data/plasma/look-and-feel/org.patina.*" "$lnf"
 
 # The start menu's folders (start_menu in defaults/settings.yaml): one directory entry
 # each and a menu file merged into the applications menu that fills them. Its button is
-# the patina mark (branding/icon-small.svg, the size for a bar), in a place that stays
-# when the theme changes.
-put "$PATINA_PATH/branding/icon-small.svg" "$data/patina/launcher.svg"
+# the patina mark (branding/icon-small.svg, the size for a bar), as tall as the apps'
+# glyphs beside it, in a place that stays when the theme changes.
+cp "$PATINA_PATH/branding/icon-small.svg" "$tmp/launcher.svg"
+even_glyph "$tmp/launcher.svg"
+put "$tmp/launcher.svg" "$data/patina/launcher.svg"
 tpl[LAUNCHER_ICON]="$data/patina/launcher.svg"
 menu_changes=$changes
 folders=""
@@ -585,6 +621,18 @@ case "$(yq eval '.windows.placement' "$settings")" in
   centered) kset kwinrc Placement Centered Windows ;;
   smart) kset kwinrc Placement Smart Windows ;;
 esac
+# Drop the KWin rule $rule: drop_rule <key>..., its keys and its name in $rules.
+drop_rule() {
+  local key
+  for key in "$@"; do
+    kdel kwinrulesrc "$key" "$rule"
+  done
+  rules="${rules//$rule/}"
+  rules="${rules//,,/,}"
+  rules="${rules#,}"
+  rules="${rules%,}"
+  kset kwinrulesrc rules "$rules" General
+}
 rule=patina-new-windows
 percent="$(yq eval '.windows.size // 0' "$settings")"
 rules="$(kreadconfig6 --file kwinrulesrc --group General --key rules)"
@@ -613,14 +661,27 @@ if [[ "$percent" -gt 0 ]]; then
     say "no Plasma session here; the window size rule comes with the next 'patina theme set' inside one"
   fi
 elif [[ -n "$(kreadconfig6 --file kwinrulesrc --group "$rule" --key sizerule)" ]]; then
-  for key in Description types size sizerule; do
-    kdel kwinrulesrc "$key" "$rule"
-  done
-  rules="${rules//$rule/}"
-  rules="${rules//,,/,}"
-  rules="${rules#,}"
-  rules="${rules%,}"
-  kset kwinrulesrc rules "$rules" General
+  drop_rule Description types size sizerule
+fi
+
+# Windows a little see-through: a KWin rule forcing the opacity of every normal window,
+# one share while it is active and one while it is not; 100 for both drops the rule.
+rule=patina-window-opacity
+active="$(yq eval '.windows.opacity.active // 100' "$settings")"
+inactive="$(yq eval '.windows.opacity.inactive // 100' "$settings")"
+rules="$(kreadconfig6 --file kwinrulesrc --group General --key rules)"
+if [[ "$active" -lt 100 || "$inactive" -lt 100 ]]; then
+  kset kwinrulesrc Description "patina: windows at $active% opacity, $inactive% while inactive" "$rule"
+  kset kwinrulesrc types 1 "$rule"
+  kset kwinrulesrc opacityactive "$active" "$rule"
+  kset kwinrulesrc opacityactiverule 2 "$rule"
+  kset kwinrulesrc opacityinactive "$inactive" "$rule"
+  kset kwinrulesrc opacityinactiverule 2 "$rule"
+  if [[ ",$rules," != *",$rule,"* ]]; then
+    kset kwinrulesrc rules "${rules:+$rules,}$rule" General
+  fi
+elif [[ -n "$(kreadconfig6 --file kwinrulesrc --group "$rule" --key opacityactiverule)" ]]; then
+  drop_rule Description types opacityactive opacityactiverule opacityinactive opacityinactiverule
 fi
 
 # Global shortcuts: each action of defaults/keybindings.yaml through actions.yaml.
