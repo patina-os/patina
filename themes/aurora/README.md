@@ -20,11 +20,20 @@ rings use the same violet and its survey point the same green. The other base16 
 keep their usual meaning, tuned to stay apart from the two: a pink-leaning red, a cyan
 between the green and the blue, an orchid for `base0F`.
 
+## Icons
+
+Papirus (`papirus-icon-theme` from Debian's archive): Papirus Dark, and Papirus Light
+in the light mode. The renderer recolours its folders and the file manager's icon to
+the accent, green at the front and darker greens behind and on the pictograms
+(`desktops/plasma/icons.yaml`); its monochrome icons in menus, toolbars and the tray
+take the palette's text and accent colours from the colour scheme. Other apps' icons
+keep their own artwork in Papirus's flat style.
+
 ## Light mode
 
 The `light:` block holds a second palette with the same roles on lavender white
 (`#f7f6fb`): a deeper green (`#087a46`) that carries white text, the violet `#7c3aed`,
-Breeze's light icons and its own wallpaper. `patina theme mode light` switches to it,
+Papirus Light with folders in that green, and its own wallpaper. `patina theme mode light` switches to it,
 `patina theme mode dark` back; the choice is kept for every later `patina theme set`.
 The boot menu, the installer, the Plasma splash and the login screen stay dark in
 either mode: the marks are made for a dark ground.

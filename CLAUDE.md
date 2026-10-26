@@ -58,10 +58,11 @@ packs. Audience: developers and privacy-minded users in the EU.
   wordmark in Sora, all from Debian's archive. The mark is text: a summit drawn as
   contour rings with the letters of patina (i, t, n, a), the word itself as the summit
   line and the survey point ▲. `branding/logo.txt` holds it for fastfetch and the
-  console, `branding/wordmark.txt` the name in block letters for `patina help`, the
-  install questions and the README; `branding/wordmark.svg` sets the mark beside
-  patina for screens, `icon.svg` and `icon-small.svg` are the mark as large and
-  small icons. The brand's colours (deep violet, violet, lavender, white, and green
+  console, `branding/wordmark.txt` the name in block letters for `patina help` and
+  the install questions; `branding/wordmark.svg` sets the mark beside patina for
+  screens and the README's header, `icon.svg` and `icon-small.svg` are the mark as
+  large and small icons. The desktop's icons are Papirus as Debian ships it, its
+  folders recoloured to the theme's accent by the renderer. The brand's colours (deep violet, violet, lavender, white, and green
   for the ▲) are aurora's and do not follow a theme.
   The desktop's shape is a floating centred bar as on Windows 11 and new windows
   centred at one size; all are knobs in `defaults/settings.yaml`. No automatic tiling
@@ -129,7 +130,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `branding/` | the marks as data: `logo.txt` (the mark) and `wordmark.txt` (the name in block letters) are what scripts print, `wordmark.svg` (the mark typeset beside patina), `icon.svg` and `icon-small.svg` what screens show |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
 | `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `system/` the system tuning files |
-| `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, one `apply.sh`) and the headless session the desktop workflow screenshots (`screenshot.sh`); `plasma/` first; `terminal/` renders the terminal and its tools for every desktop |
+| `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, Plasma's `icons.yaml` for the folder colours of an icon theme, one `apply.sh`) and the headless session the desktop workflow screenshots (`screenshot.sh`); `plasma/` first; `terminal/` renders the terminal and its tools for every desktop |
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
 | `devices/` | the only place for device- or architecture-specific files |

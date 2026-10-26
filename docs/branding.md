@@ -17,7 +17,8 @@ The mark is text: a summit drawn as contour rings with the letters of patina, i 
 foot, then t, n and a, the word itself as the summit line and the survey point ▲ beside
 it. `logo.txt` holds it as plain text for the fastfetch greeting, the live image's and
 the installed system's console and the first-boot screen. `wordmark.txt` holds the name
-in block letters for `patina help`, the install questions and the README.
+in block letters for `patina help` and the install questions; the README's header
+shows `wordmark.svg`.
 `wordmark.svg` sets the mark's characters in JetBrains Mono beside patina in Sora
 ExtraBold; that lockup is what screens show: the live image's boot menu, the installer,
 the login screen and the Plasma splash. `icon.svg` is the mark in a square for large

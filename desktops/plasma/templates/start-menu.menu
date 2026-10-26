@@ -1,0 +1,8 @@
+<!DOCTYPE Menu PUBLIC "-//freedesktop//DTD Menu 1.0//EN"
+ "http://www.freedesktop.org/standards/menu-spec/1.0/menu.dtd">
+<!-- patina: the start menu's own folders, from start_menu in defaults/settings.yaml.
+     Merged into the applications menu; `patina theme set` overwrites this file. -->
+<Menu>
+  <Name>Applications</Name>
+${MENU_FOLDERS}
+</Menu>

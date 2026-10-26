@@ -26,16 +26,6 @@ All notable changes to patina are documented here. The format follows
   violet keywords in the terminal and in code. A migration renders the theme already
   set once more.
 
-### Changed
-
-- The README's screenshots show aurora: the installer's welcome page and the desktop,
-  taken by CI from the commit that made it the default.
-- The marks take aurora's colours: the rings deep violet, violet and lavender, the
-  word white, the survey point ▲ green, in `wordmark.svg`, the icons, the terminal
-  greeting and `patina help`.
-- The cursor and the active tab in kitty, focus and hover in Plasma's colour scheme
-  follow the theme's accent and second colour in every theme.
-
 - The terminal tools follow the theme. A new renderer, `desktops/terminal/`, runs for
   every desktop before the desktop's own: kitty and the fastfetch greeting move there
   from the Plasma renderer, btop gets a theme file from the palette, neovim a colour
@@ -74,8 +64,40 @@ All notable changes to patina are documented here. The format follows
   It runs on pull requests that change the look and by hand; the README shows its amd64
   picture from `docs/screenshots/`.
 
+- A start menu of patina's own: the patina mark as its button, AI and self-hosting
+  first. Two folders, AI (the agent, Claude Desktop) and Self-hosting (Nextcloud,
+  Element, Euro-Office, Thunderbird, KeePassXC), and the same apps, then kitty and Zed,
+  ahead of Plasma's favourites in a grid (`start_menu` in `defaults/settings.yaml`).
+  An existing bar gets the new button with `patina theme set <name> --layout`.
+
+### Fixed
+
+- A first login shows the theme's wallpaper: the panel layout sets it, since Plasma
+  does not take it from the look-and-feel package then.
+- The desktop takes the theme's colours. The renderer set the colour scheme's name but
+  left copying its colours to `plasma-apply-colorscheme`, which does nothing for a name
+  already set and nothing at all without a display, so title bars, the bar and KDE's
+  apps stayed in Breeze's blue and light grey. The colours now go into `kdeglobals`
+  key by key, and a palette change or a mode switch arrives too.
+- The installer's welcome page shows the wordmark in Sora with its mark intact: it gets
+  a rendering of `wordmark.svg` instead of the SVG, which Calamares drew without its
+  fonts.
+- The README's header shows the typeset wordmark; the block letters fell apart in the
+  fonts browsers use for code.
+
 ### Changed
 
+- aurora's icons are Papirus (Papirus Light in the light mode), with its folders and
+  the file manager's icon recoloured to the theme's accent by the renderer
+  (`desktops/plasma/icons.yaml`); its monochrome icons follow the colour scheme. A
+  migration installs `papirus-icon-theme` and renders the theme again.
+- The README's screenshots show aurora: the installer's welcome page and the desktop,
+  taken by CI from the commit that made it the default.
+- The marks take aurora's colours: the rings deep violet, violet and lavender, the
+  word white, the survey point ▲ green, in `wordmark.svg`, the icons, the terminal
+  greeting and `patina help`.
+- The cursor and the active tab in kitty, focus and hover in Plasma's colour scheme
+  follow the theme's accent and second colour in every theme.
 - The name is patina, without the 21. Everything follows: the clone at
   `~/.local/share/patina`, state in `~/.local/state/patina`, the system files, units
   and generated files named `patina-*`, the installer's branding, and the screen

@@ -61,7 +61,9 @@ compose() {   # compose <template> <out.png>: fill the template, render it over 
 # Calamares: the marks, the wallpaper behind every page, the slides, the stylesheet, and
 # the sidebar colours and the version in branding.desc.
 say "rendering the installer's branding"
-cp "$repo/branding/wordmark.svg" "$branding/logo.svg"
+# The welcome page's wordmark as a picture: Calamares draws SVG with Qt, which knows
+# neither Sora nor the spacing of the mark's rings, so it gets the rsvg rendering.
+cp "$tmp/logo.png" "$branding/logo.png"
 cp "$repo/branding/icon-small.svg" "$branding/logo-square.svg"
 compose calamares/wallpaper.svg "$branding/wallpaper.png"
 compose calamares/slide-1.svg "$branding/slide-1.png"

@@ -141,6 +141,12 @@ Log out and back in once, then:
 - [ ] the desktop: the glowing contour map on black, aurora's colour scheme (green
   selections and focus, violet hover), a floating bar centred at the
   bottom with the launcher and the pinned files, browser and terminal in the middle
+- [ ] the start menu: the patina dots as its button; the AI and Self-hosting folders
+  among the categories; the favourites start with Nextcloud, Element, Euro-Office,
+  Thunderbird, KeePassXC (and the agent and Claude Desktop with the agents bundle)
+- [ ] no Breeze blue or light grey anywhere: title bars and the bar dark, Dolphin's
+  folders and its own icon green, tray and toolbar icons in the palette's colours
+  (Papirus)
 - [ ] fonts: Source Sans 3 in menus and titles, JetBrains Mono in terminals
 - [ ] a new window (Dolphin, Thunderbird) opens centred at about 70% of the screen
 - [ ] animations are noticeably shorter than stock Plasma's

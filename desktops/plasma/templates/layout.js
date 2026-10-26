@@ -11,7 +11,15 @@ panel.hiding = "none";
 panel.height = 2 * Math.ceil(gridUnit * 2.5 / 2);
 
 panel.addWidget("org.kde.plasma.panelspacer");
-panel.addWidget("org.kde.plasma.kickoff");
+// The start menu: the patina mark as its button, the favourites as a grid (AI and
+// self-hosting first, from kicker-extra-favoritesrc), quiet power buttons.
+var kickoff = panel.addWidget("org.kde.plasma.kickoff");
+kickoff.currentConfigGroup = ["General"];
+kickoff.writeConfig("icon", "${LAUNCHER_ICON}");
+kickoff.writeConfig("favoritesDisplay", 0);
+kickoff.writeConfig("applicationsDisplay", 1);
+kickoff.writeConfig("showActionButtonCaptions", false);
+kickoff.writeConfig("switchCategoryOnHover", true);
 var tasks = panel.addWidget("org.kde.plasma.icontasks");
 tasks.currentConfigGroup = ["General"];
 tasks.writeConfig("launchers", [${PINNED_LAUNCHERS}]);
@@ -21,7 +29,13 @@ panel.addWidget("org.kde.plasma.systemtray");
 panel.addWidget("org.kde.plasma.digitalclock");
 panel.addWidget("org.kde.plasma.showdesktop");
 
+// The theme's wallpaper: a first login takes the look-and-feel package's layout but not
+// its wallpaper, so the script sets it on every desktop.
 var desktops = desktopsForActivity(currentActivity());
 for (var i = 0; i < desktops.length; i++) {
   desktops[i].wallpaperPlugin = "org.kde.image";
+  if ("${WALLPAPER_PACKAGE}" !== "") {
+    desktops[i].currentConfigGroup = ["Wallpaper", "org.kde.image", "General"];
+    desktops[i].writeConfig("Image", "file://${WALLPAPER_PACKAGE}");
+  }
 }

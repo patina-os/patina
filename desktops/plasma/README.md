@@ -12,7 +12,15 @@ Files, from `templates/`, each named after the theme:
 
 - a Plasma colour scheme, `~/.local/share/color-schemes/patina-<theme>.colors`, with
   the theme's accent (`accent`, `base0E` by default) as the accent, selection and
-  focus colour and its second colour (`accent_alt`) for hover
+  focus colour and its second colour (`accent_alt`) for hover. Its colours are also
+  copied key by key into `kdeglobals` (below), where Plasma, KWin's title bars and
+  every KDE app read them
+- for an icon theme named in `icons.yaml` (Papirus, aurora's), an icon theme of its
+  own, `~/.local/share/icons/patina-<theme>/`: it inherits that icon theme and holds
+  only its folder icons and the file manager's, recoloured to the accent (the accent,
+  80 % and 35 % of it in place of the icon theme's blues), and the session uses it.
+  The icon theme's monochrome icons follow the colour scheme already. Without the
+  icon theme installed the renderer falls back to Breeze and says so
 - a Konsole colour scheme and profile under `~/.local/share/konsole/`, made the default
   profile in `konsolerc`
 - one Plasma wallpaper package per image under `~/.local/share/wallpapers/`; an SVG is
@@ -36,10 +44,22 @@ Files, from `templates/`, each named after the theme:
 - the panel layout in that package (`contents/layouts/org.kde.plasma.desktop-layout.js`)
   when `panel.layout` is `centered`: one bar at the bottom with the launcher and the
   icons-only task manager in the middle, the tray and the clock at the right, the apps
-  behind `panel.pinned` pinned. Plasma runs it for a session that has no panels yet, so
-  the image's first login starts with it; the first `patina install` inside a session
-  applies it too (Path A finds Plasma's stock bar there). Afterwards the panels are the
-  user's: only `patina theme set <name> --layout` replaces them again
+  behind `panel.pinned` pinned. The start menu (Kickoff) gets the patina mark as its
+  button (`branding/icon-small.svg`, copied to `~/.local/share/patina/launcher.svg` so
+  it stays when the theme changes), its favourites as a grid and quiet power buttons;
+  every desktop gets the theme's wallpaper, which a first login would not take from the
+  package. Plasma runs it for a session that has no panels yet, so the image's first
+  login starts with it; the first `patina install` inside a session applies it too
+  (Path A finds Plasma's stock bar there). Afterwards the panels are the user's: only
+  `patina theme set <name> --layout` replaces them again
+- the start menu's folders, from `start_menu` in `defaults/settings.yaml`: one
+  directory entry each under `~/.local/share/desktop-directories/patina-<id>.directory`
+  and `~/.config/menus/applications-merged/patina-start-menu.menu`, which fills them;
+  a folder shows the apps of its list that are installed. The menu cache is rebuilt
+  (`kbuildsycoca6`) when they change. The favourites, the folders' apps and then
+  `start_menu.favorites` as far as they are installed, go into `kicker-extra-favoritesrc`
+  (`Prepend`, a `;`-list): Kickoff puts them before Plasma's own favourites in every new
+  start menu (the first login, `--layout`)
 - with the agents bundle: `~/.local/share/applications/patina-agent.desktop`, which
   opens the command `agent` of `defaults/settings.yaml` in the agent's kitty profile;
   removed again when the bundle is not installed
@@ -51,7 +71,10 @@ Files, from `templates/`, each named after the theme:
 
 Settings, through `kwriteconfig6`, each written only when it differs:
 
-- `kdeglobals`: colour scheme, accent colour, fonts from `defaults/settings.yaml`,
+- `kdeglobals`: colour scheme and every colour of it (`plasma-apply-colorscheme` would
+  copy them only with a display and never for a scheme whose name is already set, so
+  a palette change or a mode switch would not arrive), accent colour, fonts from
+  `defaults/settings.yaml`,
   look-and-feel package, widget style, icon theme; `kcminputrc` the cursor theme,
   `plasmarc` the desktop theme, `kscreenlockerrc` the wallpaper for the lock screen
 - the speed settings of `defaults/settings.yaml`: `AnimationDurationFactor`, KWin's
@@ -84,9 +107,9 @@ disagree on a colour.
 ## Reload
 
 Inside a running Plasma session the renderer calls `plasma-apply-lookandfeel`,
-`plasma-apply-colorscheme`, `plasma-apply-cursortheme` and `plasma-apply-wallpaperimage`,
-so colours, cursor and wallpaper change at once, and asks KWin over D-Bus to reload its
-settings. `--layout` adds `--resetLayout`, which replaces the user's panels with the
+`plasma-apply-cursortheme` and `plasma-apply-wallpaperimage`, tells the running apps
+over D-Bus that the palette changed (`KGlobalSettings.notifyChange`), so colours,
+cursor and wallpaper change at once, and asks KWin over D-Bus to reload its settings. `--layout` adds `--resetLayout`, which replaces the user's panels with the
 theme's layout. Shortcuts are read at login; the renderer says so. Outside a session (first boot, a container) everything
 applies at the next login through the look-and-feel package.
 
