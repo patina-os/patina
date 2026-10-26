@@ -96,8 +96,8 @@ sudo iso/live/build.sh arm64            # on an arm64 machine
 ```
 
 `build.sh` calls `assets.sh`, which renders everything the image shows from the data:
-`branding/logo.txt` into `/etc/issue.d`, `branding/wordmark.svg` and `icon-small.svg` into the
-installer's branding, the default theme's wallpapers under a veil as the installer's
+`branding/logo.txt` into `/etc/issue.d`, `branding/wordmark.svg` (as a PNG) and
+`icon-small.svg` into the installer's branding, the default theme's wallpapers under a veil as the installer's
 background, three slides, the splash of the boot menu, and the templates under
 `live/templates/` (the Calamares stylesheet, the GRUB theme, the openbox theme) with the
 palette of `themes/<default>/theme.yaml` and the fonts of `defaults/settings.yaml`,
@@ -180,7 +180,8 @@ release, never edited.
 ## Still to verify
 
 - The look on a screen, listed under the release gate above: Calamares scales
-  `logo-square.svg` to 80x80 and `logo.svg` on the welcome page; `productWallpaper`
+  `logo-square.svg` to 80x80 and `logo.png` (the wordmark rendered with `rsvg-convert`,
+  since Qt's SVG renderer lacks its fonts and spacing) on the welcome page; `productWallpaper`
   tiles on screens larger than 1920x1080 (if it looks wrong, the veiled wallpaper goes
   and `#mainApp`'s background stays); the stylesheet over Fusion on Calamares' own
   widgets (the partition bars keep Calamares' colours by design); GRUB's `crop` scaling

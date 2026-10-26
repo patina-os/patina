@@ -1,0 +1,5 @@
+[Desktop Entry]
+# patina: a folder of the start menu, from start_menu in defaults/settings.yaml.
+Type=Directory
+Name=${FOLDER_NAME}
+Icon=${FOLDER_ICON}

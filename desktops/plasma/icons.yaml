@@ -1,0 +1,21 @@
+# Icon themes whose folders the renderer recolours to the theme's accent, as Debian
+# ships them. `variant` is the folder colour the icon theme's own folder icons point at
+# (Papirus: folder.svg -> folder-blue.svg, user-home.svg -> user-blue-home.svg);
+# `colors` maps that variant's colours to shades of the accent: `accent` itself,
+# `shade` (the back of a folder, 80 %) and `deep` (the pictograms on it, 35 %).
+# `icons` names other icons that are folders drawn in the same blue (context/name),
+# each with its own colours; other apps' artwork is left alone. The renderer writes
+# ~/.local/share/icons/patina-<theme>/, which inherits the icon theme and holds only
+# the recoloured icons; an icon theme not named here is used as it is.
+Papirus-Dark: &papirus
+  variant: blue
+  colors:
+    "#5294e2": accent
+    "#4877b1": shade
+    "#1d344f": deep
+  icons:
+    apps/org.kde.dolphin:     # the file manager's own icon, a blue folder
+      "#127bdc": accent
+      "#1f6394": shade
+Papirus-Light: *papirus
+Papirus: *papirus

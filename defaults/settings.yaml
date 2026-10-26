@@ -22,3 +22,25 @@ panel:
   layout: centered           # centered: launcher and task icons in the middle; plasma: stock bar
   floating: true             # true: Plasma's floating bar; false: edge to edge
   pinned: [files, browser, terminal]   # actions of keybindings.yaml pinned to the bar, in order
+# The start menu (Kickoff on Plasma): the patina mark as its button, AI and
+# self-hosting first. Each folder becomes a folder of the menu and its apps open the
+# favourites, in order, followed by `favorites`. Apps are desktop entries; favourites
+# not installed are left out, the folders show whatever is installed.
+start_menu:
+  folders:
+    - id: ai
+      name: AI
+      icon: folder-code
+      apps:
+        - patina-agent.desktop                         # the agent CLI (agents bundle)
+        - claude-desktop.desktop
+    - id: self-hosting
+      name: Self-hosting
+      icon: folder-network
+      apps:
+        - com.nextcloud.desktopclient.nextcloud.desktop
+        - im.riot.Riot.desktop                         # Element, on your Matrix server
+        - nextcloud-office-nextcloudoffice.desktop     # Euro-Office
+        - thunderbird.desktop
+        - org.keepassxc.KeePassXC.desktop
+  favorites: [kitty.desktop, dev.zed.Zed.desktop]

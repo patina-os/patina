@@ -78,7 +78,12 @@ kdel() {
 # The .desktop file an action of defaults/keybindings.yaml launches, through
 # actions.yaml; empty (with a warning) when the action has none or it is not installed.
 service_installed() {
-  [[ -f "$data/applications/$1" || -f /usr/share/applications/$1 || -f /usr/local/share/applications/$1 ]]
+  local d
+  for d in "$data/applications" /usr/share/applications /usr/local/share/applications \
+      "$data/flatpak/exports/share/applications" /var/lib/flatpak/exports/share/applications; do
+    [[ -f "$d/$1" ]] && return 0
+  done
+  return 1
 }
 service_for_action() {
   local action="$1" service
@@ -196,6 +201,73 @@ if [[ -n "$login_dir" && -f "$login_dir/contents/images/3840x2160.png" ]]; then
   fi
 fi
 
+# Icons: an icon theme of desktops/plasma/icons.yaml gets its folders in the accent. The
+# renderer writes a small icon theme, patina-<theme>, that inherits it and holds only
+# its folder icons, recoloured; the session then uses that one. The icon theme's
+# monochrome icons follow the colour scheme already (FollowsColorScheme).
+icons_base="${tpl[ICONS]}"
+icons_dir="$data/icons/patina-$theme"
+variant="$(yq eval ".[\"$icons_base\"].variant // \"\"" "$here/icons.yaml")"
+if [[ -n "$variant" && -f "/usr/share/icons/$icons_base/index.theme" ]]; then
+  # The sed expressions that swap the colours of a map in icons.yaml (a yq path) for
+  # shades of the accent: the accent, 80 % of it, 35 % of it.
+  recolour_args() {
+    local from role p hex="${tpl[ACCENT]}"
+    sed_args=()
+    while IFS=$'\t' read -r from role; do
+      case "$role" in
+        accent) p=100 ;;
+        shade) p=80 ;;
+        deep) p=35 ;;
+        *) warn "icons.yaml: unknown role '$role'"; continue ;;
+      esac
+      sed_args+=(-e "s/$from/$(printf '#%02x%02x%02x' $((0x${hex:1:2} * p / 100)) \
+        $((0x${hex:3:2} * p / 100)) $((0x${hex:5:2} * p / 100)))/gI")
+    done < <(yq eval "$1 | to_entries | .[] | [.key, .value] | @tsv" "$here/icons.yaml")
+  }
+  out="$tmp/icons"
+  # Every folder icon of the icon theme that points at the variant, under its own name,
+  # with the variant's colours swapped for the accent's.
+  recolour_args ".[\"$icons_base\"].colors"
+  for places in /usr/share/icons/"$icons_base"/*/places; do
+    mapfile -t links < <(find -H "$places" -maxdepth 1 -type l \
+      \( -lname "folder-$variant*.svg" -o -lname "user-$variant*.svg" \))
+    [[ ${#links[@]} -gt 0 ]] || continue
+    size="$(basename "$(dirname "$places")")"
+    mkdir -p "$out/$size/places"
+    cp -L "${links[@]}" "$out/$size/places/"
+    sed -i "${sed_args[@]}" "$out/$size/places"/*.svg
+  done
+  # The other folder drawings icons.yaml names, in every size, with their own colours.
+  while IFS= read -r icon; do
+    recolour_args ".[\"$icons_base\"].icons[\"$icon\"]"
+    for f in /usr/share/icons/"$icons_base"/*/"$icon".svg; do
+      [[ -e "$f" ]] || continue
+      rel="${f#/usr/share/icons/"$icons_base"/}"
+      mkdir -p "$out/$(dirname "$rel")"
+      sed "${sed_args[@]}" "$f" > "$out/$rel"
+    done
+  done < <(yq eval ".[\"$icons_base\"].icons // {} | keys | .[]" "$here/icons.yaml")
+  # Its index: the icon theme's own directories, its name, and the icon theme first in
+  # line for everything that is not a folder.
+  sed -e "s/^Name=.*/Name=patina ${tpl[DISPLAY_NAME]}/" \
+    -e "s/^Comment=.*/Comment=$icons_base with folders in the accent of ${tpl[DISPLAY_NAME]}/" \
+    -e "s/^Inherits=/Inherits=$icons_base,/" "/usr/share/icons/$icons_base/index.theme" > "$out/index.theme"
+  if ! diff -rq "$out" "$icons_dir" > /dev/null 2>&1; then
+    say "writing $icons_dir ($icons_base, folders in the accent)"
+    rm -rf "$icons_dir"
+    mkdir -p "$(dirname "$icons_dir")"
+    mv "$out" "$icons_dir"
+    changed
+  fi
+  tpl[ICONS]="patina-$theme"
+elif [[ -n "$variant" ]]; then
+  warn "icon theme $icons_base is not installed (papirus-icon-theme in the desktop bundle); using breeze-dark"
+  tpl[ICONS]=breeze-dark
+  [[ "${tpl[VARIANT]}" == light ]] && tpl[ICONS]=breeze
+fi
+drop_other_themes "$data/icons/patina-*" "$icons_dir"
+
 # The look-and-feel package: Plasma's own way to hand a new session its colours,
 # icons, cursors and wallpaper at once, so a fresh user gets the theme at first login.
 tpl[WALLPAPER_PACKAGE]="${wallpaper_dir:+$wallpaper_dir/}"
@@ -229,6 +301,50 @@ fi
 tpl[PATINA_PATH]="$PATINA_PATH"
 render "$templates/keys.desktop" "$tmp/keys.desktop"
 put "$tmp/keys.desktop" "$data/applications/patina-keys.desktop"
+
+# The start menu's folders (start_menu in defaults/settings.yaml): one directory entry
+# each and a menu file merged into the applications menu that fills them. Its button is
+# the patina mark (branding/icon-small.svg, the size for a bar), in a place that stays
+# when the theme changes.
+put "$PATINA_PATH/branding/icon-small.svg" "$data/patina/launcher.svg"
+tpl[LAUNCHER_ICON]="$data/patina/launcher.svg"
+menu_changes=$changes
+folders=""
+directories=" "
+while IFS=$'\t' read -r id name icon; do
+  tpl[FOLDER_NAME]="$name"
+  tpl[FOLDER_ICON]="$icon"
+  render "$templates/start-menu.directory" "$tmp/folder.directory"
+  put "$tmp/folder.directory" "$data/desktop-directories/patina-$id.directory"
+  directories="$directories$data/desktop-directories/patina-$id.directory "
+  printf -v folders '%s  <Menu>\n    <Name>patina-%s</Name>\n    <Directory>patina-%s.directory</Directory>\n    <Include>\n' \
+    "$folders" "$id" "$id"
+  while IFS= read -r app; do
+    printf -v folders '%s      <Filename>%s</Filename>\n' "$folders" "$app"
+  done < <(yq eval ".start_menu.folders[] | select(.id == \"$id\") | .apps[]" "$settings")
+  printf -v folders '%s    </Include>\n  </Menu>\n' "$folders"
+done < <(yq eval '.start_menu.folders[]? | [.id, .name, .icon] | @tsv' "$settings")
+for f in "$data"/desktop-directories/patina-*.directory; do
+  [[ -e "$f" && "$directories" != *" $f "* ]] || continue
+  say "removing $f (not in start_menu)"
+  rm -f "$f"
+  changed
+done
+tpl[MENU_FOLDERS]="${folders%$'\n'}"
+render "$templates/start-menu.menu" "$tmp/start-menu.menu"
+put "$tmp/start-menu.menu" "$config/menus/applications-merged/patina-start-menu.menu"
+# Its favourites: the folders' apps in order, then the extra ones, each only when
+# installed. Kicker prepends them, as a ;-list, to the favourites of every new start menu.
+favorites=""
+while IFS= read -r app; do
+  service_installed "$app" || continue
+  favorites="$favorites${favorites:+;}$app"
+done < <(yq eval '.start_menu.folders[]?.apps[], .start_menu.favorites[]?' "$settings")
+# The menu cache follows on its own in a session (kded); a rebuild now makes the
+# folders appear at once and costs nothing outside one.
+if [[ $changes -gt $menu_changes ]] && command -v kbuildsycoca6 > /dev/null; then
+  kbuildsycoca6 > /dev/null 2>&1 || warn "kbuildsycoca6 failed; the menu's folders appear at the next login"
+fi
 
 finish() {
   if [[ $changes -eq 0 ]]; then
@@ -267,6 +383,46 @@ fi
 
 font="${tpl[UI_FONT]},10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
 kset kdeglobals ColorScheme "patina-$theme" General
+# The colours themselves. Plasma, KWin's title bars and every KDE app read them from
+# kdeglobals, not from the scheme file. plasma-apply-colorscheme would copy them, but
+# it needs a display and does nothing for a scheme whose name is already set, so a
+# first install, a palette change and a mode switch never arrived. Every key of the
+# rendered scheme is copied here instead, each only when it differs; [General] keeps
+# the scheme's own name keys.
+colour_keys=0
+groups=()
+header=""
+# What kdeglobals holds now, read once (group line, a tab, key=value), so only the keys
+# that differ cost a kreadconfig6.
+declare -A have=()
+if [[ -f "$config/kdeglobals" ]]; then
+  while IFS= read -r line; do
+    have["$line"]=1
+  done < <(awk '/^\[/ { g = $0; next } /=/ { print g "\t" $0 }' "$config/kdeglobals")
+fi
+while IFS= read -r line; do
+  if [[ "$line" == "["*"]" ]]; then
+    header="$line"
+    section="${line:1:${#line}-2}"   # Colors:Header][Inactive is two nested groups
+    groups=()
+    while [[ "$section" == *"]["* ]]; do
+      groups+=(--group "${section%%"]["*}")
+      section="${section#*"]["}"
+    done
+    groups+=(--group "$section")
+  elif [[ "$line" == *=* && "${groups[1]:-}" != General && -z "${have["$header"$'\t'"$line"]:-}" ]]; then
+    key="${line%%=*}"
+    value="${line#*=}"
+    if [[ "$(kreadconfig6 --file kdeglobals "${groups[@]}" --key "$key")" != "$value" ]]; then
+      kwriteconfig6 --file kdeglobals "${groups[@]}" --key "$key" "$value"
+      colour_keys=$((colour_keys + 1))
+    fi
+  fi
+done < "$tmp/colors"
+if [[ $colour_keys -gt 0 ]]; then
+  say "kdeglobals: the colours of patina-$theme ($colour_keys keys)"
+  changed
+fi
 kset kdeglobals AccentColor "${tpl[ACCENT_RGB]}" General
 kset kdeglobals accentColorFromWallpaper false General
 kset kdeglobals font "$font" General
@@ -281,6 +437,11 @@ kset kdeglobals Theme "${tpl[ICONS]}" Icons
 kset kcminputrc cursorTheme "${tpl[CURSORS]}" Mouse
 kset plasmarc name "${tpl[DESKTOP_THEME]}" Theme
 kset konsolerc DefaultProfile "patina-$theme.profile" "Desktop Entry"
+if [[ -n "$favorites" ]]; then
+  kset kicker-extra-favoritesrc Prepend "$favorites" General
+else
+  kdel kicker-extra-favoritesrc Prepend General
+fi
 kset ksplashrc Theme "org.patina.$theme" KSplash
 kset ksplashrc Engine KSplashQML KSplash
 if [[ -n "$wallpaper_dir" ]]; then
@@ -421,8 +582,11 @@ if [[ $in_session -eq 1 ]]; then
     dbus-send --session --dest=org.kde.KWin /KWin org.kde.KWin.reconfigure 2> /dev/null ||
       warn "KWin did not reload its settings; they apply at the next login"
   fi
-  command -v plasma-apply-colorscheme > /dev/null &&
-    { plasma-apply-colorscheme "patina-$theme" > /dev/null || warn "plasma-apply-colorscheme failed"; }
+  # Running apps repaint when told the palette changed (KGlobalSettings, PaletteChanged).
+  if [[ $colour_keys -gt 0 ]] && command -v dbus-send > /dev/null; then
+    dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange \
+      int32:0 int32:0 2> /dev/null || warn "the running apps were not told about the new colours"
+  fi
   command -v plasma-apply-cursortheme > /dev/null &&
     { plasma-apply-cursortheme "${tpl[CURSORS]}" > /dev/null || warn "plasma-apply-cursortheme failed"; }
   if [[ -n "$wallpaper_dir" ]] && command -v plasma-apply-wallpaperimage > /dev/null; then

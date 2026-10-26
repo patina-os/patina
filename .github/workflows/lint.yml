@@ -73,12 +73,12 @@ jobs:
       - name: The mark and the wordmark have exactly one copy each
         run: |
           # Scripts print branding/logo.txt and wordmark.txt; nothing else may carry
-          # them (CLAUDE.md, "Never"). The README shows the wordmark as its header;
-          # docs/design/ keeps design pages as they were shown, the marks included.
+          # them (CLAUDE.md, "Never"). docs/design/ keeps design pages as they were
+          # shown, the marks included.
           status=0
           for mark in branding/logo.txt branding/wordmark.txt; do
             line="$(sed -n 2p "$mark")"
-            copies="$(git grep -l -F "$line" -- . ':!branding/' ':!README.md' ':!docs/design/' \
+            copies="$(git grep -l -F "$line" -- . ':!branding/' ':!docs/design/' \
               || true)"
             if [[ -n "$copies" ]]; then
               echo "$mark copied into: $copies"

@@ -1,17 +1,6 @@
 # patina
 
-```text
-            █▌  ▲
- ▄▄▟▙▖ ▄█▙▖▗█▙▄▗▄▄▗▄▟█▖ ▗▟█▄
- ██▀▜█ ▀▀▜█▝█▛▀▝▜█▐█▛▜█ ▝▀▀█▌
- █▌ ▐█ ▄███ █▌  ▐█▐█ ▐█ ▗▟██▌
- █▙ ▟█▗█▌▐█ ▜▙  ▐█▐█ ▐█ ▟█ █▌
- █▛██▛ ██▛█ ▝██ ▐█▐█ ▐█ ▐██▜▌
- █▌
- ▀▘
-⢄⣀⡀   ⢀⣀⡠⠤⠤⠒⠒⠒⠒⠢⠤⢄⣀⣀   ⢀⣀⣀⠤⠤⠒
-  ⠈⢉⣉⡩⠥⠔⠒⠒⠒⠒⠤⠤⣀⡀    ⠉⣉⣉⠥⠔⠒⠒⠒⠒
-```
+![patina: the summit mark beside the name](branding/wordmark.svg)
 
 Themes, consistency across apps, curated defaults, agent CLIs and a free-software,
 EU-sovereign app stack on top of Debian stable with Plasma. Not a distribution.

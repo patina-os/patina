@@ -6,16 +6,17 @@ themselves.
 ```text
 branding/
   logo.txt        the mark, in text: fastfetch, the console, the first-boot screen
-  wordmark.txt    the name in block letters: patina help, the install questions, README
-  wordmark.svg    the mark typeset beside patina, the mark of screens
+  wordmark.txt    the name in block letters: patina help, the install questions
+  wordmark.svg    the mark typeset beside patina, the mark of screens and the README
   icon.svg        the mark typeset in a square, for icons of 96 px and up
   icon-small.svg  the mark as dots, for 80 px and below
 ```
 
 The mark is the summit; the wordmark is the name. Terminals show the mark where there is
 room beside other text (the fastfetch greeting) or no font to trust (the console), and
-the wordmark where the name leads (`patina help`, the install questions, the README).
-Screens show the lockup of mark and name. In running text the name stays `patina`.
+the wordmark where the name leads (`patina help`, the install questions). Screens and
+the README's header show the lockup of mark and name. In running text the name stays
+`patina`.
 
 ## logo.txt, the mark
 
@@ -72,7 +73,9 @@ columns and 10 lines.
 - Unicode on purpose: quadrant blocks (U+2580–259F), braille (U+2800–28FF) and the ▲.
   Terminal fonts carry them; the Linux console may not, which is why the console shows
   `logo.txt` instead.
-- Where it appears: `patina help`, the install questions, the README header.
+- Where it appears: `patina help` and the install questions. Not in the README: the
+  fonts a browser uses for code lack the quadrant and braille characters, so the
+  letters fall apart there; the README shows `wordmark.svg` instead.
 - Print it with `print_wordmark` from `bin/lib.sh` (same `auto` and `always`): the
   letters white, the ▲ green, the upper line violet and the lower one deep violet.
 

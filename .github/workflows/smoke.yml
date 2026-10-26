@@ -105,6 +105,31 @@ jobs:
           test ! -e "$data/wallpapers/patina-zz-copy-$wallpaper"
           test ! -e "$HOME/.config/nvim/colors/patina-zz-copy.lua"
           [[ "$(scheme)" == "patina-$theme" ]]
+      - name: The colours, the icons and the start menu rendered
+        # The scheme's colours are in kdeglobals (where Plasma reads them, not only in
+        # the scheme file), the icon theme of the theme carries its folders in the
+        # accent, and the start menu has its button, folders and favourites.
+        run: |
+          theme="$(yq eval '.theme' defaults/settings.yaml)"
+          t="themes/$theme/theme.yaml"
+          data="$HOME/.local/share"
+          rgb() { printf '%d,%d,%d' "0x${1:1:2}" "0x${1:3:2}" "0x${1:5:2}"; }
+          window="$(kreadconfig6 --file kdeglobals --group Colors:Window --key BackgroundNormal)"
+          [[ "$window" == "$(rgb "$(yq eval '.palette.base01' "$t")")" ]]
+          wm="$(kreadconfig6 --file kdeglobals --group WM --key activeBackground)"
+          [[ "$wm" == "$window" ]]
+          [[ "$(kreadconfig6 --file kdeglobals --group Icons --key Theme)" == "patina-$theme" ]]
+          accent="$(yq eval '.palette[.accent]' "$t")"
+          grep -qi "$accent" "$data/icons/patina-$theme/64x64/places/folder.svg"
+          test -s "$data/patina/launcher.svg"
+          layout="$data/plasma/look-and-feel/org.patina.$theme/contents/layouts/org.kde.plasma.desktop-layout.js"
+          grep -qF "$data/patina/launcher.svg" "$layout"
+          test -s "$HOME/.config/menus/applications-merged/patina-start-menu.menu"
+          for id in $(yq eval '.start_menu.folders[].id' defaults/settings.yaml); do
+            test -s "$data/desktop-directories/patina-$id.directory"
+          done
+          prepend="$(kreadconfig6 --file kicker-extra-favoritesrc --group General --key Prepend)"
+          [[ "$prepend" == *thunderbird.desktop* ]]
       - name: The light mode switches and switches back
         # The default theme carries a light palette: the mode turns the terminal and the
         # wallpaper light, the splash and the login screen stay dark, a second run
@@ -207,7 +232,7 @@ jobs:
           cp -r iso/live/config "$build/"
           iso/live/assets.sh "$build"
           b="$build/config/includes.chroot/etc/calamares/branding/patina"
-          for f in logo.svg logo-square.svg wallpaper.png slide-1.png slide-2.png slide-3.png \
+          for f in logo.png logo-square.svg wallpaper.png slide-1.png slide-2.png slide-3.png \
               stylesheet.qss; do
             test -s "$b/$f"
           done
