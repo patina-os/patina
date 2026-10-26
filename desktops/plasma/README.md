@@ -17,14 +17,28 @@ Files, from `templates/`, each named after the theme:
   every KDE app read them
 - for an icon theme named in `icons.yaml` (Papirus, aurora's), an icon theme of its
   own, `~/.local/share/icons/patina-<theme>/`: it inherits that icon theme and holds
-  only its folder icons and the file manager's, recoloured to the accent (the accent,
-  80 % and 35 % of it in place of the icon theme's blues), and the session uses it.
-  The icon theme's monochrome icons follow the colour scheme already. Without the
-  icon theme installed the renderer falls back to Breeze and says so
+  only its folder icons, recoloured to the accent (the accent, 80 % and 35 % of it in
+  place of the icon theme's blues, following link chains such as inode-directory ->
+  folder -> folder-blue), and a monochrome glyph under the name of every app's icon
+  (`mono`: the Icon= of each installed desktop entry a menu shows, mapped to a glyph,
+  `other` for the rest; names the icon theme uses for folders or file types are left
+  alone), so the bar, the menu and the title bars are one colour, the colour scheme's
+  text colour. An app installed later gets its glyph at the next `patina theme set`.
+  The session uses this icon theme. Without the icon theme installed the renderer
+  falls back to Breeze and says so
+- with `start_menu.grain` above 0, a Plasma desktop theme of the theme's own,
+  `~/.local/share/plasma/desktoptheme/patina-<theme>/`: Breeze's four popup
+  backgrounds (`dialogs/background.svgz` and its translucent, opaque and solid forms)
+  with a 32 px noise tile in the text colour (`templates/grain.svg`, rendered to PNG
+  and embedded) laid at that opacity into their centre tile, which Plasma repeats, and
+  Breeze's `plasmarc`; every other element comes from Breeze. Plasma draws all panel
+  popups from that background, so the start menu, the calendar and the tray share the
+  grain
 - a Konsole colour scheme and profile under `~/.local/share/konsole/`, made the default
   profile in `konsolerc`
-- one Plasma wallpaper package per image under `~/.local/share/wallpapers/`; an SVG is
-  rendered with `rsvg-convert` at 3840x2160 and only again when the theme's file is newer;
+- one Plasma wallpaper package per image under `~/.local/share/wallpapers/`; an SVG or a
+  JPEG is rendered to PNG with `rsvg-convert` at 3840x2160 (a JPEG through an SVG that
+  embeds it) and only again when the theme's file is newer;
   in the theme's other mode that mode's wallpapers come first and the theme's own follow
 - a look-and-feel package, `~/.local/share/plasma/look-and-feel/org.patina.<theme>/`,
   whose `defaults` name the colour scheme, icons, cursors, desktop theme, decoration,

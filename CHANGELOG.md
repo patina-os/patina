@@ -70,6 +70,15 @@ All notable changes to patina are documented here. The format follows
   ahead of Plasma's favourites in a grid (`start_menu` in `defaults/settings.yaml`).
   An existing bar gets the new button with `patina theme set <name> --layout`.
 
+- One colour for every app: aurora's icon theme puts a monochrome Papirus glyph in the
+  text colour in place of each app's icon (a terminal, a cloud, a key; a generic one
+  for apps without a glyph of their own), in the bar, the start menu and the title
+  bars (`mono` in `desktops/plasma/icons.yaml`).
+- A slight grain on the start menu and the other panel popups (`start_menu.grain`, 6 %
+  by default), from a small Plasma desktop theme over Breeze that replaces only the
+  popup backgrounds.
+- Wallpapers may be JPEG; the renderer and the image build turn them into PNG.
+
 ### Fixed
 
 - A first login shows the theme's wallpaper: the panel layout sets it, since Plasma
@@ -87,6 +96,9 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- aurora's wallpaper is a Google DeepMind visualisation from Pexels (`deepmind.jpg`,
+  under the Pexels licence, credited in the theme's README), the one third-party
+  wallpaper; the glowing contour map is the second.
 - aurora's icons are Papirus (Papirus Light in the light mode), with its folders and
   the file manager's icon recoloured to the theme's accent by the renderer
   (`desktops/plasma/icons.yaml`); its monochrome icons follow the colour scheme. A

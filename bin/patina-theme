@@ -136,8 +136,8 @@ install_theme() {
     fi
   done
   while IFS= read -r rel; do
-    [[ "$rel" =~ ^wallpapers/[A-Za-z0-9._-]+\.(svg|png)$ && "$rel" != *..* ]] ||
-      die "wallpaper '$rel' must be an .svg or .png directly under wallpapers/"
+    [[ "$rel" =~ ^wallpapers/[A-Za-z0-9._-]+\.(svg|png|jpg)$ && "$rel" != *..* ]] ||
+      die "wallpaper '$rel' must be an .svg, .png or .jpg directly under wallpapers/"
     [[ -f "$src/$rel" && ! -L "$src/$rel" ]] || die "wallpaper '$rel' is not in $url"
     cp "$src/$rel" "$out/$rel"
   done < <(yq eval '.wallpapers[]?, .dark.wallpapers[]?, .light.wallpapers[]?' "$src/theme.yaml")

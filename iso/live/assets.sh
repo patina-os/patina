@@ -42,9 +42,14 @@ sed 's/\\/\\\\/g' "$repo/branding/logo.txt" > "$chroot/etc/issue.d/10-patina.iss
 # them: the theme's first two wallpapers at 1920x1080 and the wordmark rasterised.
 mapfile -t wallpapers < <(yq eval '.wallpapers[]?' "$theme_dir/theme.yaml")
 [[ ${#wallpapers[@]} -gt 0 ]] || { echo "assets.sh: the theme has no wallpaper" >&2; exit 65; }
-raster() {   # raster <svg-or-png> <out.png>: a theme wallpaper at 1920x1080
+raster() {   # raster <svg-png-or-jpg> <out.png>: a theme wallpaper at 1920x1080
   case "$1" in
     *.svg) rsvg-convert --width 1920 --height 1080 --output "$2" "$1" ;;
+    *.jpg)   # a photograph, through an SVG that holds it
+      printf '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1920" height="1080"><image width="1920" height="1080" preserveAspectRatio="xMidYMid slice" xlink:href="data:image/jpeg;base64,%s"/></svg>\n' \
+        "$(base64 -w0 "$1")" > "$tmp/photo.svg"
+      rsvg-convert --width 1920 --height 1080 --output "$2" "$tmp/photo.svg"
+      ;;
     *) cp "$1" "$2" ;;
   esac
 }

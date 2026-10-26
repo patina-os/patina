@@ -98,9 +98,11 @@ GTK and Flatpak apps, the install questions, the terminal greeting and the tools
 terminal (btop, neovim, bat, fzf, lazygit, eza, starship) all take their colours from
 the theme's palette; the words are set in Source Sans 3, the details in
 JetBrains Mono, the wordmark in Sora. The default theme is aurora, made for OLED
-screens: true black, neon green as the accent and violet as the second colour, with a
-contour map that glows green at its summit and turns violet towards the edges. It is
-dark by default; `patina theme mode light` switches it to its light palette and
+screens: true black, neon green as the accent and violet as the second colour, a
+Google DeepMind visualisation from Pexels as the wallpaper and a contour map that glows
+green to violet as the second. Every app's icon is a monochrome glyph in one colour,
+the folders are green, and the start menu (the patina mark, AI and self-hosting first)
+and the other popups carry a slight grain. It is dark by default; `patina theme mode light` switches it to its light palette and
 `patina theme mode dark` back. The mark is text, a summit shaded with the letters of
 patina in violet with a green survey point, so the terminal and the screens show the
 same one. datum (graphite, ice and coral around a contour map) and amethyst, the first

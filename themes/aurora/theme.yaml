@@ -1,12 +1,13 @@
 # aurora: the default patina theme, made for OLED. True black, neon green as the accent
-# and violet as the second colour, with a contour map that glows green at the summit and
-# turns violet towards the edges. Dark by default, with a light mode (`light:` below).
+# and violet as the second colour; a Google DeepMind visualisation from Pexels as the
+# wallpaper and a contour map that glows green to violet as the second. Dark by
+# default, with a light mode (`light:` below).
 # Desktop-agnostic data; desktops/<desktop>/ renders it.
 name: aurora
 display_name: Aurora
 author: patina contributors
 license: GPL-3.0-or-later      # the theme data
-artwork_license: CC-BY-SA-4.0  # the wallpapers under wallpapers/
+artwork_license: LicenseRef-Pexels AND CC-BY-SA-4.0  # the photo; the SVGs (README.md)
 variant: dark
 
 # The desktop's accent and its second colour, as palette keys: green for selections,
@@ -36,6 +37,7 @@ palette:
 # Images relative to this directory; the first one is the default. SVG files are
 # rendered by the desktop renderer at apply time; nothing rendered is committed.
 wallpapers:
+  - wallpapers/deepmind.jpg      # Google DeepMind on Pexels, the one third-party wallpaper
   - wallpapers/contour.svg
 
 # Per-desktop hints, still data.
