@@ -1,9 +1,18 @@
-# patina
+<h1 align="center">
+  <img src="branding/wordmark.svg" alt="patina" width="540">
+</h1>
 
-![patina: the summit mark beside the name](branding/wordmark.svg)
+<p align="center">
+  <a href="https://github.com/patina21/patina/actions/workflows/smoke.yml"><img src="https://github.com/patina21/patina/actions/workflows/smoke.yml/badge.svg?branch=main" alt="smoke test"></a>
+  <a href="https://github.com/patina21/patina/actions/workflows/lint.yml"><img src="https://github.com/patina21/patina/actions/workflows/lint.yml/badge.svg?branch=main" alt="lint"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licence-GPL--3.0--or--later-3cff9d?labelColor=0b0a10" alt="licence: GPL-3.0-or-later"></a>
+  <a href="https://www.debian.org/releases/trixie/"><img src="https://img.shields.io/badge/based%20on-Debian%2013%20trixie-b77dff?labelColor=0b0a10" alt="based on Debian 13 trixie"></a>
+</p>
 
-Themes, consistency across apps, curated defaults, agent CLIs and a free-software,
-EU-sovereign app stack on top of Debian stable with Plasma. Not a distribution.
+<p align="center">
+  Themes, consistency across apps, curated defaults, agent CLIs and a free-software,
+  EU-sovereign app stack on top of Debian stable with Plasma. Not a distribution.
+</p>
 
 **Status: pre-alpha.** `patina install` installs the app stack and the system tuning on
 Debian 13 and renders the default theme, aurora, into Plasma's configuration (checked in
@@ -18,8 +27,9 @@ QEMU, Calamares as Debian 13 ships it, branded through data):
 ![The patina installer's welcome page](docs/screenshots/installer-amd64.png)
 
 The finished desktop, as the `desktop` workflow captures it in CI (amd64, a Plasma X11
-session on a virtual framebuffer after `patina install`): the centred bar and kitty with
-the fastfetch greeting, in aurora, the default theme.
+session on a virtual framebuffer after `patina install`): aurora, the default theme,
+with its wallpaper, the centred bar of one-colour icons, and kitty with the fastfetch
+greeting.
 
 ![The patina desktop with the aurora theme](docs/screenshots/desktop-amd64.png)
 

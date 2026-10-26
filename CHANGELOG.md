@@ -104,7 +104,9 @@ All notable changes to patina are documented here. The format follows
   (`desktops/plasma/icons.yaml`); its monochrome icons follow the colour scheme. A
   migration installs `papirus-icon-theme` and renders the theme again.
 - The README's screenshots show aurora: the installer's welcome page and the desktop,
-  taken by CI from the commit that made it the default.
+  taken by CI, now with the DeepMind wallpaper, the one-colour icons and the
+  installer's wordmark in Sora. Its header centres the wordmark and shows the status
+  of the smoke and lint workflows, the licence and the Debian base as badges.
 - The marks take aurora's colours: the rings deep violet, violet and lavender, the
   word white, the survey point ▲ green, in `wordmark.svg`, the icons, the terminal
   greeting and `patina help`.
