@@ -33,6 +33,11 @@ All notable changes to patina are documented here. The format follows
   with Allow once, Always and Deny. Upstream recipes gain a `git` method for it: a
   tagged release installed by its own install script.
 
+### Changed
+
+- kitty keeps its text 10 points off the window's edges and its background a little
+  more see-through (98% on top of the windows' own opacity); the text stays opaque.
+
 ## [0.1.0-alpha.1] - 2026-10-26
 
 The first alpha, for testers. It covers Path A only: Debian 13 with Plasma, `git clone`
