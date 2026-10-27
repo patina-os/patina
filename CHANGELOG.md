@@ -10,10 +10,12 @@ All notable changes to patina are documented here. The format follows
 
 - An AI agent as part of the install. `patina install` asks after the bundles, and
   the image's installer has a page of its own for it: opencode with a model on this
-  machine (the default; Ollama, the largest Qwen 3.5 that fits the memory), with a
-  cloud provider you pick (Mistral and other European providers first; the key stays
-  in opencode's login), or none. `PATINA_AI` and `PATINA_AI_PROVIDER` answer it for
-  unattended runs, the answer is kept for the next run, and `patina doctor` shows it.
+  machine (the default; Ollama with a model you pick from those that fit the memory,
+  Nemotron 3.5 Bolt E4B recommended from 16 GB and Ministral 3 3B below, Ministral 3
+  8B and 14B and Qwen 3.5 offered too), with a cloud provider you pick (Mistral and
+  other European providers first; the key stays in opencode's login), or none.
+  `PATINA_AI`, `PATINA_AI_MODEL` and `PATINA_AI_PROVIDER` answer it for unattended
+  runs, the answer is kept for the next run, and `patina doctor` shows it.
   It reads freely and asks before it changes a file, runs a command or reaches a
   server, and `defaults/agent.md` tells it how a patina desktop is changed. Meta+A
   opens it without the agents bundle now.

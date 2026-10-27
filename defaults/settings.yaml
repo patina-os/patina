@@ -13,10 +13,16 @@ agent: opencode              # what the `agent` keybinding opens (needs an AI or
 # with their `ai` key; the answer is kept in the state directory, PATINA_AI overrides.
 ai:
   mode: local                # local | cloud | none; preselected, and taken when unattended
-  local:                     # Ollama on this machine: the first model whose memory fits
-    models:
-      - {min_memory_gb: 16, model: "qwen3.5"}      # the 9b, about 7 GB
-      - {min_memory_gb: 0, model: "qwen3.5:4b"}    # about 4 GB
+  local:                     # Ollama on this machine: the models that fit the memory are
+    models:                  # offered in this order, the first that fits is recommended
+      - model: "nemotron-3.5-bolt:e4b"
+        min_memory_gb: 16
+        name: "Nemotron 3.5 Bolt E4B · NVIDIA · made for agents · 8 GB"
+      - {model: "ministral-3:3b", min_memory_gb: 0, name: "Ministral 3 3B · Mistral · 3 GB"}
+      - {model: "ministral-3:8b", min_memory_gb: 12, name: "Ministral 3 8B · Mistral · 6 GB"}
+      - {model: "ministral-3:14b", min_memory_gb: 20, name: "Ministral 3 14B · Mistral · 9 GB"}
+      - {model: "qwen3.5", min_memory_gb: 16, name: "Qwen 3.5 9B · Alibaba · 7 GB"}
+      - {model: "qwen3.5:4b", min_memory_gb: 8, name: "Qwen 3.5 4B · Alibaba · 4 GB"}
   cloud:                     # offered in this order; `model` is opencode's provider/model,
     providers:               # without one opencode picks the provider's default
       - {id: mistral, name: "Mistral (EU · France)", model: "mistral/mistral-large-latest"}

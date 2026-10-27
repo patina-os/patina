@@ -62,7 +62,8 @@ script -q -c 'patina install' ~/run1.log
 - [ ] the questions appear: the wordmark, the version line, the theme (aurora offered
   first), the app bundles (desktop preselected, agents not), the AI agent (local
   preselected; answer local on a VM with 8 GB or more, the model is a few GB, else
-  cloud or none and note it), a summary, a yes
+  cloud or none and note it), for local the model (the ones that fit the VM's memory,
+  Nemotron 3.5 Bolt E4B first from 16 GB, Ministral 3 3B below), a summary, a yes
 - [ ] sudo asks for the password and nothing else does; no command fails
 - [ ] it ends with `done: N changes`, and `git -C ~/.local/share/patina status --short` is
   empty (nothing written into the checkout)

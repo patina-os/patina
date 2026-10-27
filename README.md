@@ -177,9 +177,11 @@ the local backend the agent tools point at.
 computer, one from a cloud provider, or none. Both agents are
 [opencode](https://opencode.ai), free software:
 
-- **local** (the default): Ollama runs the model on your machine, the largest of
-  `ai.local.models` in `defaults/settings.yaml` that fits your memory (Qwen 3.5, 9B
-  from 16 GB, 4B below). Nothing leaves the computer.
+- **local** (the default): Ollama runs the model on your machine. Setup offers the
+  models of `ai.local.models` in `defaults/settings.yaml` that fit your memory and
+  recommends one: NVIDIA's Nemotron 3.5 Bolt E4B, made for agents, from 16 GB, and
+  Mistral's Ministral 3 3B below that. Ministral 3 8B and 14B and Qwen 3.5 4B and 9B
+  are the others. Nothing leaves the computer.
 - **cloud**: a provider you pick, Mistral and other European providers first, then
   Anthropic and OpenAI. You log in with `opencode auth login`; the key stays in
   opencode's own login, patina never sees it.

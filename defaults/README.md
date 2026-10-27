@@ -17,8 +17,9 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   start menu (its folders, AI and self-hosting, its favourites as desktop entries,
   and the grain on it and the other popups), all as desktop-agnostic words the renderer
   translates. Under `ai`, the AI agent: the answer preselected and taken unattended
-  (`mode`: local, cloud or none), the Ollama models by the memory they need (the first
-  that fits is pulled) and the cloud providers in the order they are offered, each with
+  (`mode`: local, cloud or none), the Ollama models offered, in order, each with the
+  memory it needs and its name in the question (the first that fits is recommended,
+  and taken when unattended) and the cloud providers in the order they are offered, each with
   opencode's `provider/model` where patina picks one.
 - `apps.yaml`: settings `patina install` merges into applications' own configuration
   files (Zed with telemetry and AI off, opencode pointed at Ollama and asking before
