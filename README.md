@@ -26,13 +26,16 @@ help; see the [roadmap](docs/roadmap.md).
 ## The agent in the command palette
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/patina-os/kortex/main/docs/demo/kortex-demo.gif" alt="kortex in KRunner: a question answered, then a theme switch that waits for Allow once" width="720">
+  <img src="https://raw.githubusercontent.com/patina-os/kortex/main/docs/demo/kortex-demo.gif" alt="kortex in KRunner: a question answered, then PhotoCraft installed in two steps, each waiting for Allow once" width="720">
 </p>
 
 Meta+Space, `ai` and what you want: [kortex](https://github.com/patina-os/kortex), patina's
 KRunner runner, hands the request to the AI agent and shows the answer right in the
 command palette, and every action the agent wants to take as its own line with Allow
-once, Always and Deny. Nothing runs before you choose. The agent is
+once, Always and Deny. Nothing runs before you choose. Above, `ai install photocraft`:
+the agent knows PhotoCraft comes with the ArtCraft Launcher, patina's `artcraft`
+bundle, asks before it runs `patina install --bundles artcraft`, and asks again before
+it opens the launcher, where you pick PhotoCraft. The agent is
 [opencode](https://opencode.ai), free software, with a model on your machine by default;
 [The AI agent](#the-ai-agent) says more.
 
@@ -54,17 +57,18 @@ windows: kitty split in two, the fastfetch greeting beside btop.
 
 ![The patina desktop with the aurora theme](docs/screenshots/desktop-amd64.png)
 
-The start menu: the patina mark as its button, the AI and self-hosting folders first,
-then the favourites, here with the opt-in ArtCraft Launcher.
+The command palette in the same session, in the middle of the empty desktop:
+`ai install photocraft`, kortex's answer through a real `opencode serve`, and the
+agent's request to run `patina install --bundles artcraft`, waiting for Allow once,
+Always or Deny. The model is kortex's scripted demo model, since CI has none to run.
 
-![The patina start menu with the AI and self-hosting folders and the ArtCraft Launcher](docs/screenshots/start-menu-amd64.png)
+![KRunner with kortex in the middle of the desktop: the agent asks before it installs the artcraft bundle for PhotoCraft](docs/screenshots/command-palette-amd64.png)
 
-The command palette in the same session: `ai switch to the light theme`, kortex's
-answer through a real `opencode serve`, and the agent's request to run `patina theme
-mode light`, waiting for Allow once, Always or Deny. The model is kortex's scripted
-demo model, since CI has none to run.
+The start menu in aurora's light mode (`patina theme mode light`): full screen and
+centred, the patina mark as its button in the bar, the AI and self-hosting folders
+first, then the favourites.
 
-![KRunner with kortex: the agent's answer and an action waiting for Allow once](docs/screenshots/command-palette-amd64.png)
+![The patina start menu, full screen and centred, in the light mode](docs/screenshots/start-menu-amd64.png)
 
 ## What it is
 
@@ -168,8 +172,9 @@ JetBrains Mono, the wordmark in Sora. The default theme is aurora, made for OLED
 screens: true black, neon green as the accent and violet as the second colour, a
 Google DeepMind visualisation from Pexels as the wallpaper and a contour map that glows
 green to violet as the second. Every app's icon is a monochrome glyph in one colour,
-the folders are green, and the start menu (the patina mark, AI and self-hosting first)
-and the other popups carry a slight grain. It is dark by default; `patina theme mode light` switches it to its light palette and
+the folders are green, the start menu opens full screen and centred (the patina mark
+as its button, AI and self-hosting first), and the popups carry a slight grain. It is
+dark by default; `patina theme mode light` switches it to its light palette and
 `patina theme mode dark` back. The mark is text, a summit shaded with the letters of
 patina in violet with a green survey point, so the terminal and the screens show the
 same one. datum (graphite, ice and coral around a contour map) and amethyst, the first

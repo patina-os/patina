@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # The finished desktop as pictures: a Plasma X11 session on a virtual framebuffer (Xvfb,
-# software OpenGL), the theme applied inside it, then the start menu, the desktop with
-# kitty split in two (the greeting and btop) and, when asked, the command palette with
-# the agent's answer. No GPU and no login needed. The source of the desktop images in
-# docs/screenshots/.
+# software OpenGL), the theme applied inside it, then the desktop with kitty split in two
+# (the greeting and btop), when asked the command palette with the agent's answer on the
+# empty desktop, and the start menu in the theme's light mode. No GPU and no login
+# needed. The source of the desktop images in docs/screenshots/.
 set -euo pipefail
 
 usage() {
@@ -14,10 +14,12 @@ usage: screenshot.sh <dir>
 Run as the user the layer is installed for (patina install), on a machine or in a
 container with Plasma: Xvfb, startplasma-x11, scrot, kitty, fastfetch, fish, btop,
 dbus-run-session and dbus-send. No display or login is needed. Writes into <dir>:
-  start-menu.png       the start menu, open as Meta opens it
   desktop.png          kitty split in two, the greeting beside btop
   command-palette.png  KRunner on the agent's answer to PATINA_SHOT_ASK, through
-                       kortex; only when PATINA_SHOT_ASK is set and kortex installed
+                       kortex, on the empty desktop; only when PATINA_SHOT_ASK is set
+                       and kortex installed
+  start-menu.png       the start menu, open as Meta opens it, in the light mode (the
+                       mode the desktop had is set again afterwards)
 Environment:
   PATINA_SHOT_ASK      a request for the agent, typed after ai in KRunner (default none)
   PATINA_SHOT_SIZE     the virtual screen, WIDTHxHEIGHT (default 1920x1080)
@@ -52,7 +54,7 @@ grab() {
 # environment is the one a Plasma login sets, so the renderer sees a session
 # (XDG_CURRENT_DESKTOP, the bus) and Qt draws on X.
 session() {
-  local dir="$1" waited=0 theme session_pid split kitty_pid
+  local dir="$1" waited=0 theme session_pid split kitty_pid query mode
   export XDG_SESSION_TYPE=x11 XDG_CURRENT_DESKTOP=KDE KDE_FULL_SESSION=true \
     KDE_SESSION_VERSION=6 DESKTOP_SESSION=plasmax11 QT_QPA_PLATFORM=xcb
   startplasma-x11 &
@@ -79,16 +81,6 @@ session() {
   # The Welcome Center a first login opens would show through the windows.
   pkill -u "$(id -u)" -x plasma-welcome || true
 
-  # The start menu on the empty desktop, opened as Meta opens it, and closed again the
-  # same way.
-  dbus-send --session --type=method_call --dest=org.kde.plasmashell /PlasmaShell \
-    org.kde.PlasmaShell.activateLauncherMenu
-  sleep 5
-  grab "$dir" start-menu
-  dbus-send --session --type=method_call --dest=org.kde.plasmashell /PlasmaShell \
-    org.kde.PlasmaShell.activateLauncherMenu
-  sleep 2
-
   # One kitty window split in two: the greeting on the left, btop on the right, its
   # graphs refreshed four times a second so they fill before the grab. fastfetch asks
   # kitty for its version and reads the reply itself; give kitty a moment to finish its
@@ -101,41 +93,54 @@ session() {
   sleep "$settle"
   grab "$dir" desktop
   rm -f "$split"
-
-  [[ -n "${PATINA_SHOT_ASK:-}" ]] || return 0
-  if [[ ! -f "${XDG_DATA_HOME:-$HOME/.local/share}/krunner/dbusplugins/kortex.desktop" ]]; then
-    echo "screenshot: PATINA_SHOT_ASK is set but kortex is not installed (an AI bundle)" >&2
-    return 1
-  fi
   kill "$kitty_pid" 2> /dev/null || true
   sleep 2
-  # What Enter on kortex's "Ask the agent" match does: kortex sends the request to the
-  # agent and opens KRunner on the conversation (ai ›), which it keeps current. The
-  # match's id is "ask", the unit separator and the request.
-  dbus-send --session --print-reply --reply-timeout=60000 --dest="$kortex" /runner \
-    org.kde.krunner1.Run "string:ask"$'\x1f'"$PATINA_SHOT_ASK" string: > /dev/null
-  # Done once the conversation shows an action that waits for Allow once, Always or
-  # Deny, or an answer and no agent still at work; asked as KRunner asks.
-  waited=0
-  until dbus-send --session --print-reply --reply-timeout=30000 --dest="$kortex" /runner \
-    org.kde.krunner1.Match 'string:ai ›' 2> /dev/null | grep -q 'string "Allow '; do
-    if (( waited >= wait_s )); then
-      echo "screenshot: the agent asked for nothing within ${wait_s}s; the conversation as it stands" >&2
-      break
-    fi
+
+  if [[ -n "${PATINA_SHOT_ASK:-}" ]]; then
+    # The command palette on the empty desktop. What Enter on kortex's "Ask the agent"
+    # match does: kortex sends the request to the agent and opens KRunner on the
+    # conversation (ai ›), which it keeps current. The match's id is "ask", the unit
+    # separator and the request.
+    dbus-send --session --print-reply --reply-timeout=60000 --dest="$kortex" /runner \
+      org.kde.krunner1.Run "string:ask"$'\x1f'"$PATINA_SHOT_ASK" string: > /dev/null
+    # Done once the conversation shows an action that waits for Allow once, Always or
+    # Deny, or an answer and no agent still at work; asked as KRunner asks.
+    waited=0
+    until dbus-send --session --print-reply --reply-timeout=30000 --dest="$kortex" /runner \
+      org.kde.krunner1.Match 'string:ai ›' 2> /dev/null | grep -q 'string "Allow '; do
+      if (( waited >= wait_s )); then
+        echo "screenshot: the agent asked for nothing within ${wait_s}s; the conversation as it stands" >&2
+        break
+      fi
+      sleep 2
+      waited=$((waited + 2))
+    done
+    # Those Match calls told kortex the conversation is on screen as it stands, so it
+    # sees no news to show. KRunner asks again only for a query that differs from the
+    # one it shows: the list of conversations first, then the conversation.
+    for query in ai 'ai ›'; do
+      dbus-send --session --type=method_call --dest=org.kde.krunner /App \
+        org.kde.krunner.App.querySingleRunner string:kortex "string:$query"
+      sleep 2
+    done
+    sleep 5
+    grab "$dir" command-palette
+    pkill -u "$(id -u)" -x krunner || true
     sleep 2
-    waited=$((waited + 2))
-  done
-  # Those Match calls told kortex the conversation is on screen as it stands, so it
-  # sees no news to show. KRunner asks again only for a query that differs from the
-  # one it shows: the list of conversations first, then the conversation.
-  for query in ai 'ai ›'; do
-    dbus-send --session --type=method_call --dest=org.kde.krunner /App \
-      org.kde.krunner.App.querySingleRunner string:kortex "string:$query"
-    sleep 2
-  done
+  fi
+
+  # The start menu in the light mode, opened as Meta opens it; then the mode the desktop
+  # had, so a run on a real desktop leaves it as it was.
+  mode="$("$PATINA_PATH/bin/patina" theme mode)"
+  "$PATINA_PATH/bin/patina" theme mode light || true
+  sleep "$settle"
+  dbus-send --session --type=method_call --dest=org.kde.plasmashell /PlasmaShell \
+    org.kde.PlasmaShell.activateLauncherMenu
   sleep 5
-  grab "$dir" command-palette
+  grab "$dir" start-menu
+  dbus-send --session --type=method_call --dest=org.kde.plasmashell /PlasmaShell \
+    org.kde.PlasmaShell.activateLauncherMenu
+  "$PATINA_PATH/bin/patina" theme mode "$mode" || true
 }
 
 if [[ "${1:-}" == --session ]]; then
@@ -155,6 +160,10 @@ height="${BASH_REMATCH[2]}"
 for tool in Xvfb startplasma-x11 scrot kitty fastfetch fish btop dbus-run-session dbus-send; do
   command -v "$tool" > /dev/null || { echo "screenshot: $tool missing" >&2; exit 69; }
 done
+if [[ -n "${PATINA_SHOT_ASK:-}" && ! -f "${XDG_DATA_HOME:-$HOME/.local/share}/krunner/dbusplugins/kortex.desktop" ]]; then
+  echo "screenshot: PATINA_SHOT_ASK is set but kortex is not installed (an AI bundle)" >&2
+  exit 69
+fi
 # A runtime directory of this user's own; a login gives one, a container does not.
 if [[ -z "${XDG_RUNTIME_DIR:-}" || ! -w "${XDG_RUNTIME_DIR:-}" ]]; then
   XDG_RUNTIME_DIR="$(mktemp -d)"

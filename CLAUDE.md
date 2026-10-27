@@ -88,8 +88,10 @@ packs. Audience: developers and privacy-minded users in the EU.
   see-through; the start menu and the other panel popups carry a
   slight grain. The brand's colours (deep violet, violet, lavender, white, and green
   for the ▲) are aurora's and do not follow a theme.
-  The desktop's shape is a floating centred bar as on Windows 11 and new windows
-  centred at one size; all are knobs in `defaults/settings.yaml`. No automatic tiling
+  The desktop's shape is a floating centred bar as on Windows 11, new windows
+  centred at one size, the command palette in the middle of the screen and the start
+  menu full screen and centred (Plasma's Application Dashboard, October 2026); all are
+  knobs in `defaults/settings.yaml`. No automatic tiling
   on Plasma: that would need a KWin script Debian does not package; a tiling desktop
   is the Hyprland add-on.
 - Speed: the system tuning CachyOS ships as configuration (zram, I/O schedulers, memory

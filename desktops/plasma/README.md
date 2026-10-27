@@ -60,8 +60,8 @@ Files, from `templates/`, each named after the theme:
 - the panel layout in that package (`contents/layouts/org.kde.plasma.desktop-layout.js`)
   when `panel.layout` is `centered`: one bar at the bottom with the launcher and the
   icons-only task manager in the middle, the tray and the clock at the right, the apps
-  behind `panel.pinned` pinned. The start menu (Kickoff, a menu above its button; the
-  Application Dashboard, full screen and centred, for `start_menu.style: dashboard`)
+  behind `panel.pinned` pinned. The start menu (the Application Dashboard, full screen and
+  centred; Kickoff, a menu above its button, for `start_menu.style: popup`)
   gets the patina mark as its button (`branding/icon-small.svg`, copied to
   `~/.local/share/patina/launcher.svg` so it stays when the theme changes), and in
   Kickoff its favourites as a grid and quiet power buttons;
@@ -137,25 +137,27 @@ applies at the next login through the look-and-feel package.
 
 ## The desktop as pictures
 
-`screenshot.sh <dir>` shows what the renderer produces without a machine to log in
-to: a Plasma X11 session on a virtual framebuffer (`Xvfb`, Mesa's software OpenGL, no
-GPU and no login), `plasmashell` in it, which runs the layout script as a first login
+`screenshot.sh <dir>` shows what the renderer produces without a machine to log in to:
+a Plasma X11 session on a virtual framebuffer (`Xvfb`, Mesa's software OpenGL, no GPU
+and no login), `plasmashell` in it, which runs the layout script as a first login
 does, then `patina theme set` once more inside that session (the live reload and the
 window rule, which needs a screen) and the Welcome Center closed. Then three grabs of
-the whole screen (`scrot`): `start-menu.png`, the start menu opened as Meta opens it
-(`activateLauncherMenu` over D-Bus); `desktop.png`, kitty split in two with the
-fastfetch greeting and btop; and, when `PATINA_SHOT_ASK` holds a request and an AI
-bundle installed kortex, `command-palette.png`: what Enter on kortex's "Ask the agent"
-does (its `Run` over D-Bus), KRunner opened by kortex on the conversation, grabbed
-once the agent asks for an action (Allow once, Always, Deny). It is the X11 session,
-not Wayland, because KWin's Wayland backend needs a DRM render node a GPU-less
-container does not have. Run it as the user the layer is installed for, on anything
-with Plasma installed; the `desktop` workflow runs it in a Debian 13 container after
-`patina install` with the artcraft bundle and the cloud agent, opencode pointed at
-kortex's scripted demo model, and `docs/screenshots/` keeps its pictures, copied from
-the workflow's artifact unchanged (`desktop-amd64.png`, `start-menu-amd64.png`,
-`command-palette-amd64.png`). `PATINA_SHOT_SIZE` sets the screen (1920x1080 by
-default); the session's output lands in `<dir>/session.log`.
+the whole screen (`scrot`): `desktop.png`, kitty split in two with the fastfetch
+greeting and btop; when `PATINA_SHOT_ASK` holds a request and an AI bundle installed
+kortex, `command-palette.png` on the empty desktop: what Enter on kortex's "Ask the
+agent" does (its `Run` over D-Bus), KRunner opened by kortex on the conversation,
+grabbed once the agent asks for an action (Allow once, Always, Deny); and
+`start-menu.png`, the start menu opened as Meta opens it (`activateLauncherMenu` over
+D-Bus) after `patina theme mode light`, the mode the desktop had set again afterwards.
+It is the X11 session, not Wayland, because KWin's Wayland backend needs a DRM render
+node a GPU-less container does not have. Run it as the user the layer is installed
+for, on anything with Plasma installed; the `desktop` workflow runs it in a Debian 13
+container after `patina install` with the cloud agent, opencode pointed at kortex's
+scripted demo model and `PATINA_SHOT_ASK` set to `install photocraft`, and
+`docs/screenshots/` keeps its pictures, copied from the workflow's artifact unchanged
+(`desktop-amd64.png`, `start-menu-amd64.png`, `command-palette-amd64.png`).
+`PATINA_SHOT_SIZE` sets the screen (1920x1080 by default); the session's output lands
+in `<dir>/session.log`.
 
 Tools it calls, all from Debian's archive: `kwriteconfig6`, `kreadconfig6`
 (`libkf6config-bin`, a dependency of every KDE app), `rsvg-convert` (`librsvg2-bin`, in

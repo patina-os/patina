@@ -24,7 +24,10 @@ Use the system's own tools, in this order:
 
 1. patina's commands for what patina owns: `patina theme set <name>`, `patina theme
    mode dark|light`, `patina theme list`, `patina keys`, `patina doctor`, `patina
-   update`. Never edit files under `~/.local/share/patina`.
+   update`, and its app bundles: `patina install --list` shows them, `patina install
+   --bundles <name>` adds one (artcraft brings the ArtCraft Launcher, which installs
+   PhotoCraft, WordCraft and the other ArtCraft apps). Never edit files under
+   `~/.local/share/patina`.
 2. Plasma's settings through `kwriteconfig6` and `kreadconfig6` (read first, write only
    what differs), or `systemsettings <module>` when the user should decide in the GUI.
 3. Packages: `sudo apt install <package>` from Debian's archive first, then

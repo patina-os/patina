@@ -3,10 +3,11 @@ name: desktop
 # The finished desktop as pictures, from Path A: `patina install` as a user in a stock
 # Debian 13 container with Plasma, then desktops/plasma/screenshot.sh runs a Plasma X11
 # session on a virtual framebuffer (Xvfb, software OpenGL, no GPU and no login), applies
-# the theme inside it and grabs the start menu, kitty with the greeting, and KRunner on
-# the agent's answer through kortex. The pictures are uploaded as an artifact; the ones
-# under docs/screenshots/ are copied from there, never edited. amd64 only: the smoke
-# workflow proves the layer on arm64 as well, and the desktop looks the same.
+# the theme inside it and grabs kitty with the greeting, KRunner on the agent's answer
+# through kortex, and the start menu in the light mode. The pictures are uploaded as an
+# artifact; the ones under docs/screenshots/ are copied from there, never edited. amd64
+# only: the smoke workflow proves the layer on arm64 as well, and the desktop looks the
+# same.
 
 on:
   workflow_dispatch:
@@ -17,7 +18,6 @@ on:
       - 'defaults/**'
       - 'branding/**'
       - 'manifest/bundles/desktop.yaml'
-      - 'manifest/bundles/artcraft.yaml'
       - 'manifest/bundles/ai-cloud.yaml'
       - '.github/workflows/desktop.yml'
 
@@ -64,23 +64,24 @@ jobs:
           dbus-daemon --system --fork
       - name: patina install, as that user
         # Path A as on a laptop: the backend's sudo is used, not dropped. The default
-        # bundles, the opt-in artcraft bundle for its place in the start menu, and the
-        # cloud agent, which brings opencode and kortex without a local model's
-        # gigabytes. The agents bundle stays out, as by default.
+        # bundle and the cloud agent, which brings opencode and kortex without a local
+        # model's gigabytes. The agents and artcraft bundles stay out, as by default:
+        # the command palette's picture asks the agent for PhotoCraft, which comes with
+        # artcraft.
         run: |
           sudo -u patina -H env PATINA_AI=cloud \
-            bin/patina install --unattended --bundles desktop,artcraft
+            bin/patina install --unattended --bundles desktop
       - name: The desktop as pictures
         # The command palette's picture needs an answer, and CI has no model to give
         # one: kortex's scripted demo model (docs/demo/demo_llm.py at a fixed commit,
         # the one that recorded kortex's README animation) stands in for the cloud
-        # provider in opencode's configuration. It answers a request to switch to the
-        # light theme by asking to run `patina theme mode light`, which waits for Allow
-        # once, Always or Deny. Everything else is real: kortex, opencode serve and
+        # provider in opencode's configuration. It answers a request to install
+        # PhotoCraft by asking to run `patina install --bundles artcraft`, which waits
+        # for Allow once, Always or Deny. Everything else is real: kortex, opencode serve and
         # KRunner. Into the user's home: a path the upload step reads unchanged inside
         # the container, which the runner's temp directory is not.
         env:
-          DEMO_MODEL: https://raw.githubusercontent.com/patina-os/kortex/f01bc042804914ad872d7ab51be08cf1acee1a76/docs/demo/demo_llm.py
+          DEMO_MODEL: https://raw.githubusercontent.com/patina-os/kortex/04878415fa59b92c490454ec393008300c8a72f4/docs/demo/demo_llm.py
         run: |
           mkdir -p /opt/kortex-demo
           curl -fsSL -o /opt/kortex-demo/demo_llm.py "$DEMO_MODEL"
@@ -96,7 +97,7 @@ jobs:
               "models": {"demo": {"name": "demo", "tool_call": true}}} |
             .model = "demo/demo" | .small_model = "demo/demo"
           ' /home/patina/.config/opencode/opencode.json
-          sudo -u patina -H env PATINA_SHOT_ASK='switch to the light theme' \
+          sudo -u patina -H env PATINA_SHOT_ASK='install photocraft' \
             desktops/plasma/screenshot.sh /home/patina/shots
       - name: Keep the screenshots and the session's log
         if: always()
