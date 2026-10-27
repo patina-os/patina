@@ -8,6 +8,7 @@ packages:
   - fonts-jetbrains-mono # fonts.monospace, the text mark and the wallpaper labels
   - fonts-sora           # the wordmark (branding/wordmark.svg) on the splash
   - papirus-icon-theme   # aurora's icons; the renderer recolours its folders to the accent
+  - plasma-widgets-addons  # the start menu's Application Dashboard (start_menu.style: dashboard)
   - nextcloud-desktop
   - thunderbird
   - keepassxc
