@@ -70,4 +70,7 @@ start_menu:
         - nextcloud-office-nextcloudoffice.desktop     # Euro-Office
         - thunderbird.desktop
         - org.keepassxc.KeePassXC.desktop
-  favorites: [kitty.desktop, dev.zed.Zed.desktop]
+  favorites:
+    - kitty.desktop
+    - dev.zed.Zed.desktop
+    - patina-artcraft-launcher.desktop                 # the ArtCraft Launcher (the artcraft bundle)

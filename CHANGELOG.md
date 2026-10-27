@@ -35,6 +35,8 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- With the artcraft bundle, the ArtCraft Launcher is among the start menu's
+  favourites, after kitty and Zed.
 - kitty keeps its text 10 points off the window's edges and its background a little
   more see-through (98% on top of the windows' own opacity); the text stays opaque.
 
