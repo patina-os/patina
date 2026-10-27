@@ -56,8 +56,11 @@ entry means checking the three maps too.
 
 `upstream.yaml` documents its methods at the top. Each recipe names what it leaves
 behind, so `patina install` can skip it and `patina doctor` can report it: the `command`
-on PATH (binary, script) or the `package` (npm, uv, apt-source). Everything lands in the
-user's `~/.local` except an `apt-source` recipe, which goes through the backend.
+on PATH (binary, script), the `package` (npm, uv, apt-source), or for a `git` recipe the
+`ref` it was installed at, recorded in the state directory (a new `ref` installs again).
+Everything lands in the user's `~/.local` except an `apt-source` recipe, which goes
+through the backend. The `git` method is for kortex, patina's own runner for KRunner: a
+tagged release, installed per user by the repository's own script.
 
 ## Sources, in order of preference
 

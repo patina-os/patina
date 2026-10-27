@@ -1,7 +1,8 @@
 # Tools installed from their upstream installers, used only when no packaged version is
 # worth using. Every entry names its `method` and, for the is-installed check, the
 # `command` it puts on PATH (binary, script) or the `package` it installs (npm, uv,
-# apt-source). Methods:
+# apt-source); a git recipe is checked by the `ref` recorded when it was installed.
+# Methods:
 #   npm         global package via the base's nodejs and npm, into ~/.local
 #   uv          Python tool via `uv tool install` (uv itself is the `uv` recipe)
 #   script      the upstream's documented install script (the only `curl | sh` allowed)
@@ -12,6 +13,10 @@
 #               then installed with apt; for opt-in tools, and for a default only when
 #               the software is free and neither Debian's archive nor Flathub carries it
 #               (Euro-Office). Only an apt base can run it.
+#   git         a tagged release of a repository: cloned at `ref` into the user's cache,
+#               installed per user by the repository's own `install` script, the clone
+#               removed again. The ref is recorded in the state directory, so a new
+#               `ref` here installs again on the next `patina install`
 # Checked against the upstreams in Phase 1 (docs/roadmap.md).
 yq:
   # Debian's `yq` package is the Python jq wrapper, not the Go yq the data format is
@@ -69,6 +74,15 @@ claude-desktop:
     components: main
   package: claude-desktop
   command: claude-desktop
+kortex:
+  # The AI agent in the command palette: `ai` and a request in KRunner. patina's own
+  # project, kept in a repository of its own because it is Python, which patina's
+  # tooling does not use; its install script puts it under ~/.local/share, no root.
+  # Needs python3-dbus and python3-gi, which the AI bundles list.
+  method: git
+  url: https://github.com/patina21/kortex.git
+  ref: v0.1.0
+  install: install.sh
 ollama:
   # Its installer sets up the ollama service; it asks for sudo itself. Ollama is the
   # local backend the agent tools point at (defaults/apps.yaml).

@@ -74,6 +74,10 @@ script -q -c 'patina install' ~/run1.log
   `opencode run "which Debian release is this?"` answers from it; asked to switch to
   the light theme, opencode asks before it runs `patina theme mode light`. With the
   cloud agent: `opencode auth login` came up for the provider picked
+- [ ] with either agent, after logging out and in: `ai hello` in KRunner (Meta+Space)
+  offers to ask the agent; Enter reopens KRunner on `ai ›` with the answer growing
+  there (note whether it reads well or jumps); `ai switch to the light theme` shows an
+  Allow / Always / Deny match before anything changes
 
 ## 5. The second run and the doctor
 

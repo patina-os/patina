@@ -17,6 +17,11 @@ All notable changes to patina are documented here. The format follows
   It reads freely and asks before it changes a file, runs a command or reaches a
   server, and `defaults/agent.md` tells it how a patina desktop is changed. Meta+A
   opens it without the agents bundle now.
+- The agent in the command palette: with either AI answer, `patina install` installs
+  [kortex](https://github.com/patina21/kortex) 0.1.0, so `ai` and a request in KRunner
+  (Meta+Space) asks the agent, shows the answer there and every action it wants to take
+  with Allow once, Always and Deny. Upstream recipes gain a `git` method for it: a
+  tagged release installed by its own install script.
 
 ## [0.1.0-alpha.1] - 2026-10-26
 
