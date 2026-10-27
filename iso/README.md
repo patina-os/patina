@@ -149,10 +149,12 @@ files.
 
 `docs/screenshots/` holds the screenshots the README shows: the installer screen is
 the boot test's own screenshot, copied from the `boot-test-amd64` artifact of the `iso`
-workflow run that built the release; the desktop is the `desktop` workflow's, copied
-from its `desktop-amd64` artifact (Path A in a Debian 13 container, then
+workflow run that built the release; the desktop, the start menu and the command
+palette are the `desktop` workflow's, copied from its `desktop-amd64` artifact with
+`-amd64` added to their names (Path A in a Debian 13 container, then
 `desktops/plasma/screenshot.sh`: a Plasma X11 session on a virtual framebuffer with
-kitty and the greeting in it). They are the one generated thing committed, refreshed for every
+the start menu open, kitty and the greeting, then KRunner on kortex's answer from a
+scripted model). They are the one generated thing committed, refreshed for every
 release, never edited.
 
 ## Rules

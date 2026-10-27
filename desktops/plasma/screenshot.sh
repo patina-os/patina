@@ -1,22 +1,29 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# The finished desktop as a picture: a Plasma X11 session on a virtual framebuffer (Xvfb,
-# software OpenGL), the theme applied inside it, kitty split in two with the greeting
-# and btop, one grab of the whole screen. No GPU and no login needed. The source of the desktop image in
+# The finished desktop as pictures: a Plasma X11 session on a virtual framebuffer (Xvfb,
+# software OpenGL), the theme applied inside it, then the start menu, the desktop with
+# kitty split in two (the greeting and btop) and, when asked, the command palette with
+# the agent's answer. No GPU and no login needed. The source of the desktop images in
 # docs/screenshots/.
 set -euo pipefail
 
 usage() {
   cat << USAGE
-usage: screenshot.sh <out.png>
+usage: screenshot.sh <dir>
 
 Run as the user the layer is installed for (patina install), on a machine or in a
 container with Plasma: Xvfb, startplasma-x11, scrot, kitty, fastfetch, fish, btop,
-dbus-run-session and dbus-send. No display or login is needed. Environment:
+dbus-run-session and dbus-send. No display or login is needed. Writes into <dir>:
+  start-menu.png       the start menu, open as Meta opens it
+  desktop.png          kitty split in two, the greeting beside btop
+  command-palette.png  KRunner on the agent's answer to PATINA_SHOT_ASK, through
+                       kortex; only when PATINA_SHOT_ASK is set and kortex installed
+Environment:
+  PATINA_SHOT_ASK      a request for the agent, typed after ai in KRunner (default none)
   PATINA_SHOT_SIZE     the virtual screen, WIDTHxHEIGHT (default 1920x1080)
   PATINA_SHOT_SETTLE   seconds for the shell, then the terminal, to be drawn (default 25)
-  PATINA_SHOT_WAIT     seconds to wait for plasmashell to come up (default 240)
-The session's output lands next to the picture, in <out.png>.log.
+  PATINA_SHOT_WAIT     seconds to wait for plasmashell, then for the agent (default 240)
+The session's output lands in <dir>/session.log.
 USAGE
 }
 
@@ -25,6 +32,7 @@ PATINA_PATH="${PATINA_PATH:-$(cd "$here/../.." && pwd)}"
 export PATINA_PATH
 settle="${PATINA_SHOT_SETTLE:-25}"
 wait_s="${PATINA_SHOT_WAIT:-240}"
+kortex=io.github.patina21.kortex
 
 # Is a name owned on the session bus? plasmashell owns org.kde.plasmashell once it runs.
 on_bus() {
@@ -32,12 +40,19 @@ on_bus() {
     org.freedesktop.DBus.NameHasOwner "string:$1" 2> /dev/null | grep -q 'boolean true'
 }
 
+# One grab of the whole screen into <dir>/<name>.png.
+grab() {
+  scrot --overwrite "$1/$2.png"
+  [[ -s "$1/$2.png" ]] || { echo "screenshot: scrot wrote nothing to $1/$2.png" >&2; return 1; }
+  echo "screenshot: written to $1/$2.png"
+}
+
 # The half that runs under the session bus: it starts the Plasma X11 session on the
-# framebuffer DISPLAY already names, applies the theme, opens the terminal and grabs the
-# screen. The environment is the one a Plasma login sets, so the renderer sees a session
+# framebuffer DISPLAY already names, applies the theme and takes the pictures. The
+# environment is the one a Plasma login sets, so the renderer sees a session
 # (XDG_CURRENT_DESKTOP, the bus) and Qt draws on X.
 session() {
-  local out="$1" waited=0 theme session_pid split
+  local dir="$1" waited=0 theme session_pid split kitty_pid
   export XDG_SESSION_TYPE=x11 XDG_CURRENT_DESKTOP=KDE KDE_FULL_SESSION=true \
     KDE_SESSION_VERSION=6 DESKTOP_SESSION=plasmax11 QT_QPA_PLATFORM=xcb
   startplasma-x11 &
@@ -63,6 +78,17 @@ session() {
   sleep 5
   # The Welcome Center a first login opens would show through the windows.
   pkill -u "$(id -u)" -x plasma-welcome || true
+
+  # The start menu on the empty desktop, opened as Meta opens it, and closed again the
+  # same way.
+  dbus-send --session --type=method_call --dest=org.kde.plasmashell /PlasmaShell \
+    org.kde.PlasmaShell.activateLauncherMenu
+  sleep 5
+  grab "$dir" start-menu
+  dbus-send --session --type=method_call --dest=org.kde.plasmashell /PlasmaShell \
+    org.kde.PlasmaShell.activateLauncherMenu
+  sleep 2
+
   # One kitty window split in two: the greeting on the left, btop on the right, its
   # graphs refreshed four times a second so they fill before the grab. fastfetch asks
   # kitty for its version and reads the reply itself; give kitty a moment to finish its
@@ -71,22 +97,49 @@ session() {
   printf '%s\n' 'layout splits' "launch fish -C 'sleep 3; fastfetch'" \
     'launch --location=vsplit --bias=58 btop --update 250' > "$split"
   kitty --session "$split" &
+  kitty_pid=$!
   sleep "$settle"
-  scrot --overwrite "$out"
+  grab "$dir" desktop
   rm -f "$split"
-  [[ -s "$out" ]] || { echo "screenshot: scrot wrote nothing to $out" >&2; return 1; }
-  echo "screenshot: written to $out"
+
+  [[ -n "${PATINA_SHOT_ASK:-}" ]] || return 0
+  if [[ ! -f "${XDG_DATA_HOME:-$HOME/.local/share}/krunner/dbusplugins/kortex.desktop" ]]; then
+    echo "screenshot: PATINA_SHOT_ASK is set but kortex is not installed (an AI bundle)" >&2
+    return 1
+  fi
+  kill "$kitty_pid" 2> /dev/null || true
+  sleep 2
+  # What Enter on kortex's "Ask the agent" match does: kortex sends the request to the
+  # agent and opens KRunner on the conversation (ai ›), which it keeps current. The
+  # match's id is "ask", the unit separator and the request.
+  dbus-send --session --print-reply --reply-timeout=60000 --dest="$kortex" /runner \
+    org.kde.krunner1.Run "string:ask"$'\x1f'"$PATINA_SHOT_ASK" string: > /dev/null
+  # Done once the conversation shows an action that waits for Allow once, Always or
+  # Deny, or an answer and no agent still at work; asked as KRunner asks.
+  waited=0
+  until dbus-send --session --print-reply --reply-timeout=30000 --dest="$kortex" /runner \
+    org.kde.krunner1.Match 'string:ai ›' 2> /dev/null | grep -q 'string "Allow '; do
+    if (( waited >= wait_s )); then
+      echo "screenshot: the agent asked for nothing within ${wait_s}s; the conversation as it stands" >&2
+      break
+    fi
+    sleep 2
+    waited=$((waited + 2))
+  done
+  sleep 5
+  grab "$dir" command-palette
 }
 
 if [[ "${1:-}" == --session ]]; then
-  # The session and the terminal end with this half; it ends after the grab.
+  # The session and the terminal end with this half; it ends after the grabs.
   trap 'jobs -p | xargs -r kill 2> /dev/null || true' EXIT
   session "$2"
   exit
 fi
 
 [[ $# -eq 1 && "$1" != -* ]] || { usage >&2; exit 64; }
-out="$(readlink -f "$1")"
+mkdir -p "$1"
+dir="$(readlink -f "$1")"
 size="${PATINA_SHOT_SIZE:-1920x1080}"
 [[ "$size" =~ ^([0-9]+)x([0-9]+)$ ]] || { echo "screenshot: PATINA_SHOT_SIZE is not WIDTHxHEIGHT: $size" >&2; exit 64; }
 width="${BASH_REMATCH[1]}"
@@ -101,9 +154,8 @@ if [[ -z "${XDG_RUNTIME_DIR:-}" || ! -w "${XDG_RUNTIME_DIR:-}" ]]; then
 fi
 # Software OpenGL (Mesa's llvmpipe), so KWin composites without a GPU.
 export LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe
-rm -f "$out"
-log="$out.log"
-mkdir -p "$(dirname "$out")"
+rm -f "$dir/start-menu.png" "$dir/desktop.png" "$dir/command-palette.png"
+log="$dir/session.log"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
 
@@ -130,11 +182,11 @@ echo "screenshot: a Plasma X11 session on a ${width}x${height} framebuffer (disp
 
 # A session bus, then the session half above under it; its output joins the log.
 status=0
-dbus-run-session -- "$here/screenshot.sh" --session "$out" >> "$log" 2>&1 || status=$?
-if [[ -s "$out" ]]; then
-  echo "screenshot: $out"
+dbus-run-session -- "$here/screenshot.sh" --session "$dir" >> "$log" 2>&1 || status=$?
+if (( status == 0 )); then
+  ls "$dir"/*.png
 else
-  echo "screenshot: no picture (exit $status); the end of $log:" >&2
+  echo "screenshot: failed (exit $status); the end of $log:" >&2
   tail -n 60 "$log" >&2
   exit 1
 fi

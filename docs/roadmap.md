@@ -186,6 +186,9 @@ real Plasma desktop, which the same VM run gives.
   Debian 13 container, then a Plasma X11 session on a virtual framebuffer
   (`desktops/plasma/screenshot.sh`) with the theme applied inside it and kitty with
   the greeting; the README shows it from `docs/screenshots/`
+- [x] the same session takes the start menu (with the ArtCraft Launcher among the
+  favourites) and the command palette with kortex's answer and its Allow once, Always
+  and Deny, from kortex's scripted demo model; the README shows both
 - [x] branding within Debian's trademark policy (`docs/branding.md`, the logo)
 - [x] the AI agent as a question of the install: local (opencode with Ollama and the
   model that fits the memory), cloud (opencode with a provider picked from

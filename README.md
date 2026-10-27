@@ -17,27 +17,54 @@
   EU-sovereign app stack on top of Debian stable with Plasma. Not a distribution.
 </p>
 
-**Status: alpha, for testers.** `patina install` installs the app stack and the system
-tuning on Debian 13 and renders the default theme, aurora, into Plasma's configuration
-(checked in CI containers on x86_64 and aarch64, not yet on a real desktop); the
-branded install is still to come. [Testing the alpha](#testing-the-alpha) says how to
+**Status: alpha, for testers.** `patina install` installs the app stack, the AI agent
+and the system tuning on Debian 13 and renders the default theme, aurora, into Plasma's
+configuration (checked in CI containers on x86_64 and aarch64, not yet on a real
+desktop); the branded install is still to come. [Testing the alpha](#testing-the-alpha) says how to
 help; see the [roadmap](docs/roadmap.md).
+
+## The agent in the command palette
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/patina21/kortex/main/docs/demo/kortex-demo.gif" alt="kortex in KRunner: a question answered, then a theme switch that waits for Allow once" width="720">
+</p>
+
+Meta+Space, `ai` and what you want: [kortex](https://github.com/patina21/kortex), patina's
+KRunner runner, hands the request to the AI agent and shows the answer right in the
+command palette, and every action the agent wants to take as its own line with Allow
+once, Always and Deny. Nothing runs before you choose. The agent is
+[opencode](https://opencode.ai), free software, with a model on your machine by default;
+[The AI agent](#the-ai-agent) says more.
+
+<sub>A replay of a real run of kortex 0.1.0 with opencode and a scripted model; how it
+is made is in kortex's [`docs/demo/`](https://github.com/patina21/kortex/tree/main/docs/demo).</sub>
 
 ## Screenshots
 
-The installer's welcome page, as the live image's boot test captures it in CI (amd64,
-QEMU, Calamares as Debian 13 ships it, branded through data):
+All taken by CI, never edited (`iso/README.md` says how). The installer's welcome page,
+as the live image's boot test captures it (amd64, QEMU, Calamares as Debian 13 ships it,
+branded through data), with the AI agent's page among the steps:
 
 ![The patina installer's welcome page](docs/screenshots/installer-amd64.png)
 
-The finished desktop, as the `desktop` workflow captures it in CI (amd64, a Plasma X11
+The finished desktop, as the `desktop` workflow captures it (amd64, a Plasma X11
 session on a virtual framebuffer after `patina install`): aurora, the default theme,
 with its wallpaper, the centred bar of one-colour icons and slightly see-through
 windows: kitty split in two, the fastfetch greeting beside btop.
 
 ![The patina desktop with the aurora theme](docs/screenshots/desktop-amd64.png)
 
-The screenshots are taken by CI, never edited; see `iso/README.md`.
+The start menu: the patina mark as its button, the AI and self-hosting folders first,
+then the favourites, here with the opt-in ArtCraft Launcher.
+
+![The patina start menu with the AI and self-hosting folders and the ArtCraft Launcher](docs/screenshots/start-menu-amd64.png)
+
+The command palette in the same session: `ai switch to the light theme`, kortex's
+answer through a real `opencode serve`, and the agent's request to run `patina theme
+mode light`, waiting for Allow once, Always or Deny. The model is kortex's scripted
+demo model, since CI has none to run.
+
+![KRunner with kortex: the agent's answer and an action waiting for Allow once](docs/screenshots/command-palette-amd64.png)
 
 ## What it is
 
@@ -45,7 +72,7 @@ patina takes a stock Debian with Plasma and finishes it: one consistent theme ac
 Plasma, terminal and editors, sane defaults, the apps a privacy-minded developer in the
 EU wants, an AI agent that answers, changes settings when you say yes, writes code and
 works on your servers (opencode, with a model on your machine or from a cloud provider
-you pick), and the agent tools (Claude Code, Codex CLI, opencode, Claude Desktop,
+you pick), right in the command palette through kortex, and the agent tools (Claude Code, Codex CLI, opencode, Claude Desktop,
 Ollama for local models) installed the way their upstreams intend.
 
 It is inspired by [Omarchy](https://omarchy.org): the polish, the themes, the quick
@@ -84,7 +111,8 @@ Two paths, one layer. If they ever diverge, Path A wins.
 sudo apt install git curl
 git clone https://github.com/patina21/patina.git ~/.local/share/patina
 ~/.local/share/patina/bin/patina install            # the default bundles: base, desktop
-~/.local/share/patina/bin/patina install --all      # plus the opt-in agent tools
+~/.local/share/patina/bin/patina install --bundles desktop,artcraft   # plus ArtCraft
+~/.local/share/patina/bin/patina install --all      # every opt-in bundle, agent tools included
 ```
 
 `patina install --list` shows the bundles, `patina doctor` checks the result,
@@ -166,11 +194,17 @@ Nextcloud client, Thunderbird, Element, KeePassXC, Euro-Office (the European, AG
 ONLYOFFICE), Firefox ESR (telemetry, Pocket and sponsored content off), Tauon for music,
 Haruna for video, Gwenview for images, Okular for PDFs, kitty as the terminal, a
 developer kit (fish, starship, bat, eza, fzf, ripgrep, lazygit, btop, zoxide, atuin,
-git-delta, neovim, fastfetch) and the Zed editor, plus the agent tools above. Opt-in:
-the `artcraft` bundle, the launcher of the [ArtCraft](https://craftingapps.org) suite,
-free counterparts of Photoshop, Illustrator, Word, Excel, PowerPoint, Acrobat and seven
-more, still alpha; you pick the apps in the launcher, which keeps them updated. Gaming
-is not a focus. Everything comes from Debian's archive except what it does
+git-delta, neovim, fastfetch) and the Zed editor, plus the agent tools above. Gaming
+is not a focus.
+
+Opt-in, as an external package: the `artcraft` bundle (`patina install --bundles
+artcraft`) brings the launcher of the [ArtCraft](https://craftingapps.org) suite, free
+counterparts of Photoshop, Illustrator, Word, Excel, PowerPoint, Acrobat and seven
+more, still alpha. Neither Debian nor Flathub carries it yet, so the ArtCraft Launcher
+comes as its upstream's AppImage, pinned in `manifest/upstream.yaml`; you pick the apps
+in it, and it installs and updates them and itself, outside apt. It sits among the
+start menu's favourites, and moves to Debian's archive or Flathub as soon as one of
+them carries it. Euro-Office stays the office suite of the default stack. Everything comes from Debian's archive except what it does
 not carry: GUI apps we do not want to track come from Flathub, agent tools from their
 upstream installers (npm, uv, Anthropic's own apt repository for Claude Desktop),
 Euro-Office from Nextcloud's signed apt repository until Flathub carries it, and the
@@ -198,8 +232,10 @@ this machine is put together and how to change it the patina way. In the command
 palette (Meta+Space), type `ai` and your request: [kortex](https://github.com/patina21/kortex),
 a KRunner runner in a repository of its own (so it also serves other Plasma desktops),
 shows the answer there and every action the agent wants to take with Allow once,
-Always and Deny. `ai` alone lists the recent conversations, `ai ›` shows the current
-one. Both AI answers install it.
+Always and Deny, as the animation at the top shows. `ai` alone lists the recent
+conversations, `ai ›` shows the current one, and Open in terminal continues a
+conversation in opencode for longer work. Both AI answers install it, from its tagged
+release.
 
 ## FAQ
 
