@@ -51,7 +51,7 @@ In Konsole, inside the Plasma session:
 
 ```sh
 sudo apt install git curl
-git clone https://github.com/patina21/patina.git ~/.local/share/patina
+git clone https://github.com/patina-os/patina.git ~/.local/share/patina
 mkdir -p ~/.local/bin && ln -s ~/.local/share/patina/bin/patina ~/.local/bin/patina
 export PATH="$HOME/.local/bin:$PATH"   # Debian's ~/.profile adds it at the next login
 script -q -c 'patina install' ~/run1.log
@@ -202,7 +202,7 @@ as the image's first boot will:
 ```sh
 sudo adduser --comment '' patina-test
 sudo -iu patina-test bash -c '
-  git clone https://github.com/patina21/patina.git ~/.local/share/patina &&
+  git clone https://github.com/patina-os/patina.git ~/.local/share/patina &&
   ~/.local/share/patina/bin/patina install --unattended'
 ```
 

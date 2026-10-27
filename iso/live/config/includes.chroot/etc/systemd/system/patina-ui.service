@@ -3,7 +3,7 @@
 # system by Calamares (modules/shellprocess-firstboot.conf).
 [Unit]
 Description=patina installer screen (Calamares)
-Documentation=https://github.com/patina21/patina/tree/main/iso
+Documentation=https://github.com/patina-os/patina/tree/main/iso
 After=systemd-user-sessions.service network-online.target
 Wants=network-online.target
 Conflicts=getty@tty7.service

@@ -6,8 +6,8 @@
 </h1>
 
 <p align="center">
-  <a href="https://github.com/patina21/patina/actions/workflows/smoke.yml"><img src="https://github.com/patina21/patina/actions/workflows/smoke.yml/badge.svg?branch=main" alt="smoke test"></a>
-  <a href="https://github.com/patina21/patina/actions/workflows/lint.yml"><img src="https://github.com/patina21/patina/actions/workflows/lint.yml/badge.svg?branch=main" alt="lint"></a>
+  <a href="https://github.com/patina-os/patina/actions/workflows/smoke.yml"><img src="https://github.com/patina-os/patina/actions/workflows/smoke.yml/badge.svg?branch=main" alt="smoke test"></a>
+  <a href="https://github.com/patina-os/patina/actions/workflows/lint.yml"><img src="https://github.com/patina-os/patina/actions/workflows/lint.yml/badge.svg?branch=main" alt="lint"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/licence-GPL--3.0--or--later-3cff9d?labelColor=0b0a10" alt="licence: GPL-3.0-or-later"></a>
   <a href="https://www.debian.org/releases/trixie/"><img src="https://img.shields.io/badge/based%20on-Debian%2013%20trixie-b77dff?labelColor=0b0a10" alt="based on Debian 13 trixie"></a>
 </p>
@@ -26,10 +26,10 @@ help; see the [roadmap](docs/roadmap.md).
 ## The agent in the command palette
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/patina21/kortex/main/docs/demo/kortex-demo.gif" alt="kortex in KRunner: a question answered, then a theme switch that waits for Allow once" width="720">
+  <img src="https://raw.githubusercontent.com/patina-os/kortex/main/docs/demo/kortex-demo.gif" alt="kortex in KRunner: a question answered, then a theme switch that waits for Allow once" width="720">
 </p>
 
-Meta+Space, `ai` and what you want: [kortex](https://github.com/patina21/kortex), patina's
+Meta+Space, `ai` and what you want: [kortex](https://github.com/patina-os/kortex), patina's
 KRunner runner, hands the request to the AI agent and shows the answer right in the
 command palette, and every action the agent wants to take as its own line with Allow
 once, Always and Deny. Nothing runs before you choose. The agent is
@@ -37,7 +37,7 @@ once, Always and Deny. Nothing runs before you choose. The agent is
 [The AI agent](#the-ai-agent) says more.
 
 <sub>A replay of a real run of kortex 0.1.0 with opencode and a scripted model; how it
-is made is in kortex's [`docs/demo/`](https://github.com/patina21/kortex/tree/main/docs/demo).</sub>
+is made is in kortex's [`docs/demo/`](https://github.com/patina-os/kortex/tree/main/docs/demo).</sub>
 
 ## Screenshots
 
@@ -109,7 +109,7 @@ Two paths, one layer. If they ever diverge, Path A wins.
 
 ```sh
 sudo apt install git curl
-git clone https://github.com/patina21/patina.git ~/.local/share/patina
+git clone https://github.com/patina-os/patina.git ~/.local/share/patina
 ~/.local/share/patina/bin/patina install            # the default bundles: base, desktop
 ~/.local/share/patina/bin/patina install --bundles desktop,artcraft   # plus ArtCraft
 ~/.local/share/patina/bin/patina install --all      # every opt-in bundle, agent tools included
@@ -133,7 +133,7 @@ can reinstall.
 1. Follow [docs/vm-run.md](docs/vm-run.md): the VM, Debian 13, then `patina install`
    twice, the reboot, the apps and the look, ticking each check. The agents bundle
    (step 8) is optional.
-2. Open a [test report](https://github.com/patina21/patina/issues/new?template=test-report.yml)
+2. Open a [test report](https://github.com/patina-os/patina/issues/new?template=test-report.yml)
    with what passed and what did not, `patina version` and the output of
    `patina doctor`, failing or not. One report per run.
 3. `patina update` brings fixes as they land on `main`; a second run on a later version
@@ -229,7 +229,7 @@ computer, one from a cloud provider, or none. Both agents are
 Meta+A opens it. It reads freely, and asks before anything that changes a file, runs a
 command or reaches a server (`defaults/apps.yaml`); `defaults/agent.md` tells it how
 this machine is put together and how to change it the patina way. In the command
-palette (Meta+Space), type `ai` and your request: [kortex](https://github.com/patina21/kortex),
+palette (Meta+Space), type `ai` and your request: [kortex](https://github.com/patina-os/kortex),
 a KRunner runner in a repository of its own (so it also serves other Plasma desktops),
 shows the answer there and every action the agent wants to take with Allow once,
 Always and Deny, as the animation at the top shows. `ai` alone lists the recent

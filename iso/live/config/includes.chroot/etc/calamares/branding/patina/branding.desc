@@ -21,10 +21,10 @@ strings:
   versionedName: patina
   shortVersionedName: patina
   bootloaderEntryName: Debian GNU/Linux
-  productUrl: https://github.com/patina21/patina
-  supportUrl: https://github.com/patina21/patina/issues
-  knownIssuesUrl: https://github.com/patina21/patina/issues
-  releaseNotesUrl: https://github.com/patina21/patina/blob/main/CHANGELOG.md
+  productUrl: https://github.com/patina-os/patina
+  supportUrl: https://github.com/patina-os/patina/issues
+  knownIssuesUrl: https://github.com/patina-os/patina/issues
+  releaseNotesUrl: https://github.com/patina-os/patina/blob/main/CHANGELOG.md
 
 images:
   productLogo: logo-square.svg      # the square mark: Calamares shows this one at 80x80

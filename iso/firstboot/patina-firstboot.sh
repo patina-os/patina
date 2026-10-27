@@ -6,7 +6,7 @@ set -euo pipefail
 
 state_dir=/var/lib/patina
 done_marker="$state_dir/firstboot-done"
-repo_url="${PATINA_REPO_URL:-https://github.com/patina21/patina.git}"
+repo_url="${PATINA_REPO_URL:-https://github.com/patina-os/patina.git}"
 repo_ref="${PATINA_REPO_REF:-main}"
 
 # Answers for `patina install`: the installer writes PATINA_AI (its AI page,

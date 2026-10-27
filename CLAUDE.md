@@ -55,7 +55,7 @@ packs. Audience: developers and privacy-minded users in the EU.
   none, as the `ai-local` and `ai-cloud` bundles. It asks before every change
   (`defaults/apps.yaml`) and reads `defaults/agent.md`. Its place in the command
   palette is kortex, a KRunner runner kept in a repository of its own
-  (`patina21/kortex`), which may use what patina's tooling may not (it is Python);
+  (`patina-os/kortex`), which may use what patina's tooling may not (it is Python);
   both AI bundles install its tagged release, pinned in `manifest/upstream.yaml`.
 - Look: the default theme is aurora, made for OLED screens (October 2026, after the
   redesign whose eight directions `docs/design/futures.html` keeps): true black with
@@ -112,6 +112,9 @@ packs. Audience: developers and privacy-minded users in the EU.
 - Data format: YAML, parsed with the Go `yq` (mikefarah). Debian's `yq` package is the
   Python jq wrapper and must not be used.
 - The name is final: patina. The 21 it once carried was dropped in October 2026.
+  The GitHub account is `patina-os` (renamed from `patina21` in October 2026, before
+  anything was shared); kortex's D-Bus name keeps `io.github.patina21.kortex` until its
+  next release.
 
 ## Principles (non-negotiable)
 

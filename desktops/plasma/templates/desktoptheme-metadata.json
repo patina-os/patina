@@ -6,7 +6,7 @@
         "Id": "patina-${THEME}",
         "License": "LGPL",
         "Name": "patina ${DISPLAY_NAME}",
-        "Website": "https://github.com/patina21/patina"
+        "Website": "https://github.com/patina-os/patina"
     },
     "X-Plasma-API": "5.0"
 }

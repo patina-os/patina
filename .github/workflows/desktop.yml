@@ -80,7 +80,7 @@ jobs:
         # KRunner. Into the user's home: a path the upload step reads unchanged inside
         # the container, which the runner's temp directory is not.
         env:
-          DEMO_MODEL: https://raw.githubusercontent.com/patina21/kortex/f01bc042804914ad872d7ab51be08cf1acee1a76/docs/demo/demo_llm.py
+          DEMO_MODEL: https://raw.githubusercontent.com/patina-os/kortex/f01bc042804914ad872d7ab51be08cf1acee1a76/docs/demo/demo_llm.py
         run: |
           mkdir -p /opt/kortex-demo
           curl -fsSL -o /opt/kortex-demo/demo_llm.py "$DEMO_MODEL"
