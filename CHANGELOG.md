@@ -44,13 +44,11 @@ All notable changes to patina are documented here. The format follows
 - The command palette (KRunner, and kortex's `ai` in it) opens in the middle of the
   screen instead of at the top. `command_palette.position` in
   `defaults/settings.yaml` sets it back to `top`.
-- The start menu opens as Plasma's Application Dashboard, full screen and centred,
-  instead of the menu above its button, which never sat in the middle of the screen.
-  The dashboard comes with `plasma-widgets-addons`, now in the desktop bundle; without
-  it the renderer keeps Kickoff.
-  `start_menu.style: popup` in `defaults/settings.yaml` keeps the menu. An existing
-  desktop gets it with `patina theme set <name> --layout`, which lays out the panel
-  again.
+- `start_menu.style: dashboard` in `defaults/settings.yaml` opens the start menu as
+  Plasma's Application Dashboard, full screen and centred, instead of the menu above
+  its button (`popup`, the default). The dashboard comes with `plasma-widgets-addons`,
+  now in the desktop bundle; without it the renderer keeps Kickoff. It arrives with
+  `patina theme set <name> --layout`, which lays out the panel again.
 - aurora's light mode has its own DeepMind wallpaper from Pexels, a white and violet
   picture of the same series as the dark one (`deepmind-light.jpg`); the light contour
   map is its second.
