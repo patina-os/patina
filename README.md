@@ -170,9 +170,10 @@ terminal (btop, neovim, bat, fzf, lazygit, eza, starship) all take their colours
 the theme's palette; the words are set in Source Sans 3, the details in
 JetBrains Mono, the wordmark in Sora. The default theme is aurora, made for OLED
 screens: true black, neon green as the accent and violet as the second colour, a
-Google DeepMind visualisation from Pexels as the wallpaper and a contour map that glows
-green to violet as the second. Every app's icon is a monochrome glyph in one colour,
-the folders are green, the start menu opens full screen and centred (the patina mark
+Google DeepMind visualisation from Pexels as the wallpaper (a white one of the same
+series in the light mode) and a contour map that glows green to violet as the second.
+Every app's icon is a monochrome glyph in one colour, the folders are green, the start
+menu opens full screen and centred (the patina mark
 as its button, AI and self-hosting first), and the popups carry a slight grain. It is
 dark by default; `patina theme mode light` switches it to its light palette and
 `patina theme mode dark` back. The mark is text, a summit shaded with the letters of

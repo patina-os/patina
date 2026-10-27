@@ -61,8 +61,9 @@ packs. Audience: developers and privacy-minded users in the EU.
   redesign whose eight directions `docs/design/futures.html` keeps): true black with
   panels one step above it, neon green as the accent and violet as the second colour.
   Its wallpaper is a Google DeepMind visualisation from Pexels (`deepmind.jpg`, under
-  the Pexels licence, credited in `themes/aurora/README.md`), the one third-party
-  wallpaper, chosen by the maintainer in October 2026; a contour map that glows green
+  the Pexels licence, credited in `themes/aurora/README.md`), and the light mode's is
+  a white one of the same series (`deepmind-light.jpg`): the two third-party
+  wallpapers, chosen by the maintainer in October 2026; a contour map that glows green
   at the summit and turns violet at the edges is the second (SVG in the theme,
   rendered at apply time, licensed with the repository).
   Dark is the default mode; aurora carries a light mode as data (a `light:` block),

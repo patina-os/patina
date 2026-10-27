@@ -51,6 +51,9 @@ All notable changes to patina are documented here. The format follows
   `start_menu.style: popup` in `defaults/settings.yaml` keeps the menu. An existing
   desktop gets it with `patina theme set <name> --layout`, which lays out the panel
   again.
+- aurora's light mode has its own DeepMind wallpaper from Pexels, a white and violet
+  picture of the same series as the dark one (`deepmind-light.jpg`); the light contour
+  map is its second.
 - The AI agent knows patina's app bundles: asked for PhotoCraft, it offers
   `patina install --bundles artcraft`, which brings the ArtCraft Launcher
   (`defaults/agent.md`).
