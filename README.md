@@ -282,6 +282,9 @@ design, but other backends come only after both install paths are stable on Debi
 patina owns the polish; nearly everything under it is the work of other people, and we
 are grateful for it. Thank you:
 
+- [Omarchy](https://omarchy.org) and [CachyOS](https://cachyos.org), which inspired
+  it: Omarchy the polish, the quick branded install and the update model, CachyOS the
+  system tuning patina copies as configuration.
 - **Debian** and its developers, for the base and nearly every package, and **KDE**,
   for Plasma and its apps.
 - The apps: Nextcloud; Euro-Office (IONOS, Nextcloud and their European partners) and

@@ -9,8 +9,9 @@ All notable changes to patina are documented here. The format follows
 ### Added
 
 - Credits: `patina credits` names and thanks the people and projects patina is made
-  of, from Debian, KDE and the apps to opencode, Ollama and Anthropic, the artists of
-  aurora's wallpapers and the type designers, and the platforms. The list is data
+  of: Omarchy and CachyOS, which inspired it, then Debian, KDE and the apps, opencode,
+  Ollama and Anthropic, the artists of aurora's wallpapers and the type designers, and
+  the platforms. The list is data
   (`docs/credits.yaml`); the installer's last slide shows its names, Plasma's About
   this System shows patina as the variant with a pointer to the command, and the
   README has a Credits section.

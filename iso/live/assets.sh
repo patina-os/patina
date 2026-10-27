@@ -78,20 +78,20 @@ compose calamares/slide-2.svg "$branding/slide-2.png"
 compose calamares/slide-3.svg "$branding/slide-3.png"
 # The last slide thanks the people and projects of docs/credits.yaml: each group's
 # title, then its names on lines of at most 100 characters.
-credits="$repo/docs/credits.yaml" y=320 tpl[CREDITS]=""
+credits="$repo/docs/credits.yaml" y=300 tpl[CREDITS]=""
 for ((i = 0; i < $(yq eval '.groups | length' "$credits"); i++)); do
   tpl[CREDITS]+="<text class=\"group\" x=\"280\" y=\"$y\">$(yq eval ".groups[$i].title | upcase" "$credits")</text>"
-  y=$((y + 38)) line=""
+  y=$((y + 34)) line=""
   while IFS= read -r name; do
     if [[ -n "$line" && $((${#line} + ${#name} + 3)) -gt 100 ]]; then
       tpl[CREDITS]+="<text class=\"names\" x=\"280\" y=\"$y\">$line</text>"
-      y=$((y + 38)) line=""
+      y=$((y + 36)) line=""
     fi
     name="${name//&/&amp;}"
     line+="${line:+ · }${name//</&lt;}"
   done < <(yq eval ".groups[$i].entries[].name" "$credits")
   tpl[CREDITS]+="<text class=\"names\" x=\"280\" y=\"$y\">$line</text>"
-  y=$((y + 56))
+  y=$((y + 44))
 done
 compose calamares/slide-4.svg "$branding/slide-4.png"
 render "$templates/calamares/stylesheet.qss" "$branding/stylesheet.qss"

@@ -8,6 +8,16 @@
 # The installer's slide shows only the names, so artists whose work is the point are
 # the entry's name.
 groups:
+  - title: Inspiration
+    entries:
+      - name: Omarchy
+        for: the polish, the branded install and the update model
+        url: https://omarchy.org
+      - name: CachyOS
+        by: the CachyOS team
+        for: the system tuning patina copies as configuration
+        url: https://cachyos.org
+
   - title: The base
     entries:
       - name: Debian
