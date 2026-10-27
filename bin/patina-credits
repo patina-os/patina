@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# The credits: the people and projects patina is made of, from docs/credits.yaml.
+set -euo pipefail
+
+# shellcheck source=bin/lib.sh
+source "$PATINA_PATH/bin/lib.sh"
+
+case "${1:-}" in
+  "") ;;
+  -h | --help)
+    echo "usage: patina credits"
+    exit 0
+    ;;
+  *)
+    echo "usage: patina credits" >&2
+    exit 1
+    ;;
+esac
+need_yq
+
+credits="$PATINA_PATH/docs/credits.yaml"
+
+# The names in the theme's accent on a colour terminal, plain otherwise.
+on="" off=""
+if logo_colour auto; then
+  if d="$(theme_dir "$(current_theme || yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")")"; then
+    hex="$(yq eval '.palette.base0E' "$d/theme.yaml")"
+    printf -v on '\033[1;38;2;%d;%d;%dm' "0x${hex:1:2}" "0x${hex:3:2}" "0x${hex:5:2}"
+    off=$'\033[0m'
+  fi
+fi
+
+echo
+print_logo auto
+echo
+echo "  patina owns the polish. Everything under it is the work of these people and"
+echo "  projects, and of everyone who contributes to them. Thank you."
+# A group's title, then one line per entry: its name beside the first of what it was
+# made for, by whom and where it lives. The fields are split at the unit separator, so
+# an empty one stays in its place.
+US=$'\x1f' group=""
+# shellcheck disable=SC2016 # $t is a yq variable inside the expression, not a shell one
+while IFS="$US" read -r title name by for url; do
+  if [[ "$title" != "$group" ]]; then
+    group="$title"
+    echo
+    echo "  $group"
+  fi
+  lines=()
+  [[ -z "$for" ]] || lines+=("$for")
+  [[ -z "$by" ]] || lines+=("by $by")
+  lines+=("$url")
+  # A name wider than its column stands on a line of its own, above the rest.
+  first=1
+  if [[ ${#name} -le 22 ]]; then
+    printf '    %s%-22s%s %s\n' "$on" "$name" "$off" "${lines[0]}"
+  else
+    printf '    %s%s%s\n' "$on" "$name" "$off"
+    first=0
+  fi
+  for line in "${lines[@]:first}"; do
+    printf '    %-22s %s\n' "" "$line"
+  done
+done < <(US="$US" yq eval '.groups[] | .title as $t | .entries[] |
+  [$t, .name, .by // "", .for // "", .url] | join(strenv(US))' "$credits")
+echo
+echo "  Someone missing? The list is data, a pull request adds them:"
+echo "  $PATINA_PATH/docs/credits.yaml"

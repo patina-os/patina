@@ -56,8 +56,8 @@ iso/
 1. Boot the image. The GRUB menu shows the theme's wallpaper and the wordmark. The live
    system starts `patina-ui.service`: an X session on tty7 with Calamares full screen
    in the theme's palette and fonts, the block-letter name on the welcome page, the square mark in
-   the sidebar, the wallpaper veiled behind every page, three still slides while it
-   installs. The console shows `branding/logo.txt`.
+   the sidebar, the wallpaper veiled behind every page, four still slides while it
+   installs, the last one thanking the people and projects of `docs/credits.yaml`. The console shows `branding/logo.txt`.
 2. Calamares asks what it must: time zone and keyboard (pre-filled), disk (erase is
    preselected; encryption and manual partitioning are available), the user, and the AI
    agent (on this computer, preselected from `ai.mode` of `defaults/settings.yaml`,
@@ -108,7 +108,7 @@ sudo iso/live/build.sh arm64            # on an arm64 machine
 `build.sh` calls `assets.sh`, which renders everything the image shows from the data:
 `branding/logo.txt` into `/etc/issue.d`, `branding/wordmark.svg` (as a PNG) and
 `icon-small.svg` into the installer's branding, the default theme's wallpapers under a veil as the installer's
-background, three slides, the splash of the boot menu, and the templates under
+background, four slides (the last one the names of `docs/credits.yaml`), the splash of the boot menu, and the templates under
 `live/templates/` (the Calamares stylesheet, the GRUB theme, the openbox theme) with the
 palette of `themes/<default>/theme.yaml` and the fonts of `defaults/settings.yaml`,
 plus the version and the sidebar colours into `branding.desc` with `yq`. Nothing
@@ -139,7 +139,7 @@ files.
   in the palette over the splash, readable; the installer's welcome page (the square
   mark in the sidebar, the wordmark on the page, the wallpaper behind, Source Sans 3), the partition
   page with the manual partition editor's dialog (openbox's patina frame), the
-  install page with the gradient progress bar and the three slides; at first boot the
+  install page with the gradient progress bar and the four slides; at first boot the
   mark on tty1 and the questions; then the login screen with the theme's wallpaper,
   the splash with the wordmark and the accent line, and the desktop in Source Sans 3
   and JetBrains Mono, as `docs/screenshots/desktop-amd64.png` shows it.

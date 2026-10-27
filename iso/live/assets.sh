@@ -76,6 +76,24 @@ compose calamares/wallpaper.svg "$branding/wallpaper.png"
 compose calamares/slide-1.svg "$branding/slide-1.png"
 compose calamares/slide-2.svg "$branding/slide-2.png"
 compose calamares/slide-3.svg "$branding/slide-3.png"
+# The last slide thanks the people and projects of docs/credits.yaml: each group's
+# title, then its names on lines of at most 100 characters.
+credits="$repo/docs/credits.yaml" y=320 tpl[CREDITS]=""
+for ((i = 0; i < $(yq eval '.groups | length' "$credits"); i++)); do
+  tpl[CREDITS]+="<text class=\"group\" x=\"280\" y=\"$y\">$(yq eval ".groups[$i].title | upcase" "$credits")</text>"
+  y=$((y + 38)) line=""
+  while IFS= read -r name; do
+    if [[ -n "$line" && $((${#line} + ${#name} + 3)) -gt 100 ]]; then
+      tpl[CREDITS]+="<text class=\"names\" x=\"280\" y=\"$y\">$line</text>"
+      y=$((y + 38)) line=""
+    fi
+    name="${name//&/&amp;}"
+    line+="${line:+ · }${name//</&lt;}"
+  done < <(yq eval ".groups[$i].entries[].name" "$credits")
+  tpl[CREDITS]+="<text class=\"names\" x=\"280\" y=\"$y\">$line</text>"
+  y=$((y + 56))
+done
+compose calamares/slide-4.svg "$branding/slide-4.png"
 render "$templates/calamares/stylesheet.qss" "$branding/stylesheet.qss"
 
 # The AI page: its default answer is ai.mode of defaults/settings.yaml, and each answer

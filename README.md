@@ -277,6 +277,31 @@ gain Debian kernel support. There is never a separate ARM edition.
 **Can I use it on Fedora or openSUSE?** Not yet. The package manifest is base-agnostic by
 design, but other backends come only after both install paths are stable on Debian.
 
+## Credits
+
+patina owns the polish; nearly everything under it is the work of other people, and we
+are grateful for it. Thank you:
+
+- **Debian** and its developers, for the base and nearly every package, and **KDE**,
+  for Plasma and its apps.
+- The apps: Nextcloud; Euro-Office (IONOS, Nextcloud and their European partners) and
+  ONLYOFFICE, which it is built on; Mozilla's Firefox and Thunderbird; Element;
+  KeePassXC; kitty; Zed; Tauon; ArtCraft; and the terminal's tools: fish, starship,
+  bat, eza, fzf, ripgrep, lazygit, btop, zoxide, atuin, delta, Neovim and fastfetch.
+- The AI agent: [opencode](https://opencode.ai) (Anomaly, the team behind SST),
+  [Ollama](https://ollama.com), and [Anthropic](https://www.anthropic.com) for Claude,
+  which helped write patina, and for Claude Code and Claude Desktop.
+- Artwork and type: Google DeepMind and Domhnall Malone for aurora's two wallpapers
+  (on Pexels), the Papirus Development Team for the icons, Paul D. Hunt for Source
+  Sans 3, Philipp Nurullin and Konstantin Bulenkov for JetBrains Mono, and Jonathan
+  Barnbrook and Julián Moncada for Sora.
+- Flathub, Pexels and GitHub, for carrying the apps, the pictures and the code.
+
+The whole list, with what each one is for and a link, is
+[`docs/credits.yaml`](docs/credits.yaml). On a patina desktop `patina credits` prints
+it, Plasma's About this System points to it, and the installer thanks them all on its
+last slide. Someone missing? A pull request adds them.
+
 ## Contributing
 
 Theme packs are the most welcome contribution: copy `themes/_template/`, fill in the

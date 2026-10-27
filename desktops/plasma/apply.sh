@@ -605,6 +605,9 @@ else
 fi
 kset ksplashrc Theme "org.patina.$theme" KSplash
 kset ksplashrc Engine KSplashQML KSplash
+# About this System keeps Debian's name and website from os-release; the variant names
+# patina and where the people and projects it is made of are thanked.
+kset kcm-about-distrorc Variant "with patina · who made it: patina credits" General
 if [[ -n "$wallpaper_dir" ]]; then
   kset kscreenlockerrc Image "$wallpaper_dir/" Greeter Wallpaper org.kde.image General
 fi

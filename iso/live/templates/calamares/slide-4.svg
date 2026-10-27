@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <!-- slide 4: the thanks, the names of docs/credits.yaml (assets.sh fills CREDITS) -->
+  <style>
+    .group { font-family: "${MONO_FONT}", monospace; font-size: 20px; letter-spacing: 3px; fill: ${ACCENT_ALT}; }
+    .names { font-family: "${UI_FONT}", sans-serif; font-size: 28px; fill: ${BASE05}; }
+  </style>
+  <image xlink:href="wallpaper.png" width="1920" height="1080"/>
+  <rect width="1920" height="1080" fill="${BASE00}" fill-opacity="0.8"/>
+  <rect x="200" y="100" width="1520" height="880" rx="24" fill="${BASE01}" fill-opacity="0.75"
+    stroke="${ACCENT}" stroke-opacity="0.5" stroke-width="2"/>
+  <text x="280" y="196" font-family="'${UI_FONT}', sans-serif" font-size="48" font-weight="600"
+    fill="${ACCENT}">Thank you</text>
+  <text x="280" y="246" font-family="'${UI_FONT}', sans-serif" font-size="28"
+    fill="${BASE04}">patina is made of the work of these people and projects</text>
+  ${CREDITS}
+  <image xlink:href="logo.png" x="1400" y="890" width="280" height="80"/>
+</svg>
