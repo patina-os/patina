@@ -60,9 +60,9 @@ Files, from `templates/`, each named after the theme:
 - the panel layout in that package (`contents/layouts/org.kde.plasma.desktop-layout.js`)
   when `panel.layout` is `centered`: one bar at the bottom with the launcher and the
   icons-only task manager in the middle, the tray and the clock at the right, the apps
-  behind `panel.pinned` pinned. The start menu (the Application Dashboard, full screen and
-  centred, from `plasma-widgets-addons`; Kickoff, a menu above its button, for
-  `start_menu.style: popup` or when that package is missing)
+  behind `panel.pinned` pinned. The start menu (Kickoff, a menu above its button; the
+  Application Dashboard, full screen and centred, for `start_menu.style: dashboard`
+  when `plasma-widgets-addons` is installed)
   gets the patina mark as its button (`branding/icon-small.svg`, copied to
   `~/.local/share/patina/launcher.svg` so it stays when the theme changes), and in
   Kickoff its favourites as a grid and quiet power buttons;

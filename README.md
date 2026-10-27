@@ -64,11 +64,11 @@ Always or Deny. The model is kortex's scripted demo model, since CI has none to 
 
 ![KRunner with kortex in the middle of the desktop: the agent asks before it installs the artcraft bundle for PhotoCraft](docs/screenshots/command-palette-amd64.png)
 
-The start menu in aurora's light mode (`patina theme mode light`): full screen and
-centred, the patina mark as its button in the bar, the AI and self-hosting folders
+The start menu in aurora's light mode (`patina theme mode light`), over its own
+DeepMind wallpaper: the patina mark as its button, the AI and self-hosting folders
 first, then the favourites.
 
-![The patina start menu, full screen and centred, in the light mode](docs/screenshots/start-menu-amd64.png)
+![The patina start menu in the light mode](docs/screenshots/start-menu-amd64.png)
 
 ## What it is
 
@@ -172,9 +172,9 @@ JetBrains Mono, the wordmark in Sora. The default theme is aurora, made for OLED
 screens: true black, neon green as the accent and violet as the second colour, a
 Google DeepMind visualisation from Pexels as the wallpaper (a white one of the same
 series in the light mode) and a contour map that glows green to violet as the second.
-Every app's icon is a monochrome glyph in one colour, the folders are green, the start
-menu opens full screen and centred (the patina mark
-as its button, AI and self-hosting first), and the popups carry a slight grain. It is
+Every app's icon is a monochrome glyph in one colour, the folders are green, and the
+start menu (the patina mark, AI and self-hosting first)
+and the other popups carry a slight grain. It is
 dark by default; `patina theme mode light` switches it to its light palette and
 `patina theme mode dark` back. The mark is text, a summit shaded with the letters of
 patina in violet with a green survey point, so the terminal and the screens show the

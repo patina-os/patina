@@ -188,8 +188,8 @@ real Plasma desktop, which the same VM run gives.
   the greeting; the README shows it from `docs/screenshots/`
 - [x] the same session takes the command palette, centred on the empty desktop, with
   kortex's answer to `ai install photocraft` and its Allow once, Always and Deny, from
-  kortex's scripted demo model, and the start menu, full screen in the light mode; the
-  README shows both
+  kortex's scripted demo model, and the start menu in the light mode; the README
+  shows both
 - [x] branding within Debian's trademark policy (`docs/branding.md`, the logo)
 - [x] the AI agent as a question of the install: local (opencode with Ollama and the
   model that fits the memory), cloud (opencode with a provider picked from
