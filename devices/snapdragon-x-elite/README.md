@@ -44,7 +44,7 @@ Same rule as the Raspberry Pi 4: a clean install per attempt, correctness over U
 3. Path A, as that user:
 
    ```sh
-   git clone https://github.com/patina21/patina ~/.local/share/patina
+   git clone https://github.com/patina-os/patina ~/.local/share/patina
    mkdir -p ~/.local/bin && ln -s ~/.local/share/patina/bin/patina ~/.local/bin/patina
    patina install
    ```

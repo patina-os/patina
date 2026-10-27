@@ -28,13 +28,15 @@ All notable changes to patina are documented here. The format follows
   server, and `defaults/agent.md` tells it how a patina desktop is changed. Meta+A
   opens it without the agents bundle now.
 - The agent in the command palette: with either AI answer, `patina install` installs
-  [kortex](https://github.com/patina21/kortex) 0.1.0, so `ai` and a request in KRunner
+  [kortex](https://github.com/patina-os/kortex) 0.1.0, so `ai` and a request in KRunner
   (Meta+Space) asks the agent, shows the answer there and every action it wants to take
   with Allow once, Always and Deny. Upstream recipes gain a `git` method for it: a
   tagged release installed by its own install script.
 
 ### Changed
 
+- The project lives at github.com/patina-os: patina, kortex and the landing page moved
+  with the account's new name. Clone from `https://github.com/patina-os/patina.git`.
 - With the artcraft bundle, the ArtCraft Launcher is among the start menu's
   favourites, after kitty and Zed.
 - kitty keeps its text 10 points off the window's edges and its background a little
@@ -346,5 +348,5 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina21/patina/compare/v0.1.0-alpha.1...main
-[0.1.0-alpha.1]: https://github.com/patina21/patina/releases/tag/v0.1.0-alpha.1
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.1...main
+[0.1.0-alpha.1]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.1

@@ -80,7 +80,7 @@ kortex:
   # tooling does not use; its install script puts it under ~/.local/share, no root.
   # Needs python3-dbus and python3-gi, which the AI bundles list.
   method: git
-  url: https://github.com/patina21/kortex.git
+  url: https://github.com/patina-os/kortex.git
   ref: v0.1.0
   install: install.sh
 ollama:

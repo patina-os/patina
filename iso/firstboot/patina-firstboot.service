@@ -5,7 +5,7 @@
 # /var/lib/patina/firstboot-done.
 [Unit]
 Description=patina first boot: install the layer (Path A)
-Documentation=https://github.com/patina21/patina/tree/main/iso
+Documentation=https://github.com/patina-os/patina/tree/main/iso
 ConditionPathExists=!/var/lib/patina/firstboot-done
 After=network-online.target systemd-user-sessions.service
 Wants=network-online.target

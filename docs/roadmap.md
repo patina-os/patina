@@ -196,7 +196,7 @@ real Plasma desktop, which the same VM run gives.
   bundles; asked by the TUI after the bundles and by the installer's own page
   (Calamares' `packagechooser`), whose answer reaches the first boot as `PATINA_AI`.
   Permissions ask before changes; `defaults/agent.md` is its standing instruction
-- [x] the agent in the command palette: [kortex](https://github.com/patina21/kortex), a
+- [x] the agent in the command palette: [kortex](https://github.com/patina-os/kortex), a
   KRunner runner in a repository of its own (its own language and releases, useful on
   any Plasma desktop), that hands what is typed after `ai` to the agent's `opencode
   serve` and shows the answer and the confirmations in KRunner. Both AI bundles install
