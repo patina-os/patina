@@ -127,9 +127,13 @@ session() {
     waited=$((waited + 2))
   done
   # Those Match calls told kortex the conversation is on screen as it stands, so it
-  # sees no news to show; KRunner asks again only when queried, as kortex queries it.
-  dbus-send --session --type=method_call --dest=org.kde.krunner /App \
-    org.kde.krunner.App.querySingleRunner string:kortex 'string:ai ›'
+  # sees no news to show. KRunner asks again only for a query that differs from the
+  # one it shows: the list of conversations first, then the conversation.
+  for query in ai 'ai ›'; do
+    dbus-send --session --type=method_call --dest=org.kde.krunner /App \
+      org.kde.krunner.App.querySingleRunner string:kortex "string:$query"
+    sleep 2
+  done
   sleep 5
   grab "$dir" command-palette
 }
