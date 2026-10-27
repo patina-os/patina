@@ -296,6 +296,9 @@ are grateful for it. Thank you:
   Sans 3, Philipp Nurullin and Konstantin Bulenkov for JetBrains Mono, and Jonathan
   Barnbrook and Julián Moncada for Sora.
 - Flathub, Pexels and GitHub, for carrying the apps, the pictures and the code.
+- [CachyOS](https://cachyos.org) and [Omarchy](https://omarchy.org), which inspired
+  it: CachyOS the system tuning patina copies as configuration, Omarchy the polish,
+  the quick branded install and the update model.
 
 The whole list, with what each one is for and a link, is
 [`docs/credits.yaml`](docs/credits.yaml). On a patina desktop `patina credits` prints
