@@ -36,7 +36,9 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   as the default, the Breeze theme with the layer's cursor and font; the font name is the
   one copy of `fonts.ui` outside `settings.yaml`, because the file under `/etc` is
   static, and the lint workflow checks that the two agree; the wallpaper comes from the
-  desktop renderer). Each file is named by its destination under `/etc`
+  desktop renderer), and Firefox's policies (`firefox/policies/policies.json`: no
+  telemetry, studies, Pocket or sponsored content; the user may change the rest). Each
+  file is named by its destination under `/etc`
   (`system/sysctl.d/x.conf` lands at `/etc/sysctl.d/x.conf`), and the backend's sudo
   path (`system.write` in `manifest/backends/`) is the only thing that writes them.
   These files keep the names and formats their tools require, so they are, with

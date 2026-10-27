@@ -257,6 +257,19 @@ elif [[ -e "$agent_desktop" ]]; then
   changed
 fi
 
+# The ArtCraft Launcher's menu entry, only with the artcraft bundle: its AppImage in
+# ~/.local/bin brings none of its own.
+launcher_desktop="$data/applications/patina-artcraft-launcher.desktop"
+if [[ " ${PATINA_BUNDLES:-} " == *" artcraft "* ]]; then
+  tpl[LAUNCHER_COMMAND]="$(command -v artcraft-launcher 2> /dev/null || echo "$HOME/.local/bin/artcraft-launcher")"
+  render "$templates/artcraft-launcher.desktop" "$tmp/artcraft-launcher.desktop"
+  put "$tmp/artcraft-launcher.desktop" "$launcher_desktop"
+elif [[ -e "$launcher_desktop" ]]; then
+  say "removing $launcher_desktop (the artcraft bundle is not installed)"
+  rm -f "$launcher_desktop"
+  changed
+fi
+
 # The cheat sheet's launcher, which the keys action (Meta+K) starts: kitty showing
 # `patina keys` until a key is pressed.
 tpl[PATINA_PATH]="$PATINA_PATH"

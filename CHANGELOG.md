@@ -8,6 +8,14 @@ All notable changes to patina are documented here. The format follows
 
 ### Added
 
+- The everyday apps in the default desktop bundle: Firefox ESR as the browser, with
+  telemetry, studies, Pocket and sponsored content off by policy; Tauon for music
+  (Flathub), Haruna for video, Gwenview for images and Okular for PDFs, each with its
+  monochrome glyph in the start menu.
+- An opt-in `artcraft` bundle: the launcher of the ArtCraft suite (PhotoCraft,
+  WordCraft and 11 more free, alpha counterparts of Adobe's and Microsoft's apps). You
+  pick the apps in the launcher, which installs and updates them; it gets a menu
+  entry. Upstream `binary` recipes may now be an AppImage.
 - An AI agent as part of the install. `patina install` asks after the bundles, and
   the image's installer has a page of its own for it: opencode with a model on this
   machine (the default; Ollama with a model you pick from those that fit the memory,

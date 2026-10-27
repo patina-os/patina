@@ -163,13 +163,18 @@ install` and every fresh login get the bar; after that your panels are yours, an
 ## The app stack
 
 Nextcloud client, Thunderbird, Element, KeePassXC, Euro-Office (the European, AGPL fork of
-ONLYOFFICE), kitty as the terminal, a developer kit (fish, starship, bat, eza, fzf,
-ripgrep, lazygit, btop, zoxide, atuin, git-delta, neovim, fastfetch) and the Zed editor,
-plus the agent tools above. Everything comes from Debian's archive except what it does
+ONLYOFFICE), Firefox ESR (telemetry, Pocket and sponsored content off), Tauon for music,
+Haruna for video, Gwenview for images, Okular for PDFs, kitty as the terminal, a
+developer kit (fish, starship, bat, eza, fzf, ripgrep, lazygit, btop, zoxide, atuin,
+git-delta, neovim, fastfetch) and the Zed editor, plus the agent tools above. Opt-in:
+the `artcraft` bundle, the launcher of the [ArtCraft](https://craftingapps.org) suite,
+free counterparts of Photoshop, Illustrator, Word, Excel, PowerPoint, Acrobat and seven
+more, still alpha; you pick the apps in the launcher, which keeps them updated. Gaming
+is not a focus. Everything comes from Debian's archive except what it does
 not carry: GUI apps we do not want to track come from Flathub, agent tools from their
-upstream installers (npm, uv, Anthropic's own apt repository for Claude Desktop), and
-Euro-Office from Nextcloud's signed apt repository until Flathub carries it. Ollama is
-the local backend the agent tools point at.
+upstream installers (npm, uv, Anthropic's own apt repository for Claude Desktop),
+Euro-Office from Nextcloud's signed apt repository until Flathub carries it, and the
+ArtCraft Launcher from its release. Ollama is the local backend the agent tools point at.
 
 ## The AI agent
 

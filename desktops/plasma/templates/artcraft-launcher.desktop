@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=ArtCraft Launcher
+Comment=Installs and updates the ArtCraft apps
+Exec=${LAUNCHER_COMMAND}
+Icon=artcraft-launcher
+Terminal=false
+Categories=Graphics;Office;
+Keywords=artcraft;photocraft;wordcraft;vectorcraft;pdfcraft;
