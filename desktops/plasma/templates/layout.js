@@ -11,15 +11,18 @@ panel.hiding = "none";
 panel.height = 2 * Math.ceil(gridUnit * 2.5 / 2);
 
 panel.addWidget("org.kde.plasma.panelspacer");
-// The start menu: the patina mark as its button, the favourites as a grid (AI and
-// self-hosting first, from kicker-extra-favoritesrc), quiet power buttons.
-var kickoff = panel.addWidget("org.kde.plasma.kickoff");
-kickoff.currentConfigGroup = ["General"];
-kickoff.writeConfig("icon", "${LAUNCHER_ICON}");
-kickoff.writeConfig("favoritesDisplay", 0);
-kickoff.writeConfig("applicationsDisplay", 1);
-kickoff.writeConfig("showActionButtonCaptions", false);
-kickoff.writeConfig("switchCategoryOnHover", true);
+// The start menu (Kickoff, or the Application Dashboard for start_menu.style dashboard):
+// the patina mark as its button, the favourites first (AI and self-hosting, from
+// kicker-extra-favoritesrc); in Kickoff as a grid, with quiet power buttons.
+var launcher = panel.addWidget("${LAUNCHER_APPLET}");
+launcher.currentConfigGroup = ["General"];
+launcher.writeConfig("icon", "${LAUNCHER_ICON}");
+if ("${LAUNCHER_APPLET}" === "org.kde.plasma.kickoff") {
+  launcher.writeConfig("favoritesDisplay", 0);
+  launcher.writeConfig("applicationsDisplay", 1);
+  launcher.writeConfig("showActionButtonCaptions", false);
+  launcher.writeConfig("switchCategoryOnHover", true);
+}
 var tasks = panel.addWidget("org.kde.plasma.icontasks");
 tasks.currentConfigGroup = ["General"];
 tasks.writeConfig("launchers", [${PINNED_LAUNCHERS}]);

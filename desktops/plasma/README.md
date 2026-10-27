@@ -60,9 +60,11 @@ Files, from `templates/`, each named after the theme:
 - the panel layout in that package (`contents/layouts/org.kde.plasma.desktop-layout.js`)
   when `panel.layout` is `centered`: one bar at the bottom with the launcher and the
   icons-only task manager in the middle, the tray and the clock at the right, the apps
-  behind `panel.pinned` pinned. The start menu (Kickoff) gets the patina mark as its
-  button (`branding/icon-small.svg`, copied to `~/.local/share/patina/launcher.svg` so
-  it stays when the theme changes), its favourites as a grid and quiet power buttons;
+  behind `panel.pinned` pinned. The start menu (Kickoff, a menu above its button; the
+  Application Dashboard, full screen and centred, for `start_menu.style: dashboard`)
+  gets the patina mark as its button (`branding/icon-small.svg`, copied to
+  `~/.local/share/patina/launcher.svg` so it stays when the theme changes), and in
+  Kickoff its favourites as a grid and quiet power buttons;
   every desktop gets the theme's wallpaper, which a first login would not take from the
   package. Plasma runs it for a session that has no panels yet, so the image's first
   login starts with it; the first `patina install` inside a session applies it too
@@ -103,6 +105,8 @@ Settings, through `kwriteconfig6`, each written only when it differs:
   `kscreen-doctor` (the output with priority 1); outside one it waits for the next
   `patina theme set` in a session; for `windows.opacity` a second rule that forces
   every normal window to that opacity, one share while active and one while not
+- the command palette's position of `defaults/settings.yaml`: KRunner's `FreeFloating`
+  in `krunnerrc`, true for `center` (the middle of the screen), false for `top`
 - global shortcuts in `kglobalshortcutsrc` from `defaults/keybindings.yaml`, each action
   through `actions.yaml`: a `.desktop` file's `_launch` (kitty, KRunner, Dolphin,
   Spectacle, the default web browser from `xdg-settings`, the agent launcher, the cheat

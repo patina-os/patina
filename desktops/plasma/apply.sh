@@ -517,6 +517,10 @@ if [[ "$(yq eval '.panel.layout' "$settings")" == centered ]]; then
     pinned="$pinned${pinned:+, }\"applications:$service\""
   done < <(yq eval '.panel.pinned[]?' "$settings")
   tpl[PINNED_LAUNCHERS]="$pinned"
+  case "$(yq eval '.start_menu.style // "popup"' "$settings")" in
+    dashboard) tpl[LAUNCHER_APPLET]=org.kde.plasma.kickerdash ;;
+    *) tpl[LAUNCHER_APPLET]=org.kde.plasma.kickoff ;;
+  esac
   render "$templates/layout.js" "$tmp/layout.js"
   put "$tmp/layout.js" "$layout"
 elif [[ -e "$layout" ]]; then
@@ -634,6 +638,11 @@ in_session=0
 case "$(yq eval '.windows.placement' "$settings")" in
   centered) kset kwinrc Placement Centered Windows ;;
   smart) kset kwinrc Placement Smart Windows ;;
+esac
+# The command palette: KRunner in the middle of the screen (free floating) or at the top.
+case "$(yq eval '.command_palette.position' "$settings")" in
+  center) kset krunnerrc FreeFloating true General ;;
+  top) kset krunnerrc FreeFloating false General ;;
 esac
 # Drop the KWin rule $rule: drop_rule <key>..., its keys and its name in $rules.
 drop_rule() {
