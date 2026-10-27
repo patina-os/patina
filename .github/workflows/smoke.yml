@@ -64,6 +64,7 @@ jobs:
         run: |
           bin/patina install --unattended
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          export PATH="$HOME/.local/bin:$PATH"   # GITHUB_PATH applies from the next step
           model="$(yq eval '.ai.cloud.providers[0].model' defaults/settings.yaml)"
           [[ "$(yq eval '.model' "$HOME/.config/opencode/opencode.json")" == "$model" ]]
           yq eval -e '.instructions[] | select(. == "*/defaults/agent.md")' \
