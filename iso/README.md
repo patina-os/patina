@@ -27,7 +27,8 @@ iso/
     etc/calamares/settings.conf        the pages shown and the steps run
     etc/calamares/modules/*.conf       one file per step; packages.conf is the list the
                             installer fetches from Debian's mirrors (Plasma and the base
-                            bundle) and the live tooling it removes afterwards
+                            bundle) and the live tooling it removes afterwards;
+                            packagechooser-ai.conf the AI page
     etc/calamares/branding/patina/   the strings; the marks, artwork, stylesheet and
                             colours next to them are rendered by assets.sh
     etc/systemd/system/patina-ui.service  the installer screen (X, openbox, Calamares)
@@ -35,7 +36,8 @@ iso/
     root/.config/openbox/rc.xml        openbox with the patina theme for the dialogs
   live/templates/           what assets.sh fills from the theme's palette and the fonts:
                             calamares/ (stylesheet.qss, the wallpaper and the slides as
-                            SVG compositions), grub/ (theme.txt, splash.svg), openbox/
+                            SVG compositions, ai.svg for the pictures of the AI page),
+                            grub/ (theme.txt, splash.svg), openbox/
   live/assets.sh            renders the above plus branding/ into a build directory: the
                             console mark, the installer's files, the boot menu's theme
                             and splash; no root, so the smoke test runs it too
@@ -57,8 +59,11 @@ iso/
    the sidebar, the wallpaper veiled behind every page, three still slides while it
    installs. The console shows `branding/logo.txt`.
 2. Calamares asks what it must: time zone and keyboard (pre-filled), disk (erase is
-   preselected; encryption and manual partitioning are available) and the user. The
-   summary page is the last look before anything is written.
+   preselected; encryption and manual partitioning are available), the user, and the AI
+   agent (on this computer, preselected from `ai.mode` of `defaults/settings.yaml`,
+   from a cloud provider, or none). The AI page installs nothing: its answer is
+   handed to the first boot. The summary page is the last look before anything is
+   written.
 3. The live system is copied to disk (`unpackfs`), then Plasma and the base bundle are
    fetched from Debian's mirrors into it (`packages`, the list in
    `modules/packages.conf`), the live tooling and Calamares are removed from it, the
@@ -67,7 +72,9 @@ iso/
 4. First boot: the service takes tty1 before the login screen, clones this repository
    into the user's `~/.local/share/patina`, links `~/.local/bin/patina` and runs
    `patina install`, which asks the remaining questions on tty1 (the theme and the app
-   bundles, with `gum`; `/etc/patina/firstboot.env` can answer them). Then it writes
+   bundles, with `gum`, and for a cloud agent the provider and its login;
+   `/etc/patina/firstboot.env` answers them: the installer writes the AI page's answer
+   there as `PATINA_AI`, and more can be added by hand). Then it writes
    `/var/lib/patina/firstboot-done` and never runs again. A failed clone or install
    prints the Path A command to run by hand and still marks the boot done, so a machine
    never loops on first boot.
@@ -156,7 +163,8 @@ release, never edited.
 - Debian's signed kernel, shim and GRUB stay untouched so Secure Boot keeps working. No
   kernel patches, no out-of-tree modules.
 - The first-boot contract for `patina install` (Phases 1 and 2): honour `PATINA_UNATTENDED=1`
-  (no prompts, defaults for everything) and `PATINA_THEME=<name>`, and exit non-zero on
+  (no prompts, defaults for everything), `PATINA_THEME=<name>` and
+  `PATINA_AI=local|cloud|none` (with `PATINA_AI_PROVIDER=<id>`), and exit non-zero on
   failure so the first-boot script can say so.
 
 ## Settled by the first build
@@ -197,6 +205,10 @@ release, never edited.
   `shim-signed` are present in the target; they come from the live system
   (`live/arch/<arch>.list.chroot`) and must survive the `remove` list. The manual
   install on a Secure Boot machine is the check.
+- The AI page: Calamares 3.3.14's `packagechooser` with the `legacy` method, its
+  pictures found in the branding directory, and `${gs[packagechooser_ai]}` filled in
+  `shellprocess-firstboot.conf`, as the module documentation of that release describes
+  them; the manual install is the check (`/etc/patina/firstboot.env` names the answer).
 - Whether the package set the installer fetches is complete for first boot: the first
   boot of an installed system tells (`patina firstboot: done`).
 - The arm64 image on real hardware: the boot test covers the QEMU `virt` machine only.

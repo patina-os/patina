@@ -62,8 +62,9 @@ jobs:
           dbus-daemon --system --fork
       - name: patina install, as that user
         # Path A as on a laptop: the backend's sudo is used, not dropped. The agents
-        # bundle stays out, as by default.
-        run: sudo -u patina -H bin/patina install --unattended
+        # bundle stays out, as by default, and so does the AI agent: its local model is
+        # gigabytes, and the picture is of the desktop.
+        run: sudo -u patina -H env PATINA_AI=none bin/patina install --unattended
       - name: The desktop as a picture
         # Into the user's home: a path the upload step reads unchanged inside the
         # container, which the runner's temp directory is not.

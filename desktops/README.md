@@ -15,7 +15,7 @@ Contract:
 
 - Input is only data: a theme directory, `defaults/` and the user's overrides. The
   bundles of the last install arrive as `PATINA_BUNDLES` (space-separated), so a
-  renderer can skip what is not installed (the agent shortcut without the agents bundle).
+  renderer can skip what is not installed (the agent shortcut without an AI or the agents bundle).
 - A desktop never reads or writes another desktop's directory.
 - Output lands in the user's XDG config and data directories; the repository checkout
   stays untouched, so `git pull` keeps working. Everything generated carries the theme's

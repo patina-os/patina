@@ -40,6 +40,13 @@ packs. Audience: developers and privacy-minded users in the EU.
   bundle. Agent tools (Claude Code, Codex CLI, opencode, Claude Desktop, Ollama) are an
   opt-in bundle because most of them are proprietary; Ollama is the local backend they
   point at, and their desktop integration is a shortcut and a terminal profile, as data.
+  The AI agent is a question of the install (and a page of the installer): opencode, a
+  free agent, with a model Ollama runs on the machine (the default), with a cloud
+  provider the user picks (European ones first, the key in opencode's own login) or
+  none, as the `ai-local` and `ai-cloud` bundles. It asks before every change
+  (`defaults/apps.yaml`) and reads `defaults/agent.md`. Its place in the command
+  palette is kortex, a KRunner runner kept in a repository of its own
+  (`patina21/kortex`), which may use what patina's tooling may not.
 - Look: the default theme is aurora, made for OLED screens (October 2026, after the
   redesign whose eight directions `docs/design/futures.html` keeps): true black with
   panels one step above it, neon green as the accent and violet as the second colour.
@@ -138,7 +145,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash; `lib.sh` holds the few functions they share, among them the theme loader and template filler the renderers and the image build use |
 | `branding/` | the marks as data: `logo.txt` (the mark) and `wordmark.txt` (the name in block letters) are what scripts print, `wordmark.svg` (the mark typeset beside patina), `icon.svg` and `icon-small.svg` what screens show; `export/` the block-letter name as outlined SVG and PNG |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
-| `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `system/` the system tuning files |
+| `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `agent.md` the AI agent's standing instruction; `system/` the system tuning files |
 | `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, Plasma's `icons.yaml` for the folder colours of an icon theme, one `apply.sh`) and the headless session the desktop workflow screenshots (`screenshot.sh`); `plasma/` first; `terminal/` renders the terminal and its tools for every desktop |
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
@@ -160,7 +167,8 @@ Each directory's README is the authority on its file format.
   `.conf` and `branding.desc` names and live-build its `.list.chroot` names, because the
   tools require them. They are YAML all the same and are linted as such. The files under
   `defaults/system/` are the exception: sysctl, udev and systemd files named by their
-  destination, excluded from the YAML checks.
+  destination, excluded from the YAML checks; so is `defaults/agent.md`, the agent's
+  instruction in Markdown, which opencode reads.
 - Entries starting with `_` are templates; tools skip them.
 
 ## Coding conventions

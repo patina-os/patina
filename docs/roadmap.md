@@ -178,6 +178,12 @@ real Plasma desktop, which the same VM run gives.
   (`desktops/plasma/screenshot.sh`) with the theme applied inside it and kitty with
   the greeting; the README shows it from `docs/screenshots/`
 - [x] branding within Debian's trademark policy (`docs/branding.md`, the logo)
+- [x] the AI agent as a question of the install: local (opencode with Ollama and the
+  model that fits the memory), cloud (opencode with a provider picked from
+  `ai.cloud.providers`, European ones first) or none, as the `ai-local` and `ai-cloud`
+  bundles; asked by the TUI after the bundles and by the installer's own page
+  (Calamares' `packagechooser`), whose answer reaches the first boot as `PATINA_AI`.
+  Permissions ask before changes; `defaults/agent.md` is its standing instruction
 - [ ] one manual install in a VM per release, until Calamares can be driven unattended
   (upstream has no unattended mode; see `iso/README.md`): boot, answer the installer,
   first boot ends in `patina firstboot: done`, and the desktop looks like the
@@ -276,6 +282,11 @@ default. The contract is in `desktops/hyprland/README.md`.
   README row with a status come only after Phase 5, one base at a time
 - more themes and more devices, as contributors bring them and as devices boot Debian's
   kernel; neither needs a phase
+- the agent in the command palette: [kortex](https://github.com/patina21/kortex), a
+  KRunner runner in a repository of its own (its own language and releases, useful on
+  any Plasma desktop), that hands what is typed after `ai` to the agent's `opencode
+  serve` and shows the answer and the confirmations in KRunner. patina installs it
+  once a source the manifest allows carries it, and binds nothing for it before
 
 ## Non-goals
 

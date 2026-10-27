@@ -15,9 +15,13 @@ zed:
       metrics: false
     disable_ai: true
 opencode:
-  # Ollama as the local backend: the OpenAI-compatible endpoint on this machine and the
-  # model Ollama's own opencode guide names. Nothing is pulled; `ollama pull qwen3.5`
-  # once, then opencode has a model that never leaves the machine.
+  # The agent of the AI bundles and the agents bundle. Ollama as the local provider: the
+  # OpenAI-compatible endpoint on this machine and the model Ollama's own opencode guide
+  # names. Which model opencode uses, the model that fits this machine's memory and the
+  # instructions (defaults/agent.md) come from the AI step of `patina install`, which
+  # knows the answer to its question. Permissions: reading runs freely, anything that
+  # changes files or runs a command (ssh to a server included) asks first; a few
+  # read-only commands are allowed. The last matching rule wins, so "*" comes first.
   requires:
     upstream: opencode
   file: ~/.config/opencode/opencode.json
@@ -32,3 +36,22 @@ opencode:
         models:
           "qwen3.5":
             name: qwen3.5
+    permission:
+      edit: ask
+      webfetch: allow
+      external_directory: ask
+      bash:
+        "*": ask
+        "cat *": allow
+        "df *": allow
+        "free *": allow
+        "git diff*": allow
+        "git log*": allow
+        "git status*": allow
+        "ls*": allow
+        "lsblk*": allow
+        "patina doctor*": allow
+        "patina keys*": allow
+        "patina theme list*": allow
+        "systemctl status *": allow
+        "uname *": allow

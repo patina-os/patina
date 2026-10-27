@@ -9,9 +9,10 @@ done_marker="$state_dir/firstboot-done"
 repo_url="${PATINA_REPO_URL:-https://github.com/patina21/patina.git}"
 repo_ref="${PATINA_REPO_REF:-main}"
 
-# Optional answers for unattended runs (written by hand, nothing in the image creates it):
-# PATINA_THEME, PATINA_UNATTENDED=1. `patina install` honours them (roadmap, Phases 1 and 2).
-# shellcheck disable=SC1091  # optional, written by hand for unattended runs
+# Answers for `patina install`: the installer writes PATINA_AI (its AI page,
+# modules/shellprocess-firstboot.conf); PATINA_AI_PROVIDER, PATINA_THEME and
+# PATINA_UNATTENDED=1 may be added by hand for unattended runs.
+# shellcheck disable=SC1091  # written at install time, absent on a hand-made system
 [[ -r /etc/patina/firstboot.env ]] && source /etc/patina/firstboot.env
 
 say() {
@@ -52,8 +53,10 @@ if [[ -n "${PATINA_UNATTENDED:-}" && -r "$clone/branding/logo.txt" ]]; then
   echo
 fi
 say "running 'patina install' as $user"
-export PATINA_THEME="${PATINA_THEME:-}" PATINA_UNATTENDED="${PATINA_UNATTENDED:-}"
-if runuser -u "$user" --whitelist-environment=PATINA_THEME,PATINA_UNATTENDED \
+export PATINA_THEME="${PATINA_THEME:-}" PATINA_UNATTENDED="${PATINA_UNATTENDED:-}" \
+  PATINA_AI="${PATINA_AI:-}" PATINA_AI_PROVIDER="${PATINA_AI_PROVIDER:-}"
+if runuser -u "$user" \
+    --whitelist-environment=PATINA_THEME,PATINA_UNATTENDED,PATINA_AI,PATINA_AI_PROVIDER \
     -- "$clone/bin/patina" install; then
   say "done"
 else

@@ -7,7 +7,24 @@ flatpak_remote: https://dl.flathub.org/repo/flathub.flatpakrepo
 fonts:                       # font names only; the desktop bundle installs the packages
   ui: Source Sans 3          # everything the user reads
   monospace: JetBrains Mono  # terminals and details (versions, hostnames, progress)
-agent: opencode              # what the `agent` keybinding opens (needs the agents bundle)
+agent: opencode              # what the `agent` keybinding opens (needs an AI or the agents bundle)
+# The AI agent: the question `patina install` asks after the bundles, and the page of
+# the image's installer. local and cloud are the bundles manifest/bundles/ai-*.yaml name
+# with their `ai` key; the answer is kept in the state directory, PATINA_AI overrides.
+ai:
+  mode: local                # local | cloud | none; preselected, and taken when unattended
+  local:                     # Ollama on this machine: the first model whose memory fits
+    models:
+      - {min_memory_gb: 16, model: "qwen3.5"}      # the 9b, about 7 GB
+      - {min_memory_gb: 0, model: "qwen3.5:4b"}    # about 4 GB
+  cloud:                     # offered in this order; `model` is opencode's provider/model,
+    providers:               # without one opencode picks the provider's default
+      - {id: mistral, name: "Mistral (EU · France)", model: "mistral/mistral-large-latest"}
+      - {id: scaleway, name: "Scaleway (EU · France)"}
+      - {id: ovhcloud, name: "OVHcloud (EU · France)"}
+      - {id: stackit, name: "STACKIT (EU · Germany)"}
+      - {id: anthropic, name: "Anthropic (US)", model: "anthropic/claude-sonnet-5-5"}
+      - {id: openai, name: "OpenAI (US)"}
 # The speed settings (docs/roadmap.md, Phase 2), after what CachyOS sets on Plasma.
 speed:
   animation_speed: 0.5       # factor on the animation length; 1 is Plasma's default, 0 none
@@ -36,7 +53,7 @@ start_menu:
       name: AI
       icon: folder-code
       apps:
-        - patina-agent.desktop                         # the agent CLI (agents bundle)
+        - patina-agent.desktop                         # the agent (an AI or the agents bundle)
         - claude-desktop.desktop
     - id: self-hosting
       name: Self-hosting

@@ -60,7 +60,9 @@ script -q -c 'patina install' ~/run1.log
 `script` keeps a log without hiding the terminal from the questions.
 
 - [ ] the questions appear: the wordmark, the version line, the theme (aurora offered
-  first), the app bundles (desktop preselected, agents not), a summary, a yes
+  first), the app bundles (desktop preselected, agents not), the AI agent (local
+  preselected; answer local on a VM with 8 GB or more, the model is a few GB, else
+  cloud or none and note it), a summary, a yes
 - [ ] sudo asks for the password and nothing else does; no command fails
 - [ ] it ends with `done: N changes`, and `git -C ~/.local/share/patina status --short` is
   empty (nothing written into the checkout)
@@ -68,6 +70,10 @@ script -q -c 'patina install' ~/run1.log
   /etc/udev/rules.d/60-patina-ioschedulers.rules` shows `root root` and `-rw-r--r--`
 - [ ] the apt source of Euro-Office is in place:
   `/etc/apt/sources.list.d/*.sources` names Nextcloud's repository
+- [ ] with the local agent: `ollama list` shows the model the summary named, and
+  `opencode run "which Debian release is this?"` answers from it; asked to switch to
+  the light theme, opencode asks before it runs `patina theme mode light`. With the
+  cloud agent: `opencode auth login` came up for the provider picked
 
 ## 5. The second run and the doctor
 
@@ -127,8 +133,8 @@ patina install --bundles agents
 - [ ] Claude Code, Codex CLI, opencode, Claude Desktop and Ollama install;
   `systemctl is-active ollama` is `active`
 - [ ] `~/.config/opencode/opencode.json` points opencode at `http://localhost:11434`
-- [ ] Meta+A opens opencode in its own kitty profile; without the bundle the key does
-  nothing
+- [ ] Meta+A opens opencode in its own kitty profile; without the bundle or an AI
+  agent the key does nothing
 - [ ] a second `patina install --bundles agents` ends with `nothing to do`
 
 Roll back to "patina-desktop" afterwards.

@@ -24,8 +24,8 @@ actions:
     service: org.kde.spectacle.desktop
     label: Spectacle
   agent:
-    # apply.sh writes this desktop file when the agents bundle is installed; otherwise
-    # the action is skipped.
+    # apply.sh writes this desktop file when an AI bundle or the agents bundle is
+    # installed; otherwise the action is skipped.
     service: patina-agent.desktop
     label: Agent
   keys:

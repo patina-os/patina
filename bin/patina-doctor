@@ -59,6 +59,10 @@ check_state() {
   echo "state"
   if [[ -e "$PATINA_STATE/installed-at" ]]; then
     ok "installed $(cat "$PATINA_STATE/installed-at"), bundles: $(recorded_bundles | paste -sd ' ')"
+    local ai
+    ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || true)"
+    [[ "$ai" != cloud ]] || ai="cloud, $(cat "$PATINA_STATE/ai-provider" 2> /dev/null || true)"
+    [[ -z "$ai" ]] || ok "ai agent: $ai"
   else
     bad "no install recorded in $PATINA_STATE (run patina install)"
   fi

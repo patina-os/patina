@@ -76,9 +76,10 @@ Files, from `templates/`, each named after the theme:
   `start_menu.favorites` as far as they are installed, go into `kicker-extra-favoritesrc`
   (`Prepend`, a `;`-list): Kickoff puts them before Plasma's own favourites in every new
   start menu (the first login, `--layout`)
-- with the agents bundle: `~/.local/share/applications/patina-agent.desktop`, which
-  opens the command `agent` of `defaults/settings.yaml` in the agent's kitty profile;
-  removed again when the bundle is not installed
+- with an AI bundle (`ai-local`, `ai-cloud`) or the agents bundle:
+  `~/.local/share/applications/patina-agent.desktop`, which opens the command `agent`
+  of `defaults/settings.yaml` in the agent's kitty profile; removed again when none of
+  them is installed
 - the cheat sheet's launcher, `~/.local/share/applications/patina-keys.desktop` (from
   `templates/keys.desktop`): kitty showing `patina keys` until a key is pressed, bound
   to the `keys` action (Meta+K). The sheet lists the actions of

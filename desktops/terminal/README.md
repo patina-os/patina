@@ -20,9 +20,9 @@ neovim.
 
 - kitty: `~/.config/kitty/patina.conf` (colours and fonts), included from `kitty.conf`;
   the include line is added once, above whatever the user keeps there
-- with the agents bundle: `~/.config/kitty/patina-agent.conf`, a quieter kitty profile
-  from the same palette for the agent CLI; removed again when the bundle is not
-  installed
+- with an AI bundle (`ai-local`, `ai-cloud`) or the agents bundle:
+  `~/.config/kitty/patina-agent.conf`, a quieter kitty profile from the same palette
+  for the agent; removed again when none of them is installed
 - the fastfetch greeting: `~/.local/share/patina/logo.txt`, the text mark in the
   brand's colours (`print_logo always`), and `~/.config/fastfetch/config.jsonc`
   pointing at it with the theme's accent for the labels

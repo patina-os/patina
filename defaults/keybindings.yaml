@@ -10,7 +10,7 @@ actions:
   launcher: Meta+Space     # search and run; Meta alone still opens the application menu
   browser: Meta+B          # the default web browser
   files: Meta+E            # the file manager
-  agent: Meta+A            # the agent CLI in its own terminal profile; only with the agents bundle
+  agent: Meta+A            # the agent in its own terminal profile; with an AI or the agents bundle
   close-window: Meta+Q
   overview: Meta+Tab       # all windows and desktops at a glance
   lock-screen: Meta+L
@@ -22,7 +22,7 @@ names:
   launcher: Search and run
   browser: Open the web browser
   files: Open the file manager
-  agent: Open the agent CLI (agents bundle)
+  agent: Open the AI agent
   close-window: Close the window
   overview: Show all windows and desktops
   lock-screen: Lock the screen
