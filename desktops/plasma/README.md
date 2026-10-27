@@ -96,7 +96,9 @@ Settings, through `kwriteconfig6`, each written only when it differs:
   a palette change or a mode switch would not arrive), accent colour, fonts from
   `defaults/settings.yaml`,
   look-and-feel package, widget style, icon theme; `kcminputrc` the cursor theme,
-  `plasmarc` the desktop theme, `kscreenlockerrc` the wallpaper for the lock screen
+  `plasmarc` the desktop theme, `kscreenlockerrc` the wallpaper for the lock screen,
+  `kcm-about-distrorc` the variant About this System shows under Debian's name (patina,
+  and `patina credits` for who made it)
 - the speed settings of `defaults/settings.yaml`: `AnimationDurationFactor`, KWin's
   `LatencyPolicy`, Baloo's indexing (file names under home only, by default)
 - the window defaults of `defaults/settings.yaml`: KWin's placement (`Centered`), and

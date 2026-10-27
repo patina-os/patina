@@ -1,0 +1,141 @@
+# The people and projects patina is made of, and our thanks to them. patina owns the
+# polish; nearly everything it installs, shows and runs is their work. `patina credits`
+# prints this file, the installer's last slide shows its names (iso/live/assets.sh),
+# and the README's Credits section links it.
+# Each group has a `title` and `entries`. An entry has a `name` and a `url`, and
+# optionally `by` (the people or organisation behind it) and `for` (what patina uses it
+# for). People are named where they are plainly the authors: the artwork and the type.
+# The installer's slide shows only the names, so artists whose work is the point are
+# the entry's name.
+groups:
+  - title: The base
+    entries:
+      - name: Debian
+        by: the Debian project and its developers
+        for: the base, and nearly every package patina installs
+        url: https://www.debian.org
+      - name: KDE
+        by: the KDE community
+        for: Plasma, KRunner, Dolphin, Okular, Gwenview and Haruna
+        url: https://kde.org
+
+  - title: The apps
+    entries:
+      - name: Nextcloud
+        by: Nextcloud GmbH and its community
+        for: the sync client and Euro-Office's apt repository
+        url: https://nextcloud.com
+      - name: Euro-Office
+        by: IONOS, Nextcloud and their European partners
+        for: the office suite
+        url: https://github.com/Euro-Office
+      - name: ONLYOFFICE
+        by: Ascensio System SIA
+        for: the code Euro-Office is built on
+        url: https://www.onlyoffice.com
+      - name: Firefox
+        by: Mozilla
+        for: the browser
+        url: https://www.mozilla.org/firefox/
+      - name: Thunderbird
+        by: MZLA Technologies, part of Mozilla
+        for: mail and calendar
+        url: https://www.thunderbird.net
+      - name: Element
+        by: Element and the Matrix.org Foundation
+        for: chat on Matrix
+        url: https://element.io
+      - name: KeePassXC
+        by: the KeePassXC team
+        for: passwords
+        url: https://keepassxc.org
+      - name: kitty
+        for: the terminal
+        url: https://sw.kovidgoyal.net/kitty/
+      - name: Zed
+        by: Zed Industries
+        for: the editor
+        url: https://zed.dev
+      - name: Tauon
+        for: music
+        url: https://tauonmusicbox.rocks
+      - name: ArtCraft
+        for: the launcher of the opt-in artcraft bundle
+        url: https://craftingapps.org
+
+  - title: The terminal
+    entries:
+      - name: fish
+        url: https://fishshell.com
+      - name: starship
+        url: https://starship.rs
+      - name: bat
+        url: https://github.com/sharkdp/bat
+      - name: eza
+        url: https://eza.rocks
+      - name: fzf
+        url: https://github.com/junegunn/fzf
+      - name: ripgrep
+        url: https://github.com/BurntSushi/ripgrep
+      - name: lazygit
+        url: https://github.com/jesseduffield/lazygit
+      - name: btop
+        url: https://github.com/aristocratos/btop
+      - name: zoxide
+        url: https://github.com/ajeetdsouza/zoxide
+      - name: atuin
+        url: https://atuin.sh
+      - name: delta
+        url: https://github.com/dandavison/delta
+      - name: Neovim
+        url: https://neovim.io
+      - name: fastfetch
+        url: https://github.com/fastfetch-cli/fastfetch
+
+  - title: The AI agent
+    entries:
+      - name: opencode
+        by: Anomaly, the team behind SST
+        for: the AI agent, free software
+        url: https://opencode.ai
+      - name: Ollama
+        by: the Ollama team
+        for: running the agent's model on this machine
+        url: https://ollama.com
+      - name: Anthropic
+        for: Claude, which helped write patina, and Claude Code and Claude Desktop
+        url: https://www.anthropic.com
+
+  - title: Artwork and type
+    entries:
+      - name: Google DeepMind and Domhnall Malone
+        for: aurora's two wallpapers, through Pexels
+        url: https://www.pexels.com/photo/17483910/
+      - name: Papirus
+        by: the Papirus Development Team
+        for: the icons
+        url: https://github.com/PapirusDevelopmentTeam/papirus-icon-theme
+      - name: Source Sans 3
+        by: Paul D. Hunt for Adobe
+        for: the words
+        url: https://github.com/adobe-fonts/source-sans
+      - name: JetBrains Mono
+        by: Philipp Nurullin and Konstantin Bulenkov for JetBrains
+        for: the details and the terminal
+        url: https://www.jetbrains.com/lp/mono/
+      - name: Sora
+        by: Jonathan Barnbrook and Julián Moncada
+        for: the wordmark
+        url: https://github.com/sora-xor/sora-font
+
+  - title: Platforms
+    entries:
+      - name: Flathub
+        for: Element, Zed and Tauon
+        url: https://flathub.org
+      - name: Pexels
+        for: the wallpapers, under its licence
+        url: https://www.pexels.com
+      - name: GitHub
+        for: the code, the CI that tests every change, the releases
+        url: https://github.com

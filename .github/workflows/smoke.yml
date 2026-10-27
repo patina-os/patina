@@ -220,9 +220,11 @@ jobs:
           ! grep -q '\${' "$splash/Splash.qml"
           ksplash="$(kreadconfig6 --file ksplashrc --group KSplash --key Theme)"
           [[ "$ksplash" == "org.patina.$theme" ]]
+          variant="$(kreadconfig6 --file kcm-about-distrorc --group General --key Variant)"
+          [[ "$variant" == *"patina credits"* ]]
           test -s "$data/patina/logo.txt"
           test -s "$HOME/.config/fastfetch/config.jsonc"
-      - name: The cheat sheet, and a theme installed from git
+      - name: The cheat sheet, the credits, and a theme installed from git
         # A local repository stands in for a community theme: install keeps only its
         # data, set renders it, remove refuses the current theme and deletes it after.
         run: |
@@ -232,6 +234,8 @@ jobs:
           # pipefail the writer's SIGPIPE would fail the step.
           out="$(bin/patina keys)"
           grep -q 'Show these keys' <<< "$out"
+          out="$(bin/patina credits)"
+          grep -q 'Debian' <<< "$out"
           test -s "$data/applications/patina-keys.desktop"
           launch="$(kreadconfig6 --file kglobalshortcutsrc --group services \
             --group patina-keys.desktop --key _launch)"
@@ -265,7 +269,7 @@ jobs:
           iso/live/assets.sh "$build"
           b="$build/config/includes.chroot/etc/calamares/branding/patina"
           for f in logo.png welcome.png logo-square.svg wallpaper.png slide-1.png slide-2.png \
-              slide-3.png stylesheet.qss ai-local.png ai-cloud.png ai-none.png; do
+              slide-3.png slide-4.png stylesheet.qss ai-local.png ai-cloud.png ai-none.png; do
             test -s "$b/$f"
           done
           test -s "$build/config/bootloaders/grub-pc/splash.png"

@@ -21,6 +21,7 @@ commands:
   theme     List, switch, install or remove themes; dark or light (patina theme --help)
   keys      Show the keyboard shortcuts (Meta+K opens the same in a window)
   doctor    Check the base system and report what patina would change
+  credits   Name and thank the people and projects patina is made of
   migrate   Run pending migrations without pulling
   version   Print the patina version
   help      Show this help
@@ -43,7 +44,7 @@ main() {
   case "$cmd" in
     help | -h | --help) usage ;;
     version | -V | --version) version ;;
-    install | update | theme | keys | doctor | migrate)
+    install | update | theme | keys | doctor | credits | migrate)
       if [[ -x "$PATINA_PATH/bin/patina-$cmd" ]]; then
         exec "$PATINA_PATH/bin/patina-$cmd" "$@"
       fi

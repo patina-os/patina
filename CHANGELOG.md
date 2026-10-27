@@ -8,6 +8,12 @@ All notable changes to patina are documented here. The format follows
 
 ### Added
 
+- Credits: `patina credits` names and thanks the people and projects patina is made
+  of, from Debian, KDE and the apps to opencode, Ollama and Anthropic, the artists of
+  aurora's wallpapers and the type designers, and the platforms. The list is data
+  (`docs/credits.yaml`); the installer's last slide shows its names, Plasma's About
+  this System shows patina as the variant with a pointer to the command, and the
+  README has a Credits section.
 - The everyday apps in the default desktop bundle: Firefox ESR as the browser, with
   telemetry, studies, Pocket and sponsored content off by policy; Tauon for music
   (Flathub), Haruna for video, Gwenview for images and Okular for PDFs, each with its
