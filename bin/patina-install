@@ -26,7 +26,8 @@ picks one (patina theme list) and skips that question; otherwise the theme alrea
 on this machine, or the default of defaults/settings.yaml, is offered first.
 
 The AI agent (opencode): PATINA_AI=local|cloud|none answers that question, and
-PATINA_AI_PROVIDER=<id> the cloud provider (ai.cloud in defaults/settings.yaml);
+PATINA_AI_MODEL=<tag> the local model and PATINA_AI_PROVIDER=<id> the cloud provider
+(ai.local and ai.cloud in defaults/settings.yaml);
 otherwise the answer of the last install, or ai.mode, is offered first and taken when
 unattended. --bundles adds an agent only when it names ai-local or ai-cloud.
 EOU
@@ -50,12 +51,12 @@ section() {
 }
 
 # The questions, on a terminal: the theme, the app bundles, the AI agent, a summary and
-# a yes. Sets PATINA_THEME, bundles, ai and PATINA_AI_PROVIDER. Esc or Cancel leaves
+# a yes. Sets PATINA_THEME, bundles, ai, PATINA_AI_MODEL and PATINA_AI_PROVIDER. Esc or Cancel leaves
 # without a change. Bundle descriptions carry no comma: gum takes the preselected lines
 # as a comma-separated list.
 ask() {
   local current d mode name kind lines choice chosen_lines b
-  local -a theme_lines=() bundle_lines=() preselected=() ai_lines=() provider_lines=()
+  local -a theme_lines=() bundle_lines=() preselected=() ai_lines=() provider_lines=() model_lines=()
   current="${PATINA_THEME:-$(current_theme || yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")}"
   d="$(theme_dir "$current")" || die "no theme '$current' under themes/ (try patina theme list)"
   mode="$(current_mode)"
@@ -98,6 +99,16 @@ ask() {
     ai="${choice%% *}"
     echo
   fi
+  if [[ "$ai" == local && -z "${PATINA_AI_MODEL:-}" ]]; then
+    mapfile -t model_lines < <(yq eval "[.ai.local.models[] | select(.min_memory_gb <= $(memory_gb))][] |
+      (.model + \"|\" + .name)" "$PATINA_PATH/defaults/settings.yaml" | awk -F'|' '{ printf "%-24s %s\n", $1, $2 }')
+    choice="$(printf '%s\n' "${model_lines[@]}" | grep "^$(local_model) ")" || choice="${model_lines[0]}"
+    choice="$(gum choose --header "Local model ($(memory_gb) GB of memory; the first fits best)" \
+      --selected "$choice" "${model_lines[@]}")" || exit 0
+    PATINA_AI_MODEL="${choice%% *}"
+    export PATINA_AI_MODEL
+    echo
+  fi
   if [[ "$ai" == cloud && -z "${PATINA_AI_PROVIDER:-}" ]]; then
     mapfile -t provider_lines < <(yq eval '.ai.cloud.providers[] | (.id + "|" + .name)' "$PATINA_PATH/defaults/settings.yaml" |
       awk -F'|' '{ printf "%-10s %s\n", $1, $2 }')
@@ -128,12 +139,19 @@ cloud_provider() {
   echo "$p"
 }
 
-# The Ollama model for this machine: the first of ai.local.models whose memory fits.
+# This machine's memory in whole gigabytes, rounded.
+memory_gb() {
+  awk '/^MemTotal:/ { print int($2 / 1048576 + 0.5) }' /proc/meminfo
+}
+
+# The Ollama model: PATINA_AI_MODEL, else the one the last install recorded, else the
+# first of ai.local.models whose memory fits this machine.
 local_model() {
-  local gb
-  gb="$(awk '/^MemTotal:/ { print int($2 / 1048576 + 0.5) }' /proc/meminfo)"
-  yq eval "[.ai.local.models[] | select(.min_memory_gb <= $gb)][0].model // \"\"" \
-    "$PATINA_PATH/defaults/settings.yaml"
+  local m="${PATINA_AI_MODEL:-}"
+  [[ -n "$m" ]] || m="$(cat "$PATINA_STATE/ai-model" 2> /dev/null || true)"
+  [[ -n "$m" ]] || m="$(yq eval "[.ai.local.models[] | select(.min_memory_gb <= $(memory_gb))][0].model // \"\"" \
+    "$PATINA_PATH/defaults/settings.yaml")"
+  echo "$m"
 }
 
 # The AI answer in words, for the summary.
@@ -451,8 +469,13 @@ install_ai() {
       say "ai: $model is in Ollama"
     else
       say "ai: pulling $model into Ollama (a few GB, once)"
-      ollama pull "$model"
-      changed
+      if ollama pull "$model"; then
+        changed
+      else
+        # A newer model can need a newer Ollama than the one installed.
+        warn "ai: pulling $model failed; update Ollama (its installer, manifest/upstream.yaml) and run: ollama pull $model"
+        failed=1
+      fi
     fi
   elif yq eval -e ".\"$provider\"" "$HOME/.local/share/opencode/auth.json" > /dev/null 2>&1; then
     say "ai: opencode is logged in to $provider"
@@ -498,6 +521,7 @@ record_state() {
   if [[ -n "$ai" ]]; then
     echo "$ai" > "$PATINA_STATE/ai"
     [[ "$ai" != cloud ]] || cloud_provider > "$PATINA_STATE/ai-provider"
+    [[ "$ai" != local ]] || local_model > "$PATINA_STATE/ai-model"
   fi
   if [[ $first_install -eq 1 ]]; then
     # A fresh install is the end state every migration leads to, so none is pending.
