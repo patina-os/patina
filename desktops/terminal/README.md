@@ -18,7 +18,8 @@ neovim.
 
 ## What it produces
 
-- kitty: `~/.config/kitty/patina.conf` (colours and fonts), included from `kitty.conf`;
+- kitty: `~/.config/kitty/patina.conf` (colours, fonts, padding and a slightly
+  see-through background), included from `kitty.conf`;
   the include line is added once, above whatever the user keeps there
 - with an AI bundle (`ai-local`, `ai-cloud`) or the agents bundle:
   `~/.config/kitty/patina-agent.conf`, a quieter kitty profile from the same palette
