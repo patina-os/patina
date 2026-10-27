@@ -66,9 +66,10 @@ flatpak_installed() {
   command -v flatpak > /dev/null && flatpak info --user "$1" > /dev/null 2>&1
 }
 
-# Is the tool of a manifest/upstream.yaml recipe installed? Each method has its own trace.
+# Is the tool of a manifest/upstream.yaml recipe installed? Each method has its own trace;
+# a git recipe's is the ref patina install recorded, so a new ref counts as missing.
 upstream_installed() {
-  local key="$1" method command package
+  local key="$1" method command package ref
   method="$(yq eval ".$key.method" "$PATINA_PATH/manifest/upstream.yaml")"
   command="$(yq eval ".$key.command // \"\"" "$PATINA_PATH/manifest/upstream.yaml")"
   package="$(yq eval ".$key.package // \"\"" "$PATINA_PATH/manifest/upstream.yaml")"
@@ -78,6 +79,10 @@ upstream_installed() {
     npm) [[ -e "$HOME/.local/lib/node_modules/$package" ]] ;;
     uv) command -v uv > /dev/null && uv tool list 2> /dev/null | grep -q "^$package " ;;
     apt-source) package_installed "$package" ;;
+    git)
+      ref="$(yq eval ".$key.ref" "$PATINA_PATH/manifest/upstream.yaml")"
+      [[ "$(cat "$PATINA_STATE/upstream/$key" 2> /dev/null)" == "$ref" ]]
+      ;;
     *) die "unknown upstream method '$method' for $key" ;;
   esac
 }

@@ -188,8 +188,11 @@ computer, one from a cloud provider, or none. Both agents are
 Meta+A opens it. It reads freely, and asks before anything that changes a file, runs a
 command or reaches a server (`defaults/apps.yaml`); `defaults/agent.md` tells it how
 this machine is put together and how to change it the patina way. In the command
-palette (Meta+Space) it will come with [kortex](https://github.com/patina21/kortex),
-a KRunner plugin of its own repository, so that it also serves other Plasma desktops.
+palette (Meta+Space), type `ai` and your request: [kortex](https://github.com/patina21/kortex),
+a KRunner runner in a repository of its own (so it also serves other Plasma desktops),
+shows the answer there and every action the agent wants to take with Allow once,
+Always and Deny. `ai` alone lists the recent conversations, `ai ›` shows the current
+one. Both AI answers install it.
 
 ## FAQ
 

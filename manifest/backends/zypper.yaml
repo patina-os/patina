@@ -14,6 +14,8 @@ map:      # canonical (Debian) name -> zypper name, only where they differ
   fonts-adobe-sourcesans3: adobe-sourcesans3-fonts
   # fonts-sora: not packaged for openSUSE; to settle when this base is scheduled
   fonts-jetbrains-mono: jetbrains-mono-fonts
+  python3-dbus: python3-dbus-python
+  python3-gi: python3-gobject
 system:   # untested, like the rest of this file; the files under defaults/system/ that name
           # initramfs-tools and /etc/default/grub.d are Debian's and need a map here later
   write: sudo install -D -m 0644

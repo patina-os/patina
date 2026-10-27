@@ -29,7 +29,9 @@ packs. Audience: developers and privacy-minded users in the EU.
 - Sources: Debian's `main` archive first (plus `non-free-firmware` for firmware only, the
   same blobs every base ships), Flathub for GUI apps we do not track, upstream installers
   (npm, uv, a release binary, an upstream's own signed apt repository for an opt-in
-  tool) for the agent tools and for the Go `yq`, which Debian does not package. An
+  tool) for the agent tools and for the Go `yq`, which Debian does not package, and the
+  tagged release of patina's own kortex through its install script (the `git` method).
+  An
   upstream's signed apt repository may serve a default only when the software is free
   and neither Debian's archive nor Flathub carries it (Euro-Office today); the recipe
   moves to Flathub as soon as Flathub carries it.
@@ -46,7 +48,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   none, as the `ai-local` and `ai-cloud` bundles. It asks before every change
   (`defaults/apps.yaml`) and reads `defaults/agent.md`. Its place in the command
   palette is kortex, a KRunner runner kept in a repository of its own
-  (`patina21/kortex`), which may use what patina's tooling may not.
+  (`patina21/kortex`), which may use what patina's tooling may not (it is Python);
+  both AI bundles install its tagged release, pinned in `manifest/upstream.yaml`.
 - Look: the default theme is aurora, made for OLED screens (October 2026, after the
   redesign whose eight directions `docs/design/futures.html` keeps): true black with
   panels one step above it, neon green as the accent and violet as the second colour.

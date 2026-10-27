@@ -70,6 +70,12 @@ jobs:
           yq eval -e '.instructions[] | select(. == "*/defaults/agent.md")' \
             "$HOME/.config/opencode/opencode.json"
           [[ "$(cat "$HOME/.local/state/patina/ai")" == cloud ]]
+          # kortex, the agent in KRunner, from its tagged release
+          test -f "$HOME/.local/share/kortex/kortex.py"
+          test -f "$HOME/.local/share/krunner/dbusplugins/kortex.desktop"
+          ref="$(yq eval '.kortex.ref' manifest/upstream.yaml)"
+          [[ "$(cat "$HOME/.local/state/patina/upstream/kortex")" == "$ref" ]]
+          python3 "$HOME/.local/share/kortex/kortex.py" --version
       - name: patina install, second run changes nothing
         # No PATINA_AI: the answer the first run recorded is taken.
         run: |

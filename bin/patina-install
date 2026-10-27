@@ -262,7 +262,7 @@ EOS
 }
 
 install_upstream() {
-  local key="$1" method command package url arch
+  local key="$1" method command package url arch ref clone
   method="$(yq eval ".$key.method" "$UPSTREAM")"
   command="$(yq eval ".$key.command // \"\"" "$UPSTREAM")"
   package="$(yq eval ".$key.package // \"\"" "$UPSTREAM")"
@@ -306,6 +306,19 @@ install_upstream() {
         uv)
           command -v uv > /dev/null || install_upstream uv
           uv tool install "$package"
+          ;;
+        git)
+          # The release's own install script does the installing, per user; the clone
+          # is only its vehicle.
+          url="$(yq eval ".$key.url" "$UPSTREAM")"
+          ref="$(yq eval ".$key.ref" "$UPSTREAM")"
+          clone="${XDG_CACHE_HOME:-$HOME/.cache}/patina/upstream/$key"
+          rm -rf "$clone"
+          git -c advice.detachedHead=false clone --quiet --depth 1 --branch "$ref" "$url" "$clone"
+          (cd "$clone" && "./$(yq eval ".$key.install" "$UPSTREAM")")
+          rm -rf "$clone"
+          mkdir -p "$PATINA_STATE/upstream"
+          echo "$ref" > "$PATINA_STATE/upstream/$key"
           ;;
         *) die "unknown upstream method '$method' for $key" ;;
       esac

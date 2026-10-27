@@ -184,6 +184,11 @@ real Plasma desktop, which the same VM run gives.
   bundles; asked by the TUI after the bundles and by the installer's own page
   (Calamares' `packagechooser`), whose answer reaches the first boot as `PATINA_AI`.
   Permissions ask before changes; `defaults/agent.md` is its standing instruction
+- [x] the agent in the command palette: [kortex](https://github.com/patina21/kortex), a
+  KRunner runner in a repository of its own (its own language and releases, useful on
+  any Plasma desktop), that hands what is typed after `ai` to the agent's `opencode
+  serve` and shows the answer and the confirmations in KRunner. Both AI bundles install
+  its tagged release (the `git` method of `manifest/upstream.yaml`)
 - [ ] one manual install in a VM per release, until Calamares can be driven unattended
   (upstream has no unattended mode; see `iso/README.md`): boot, answer the installer,
   first boot ends in `patina firstboot: done`, and the desktop looks like the
@@ -282,11 +287,8 @@ default. The contract is in `desktops/hyprland/README.md`.
   README row with a status come only after Phase 5, one base at a time
 - more themes and more devices, as contributors bring them and as devices boot Debian's
   kernel; neither needs a phase
-- the agent in the command palette: [kortex](https://github.com/patina21/kortex), a
-  KRunner runner in a repository of its own (its own language and releases, useful on
-  any Plasma desktop), that hands what is typed after `ai` to the agent's `opencode
-  serve` and shows the answer and the confirmations in KRunner. patina installs it
-  once a source the manifest allows carries it, and binds nothing for it before
+- kortex from the KDE Store or Debian's archive instead of its tagged release, once one
+  of them carries it
 
 ## Non-goals
 

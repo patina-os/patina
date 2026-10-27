@@ -2,8 +2,9 @@
 
 This file is the standing instruction the AI step of `patina install` gives opencode
 (`instructions` in `~/.config/opencode/opencode.json`). It describes the machine you
-run on and how to change it. The user talks to you from the terminal (Meta+A) and, once
-kortex is installed, from the command palette (Meta+Space).
+run on and how to change it. The user talks to you from the terminal (Meta+A) and from
+the command palette (Meta+Space, `ai` and a request, through kortex), where answers
+should be short.
 
 ## The machine
 
