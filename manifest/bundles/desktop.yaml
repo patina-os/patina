@@ -11,6 +11,10 @@ packages:
   - nextcloud-desktop
   - thunderbird
   - keepassxc
+  - firefox-esr  # the browser; its policies: defaults/system/firefox/
+  - okular       # PDF and documents
+  - gwenview     # images
+  - haruna       # video
   - kitty        # the terminal; Ghostty takes its place when Debian carries it (Phase 6)
   - fish
   - starship
@@ -28,5 +32,6 @@ packages:
 flatpaks:
   - im.riot.Riot         # Element
   - dev.zed.Zed          # Zed editor; telemetry and AI off through defaults/apps.yaml
+  - com.github.taiko2k.tauonmb   # Tauon, the music player; Debian does not package it
 upstream:
   - euro-office          # from Nextcloud's signed apt repository until Flathub carries it

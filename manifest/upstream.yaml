@@ -6,8 +6,8 @@
 #   npm         global package via the base's nodejs and npm, into ~/.local
 #   uv          Python tool via `uv tool install` (uv itself is the `uv` recipe)
 #   script      the upstream's documented install script (the only `curl | sh` allowed)
-#   binary      a single static binary from the upstream's release page, installed to
-#               ~/.local/bin; `arch` maps uname -m to the upstream's file name
+#   binary      a single static binary or AppImage from the upstream's release page,
+#               installed to ~/.local/bin; `arch` maps uname -m to the upstream's file name
 #   apt-source  the upstream's own signed apt repository, written as <name>.sources in
 #               deb822 form with the key at `keyring`, through the backend's sudo path,
 #               then installed with apt; for opt-in tools, and for a default only when
@@ -89,3 +89,14 @@ ollama:
   method: script
   url: https://ollama.com/install.sh
   command: ollama
+artcraft-launcher:
+  # The ArtCraft Launcher, which installs and updates the ArtCraft apps (the artcraft
+  # bundle). Free (MIT or Apache-2.0); neither Debian nor Flathub carries it, so its AppImage
+  # comes from the release. It updates itself after that; a new version here only
+  # matters for a fresh install. The desktop renderer adds its menu entry.
+  method: binary
+  url: https://github.com/storytold/craft-launcher/releases/download/v0.8.1/artcraft-launcher-0.8.1-linux-${arch}.AppImage
+  arch:
+    x86_64: x86_64
+    aarch64: aarch64
+  command: artcraft-launcher

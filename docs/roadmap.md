@@ -65,6 +65,15 @@ what the ticks below still owe is the "done when" run on a real VM.
   `manifest/upstream.yaml`, moved to Flathub as soon as Flathub carries it. This is the
   one default that comes from an upstream apt repository; the rule in `manifest/` says
   when that is allowed
+- [ ] the everyday apps in the desktop bundle: Firefox ESR (its policies under
+  `defaults/system/firefox/`: no telemetry, studies, Pocket or sponsored content),
+  Okular, Gwenview and Haruna from Debian's archive, Tauon (the music player, GPL-3.0)
+  from Flathub (`com.github.taiko2k.tauonmb`), each with its glyph in
+  `desktops/plasma/icons.yaml`
+- [ ] the opt-in `artcraft` bundle: the ArtCraft Launcher (MIT or Apache-2.0) as an AppImage
+  from its release, a `binary` recipe pinned at 0.8.1, which installs and updates the
+  ArtCraft apps the user picks; the renderer adds its menu entry. Neither Debian nor
+  Flathub carries the suite, and most of its apps are still in development
 - [x] the system tuning, in the `base` bundle for every install, after what CachyOS
   ships as configuration (its `cachyos-settings` package, GPL-3.0): zram with zstd
   through `systemd-zram-generator`, I/O scheduler udev rules (bfq for disks,
@@ -289,6 +298,10 @@ default. The contract is in `desktops/hyprland/README.md`.
   kernel; neither needs a phase
 - kortex from the KDE Store or Debian's archive instead of its tagged release, once one
   of them carries it
+- the ArtCraft apps from Flathub instead of the launcher's AppImage, once Flathub
+  carries them
+- cliamp (MIT), the terminal music player, in an opt-in bundle once Debian's archive or
+  Flathub carries it; today it comes only as an install script or a release binary
 
 ## Non-goals
 

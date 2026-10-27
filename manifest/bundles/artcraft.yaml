@@ -1,0 +1,14 @@
+# The ArtCraft suite (craftingapps.org): free, clean-room counterparts of Photoshop,
+# Illustrator, Word, Excel, PowerPoint, Acrobat and seven more, written in Rust. Opt-in
+# and alpha: most of the apps are still in development. Neither Debian nor Flathub
+# carries them, so the bundle installs the ArtCraft Launcher from its release, and the
+# launcher installs and updates the apps the user picks in it; patina cannot name them.
+# Euro-Office stays the default office suite.
+name: artcraft
+description: ArtCraft (alpha) · the launcher for PhotoCraft · WordCraft and 11 more
+default: false
+packages:
+  - fuse3   # fusermount for the launcher's AppImage (its runtime carries libfuse itself)
+flatpaks: []
+upstream:
+  - artcraft-launcher

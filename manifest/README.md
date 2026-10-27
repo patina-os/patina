@@ -9,7 +9,8 @@ recipe here.
 manifest/
   bundles/<bundle>.yaml    what to install, by canonical name, grouped for the installer TUI
   backends/<backend>.yaml  how one package manager installs it (apt is the reference)
-  upstream.yaml            tools that come from their upstream installers (agent CLIs, yq)
+  upstream.yaml            tools that come from their upstream installers (agent CLIs, yq,
+                           the ArtCraft Launcher)
 ```
 
 ## Bundles
@@ -70,7 +71,9 @@ tagged release, installed per user by the repository's own script.
    or uv package, the upstream's install script, a single release binary, or the
    upstream's own signed apt repository for an opt-in tool, and for a default only when
    the software is free and neither Debian's archive nor Flathub carries it (Euro-Office
-   today; it moves to Flathub as soon as Flathub carries it)
+   today; it moves to Flathub as soon as Flathub carries it); an opt-in app that is free
+   and that neither carries may also come from its upstream's release (the ArtCraft
+   Launcher's AppImage, a `binary` recipe), until one of them carries it
 
 Never: snap, repositories we would have to maintain ourselves, binaries we build
 ourselves, an upstream repository or installer for anything Debian or Flathub carries.

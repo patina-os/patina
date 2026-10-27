@@ -29,6 +29,11 @@ Papirus-Dark: &papirus
       nextcloud-office-nextcloudoffice: x-office-document-symbolic   # Euro-Office
       keepassxc: dialog-password-symbolic
       dev.zed.Zed: text-editor-symbolic
+      com.github.taiko2k.tauonmb: audio-x-generic-symbolic # Tauon
+      okular: view-dual-symbolic                           # two pages
+      gwenview: image-x-generic-symbolic
+      haruna: video-x-generic-symbolic
+      artcraft-launcher: applications-graphics-symbolic
       claude-desktop: weather-clear-symbolic               # a spark
       preferences-system: preferences-system-symbolic      # System Settings
       plasmadiscover: system-software-install-symbolic

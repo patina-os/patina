@@ -34,12 +34,19 @@ packs. Audience: developers and privacy-minded users in the EU.
   An
   upstream's signed apt repository may serve a default only when the software is free
   and neither Debian's archive nor Flathub carries it (Euro-Office today); the recipe
-  moves to Flathub as soon as Flathub carries it.
+  moves to Flathub as soon as Flathub carries it. An opt-in app that is free and that
+  neither Debian's archive nor Flathub carries may come from its upstream's release
+  (the ArtCraft Launcher, chosen by the maintainer in October 2026); it too moves as
+  soon as one of them carries it. Opt-in tools that wait for a package instead: cliamp.
 - App stack: Nextcloud client, Euro-Office (the AGPL fork of ONLYOFFICE by a European
   consortium, from Nextcloud's signed apt repository until Flathub carries it), Thunderbird,
-  Element, KeePassXC, kitty as the terminal (Ghostty once Debian carries it), the
-  developer tools from Debian's archive and Zed from Flathub, all in the default desktop
-  bundle. Agent tools (Claude Code, Codex CLI, opencode, Claude Desktop, Ollama) are an
+  Element, KeePassXC, kitty as the terminal (Ghostty once Debian carries it), Firefox ESR
+  (its telemetry, Pocket and sponsored content off by policy), Okular, Gwenview and
+  Haruna, the developer tools from Debian's archive, and Zed and Tauon (the music
+  player) from Flathub, all in the default desktop bundle. The ArtCraft suite (free,
+  alpha counterparts of Adobe's and Microsoft's apps) is the opt-in `artcraft` bundle:
+  its launcher, which installs and updates the apps the user picks. Gaming is not a
+  focus. Agent tools (Claude Code, Codex CLI, opencode, Claude Desktop, Ollama) are an
   opt-in bundle because most of them are proprietary; Ollama is the local backend they
   point at, and their desktop integration is a shortcut and a terminal profile, as data.
   The AI agent is a question of the install (and a page of the installer): opencode, a
@@ -148,7 +155,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash; `lib.sh` holds the few functions they share, among them the theme loader and template filler the renderers and the image build use |
 | `branding/` | the marks as data: `logo.txt` (the mark) and `wordmark.txt` (the name in block letters) are what scripts print, `wordmark.svg` (the mark typeset beside patina), `icon.svg` and `icon-small.svg` what screens show; `export/` the block-letter name as outlined SVG and PNG |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
-| `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `agent.md` the AI agent's standing instruction; `system/` the system tuning files |
+| `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `agent.md` the AI agent's standing instruction; `system/` the system tuning files and Firefox's policies |
 | `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, Plasma's `icons.yaml` for the folder colours of an icon theme, one `apply.sh`) and the headless session the desktop workflow screenshots (`screenshot.sh`); `plasma/` first; `terminal/` renders the terminal and its tools for every desktop |
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
@@ -170,7 +177,7 @@ Each directory's README is the authority on its file format.
   `.conf` and `branding.desc` names and live-build its `.list.chroot` names, because the
   tools require them. They are YAML all the same and are linted as such. The files under
   `defaults/system/` are the exception: sysctl, udev and systemd files named by their
-  destination, excluded from the YAML checks; so is `defaults/agent.md`, the agent's
+  destination (Firefox's policies are JSON), excluded from the YAML checks; so is `defaults/agent.md`, the agent's
   instruction in Markdown, which opencode reads.
 - Entries starting with `_` are templates; tools skip them.
 
