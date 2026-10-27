@@ -56,6 +56,7 @@ command_palette:
 # favourites, in order, followed by `favorites`. Apps are desktop entries; favourites
 # not installed are left out, the folders show whatever is installed.
 start_menu:
+  style: popup               # popup: a menu above its button | dashboard: full screen, centred
   grain: 6                   # percent of fine noise on the start menu and the other popups; 0 none
   folders:
     - id: ai

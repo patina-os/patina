@@ -517,6 +517,10 @@ if [[ "$(yq eval '.panel.layout' "$settings")" == centered ]]; then
     pinned="$pinned${pinned:+, }\"applications:$service\""
   done < <(yq eval '.panel.pinned[]?' "$settings")
   tpl[PINNED_LAUNCHERS]="$pinned"
+  case "$(yq eval '.start_menu.style // "popup"' "$settings")" in
+    dashboard) tpl[LAUNCHER_APPLET]=org.kde.plasma.kickerdash ;;
+    *) tpl[LAUNCHER_APPLET]=org.kde.plasma.kickoff ;;
+  esac
   render "$templates/layout.js" "$tmp/layout.js"
   put "$tmp/layout.js" "$layout"
 elif [[ -e "$layout" ]]; then

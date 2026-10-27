@@ -44,6 +44,9 @@ All notable changes to patina are documented here. The format follows
 - The command palette (KRunner, and kortex's `ai` in it) opens in the middle of the
   screen instead of at the top. `command_palette.position` in
   `defaults/settings.yaml` sets it back to `top`.
+- `start_menu.style: dashboard` in `defaults/settings.yaml` opens the start menu as
+  Plasma's Application Dashboard, full screen and centred, instead of the menu above
+  its button (`popup`, the default). It arrives with `patina theme set <name> --layout`.
 
 ## [0.1.0-alpha.1] - 2026-10-26
 
