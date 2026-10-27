@@ -7,12 +7,13 @@ finished in, not the order they were prepared in: the image and the device entri
 written as data before the layer's own commands existed, so Phases 3 and 4 already carry
 ticked items while Phase 1 is open.
 
-Status: pre-alpha. The core commands exist and the smoke test runs `patina install`
-twice in Debian 13 containers on both architectures; the live image builds and boots to
-the installer in CI; the Plasma renderer and the themes, aurora by default, render from data
-and switch without leftovers in the same containers. Phase 1's last step, the run on a
-fresh Debian 13 VM with Plasma, is open; Phase 2 waits for the same run to see the
-theme on a real desktop; Phase 3 is open.
+Status: alpha (`v0.1.0-alpha.1`, Path A only, for testers). The core commands exist and
+the smoke test runs `patina install` twice in Debian 13 containers on both
+architectures; the live image builds and boots to the installer in CI; the Plasma
+renderer and the themes, aurora by default, render from data and switch without
+leftovers in the same containers. Phase 1's last step, the run on a fresh Debian 13 VM
+with Plasma, is open and handed to the alpha's testers; Phase 2 waits for the same run
+to see the theme on a real desktop; Phase 3 is open.
 
 Settled on this roadmap: the TUI helper is `gum` (Debian 13 ships 0.14 on both
 architectures); the office suite is Euro-Office; the terminal is kitty until Debian
@@ -214,6 +215,11 @@ a row in `docs/hardware.md`. Apple Silicon is out of scope (Fedora Asahi, not De
 
 ## Phase 5: the 0.1 release
 
+- [x] the first alpha, `v0.1.0-alpha.1`: Path A only, the image stays in CI (the `iso`
+  workflow attaches no images to an alpha tag); testers do the VM run of
+  `docs/vm-run.md` and report it with the test report form
+  (`.github/ISSUE_TEMPLATE/test-report.yml`). More alphas follow as their reports are
+  fixed; the 0.1.0 below waits for the items under it
 - [ ] `CHANGELOG.md`: the Unreleased section becomes 0.1.0
 - [ ] tag `v0.1.0`; the `iso` workflow attaches both images to the release after the
   boot tests

@@ -1,0 +1,81 @@
+# The report of one tester's run of docs/vm-run.md; GitHub's issue form, so it keeps
+# GitHub's .yml name. One report per run, failing or not.
+name: Test report
+description: One run of docs/vm-run.md on a VM or a machine, what passed and what did not.
+title: "Test report: <version> on <machine>"
+labels: [test-report]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for testing patina. Follow
+        [docs/vm-run.md](https://github.com/patina21/patina/blob/main/docs/vm-run.md)
+        on a fresh Debian 13 with Plasma, ideally a VM with a snapshot, and report
+        here what it showed. A run that stops halfway is worth a report too.
+  - type: input
+    id: version
+    attributes:
+      label: patina version
+      description: The output of `patina version`.
+      placeholder: v0.1.0-alpha.1
+    validations:
+      required: true
+  - type: dropdown
+    id: machine
+    attributes:
+      label: Machine
+      options:
+        - VM, x86_64
+        - VM, aarch64
+        - real hardware, x86_64
+        - real hardware, aarch64
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: Setup
+      description: |
+        The hypervisor and its settings (firmware, CPUs, memory, disk controller,
+        display), or the hardware model; the Debian 13 image you installed from.
+      placeholder: |
+        virt-manager, UEFI, 4 CPUs, 8 GB, SATA disk, 1920x1080
+        debian-13.x.y-amd64-netinst.iso, KDE Plasma and standard system utilities
+    validations:
+      required: true
+  - type: checkboxes
+    id: passed
+    attributes:
+      label: Steps that passed
+      description: Tick each step of docs/vm-run.md that passed completely.
+      options:
+        - label: "4. The first run"
+        - label: "5. The second run and the doctor"
+        - label: "6. After a reboot: the systemd side"
+        - label: "7. The apps"
+        - label: "8. The agents bundle (optional)"
+        - label: "9. The look"
+        - label: "10. Switching themes in a running session"
+        - label: "11. The first login of a new user"
+  - type: textarea
+    id: problems
+    attributes:
+      label: What failed or looked wrong
+      description: |
+        Per step: what you expected, what happened, the command and its output.
+        Screenshots help with the look.
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: patina doctor
+      description: The output of `patina doctor` after the second run.
+      render: text
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: |
+        The failing part of `~/run1.log` or `~/run2.log`, or attach the files.
+      render: text
