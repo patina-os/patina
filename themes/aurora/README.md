@@ -1,8 +1,8 @@
 # aurora
 
 The default patina theme, made for OLED panels: true black, neon green as the accent,
-violet as the second colour, a Google DeepMind visualisation as the wallpaper and a
-contour map that glows green to violet as the second. Dark by default, with a light
+violet as the second colour, a Google DeepMind visualisation as the wallpaper (a white
+one in the light mode) and a contour map that glows green to violet as the second. Dark by default, with a light
 mode (`patina theme mode light`).
 
 ## Palette
@@ -48,17 +48,22 @@ either mode: the marks are made for a dark ground.
 `deepmind.jpg`, the default: an abstract visualisation of flowing digital waves in
 blue and violet, by Google DeepMind (credited on Pexels also to the artist Domhnall
 Malone), [photo 17483910 on Pexels](https://www.pexels.com/photo/17483910/), resized
-to 3840x2160. It is the one third-party file of the theme, under the
+to 3840x2160. `deepmind-light.jpg`, the light mode's: a picture of the same series, an
+artist's illustration of artificial general intelligence, a landscape of columns in
+white, lavender and violet, by Google DeepMind and Domhnall Malone,
+[photo 17483907 on Pexels](https://www.pexels.com/photo/17483907/), resized the same
+way. They are the theme's two third-party files, under the
 [Pexels licence](https://www.pexels.com/license/): free to use and to change, with no
 attribution required (given here anyway), but not to be sold unaltered or offered on
-other stock-photo sites. It is not a free-culture licence; the maintainer chose the
-picture in October 2026 knowing that. The renderer turns it into a PNG at apply time.
+other stock-photo sites. It is not a free-culture licence; the maintainer chose both
+pictures in October 2026 knowing that. The renderer turns them into PNGs at apply
+time.
 
 `contour.svg`, the second: height lines around a summit, every 20 m, every 100 m
 brighter with a soft glow and labelled in JetBrains Mono, drawn in one gradient from
 green at the summit through cyan to violet at the edges; the survey point ▲ glows green
 with its height. The ground is black, so most of the screen stays dark on OLED.
-`contour-light.svg` is the same map on lavender white, the light mode's wallpaper. Both
+`contour-light.svg` is the same map on lavender white, the light mode's second. Both
 are drawn once from a height field and kept as artwork, rendered at 3840x2160 when the
 theme is applied; the script that drew them is not part of the repository. Licensed
 CC-BY-SA-4.0. `artwork_license` names both licences; the theme data is

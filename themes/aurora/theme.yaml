@@ -7,7 +7,7 @@ name: aurora
 display_name: Aurora
 author: patina contributors
 license: GPL-3.0-or-later      # the theme data
-artwork_license: LicenseRef-Pexels AND CC-BY-SA-4.0  # the photo; the SVGs (README.md)
+artwork_license: LicenseRef-Pexels AND CC-BY-SA-4.0  # the photos; the SVGs (README.md)
 variant: dark
 
 # The desktop's accent and its second colour, as palette keys: green for selections,
@@ -37,7 +37,7 @@ palette:
 # Images relative to this directory; the first one is the default. SVG files are
 # rendered by the desktop renderer at apply time; nothing rendered is committed.
 wallpapers:
-  - wallpapers/deepmind.jpg      # Google DeepMind on Pexels, the one third-party wallpaper
+  - wallpapers/deepmind.jpg      # Google DeepMind on Pexels, like the light mode's first
   - wallpapers/contour.svg
 
 # Per-desktop hints, still data.
@@ -67,6 +67,7 @@ light:
     base0E: "#7c3aed"  # magenta: keywords; the violet of the second colour
     base0F: "#a21caf"  # orchid: deprecated, embedded tags
   wallpapers:
+    - wallpapers/deepmind-light.jpg   # the same series on Pexels, in white and violet
     - wallpapers/contour-light.svg
   plasma:
     icons: Papirus-Light

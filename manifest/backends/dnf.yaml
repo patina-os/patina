@@ -16,6 +16,7 @@ map:      # canonical (Debian) name -> dnf name, only where they differ
   fonts-jetbrains-mono: jetbrains-mono-fonts
   python3-gi: python3-gobject
   firefox-esr: firefox   # Fedora ships no ESR
+  plasma-widgets-addons: kdeplasma-addons
 system:   # untested, like the rest of this file; the files under defaults/system/ that name
           # initramfs-tools and /etc/default/grub.d are Debian's and need a map here later
   write: sudo install -D -m 0644

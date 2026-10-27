@@ -61,8 +61,9 @@ packs. Audience: developers and privacy-minded users in the EU.
   redesign whose eight directions `docs/design/futures.html` keeps): true black with
   panels one step above it, neon green as the accent and violet as the second colour.
   Its wallpaper is a Google DeepMind visualisation from Pexels (`deepmind.jpg`, under
-  the Pexels licence, credited in `themes/aurora/README.md`), the one third-party
-  wallpaper, chosen by the maintainer in October 2026; a contour map that glows green
+  the Pexels licence, credited in `themes/aurora/README.md`), and the light mode's is
+  a white one of the same series (`deepmind-light.jpg`): the two third-party
+  wallpapers, chosen by the maintainer in October 2026; a contour map that glows green
   at the summit and turns violet at the edges is the second (SVG in the theme,
   rendered at apply time, licensed with the repository).
   Dark is the default mode; aurora carries a light mode as data (a `light:` block),
@@ -88,8 +89,10 @@ packs. Audience: developers and privacy-minded users in the EU.
   see-through; the start menu and the other panel popups carry a
   slight grain. The brand's colours (deep violet, violet, lavender, white, and green
   for the ▲) are aurora's and do not follow a theme.
-  The desktop's shape is a floating centred bar as on Windows 11 and new windows
-  centred at one size; all are knobs in `defaults/settings.yaml`. No automatic tiling
+  The desktop's shape is a floating centred bar as on Windows 11, new windows
+  centred at one size, the command palette in the middle of the screen and the start
+  menu full screen and centred (Plasma's Application Dashboard, October 2026); all are
+  knobs in `defaults/settings.yaml`. No automatic tiling
   on Plasma: that would need a KWin script Debian does not package; a tiling desktop
   is the Hyprland add-on.
 - Speed: the system tuning CachyOS ships as configuration (zram, I/O schedulers, memory

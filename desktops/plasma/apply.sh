@@ -517,10 +517,16 @@ if [[ "$(yq eval '.panel.layout' "$settings")" == centered ]]; then
     pinned="$pinned${pinned:+, }\"applications:$service\""
   done < <(yq eval '.panel.pinned[]?' "$settings")
   tpl[PINNED_LAUNCHERS]="$pinned"
-  case "$(yq eval '.start_menu.style // "popup"' "$settings")" in
-    dashboard) tpl[LAUNCHER_APPLET]=org.kde.plasma.kickerdash ;;
-    *) tpl[LAUNCHER_APPLET]=org.kde.plasma.kickoff ;;
-  esac
+  # The Application Dashboard comes with plasma-widgets-addons (the desktop bundle);
+  # without it Plasma would show a broken applet in the bar, so Kickoff stands in.
+  tpl[LAUNCHER_APPLET]=org.kde.plasma.kickoff
+  if [[ "$(yq eval '.start_menu.style // "popup"' "$settings")" == dashboard ]]; then
+    if [[ -d /usr/share/plasma/plasmoids/org.kde.plasma.kickerdash ]]; then
+      tpl[LAUNCHER_APPLET]=org.kde.plasma.kickerdash
+    else
+      warn "start menu: the Application Dashboard is not installed (plasma-widgets-addons); using Kickoff"
+    fi
+  fi
   render "$templates/layout.js" "$tmp/layout.js"
   put "$tmp/layout.js" "$layout"
 elif [[ -e "$layout" ]]; then
