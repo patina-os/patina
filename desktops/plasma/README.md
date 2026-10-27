@@ -103,6 +103,8 @@ Settings, through `kwriteconfig6`, each written only when it differs:
   `kscreen-doctor` (the output with priority 1); outside one it waits for the next
   `patina theme set` in a session; for `windows.opacity` a second rule that forces
   every normal window to that opacity, one share while active and one while not
+- the command palette's position of `defaults/settings.yaml`: KRunner's `FreeFloating`
+  in `krunnerrc`, true for `center` (the middle of the screen), false for `top`
 - global shortcuts in `kglobalshortcutsrc` from `defaults/keybindings.yaml`, each action
   through `actions.yaml`: a `.desktop` file's `_launch` (kitty, KRunner, Dolphin,
   Spectacle, the default web browser from `xdg-settings`, the agent launcher, the cheat

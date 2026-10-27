@@ -41,6 +41,9 @@ All notable changes to patina are documented here. The format follows
   favourites, after kitty and Zed.
 - kitty keeps its text 10 points off the window's edges and its background a little
   more see-through (98% on top of the windows' own opacity); the text stays opaque.
+- The command palette (KRunner, and kortex's `ai` in it) opens in the middle of the
+  screen instead of at the top. `command_palette.position` in
+  `defaults/settings.yaml` sets it back to `top`.
 
 ## [0.1.0-alpha.1] - 2026-10-26
 

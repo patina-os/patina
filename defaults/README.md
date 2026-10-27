@@ -13,8 +13,8 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   the user's choice in the state directory) and desktop, Flatpak remote, fonts, the command the
   `agent` action opens, the speed settings (animation factor, compositor latency,
   file indexing), and the window and panel defaults (where a new window opens and how
-  big, a centred or the desktop's own bar, which actions' apps are pinned to it), the
-  start menu (its folders, AI and self-hosting, its favourites as desktop entries,
+  big, a centred or the desktop's own bar, which actions' apps are pinned to it), where
+  the command palette opens (the middle of the screen or the top), the start menu (its folders, AI and self-hosting, its favourites as desktop entries,
   and the grain on it and the other popups), all as desktop-agnostic words the renderer
   translates. Under `ai`, the AI agent: the answer preselected and taken unattended
   (`mode`: local, cloud or none), the Ollama models offered, in order, each with the

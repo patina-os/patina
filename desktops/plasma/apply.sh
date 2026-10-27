@@ -635,6 +635,11 @@ case "$(yq eval '.windows.placement' "$settings")" in
   centered) kset kwinrc Placement Centered Windows ;;
   smart) kset kwinrc Placement Smart Windows ;;
 esac
+# The command palette: KRunner in the middle of the screen (free floating) or at the top.
+case "$(yq eval '.command_palette.position' "$settings")" in
+  center) kset krunnerrc FreeFloating true General ;;
+  top) kset krunnerrc FreeFloating false General ;;
+esac
 # Drop the KWin rule $rule: drop_rule <key>..., its keys and its name in $rules.
 drop_rule() {
   local key

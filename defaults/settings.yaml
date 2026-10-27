@@ -48,6 +48,9 @@ panel:
   layout: centered           # centered: launcher and task icons in the middle; plasma: stock bar
   floating: true             # true: Plasma's floating bar; false: edge to edge
   pinned: [files, browser, terminal]   # actions of keybindings.yaml pinned to the bar, in order
+# The command palette (KRunner on Plasma, kortex's `ai` in it).
+command_palette:
+  position: center           # where it opens: center of the screen | top (Plasma's own)
 # The start menu (Kickoff on Plasma): the patina mark as its button, AI and
 # self-hosting first. Each folder becomes a folder of the menu and its apps open the
 # favourites, in order, followed by `favorites`. Apps are desktop entries; favourites
