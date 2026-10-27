@@ -43,8 +43,10 @@ The screenshots are taken by CI, never edited; see `iso/README.md`.
 
 patina takes a stock Debian with Plasma and finishes it: one consistent theme across
 Plasma, terminal and editors, sane defaults, the apps a privacy-minded developer in the
-EU wants, and the agent tools (Claude Code, Codex CLI, opencode, Claude Desktop, Ollama
-for local models) installed the way their upstreams intend.
+EU wants, an AI agent that answers, changes settings when you say yes, writes code and
+works on your servers (opencode, with a model on your machine or from a cloud provider
+you pick), and the agent tools (Claude Code, Codex CLI, opencode, Claude Desktop,
+Ollama for local models) installed the way their upstreams intend.
 
 It is inspired by [Omarchy](https://omarchy.org): the polish, the themes, the quick
 branded boot-to-finished-desktop install, and the `git pull` plus migrations update
@@ -62,7 +64,9 @@ repository.
 ## The stance
 
 1. Free software only. No snap, no proprietary defaults, no US cloud services as defaults.
-   Proprietary agent tools exist as an opt-in bundle, never preselected.
+   Proprietary agent tools exist as an opt-in bundle, never preselected. The AI agent
+   is free software; its default model runs on your machine, and a cloud provider is
+   your choice, European ones first.
 2. Own the UI, own nothing that gets CVEs.
 3. Data over code: themes, keybindings and package lists are data files; scripts stay thin.
 4. Every design choice must reduce the work for a one-person, part-time maintainer.
@@ -145,7 +149,7 @@ theme, a purple palette with two abstract wallpapers, stay as options (`patina t
 set datum`).
 Meta plus
 one key opens the terminal (Return), the search (Space), the browser (B), the files (E)
-and, with the agent tools installed, the agent CLI in its own terminal profile (A);
+and the AI agent in its own terminal profile (A);
 Meta+K shows all of them, and Plasma's own, at a glance (`patina keys`). Themes shared
 in a repository of their own install with `patina theme install <git-url>`, as data
 only. The
@@ -166,6 +170,26 @@ not carry: GUI apps we do not want to track come from Flathub, agent tools from 
 upstream installers (npm, uv, Anthropic's own apt repository for Claude Desktop), and
 Euro-Office from Nextcloud's signed apt repository until Flathub carries it. Ollama is
 the local backend the agent tools point at.
+
+## The AI agent
+
+`patina install` (and the installer's AI page) asks one question: an AI agent on this
+computer, one from a cloud provider, or none. Both agents are
+[opencode](https://opencode.ai), free software:
+
+- **local** (the default): Ollama runs the model on your machine, the largest of
+  `ai.local.models` in `defaults/settings.yaml` that fits your memory (Qwen 3.5, 9B
+  from 16 GB, 4B below). Nothing leaves the computer.
+- **cloud**: a provider you pick, Mistral and other European providers first, then
+  Anthropic and OpenAI. You log in with `opencode auth login`; the key stays in
+  opencode's own login, patina never sees it.
+- **none**: no agent. `patina install` asks again whenever you run it.
+
+Meta+A opens it. It reads freely, and asks before anything that changes a file, runs a
+command or reaches a server (`defaults/apps.yaml`); `defaults/agent.md` tells it how
+this machine is put together and how to change it the patina way. In the command
+palette (Meta+Space) it will come with [kortex](https://github.com/patina21/kortex),
+a KRunner plugin of its own repository, so that it also serves other Plasma desktops.
 
 ## FAQ
 

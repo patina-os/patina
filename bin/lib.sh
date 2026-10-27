@@ -154,6 +154,28 @@ current_mode() {
   echo "$mode"
 }
 
+# The AI agent, local, cloud or none: PATINA_AI, else what the last `patina install`
+# recorded, else `ai.mode` of defaults/settings.yaml.
+current_ai() {
+  local ai="${PATINA_AI:-}"
+  [[ -n "$ai" ]] || ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || true)"
+  [[ -n "$ai" ]] || ai="$(yq eval '.ai.mode // "none"' "$PATINA_PATH/defaults/settings.yaml")"
+  [[ "$ai" =~ ^(local|cloud|none)$ ]] || die "the AI agent is local, cloud or none, not '$ai'"
+  echo "$ai"
+}
+
+# The bundle that answers the AI question with this mode (its `ai` key); fails for none.
+ai_bundle() {
+  local b
+  for b in $(all_bundles); do
+    if [[ "$(yq eval '.ai // ""' "$PATINA_PATH/manifest/bundles/$b.yaml")" == "$1" ]]; then
+      echo "$b"
+      return
+    fi
+  done
+  return 1
+}
+
 # Does a theme have this mode: its own variant, or a block named after the other one
 # (`light:` in a dark theme) with a palette? theme_has_mode <theme.yaml> <mode>
 theme_has_mode() {

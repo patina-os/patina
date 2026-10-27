@@ -15,10 +15,20 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   file indexing), and the window and panel defaults (where a new window opens and how
   big, a centred or the desktop's own bar, which actions' apps are pinned to it), the
   start menu (its folders, AI and self-hosting, its favourites as desktop entries,
-  and the grain on it and the other popups), all as desktop-agnostic words the renderer translates.
+  and the grain on it and the other popups), all as desktop-agnostic words the renderer
+  translates. Under `ai`, the AI agent: the answer preselected and taken unattended
+  (`mode`: local, cloud or none), the Ollama models by the memory they need (the first
+  that fits is pulled) and the cloud providers in the order they are offered, each with
+  opencode's `provider/model` where patina picks one.
 - `apps.yaml`: settings `patina install` merges into applications' own configuration
-  files (Zed with telemetry and AI off, opencode pointed at Ollama), each with the file
-  it owns and the bundle item that must be installed for it to apply.
+  files (Zed with telemetry and AI off, opencode pointed at Ollama and asking before
+  every change), each with the file it owns and the bundle item that must be installed
+  for it to apply.
+- `agent.md`: the AI agent's standing instruction, in the agent's own language: what
+  machine it runs on, how a patina desktop is changed (patina's commands, then
+  `kwriteconfig6`, apt and Flathub), and that it explains and asks before a change. The
+  AI step of `patina install` names it in opencode's `instructions`; the agent reads it,
+  no script does.
 - `system/`: the system tuning every install gets, copied from what CachyOS ships as
   configuration: sysctl, udev rules, systemd drop-ins, tmpfiles, initramfs and GRUB
   settings, plus the login screen's static settings (`sddm.conf.d/`: the Wayland session
@@ -28,10 +38,11 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   desktop renderer). Each file is named by its destination under `/etc`
   (`system/sysctl.d/x.conf` lands at `/etc/sysctl.d/x.conf`), and the backend's sudo
   path (`system.write` in `manifest/backends/`) is the only thing that writes them.
-  These files keep the names and formats their tools require, so they are the one place
-  in the repository that is neither YAML nor bash; `patina doctor` reports any that is
+  These files keep the names and formats their tools require, so they are, with
+  `agent.md`, the only data here that is not YAML; `patina doctor` reports any that is
   missing or differs.
 
-Rules: no commands, no architecture names, no filesystem paths except the destinations
+Rules: no commands (`agent.md` names commands for the agent to run, never for a script),
+no architecture names, no filesystem paths except the destinations
 the `system/` files are named by and the `file` an app owns in `apps.yaml`. If a default
 only makes sense on one desktop, it belongs in that desktop's directory, not here.

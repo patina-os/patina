@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Install the layer: the chosen bundles (packages through this base's backend, flatpaks
-# from Flathub, the upstream recipes), the system tuning, the app settings and the theme,
-# all from the data files. Idempotent: a second run changes nothing and says so.
+# from Flathub, the upstream recipes), the system tuning, the app settings, the AI agent
+# and the theme, all from the data files. Idempotent: a second run changes nothing and
+# says so.
 set -euo pipefail
 
 # shellcheck source=bin/lib.sh
@@ -20,9 +21,14 @@ usage: patina install [--bundles <a,b,...>] [--all] [--list] [--unattended]
                  the contract the image's first boot and CI use
 
 On a terminal, without --bundles or --all, the install asks (with gum): the theme, the
-app bundles, then a summary and a yes. The theme: PATINA_THEME=<name> picks one (patina
-theme list) and skips that question; otherwise the theme already set on this machine, or
-the default of defaults/settings.yaml, is offered first.
+app bundles, the AI agent, then a summary and a yes. The theme: PATINA_THEME=<name>
+picks one (patina theme list) and skips that question; otherwise the theme already set
+on this machine, or the default of defaults/settings.yaml, is offered first.
+
+The AI agent (opencode): PATINA_AI=local|cloud|none answers that question, and
+PATINA_AI_PROVIDER=<id> the cloud provider (ai.cloud in defaults/settings.yaml);
+otherwise the answer of the last install, or ai.mode, is offered first and taken when
+unattended. --bundles adds an agent only when it names ai-local or ai-cloud.
 EOU
 }
 
@@ -43,12 +49,13 @@ section() {
   gum style --bold --foreground "${tpl[ACCENT]}" "── $1 ──"
 }
 
-# The questions, on a terminal: the theme, the app bundles, a summary and a yes. Sets
-# PATINA_THEME and bundles. Esc or Cancel leaves without a change. Bundle descriptions
-# carry no comma: gum takes the preselected lines as a comma-separated list.
+# The questions, on a terminal: the theme, the app bundles, the AI agent, a summary and
+# a yes. Sets PATINA_THEME, bundles, ai and PATINA_AI_PROVIDER. Esc or Cancel leaves
+# without a change. Bundle descriptions carry no comma: gum takes the preselected lines
+# as a comma-separated list.
 ask() {
-  local current d mode name kind lines choice chosen_lines
-  local -a theme_lines=() bundle_lines=() preselected=()
+  local current d mode name kind lines choice chosen_lines b
+  local -a theme_lines=() bundle_lines=() preselected=() ai_lines=() provider_lines=()
   current="${PATINA_THEME:-$(current_theme || yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")}"
   d="$(theme_dir "$current")" || die "no theme '$current' under themes/ (try patina theme list)"
   mode="$(current_mode)"
@@ -68,7 +75,7 @@ ask() {
     echo
   fi
   for name in $(all_bundles); do
-    yq eval -e '.required == true' "$PATINA_PATH/manifest/bundles/$name.yaml" > /dev/null 2>&1 && continue
+    yq eval -e '.required == true or .ai' "$PATINA_PATH/manifest/bundles/$name.yaml" > /dev/null 2>&1 && continue
     kind="opt-in"
     yq eval -e '.default == true' "$PATINA_PATH/manifest/bundles/$name.yaml" > /dev/null 2>&1 && kind="default"
     lines="$(printf '%-9s %-8s %s' "$name" "($kind)" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$name.yaml")")"
@@ -79,15 +86,63 @@ ask() {
     --selected "$(IFS=,; echo "${preselected[*]}")" "${bundle_lines[@]}")" || exit 0
   mapfile -t bundles < <(printf 'base\n%s\n' "$(printf '%s\n' "$chosen_lines" | awk 'NF { print $1 }')" | awk 'NF && !seen[$0]++')
   echo
+  if [[ -z "${PATINA_AI:-}" ]]; then
+    for mode in local cloud; do
+      b="$(ai_bundle "$mode")" || continue
+      ai_lines+=("$(printf '%-6s %s' "$mode" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$b.yaml")")")
+    done
+    ai_lines+=("$(printf '%-6s %s' none "No AI agent · patina install asks again next time")")
+    choice="$(printf '%s\n' "${ai_lines[@]}" | grep "^$ai ")" || choice="${ai_lines[0]}"
+    choice="$(gum choose --header "AI agent (Meta+A; it asks before it changes anything)" \
+      --selected "$choice" "${ai_lines[@]}")" || exit 0
+    ai="${choice%% *}"
+    echo
+  fi
+  if [[ "$ai" == cloud && -z "${PATINA_AI_PROVIDER:-}" ]]; then
+    mapfile -t provider_lines < <(yq eval '.ai.cloud.providers[] | (.id + "|" + .name)' "$PATINA_PATH/defaults/settings.yaml" |
+      awk -F'|' '{ printf "%-10s %s\n", $1, $2 }')
+    choice="$(printf '%s\n' "${provider_lines[@]}" | grep "^$(cloud_provider) ")" || choice="${provider_lines[0]}"
+    choice="$(gum choose --header "Cloud provider (the key stays in opencode's own login)" \
+      --selected "$choice" "${provider_lines[@]}")" || exit 0
+    PATINA_AI_PROVIDER="${choice%% *}"
+    export PATINA_AI_PROVIDER
+    echo
+  fi
   gum style --border rounded --border-foreground "${tpl[ACCENT]}" --padding "1 3" \
-    "$(printf 'theme    %s\nbundles  %s\nbackend  %s (%s)' "$PATINA_THEME" "${bundles[*]}" \
-      "$(basename "$BACKEND" .yaml)" "$(uname -m)")"
+    "$(printf 'theme    %s\nbundles  %s\nai       %s\nbackend  %s (%s)' "$PATINA_THEME" "${bundles[*]}" \
+      "$(ai_summary)" "$(basename "$BACKEND" .yaml)" "$(uname -m)")"
   echo
   if ! gum confirm "Install now?" --affirmative Install --negative Cancel; then
     say "nothing changed"
     exit 0
   fi
   tui=1
+}
+
+# The cloud provider: PATINA_AI_PROVIDER, else the one the last install recorded, else
+# the first of ai.cloud.providers.
+cloud_provider() {
+  local p="${PATINA_AI_PROVIDER:-}"
+  [[ -n "$p" ]] || p="$(cat "$PATINA_STATE/ai-provider" 2> /dev/null || true)"
+  [[ -n "$p" ]] || p="$(yq eval '.ai.cloud.providers[0].id' "$PATINA_PATH/defaults/settings.yaml")"
+  echo "$p"
+}
+
+# The Ollama model for this machine: the first of ai.local.models whose memory fits.
+local_model() {
+  local gb
+  gb="$(awk '/^MemTotal:/ { print int($2 / 1048576 + 0.5) }' /proc/meminfo)"
+  yq eval "[.ai.local.models[] | select(.min_memory_gb <= $gb)][0].model // \"\"" \
+    "$PATINA_PATH/defaults/settings.yaml"
+}
+
+# The AI answer in words, for the summary.
+ai_summary() {
+  case "$ai" in
+    local) echo "local, $(local_model) through Ollama" ;;
+    cloud) echo "cloud, $(cloud_provider)" ;;
+    *) echo none ;;
+  esac
 }
 
 # Download to a file with curl, or wget while curl is not installed yet.
@@ -127,6 +182,7 @@ list_bundles() {
     kind=opt-in
     yq eval -e '.default == true' "$f" > /dev/null 2>&1 && kind=default
     yq eval -e '.required == true' "$f" > /dev/null 2>&1 && kind=always
+    yq eval -e '.ai' "$f" > /dev/null 2>&1 && kind=ai
     printf '%-8s %-9s %s\n' "$b" "($kind)" "$(yq eval '.description' "$f")"
   done
 }
@@ -335,6 +391,67 @@ install_apps() {
   done
 }
 
+# The AI agent the question chose: which model opencode uses, its standing instructions
+# (defaults/agent.md), the local model pulled into Ollama or the cloud provider's login,
+# which stays opencode's own. install_apps has written the rest of opencode's file.
+install_ai() {
+  local file="$HOME/.config/opencode/opencode.json" rules="$PATINA_PATH/defaults/agent.md"
+  local model="" provider="" cloud_model="" tmp
+  [[ -n "$ai" && "$ai" != none ]] || return 0
+  if [[ "$ai" == local ]]; then
+    model="$(local_model)"
+    [[ -n "$model" ]] || die "no model of ai.local.models fits this machine"
+  else
+    provider="$(cloud_provider)"
+    cloud_model="$(yq eval -e ".ai.cloud.providers[] | select(.id == \"$provider\") | .model // \"\"" \
+      "$PATINA_PATH/defaults/settings.yaml" 2> /dev/null)" ||
+      die "no cloud provider '$provider' in ai.cloud.providers of defaults/settings.yaml"
+  fi
+  mkdir -p "$(dirname "$file")"
+  [[ -s "$file" ]] || echo '{}' > "$file"
+  tmp="$(mktemp)"
+  # A provider without a model of its own: opencode picks that provider's default.
+  if ! MODEL="$model" PROVIDER="$provider" CLOUD_MODEL="$cloud_model" RULES="$rules" yq eval -o=json '
+      .instructions = ((.instructions // []) + [strenv(RULES)] | unique) |
+      with(select(strenv(MODEL) != "");
+        .provider.ollama.models[strenv(MODEL)].name = strenv(MODEL) |
+        .model = "ollama/" + strenv(MODEL)) |
+      with(select(strenv(PROVIDER) != "");
+        .model = strenv(CLOUD_MODEL) | del(.model | select(. == "")))
+    ' "$file" > "$tmp" 2> /dev/null; then
+    warn "opencode: cannot parse $file (comments?); set model and instructions by hand"
+    rm -f "$tmp"
+    failed=1
+    return
+  fi
+  if ! cmp -s "$tmp" "$file"; then
+    say "opencode: the $ai agent in $file"
+    cp "$tmp" "$file"
+    changed
+  fi
+  rm -f "$tmp"
+  if [[ "$ai" == local ]]; then
+    # `ollama list` names an untagged model with :latest.
+    if ! ollama list > /dev/null 2>&1; then
+      say "ai: Ollama is not running (a container?); later: ollama pull $model"
+    elif ollama list | awk 'NR > 1 { print $1 }' | grep -qx "$model$([[ "$model" == *:* ]] || echo :latest)"; then
+      say "ai: $model is in Ollama"
+    else
+      say "ai: pulling $model into Ollama (a few GB, once)"
+      ollama pull "$model"
+      changed
+    fi
+  elif yq eval -e ".\"$provider\"" "$HOME/.local/share/opencode/auth.json" > /dev/null 2>&1; then
+    say "ai: opencode is logged in to $provider"
+  elif [[ -t 0 && -t 1 && -z "$PATINA_UNATTENDED" ]]; then
+    say "ai: log in to $provider; opencode keeps the key, patina never sees it"
+    opencode auth login --provider "$provider" ||
+      say "ai: not logged in; later: opencode auth login --provider $provider"
+  else
+    say "ai: log in once with: opencode auth login --provider $provider"
+  fi
+}
+
 # The theme, through `patina theme set`: PATINA_THEME, else the one already recorded,
 # else the default of defaults/settings.yaml. The first install also gives the desktop
 # the theme's panel layout (Plasma's stock bar is all that exists then); later runs
@@ -364,6 +481,11 @@ record_state() {
   { [[ -f "$PATINA_STATE/bundles" ]] && cat "$PATINA_STATE/bundles"; printf '%s\n' "${bundles[@]}"; } |
     awk 'NF && !seen[$0]++' > "$PATINA_STATE/bundles.new"
   mv "$PATINA_STATE/bundles.new" "$PATINA_STATE/bundles"
+  # The AI answer, offered first next time; none too, so the question remembers it.
+  if [[ -n "$ai" ]]; then
+    echo "$ai" > "$PATINA_STATE/ai"
+    [[ "$ai" != cloud ]] || cloud_provider > "$PATINA_STATE/ai-provider"
+  fi
   if [[ $first_install -eq 1 ]]; then
     # A fresh install is the end state every migration leads to, so none is pending.
     for m in "$PATINA_PATH"/migrations/[0-9]*.sh; do
@@ -420,19 +542,28 @@ main() {
   BACKEND="$(backend_file)"
   UPSTREAM="$PATINA_PATH/manifest/upstream.yaml"
 
+  # The AI answer: local, cloud, none, or empty when --bundles leaves the agent alone.
+  ai="$(current_ai)"
   bundles=()
   if [[ $all -eq 1 ]]; then
     mapfile -t bundles < <(all_bundles)
+    [[ "$ai" != none ]] || ai=local
   elif [[ -n "$chosen" ]]; then
     mapfile -t bundles < <(printf 'base\n%s\n' "${chosen//,/$'\n'}" | awk 'NF && !seen[$0]++')
+    [[ -n "${PATINA_AI:-}" ]] || ai=""
     for b in "${bundles[@]}"; do
       [[ -f "$PATINA_PATH/manifest/bundles/$b.yaml" ]] || die "no bundle '$b' (try --list)"
+      [[ -n "${PATINA_AI:-}" ]] || ai="$(yq eval ".ai // \"$ai\"" "$PATINA_PATH/manifest/bundles/$b.yaml")"
     done
   else
     mapfile -t bundles < <(default_bundles)
     if [[ -t 0 && -t 1 && -z "$PATINA_UNATTENDED" ]] && command -v gum > /dev/null; then
       ask
     fi
+  fi
+  if [[ -n "$ai" && "$ai" != none ]]; then
+    b="$(ai_bundle "$ai")" || die "no bundle in manifest/bundles/ answers ai: $ai"
+    mapfile -t bundles < <(printf '%s\n' "${bundles[@]}" "$b" | awk 'NF && !seen[$0]++')
   fi
   say "bundles: ${bundles[*]} ($(basename "$BACKEND" .yaml) backend, $(uname -m))"
 
@@ -451,6 +582,8 @@ main() {
   section system
   install_system
   install_apps
+  section "ai agent"
+  install_ai
   record_state
   section theme
   install_theme

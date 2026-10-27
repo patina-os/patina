@@ -25,7 +25,13 @@ flatpaks:            # Flathub application IDs; identical on every base, install
   - org.kde.okular
 upstream:            # keys of manifest/upstream.yaml
   - claude-code
+ai: local            # only on the bundles that answer the AI question (local, cloud)
 ```
+
+A bundle with an `ai` key is not a line of the bundle list: it is the answer of the AI
+question of `patina install` and the installer's AI page (`ai-local`, `ai-cloud`). The
+question's answer adds that bundle; `--bundles ai-cloud` and `PATINA_AI=cloud` do the
+same.
 
 Canonical names are the Debian package names, because Debian is the reference base.
 A backend file maps them only where its own name differs. `patina install --list`

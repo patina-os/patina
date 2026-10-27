@@ -1,0 +1,15 @@
+# The AI agent on this machine: opencode with a model Ollama runs locally, so nothing
+# leaves the computer. One of the answers to the AI question of `patina install` (the
+# `ai` key), not a line of the bundle list. Both tools are free (MIT); they come from
+# their upstream installers because Debian packages neither.
+name: ai-local
+description: The AI agent on this machine · opencode with a local model from Ollama
+default: false
+ai: local
+packages:
+  - nodejs   # the npm install of opencode
+  - npm
+flatpaks: []
+upstream:
+  - opencode
+  - ollama

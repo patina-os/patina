@@ -77,6 +77,23 @@ compose calamares/slide-1.svg "$branding/slide-1.png"
 compose calamares/slide-2.svg "$branding/slide-2.png"
 compose calamares/slide-3.svg "$branding/slide-3.png"
 render "$templates/calamares/stylesheet.qss" "$branding/stylesheet.qss"
+
+# The AI page: its default answer is ai.mode of defaults/settings.yaml, and each answer
+# gets a picture with its name and what it sets up.
+say "rendering the AI page"
+chooser="$chroot/etc/calamares/modules/packagechooser-ai.conf"
+yq -i ".default = \"$(yq eval '.ai.mode' "$settings")\"" "$chooser"
+for id in $(yq eval '.items[].id' "$chooser"); do
+  tpl[AI_NAME]="$(yq eval ".items[] | select(.id == \"$id\") | .name" "$chooser")"
+  tpl[AI_DEMO]=1
+  case "$id" in
+    local) tpl[AI_DETAIL]="opencode · Ollama · $(yq eval '.ai.local.models[0].model' "$settings")" ;;
+    cloud) tpl[AI_DETAIL]="opencode · $(yq eval '.ai.cloud.providers[0].id + " and " + (.ai.cloud.providers | length - 1 | tostring) + " more"' "$settings")" ;;
+    *) tpl[AI_DETAIL]="patina install offers it again" tpl[AI_DEMO]=0.15 ;;
+  esac
+  render "$templates/calamares/ai.svg" "$tmp/ai-$id.svg"
+  rsvg-convert --width 960 --height 540 --output "$branding/ai-$id.png" "$tmp/ai-$id.svg"
+done
 yq -i "
   .strings.version = \"${tpl[VERSION]}\" |
   .strings.shortVersion = \"${tpl[VERSION]}\" |

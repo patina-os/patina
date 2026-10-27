@@ -56,11 +56,21 @@ jobs:
           bin/patina install --list
       - name: patina install, first run
         # As root: the backend's sudo is dropped; curl, flatpak and the rest come from
-        # the base bundle; yq is fetched by the installer itself.
+        # the base bundle; yq is fetched by the installer itself. The AI agent with a
+        # cloud model: opencode from npm and its configuration, no login and no
+        # multi-gigabyte local model in CI.
+        env:
+          PATINA_AI: cloud
         run: |
           bin/patina install --unattended
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          model="$(yq eval '.ai.cloud.providers[0].model' defaults/settings.yaml)"
+          [[ "$(yq eval '.model' "$HOME/.config/opencode/opencode.json")" == "$model" ]]
+          yq eval -e '.instructions[] | select(. == "*/defaults/agent.md")' \
+            "$HOME/.config/opencode/opencode.json"
+          [[ "$(cat "$HOME/.local/state/patina/ai")" == cloud ]]
       - name: patina install, second run changes nothing
+        # No PATINA_AI: the answer the first run recorded is taken.
         run: |
           bin/patina install --unattended | tee second-run.txt
           grep -q 'patina: nothing to do' second-run.txt
@@ -248,13 +258,15 @@ jobs:
           iso/live/assets.sh "$build"
           b="$build/config/includes.chroot/etc/calamares/branding/patina"
           for f in logo.png welcome.png logo-square.svg wallpaper.png slide-1.png slide-2.png \
-              slide-3.png stylesheet.qss; do
+              slide-3.png stylesheet.qss ai-local.png ai-cloud.png ai-none.png; do
             test -s "$b/$f"
           done
           test -s "$build/config/bootloaders/grub-pc/splash.png"
           test -s "$build/config/bootloaders/grub-pc/live-theme/theme.txt"
           test -s "$build/config/includes.chroot/usr/share/themes/patina/openbox-3/themerc"
           test -s "$build/config/includes.chroot/etc/issue.d/10-patina.issue"
+          chooser="$build/config/includes.chroot/etc/calamares/modules/packagechooser-ai.conf"
+          [[ "$(yq eval '.default' "$chooser")" == "$(yq eval '.ai.mode' defaults/settings.yaml)" ]]
           sidebar="$(yq eval '.style.SidebarBackground' "$b/branding.desc")"
           [[ "$sidebar" == "$(yq eval '.palette.base00' "themes/$theme/theme.yaml")" ]]
       - name: What landed

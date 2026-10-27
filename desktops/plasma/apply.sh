@@ -133,7 +133,7 @@ service_for_action() {
     return
   fi
   if [[ "$service" == patina-agent.desktop && ! -f "$agent_desktop" ]]; then
-    return   # the agents bundle is not installed
+    return   # no AI or agents bundle is installed
   fi
   if ! service_installed "$service"; then
     warn "$action: $service is not installed; skipping"
@@ -243,15 +243,16 @@ if [[ -n "$login_dir" && -f "$login_dir/contents/images/3840x2160.png" ]]; then
   fi
 fi
 
-# The agent launcher, only with the agents bundle installed. It and the cheat sheet's
+# The agent launcher, only with an AI bundle (ai-local, ai-cloud) or the agents bundle
+# installed. It and the cheat sheet's
 # launcher come before the icons, which give every app's desktop entry its glyph. It opens the agent CLI in
 # the kitty profile desktops/terminal/ writes.
-if [[ " ${PATINA_BUNDLES:-} " == *" agents "* ]]; then
+if [[ " ${PATINA_BUNDLES:-} " =~ \ (agents|ai-local|ai-cloud)\  ]]; then
   tpl[AGENT_COMMAND]="$(command -v "${tpl[AGENT]}" 2> /dev/null || echo "${tpl[AGENT]}")"
   render "$templates/agent.desktop" "$tmp/agent.desktop"
   put "$tmp/agent.desktop" "$agent_desktop"
 elif [[ -e "$agent_desktop" ]]; then
-  say "removing $agent_desktop (the agents bundle is not installed)"
+  say "removing $agent_desktop (no AI or agents bundle is installed)"
   rm -f "$agent_desktop"
   changed
 fi
@@ -691,7 +692,7 @@ while IFS= read -r action; do
   label="$(yq eval ".actions[\"$action\"].label // \"$action\"" "$actions")"
   if yq eval -e ".actions[\"$action\"].service" "$actions" > /dev/null 2>&1; then
     if [[ "$(yq eval ".actions[\"$action\"].service" "$actions")" == patina-agent.desktop && ! -f "$agent_desktop" ]]; then
-      kdel kglobalshortcutsrc _launch services patina-agent.desktop   # the agents bundle is not installed
+      kdel kglobalshortcutsrc _launch services patina-agent.desktop   # no AI or agents bundle is installed
       continue
     fi
     service="$(service_for_action "$action")"

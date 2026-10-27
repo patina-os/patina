@@ -1,0 +1,14 @@
+# The AI agent with a cloud model: opencode with the provider picked at install time
+# (defaults/settings.yaml, `ai.cloud`, Mistral first). The key stays in opencode's own
+# login; patina never stores it. One of the answers to the AI question of `patina
+# install` (the `ai` key), not a line of the bundle list.
+name: ai-cloud
+description: The AI agent with a cloud model · opencode with the provider you pick
+default: false
+ai: cloud
+packages:
+  - nodejs   # the npm install of opencode
+  - npm
+flatpaks: []
+upstream:
+  - opencode
