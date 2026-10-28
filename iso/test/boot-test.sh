@@ -99,13 +99,15 @@ initrd="$(find "$work/live" -name 'initrd*' | sort | head -n1)"
 [[ -n "$kernel" && -n "$initrd" ]] \
   || { echo "boot-test: no kernel or initrd under live/ in $iso" >&2; exit 65; }
 
+# QEMU loads the kernel itself, past GRUB, so the command line is auto/config's
+# --bootappend-live plus the serial console; change them together.
 echo "boot-test: booting $iso ($arch, $accel, ${cpus} cpus, timeout ${timeout_s}s)"
 "$qemu" "${machine[@]}" -m "$memory" -smp "$cpus" -display none -no-reboot \
   -drive "if=pflash,format=raw,readonly=on,file=$firmware" \
   -cdrom "$iso" \
   -drive "file=$disk,format=raw,if=virtio" \
   -kernel "$kernel" -initrd "$initrd" \
-  -append "boot=live components quiet hostname=patina-live username=live noautologin console=$serial,115200n8" \
+  -append "boot=live components quiet hostname=patina-live username=live noautologin locales=en_GB.UTF-8 console=$serial,115200n8" \
   -netdev user,id=net0 -device virtio-net-pci,netdev=net0 \
   -serial "file:$log" \
   -monitor "tcp:127.0.0.1:$monitor_port,server,nowait" &
