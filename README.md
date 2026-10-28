@@ -19,8 +19,8 @@
 
 **Status: alpha, for testers.** `patina install` installs the app stack, the AI agent
 and the system tuning on Debian 13 and renders the default theme, aurora, into Plasma's
-configuration (checked in CI containers on x86_64 and aarch64, not yet on a real
-desktop); the branded install is still to come. [Testing the alpha](#testing-the-alpha) says how to
+configuration (checked in CI containers on x86_64 and aarch64 and in a first run on a
+Debian 13 VM, not yet on real hardware); the branded install is still to come. [Testing the alpha](#testing-the-alpha) says how to
 help; see the [roadmap](docs/roadmap.md).
 
 ## The agent in the command palette
@@ -36,8 +36,8 @@ once, Always and Deny. Nothing runs before you choose. Above, `ai install photoc
 the agent knows PhotoCraft comes with the ArtCraft Launcher, patina's `artcraft`
 bundle, asks before it runs `patina install --bundles artcraft`, and asks again before
 it opens the launcher, where you pick PhotoCraft. The agent is
-[opencode](https://opencode.ai), free software, with a model on your machine by default;
-[The AI agent](#the-ai-agent) says more.
+[opencode](https://opencode.ai), free software, with a model on your machine or from a
+cloud provider you pick, once you turn it on; [The AI agent](#the-ai-agent) says more.
 
 <sub>A replay of a real run of kortex 0.1.0 with opencode and a scripted model; how it
 is made is in kortex's [`docs/demo/`](https://github.com/patina-os/kortex/tree/main/docs/demo).</sub>
@@ -46,14 +46,15 @@ is made is in kortex's [`docs/demo/`](https://github.com/patina-os/kortex/tree/m
 
 All taken by CI, never edited (`iso/README.md` says how). The installer's welcome page,
 as the live image's boot test captures it (amd64, QEMU, Calamares as Debian 13 ships it,
-branded through data), with the AI agent's page among the steps:
+branded through data), in British English, its sidebar and buttons glass over the
+blurred wallpaper, with the AI agent's page among the steps:
 
 ![The patina installer's welcome page](docs/screenshots/installer-amd64.png)
 
 The finished desktop, as the `desktop` workflow captures it (amd64, a Plasma X11
 session on a virtual framebuffer after `patina install`): aurora, the default theme,
-with its wallpaper, the centred bar of one-colour icons and slightly see-through
-windows: kitty split in two, the fastfetch greeting beside btop.
+with its wallpaper, the centred bar of one-colour icons and kitty, the one
+see-through window, split in two: the fastfetch greeting beside btop.
 
 ![The patina desktop with the aurora theme](docs/screenshots/desktop-amd64.png)
 
@@ -65,8 +66,9 @@ Always or Deny. The model is kortex's scripted demo model, since CI has none to 
 ![KRunner with kortex in the middle of the desktop: the agent asks before it installs the artcraft bundle for PhotoCraft](docs/screenshots/command-palette-amd64.png)
 
 The start menu in aurora's light mode (`patina theme mode light`), over its own
-DeepMind wallpaper: the patina mark as its button, the AI and self-hosting folders
-first, then the favourites.
+DeepMind wallpaper: glass the wallpaper glows through, the category icons in the
+accent, the apps by their names alone, and the small patina mark as the user's
+picture while it is Debian's.
 
 ![The patina start menu in the light mode](docs/screenshots/start-menu-amd64.png)
 
@@ -131,9 +133,9 @@ your PATH and link `patina` there (`ln -s ~/.local/share/patina/bin/patina
 
 `v0.1.0-alpha.1` is the first release, for people willing to try patina on a fresh
 Debian 13 with Plasma and report what they see. It is Path A only; the image is not
-handed out yet. Everything has run in CI containers and a headless Plasma session, never
-on a real desktop, so expect rough edges, and use a VM with a snapshot or a machine you
-can reinstall.
+handed out yet. Beyond CI containers and a headless Plasma session it has had one run
+on a Debian 13 VM, whose fixes are on `main`, and none on real hardware, so expect rough
+edges, and use a VM with a snapshot or a machine you can reinstall.
 
 1. Follow [docs/vm-run.md](docs/vm-run.md): the VM, Debian 13, then `patina install`
    twice, the reboot, the apps and the look, ticking each check. The agents bundle
@@ -173,9 +175,9 @@ JetBrains Mono, the wordmark in Sora. The default theme is aurora, made for OLED
 screens: true black, neon green as the accent and violet as the second colour, a
 Google DeepMind visualisation from Pexels as the wallpaper (a white one of the same
 series in the light mode) and a contour map that glows green to violet as the second.
-Every app's icon is a monochrome glyph in one colour, the folders are green, and the
-start menu (the patina mark, AI and self-hosting first)
-and the other popups carry a slight grain. It is
+Every app's icon is a monochrome glyph in the text colour, the folders are green, the
+start menu (the patina mark, AI and self-hosting first) is glass the wallpaper glows
+through, its category icons green, and it and the other popups carry a slight grain. It is
 dark by default; `patina theme mode light` switches it to its light palette and
 `patina theme mode dark` back. The mark is text, a summit shaded with the letters of
 patina in violet with a green survey point, so the terminal and the screens show the
