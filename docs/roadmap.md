@@ -4,8 +4,8 @@ patina ships in phases. Each phase ends with something a user can run, and nothi
 later phase may break an earlier one. Path A (stock Debian plus `patina install`) is the
 reference path and must work at every point. The numbers give the order the phases are
 finished in, not the order they were prepared in: the image and the device entries were
-written as data before the layer's own commands existed, so Phases 3 and 4 already carry
-ticked items while Phase 1 is open.
+written as data before the layer's own commands existed, so Phases 3 and 4 carried
+ticked items while Phase 1 was still open.
 
 Status: alpha (`v0.1.0-alpha.2`, Path A only, for testers). The core commands exist and
 the smoke test runs `patina install` twice in Debian 13 containers on both
@@ -68,12 +68,13 @@ run on a real VM passed in October 2026.
   `manifest/upstream.yaml`, moved to Flathub as soon as Flathub carries it. This is the
   one default that comes from an upstream apt repository; the rule in `manifest/` says
   when that is allowed
-- [ ] the everyday apps in the desktop bundle: Firefox ESR (its policies under
+- [x] the everyday apps in the desktop bundle: Firefox ESR (its policies under
   `defaults/system/firefox/`: no telemetry, studies, Pocket or sponsored content),
-  Okular, Gwenview and Haruna from Debian's archive, Tauon (the music player, GPL-3.0)
-  from Flathub (`com.github.taiko2k.tauonmb`), each with its glyph in
-  `desktops/plasma/icons.yaml`
-- [ ] the opt-in `artcraft` bundle: the ArtCraft Launcher (MIT or Apache-2.0) as an AppImage
+  Okular, Gwenview and Haruna from Debian's archive, each with its glyph in
+  `desktops/plasma/icons.yaml`; Tauon (the music player, GPL-3.0) from Flathub
+  (`com.github.taiko2k.tauonmb`) moved with Zed to the opt-in `extras` bundle after the
+  first VM run, since their runtimes take over 2 GB
+- [x] the opt-in `artcraft` bundle: the ArtCraft Launcher (MIT or Apache-2.0) as an AppImage
   from its release, a `binary` recipe pinned at 0.8.1, which installs and updates the
   ArtCraft apps the user picks; the renderer adds its menu entry. Neither Debian nor
   Flathub carries the suite, and most of its apps are still in development
