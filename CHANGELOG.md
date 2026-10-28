@@ -25,7 +25,7 @@ All notable changes to patina are documented here. The format follows
   entry. Upstream `binary` recipes may now be an AppImage.
 - An AI agent as part of the install. `patina install` asks after the bundles, and
   the image's installer has a page of its own for it: opencode with a model on this
-  machine (the default; Ollama with a model you pick from those that fit the memory,
+  machine (Ollama with a model you pick from those that fit the memory,
   Nemotron 3.5 Bolt E4B recommended from 16 GB and Ministral 3 3B below, Ministral 3
   8B and 14B and Qwen 3.5 offered too), with a cloud provider you pick (Mistral and
   other European providers first; the key stays in opencode's login), or none.
@@ -39,6 +39,15 @@ All notable changes to patina are documented here. The format follows
   (Meta+Space) asks the agent, shows the answer there and every action it wants to take
   with Allow once, Always and Deny. Upstream recipes gain a `git` method for it: a
   tagged release installed by its own install script.
+- `patina ai` turns the AI agent on or off after the install: `patina ai on local`
+  or `on cloud` installs it (through `patina install --bundles ai-local` or
+  `ai-cloud`), `patina ai off` takes Meta+A, its launcher and `ai` in the command
+  palette away again and says how to remove Ollama, `patina ai` alone says which one
+  this machine has.
+- A `minimal` bundle, the small alternative to desktop: kitty and Firefox ESR only.
+- An `extras` bundle, opt-in: the Zed editor and Tauon from Flathub.
+- kitty greets every new window with fastfetch and the mark, through two lines added
+  once at the end of `~/.bashrc` and a file in fish's `conf.d`.
 
 ### Changed
 
@@ -62,6 +71,56 @@ All notable changes to patina are documented here. The format follows
 - The AI agent knows patina's app bundles: asked for PhotoCraft, it offers
   `patina install --bundles artcraft`, which brings the ArtCraft Launcher
   (`defaults/agent.md`).
+- The AI agent is opt-in: the install's question and the installer's AI page offer no
+  agent first (`ai.mode: none` in `defaults/settings.yaml`); a local model meant
+  several GB of downloads nobody had asked for yet.
+- Zed and Tauon left the desktop bundle for the opt-in extras bundle: their Flathub
+  runtimes (the Freedesktop SDK and GNOME's platform) took over 2 GB, which filled a
+  20 GB VM. The desktop bundle's one Flathub app is Element.
+- The look is part of the base bundle: the fonts, the Papirus icons and the start
+  menu's dashboard come with every install, whichever app bundles it takes.
+- The bar sits along the bottom edge and stays there (`panel.floating: false`): a
+  floating bar jumped when a window was maximised. A migration lays out the panel
+  again.
+- Only kitty is see-through, by its own background (95%); the KWin rule that made
+  every window a little transparent is off (`windows.opacity` 100), so Firefox and
+  the other apps stay opaque.
+- A new window opens at the size of `windows.size` even when the app remembers being
+  maximised (Firefox on a small screen); maximising it afterwards still works.
+  kitty no longer remembers its own size, so it opens at that size too.
+- `~/.local/bin` is on the PATH of the whole session
+  (`~/.config/environment.d/60-patina.conf`), so `patina` and the tools it fetches are
+  found in every terminal right after the install.
+- Bundle descriptions are short enough for an 80-column terminal; lint checks it.
+- The start menu is glass: where KWin blurs behind it, its background is 60% opaque
+  instead of Breeze's 85% (`start_menu.glass`), so the wallpaper glows through. Its
+  category icons and the apps' glyphs in the bar and the menu take the accent, the
+  labels keep the text colour (`start_menu.icons: accent`, or `text` as before).
+- The user's picture is the patina mark while it is Debian's swirl, set through
+  AccountsService so the login screen shows it too.
+
+### Fixed
+
+- Themes installed with `patina theme install` lived in `~/.local/share/patina/themes`,
+  which is the checkout's own `themes/`: every theme was listed twice as installed,
+  the install's theme question preselected amethyst instead of the default, and
+  `patina theme remove` could delete one of patina's own themes. They now live in
+  `~/.config/patina/themes`; the fastfetch mark and the start menu's button moved from
+  the checkout to `~/.local/state/patina`. A migration moves what an earlier install
+  put there.
+- On a desktop that was logged into before patina, the start menu kept Plasma's
+  favourites (Discover, Dolphin, System Settings, the browser): patina's only seeded
+  an empty store. `--layout` (the first install, the migration) now replaces Plasma's
+  defaults with patina's through the activity manager; your own stay.
+- KDE's splash showed after login: applying the look-and-feel package reverted the
+  splash setting. It is set again afterwards.
+- One Flathub app that fails to install (no disk space, Flathub unreachable) no longer
+  stops the install: the others follow, and the end says which are missing.
+
+### Removed
+
+- amethyst, the first theme. A machine still on it moves to aurora with the next
+  `patina update`.
 
 ## [0.1.0-alpha.1] - 2026-10-26
 

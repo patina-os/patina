@@ -12,7 +12,6 @@ theme_yaml="$theme_dir/theme.yaml"
 templates="$here/templates"
 
 config="${XDG_CONFIG_HOME:-$HOME/.config}"
-data="${XDG_DATA_HOME:-$HOME/.local/share}"
 changes=0
 
 # shellcheck source=bin/lib.sh
@@ -23,7 +22,7 @@ changed() { changes=$((changes + 1)); }
 
 mode="$(current_mode)"
 theme_vars "$theme_yaml" "$PATINA_PATH/defaults/settings.yaml" "$mode"
-tpl[DATA_HOME]="$data"
+tpl[STATE_HOME]="$PATINA_STATE"
 tpl[ACCENT_SGR]="38;2;${tpl[ACCENT_RGB]//,/;}"   # the accent as an ANSI colour, for fastfetch
 theme="${tpl[THEME]}"
 
@@ -72,8 +71,21 @@ fi
 # fastfetch greets a new terminal with the mark: a coloured copy of branding/logo.txt
 # (the file itself stays plain) and a configuration that points at it.
 print_logo always > "$tmp/logo.txt"
-put "$tmp/logo.txt" "$data/patina/logo.txt"
+put "$tmp/logo.txt" "$PATINA_STATE/logo.txt"
 ours "$templates/fastfetch.jsonc" "$config/fastfetch/config.jsonc"
+# Which runs in every new kitty window: two lines added once at the end of ~/.bashrc
+# (Debian's shell), and a file of fish's own conf.d. A user who deletes the bash lines
+# or the fish file's first line keeps them out.
+if ! grep -qF '# patina: fastfetch greets' "$HOME/.bashrc" 2> /dev/null; then
+  say ".bashrc: adding the greeting in kitty"
+  {
+    printf '\n# patina: fastfetch greets every new kitty window; delete these two lines to stop it.\n'
+    # shellcheck disable=SC2016 # the line is for ~/.bashrc, expanded there
+    printf '%s\n' 'if [[ $- == *i* && -n ${KITTY_WINDOW_ID:-} && -z ${PATINA_GREETED:-} ]] && command -v fastfetch > /dev/null; then export PATINA_GREETED=1; fastfetch; fi'
+  } >> "$HOME/.bashrc"
+  changed
+fi
+ours "$templates/greeting.fish" "$config/fish/conf.d/patina-greeting.fish"
 
 # btop: a theme file from the palette, made btop's colour theme unless the user picked
 # another one. btop rewrites btop.conf itself and keeps the key; a btop.conf that does

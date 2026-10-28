@@ -127,8 +127,9 @@ booted_with_systemd() {
   [[ -d /run/systemd/system ]]
 }
 
-# Themes installed with `patina theme install`, outside the checkout.
-PATINA_THEMES="${XDG_DATA_HOME:-$HOME/.local/share}/patina/themes"
+# Themes installed with `patina theme install`, outside the checkout: the checkout is
+# ~/.local/share/patina, so nothing of the user's goes under that name.
+PATINA_THEMES="${XDG_CONFIG_HOME:-$HOME/.config}/patina/themes"
 
 # The directory of a theme: the repository's themes/ first, then the installed ones.
 # Entries starting with _ are templates.

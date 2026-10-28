@@ -76,4 +76,5 @@ image build install `fonts-jetbrains-mono`.
 
 aurora replaced datum as the default in October 2026, for a desktop that looks its best
 on an OLED screen. datum keeps the contour map in graphite, ice and coral, and stays an
-option (`patina theme set datum`), as does amethyst.
+option (`patina theme set datum`). amethyst, the first theme, was removed in October
+2026.

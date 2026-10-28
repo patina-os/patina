@@ -54,6 +54,23 @@ jobs:
             fi
           done
           exit "$missing"
+      - name: Bundle descriptions fit an 80-column terminal
+        run: |
+          # The bundle question prints "  • <name 9> (<kind>) <description>": 23 columns
+          # before the description; the AI question "  <mode 6> <description>": 9. gum
+          # cuts what does not fit. Characters, not bytes: the descriptions use "·".
+          export LC_ALL=C.UTF-8
+          long=0
+          for f in manifest/bundles/*.yaml; do
+            d="$(yq eval '.description' "$f")"
+            max=56
+            yq eval -e '.ai' "$f" > /dev/null 2>&1 && max=70
+            if [[ ${#d} -gt $max ]]; then
+              echo "$f: the description has ${#d} characters, at most $max fit"
+              long=1
+            fi
+          done
+          exit "$long"
       - name: The installer's yq bootstrap matches the recipe in manifest/upstream.yaml
         run: |
           # yq cannot read its own recipe, so bin/patina-install carries the URL once more.

@@ -2,7 +2,7 @@
 # out proprietary defaults. Everything here comes from its upstream installer; Ollama is
 # the only one with a free licence and the only one that runs local models.
 name: agents
-description: The agent tools · Claude Code · Codex CLI · opencode · Claude Desktop · Ollama
+description: Claude Code · Codex · opencode · Claude Desktop · Ollama
 default: false
 packages:
   - nodejs   # the npm installs below

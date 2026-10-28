@@ -12,7 +12,8 @@ agent: opencode              # what the `agent` keybinding opens (needs an AI or
 # the image's installer. local and cloud are the bundles manifest/bundles/ai-*.yaml name
 # with their `ai` key; the answer is kept in the state directory, PATINA_AI overrides.
 ai:
-  mode: local                # local | cloud | none; preselected, and taken when unattended
+  mode: none                 # local | cloud | none; preselected, and taken when unattended;
+                             # `patina ai on` turns the agent on later
   local:                     # Ollama on this machine: the models that fit the memory are
     models:                  # offered in this order, the first that fits is recommended
       - model: "nemotron-3.5-bolt:e4b"
@@ -41,12 +42,12 @@ speed:
 windows:
   placement: centered        # where a new window opens: centered | smart (Plasma's own)
   size: 70                   # percent of the screen a new main window takes; 0 keeps the app's size
-  opacity:                   # percent opacity of every window; 100 for both: fully opaque
-    active: 97
-    inactive: 92
+  opacity:                   # percent opacity of every window; 100 for both: fully opaque.
+    active: 100              # Only kitty is see-through, by its own background
+    inactive: 100            # (desktops/terminal/templates/kitty.conf)
 panel:
   layout: centered           # centered: launcher and task icons in the middle; plasma: stock bar
-  floating: true             # true: Plasma's floating bar; false: edge to edge
+  floating: false            # false: along the screen's edge, always; true: Plasma's floating bar
   pinned: [files, browser, terminal]   # actions of keybindings.yaml pinned to the bar, in order
 # The command palette (KRunner on Plasma, kortex's `ai` in it).
 command_palette:
@@ -58,6 +59,9 @@ command_palette:
 start_menu:
   style: popup               # popup: a menu above its button | dashboard: full screen, centred
   grain: 6                   # percent of fine noise on the start menu and the other popups; 0 none
+  glass: 60                  # percent opacity of the popups' background where KWin blurs behind
+                             # it (Breeze: 85); lower lets more of the wallpaper glow through
+  icons: accent              # the apps' glyphs and the menu's category icons: accent | text
   folders:
     - id: ai
       name: AI
@@ -76,5 +80,5 @@ start_menu:
         - org.keepassxc.KeePassXC.desktop
   favorites:
     - kitty.desktop
-    - dev.zed.Zed.desktop
+    - dev.zed.Zed.desktop                              # the extras bundle
     - patina-artcraft-launcher.desktop                 # the ArtCraft Launcher (the artcraft bundle)

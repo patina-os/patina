@@ -1,0 +1,12 @@
+# The smallest patina with apps: the terminal and the browser the shortcuts open, for a
+# machine that gets its apps elsewhere. Picked instead of desktop; base brings the look
+# and the system tuning either way.
+name: minimal
+description: Only kitty and Firefox ESR · instead of desktop
+default: false
+packages:
+  - kitty        # the terminal (Meta+Return)
+  - fastfetch    # its greeting
+  - firefox-esr  # the browser (Meta+B); its policies: defaults/system/firefox/
+flatpaks: []
+upstream: []

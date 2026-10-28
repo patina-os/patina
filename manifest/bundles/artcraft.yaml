@@ -5,7 +5,7 @@
 # launcher installs and updates the apps the user picks in it; patina cannot name them.
 # Euro-Office stays the default office suite.
 name: artcraft
-description: ArtCraft (alpha) · the launcher for PhotoCraft · WordCraft and 11 more
+description: ArtCraft (alpha) · PhotoCraft · WordCraft and 11 more
 default: false
 packages:
   - fuse3   # fusermount for the launcher's AppImage (its runtime carries libfuse itself)

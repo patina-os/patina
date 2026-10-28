@@ -127,7 +127,8 @@ jobs:
         # The scheme's colours are in kdeglobals (where Plasma reads them, not only in
         # the scheme file), the icon theme of the theme carries its folders in the
         # accent and its glyphs at one height, the start menu has its button, folders
-        # and favourites, and the windows their opacity rule.
+        # and favourites, the popups their glass, the glyphs the accent, and no window an
+        # opacity rule (only kitty is see-through, by its own background).
         run: |
           theme="$(yq eval '.theme' defaults/settings.yaml)"
           t="themes/$theme/theme.yaml"
@@ -140,27 +141,30 @@ jobs:
           [[ "$(kreadconfig6 --file kdeglobals --group Icons --key Theme)" == "patina-$theme" ]]
           accent="$(yq eval '.palette[.accent]' "$t")"
           grep -qi "$accent" "$data/icons/patina-$theme/64x64/places/folder.svg"
-          test -s "$data/patina/launcher.svg"
+          test -s "$HOME/.local/state/patina/launcher.svg"
           layout="$data/plasma/look-and-feel/org.patina.$theme/contents/layouts/org.kde.plasma.desktop-layout.js"
-          grep -qF "$data/patina/launcher.svg" "$layout"
+          grep -qF "$HOME/.local/state/patina/launcher.svg" "$layout"
           test -s "$HOME/.config/menus/applications-merged/patina-start-menu.menu"
           for id in $(yq eval '.start_menu.folders[].id' defaults/settings.yaml); do
             test -s "$data/desktop-directories/patina-$id.directory"
           done
           prepend="$(kreadconfig6 --file kicker-extra-favoritesrc --group General --key Prepend)"
           [[ "$prepend" == *thunderbird.desktop* ]]
-          test -s "$data/icons/patina-$theme/32x32/symbolic/apps/kitty.svg"
-          grep -q '<svg viewBox=' "$data/icons/patina-$theme/32x32/symbolic/apps/kitty.svg"
-          grep -q '<svg viewBox=' "$data/patina/launcher.svg"
-          rule=patina-window-opacity
-          opacity="$(kreadconfig6 --file kwinrulesrc --group "$rule" --key opacityinactive)"
-          [[ "$opacity" == "$(yq eval '.windows.opacity.inactive' defaults/settings.yaml)" ]]
-          [[ "$(kreadconfig6 --file kwinrulesrc --group General --key rules)" == *"$rule"* ]]
+          glyph="$data/icons/patina-$theme/32x32/symbolic/apps/kitty.svg"
+          test -s "$glyph"
+          grep -q '<svg viewBox=' "$glyph"
+          grep -q '<svg viewBox=' "$HOME/.local/state/patina/launcher.svg"
+          grep -qiE "$accent|ColorScheme-Accent" "$glyph"
+          rules="$(kreadconfig6 --file kwinrulesrc --group General --key rules)"
+          [[ "$rules" != *patina-window-opacity* ]]
           [[ "$(kreadconfig6 --file plasmarc --group Theme --key name)" == "patina-$theme" ]]
           # Captured before grep: grep -q stops at the first match, and with pipefail
           # zcat's SIGPIPE would fail the step.
           background="$(zcat "$data/plasma/desktoptheme/patina-$theme/dialogs/background.svgz")"
           grep -q '<image' <<< "$background"
+          glass="$data/plasma/desktoptheme/patina-$theme/translucent/dialogs/background.svgz"
+          glass="$(zcat "$glass")"
+          grep -q "opacity:0.$(yq eval '.start_menu.glass' defaults/settings.yaml)" <<< "$glass"
           test -s "$data/plasma/desktoptheme/patina-$theme/metadata.json"
       - name: The light mode switches and switches back
         # The default theme carries a light palette: the mode turns the terminal and the
@@ -222,7 +226,7 @@ jobs:
           [[ "$ksplash" == "org.patina.$theme" ]]
           variant="$(kreadconfig6 --file kcm-about-distrorc --group General --key Variant)"
           [[ "$variant" == *"patina credits"* ]]
-          test -s "$data/patina/logo.txt"
+          test -s "$HOME/.local/state/patina/logo.txt"
           test -s "$HOME/.config/fastfetch/config.jsonc"
       - name: The cheat sheet, the credits, and a theme installed from git
         # A local repository stands in for a community theme: install keeps only its
@@ -241,15 +245,15 @@ jobs:
             --group patina-keys.desktop --key _launch)"
           [[ "$launch" == Meta+K,* ]]
           repo="$(mktemp -d)/patina-dusk-theme"
-          cp -r themes/amethyst "$repo"
-          sed -i 's/^name: amethyst/name: dusk/' "$repo/theme.yaml"
+          cp -r themes/datum "$repo"
+          sed -i 's/^name: datum/name: dusk/' "$repo/theme.yaml"
           echo 'echo not data' > "$repo/run.sh"
           git -C "$repo" init -q
           git -C "$repo" add -A
           git -C "$repo" -c user.email=ci@patina -c user.name=ci commit -qm theme
           bin/patina theme install "file://$repo"
-          test -s "$data/patina/themes/dusk/theme.yaml"
-          test ! -e "$data/patina/themes/dusk/run.sh"
+          test -s "$HOME/.config/patina/themes/dusk/theme.yaml"
+          test ! -e "$HOME/.config/patina/themes/dusk/run.sh"
           out="$(bin/patina theme list)"
           grep -q '^  dusk .*installed' <<< "$out"
           out="$(bin/patina theme install "file://$repo")"
@@ -258,7 +262,7 @@ jobs:
           if bin/patina theme remove dusk; then exit 1; fi
           bin/patina theme set "$theme"
           bin/patina theme remove dusk
-          test ! -e "$data/patina/themes/dusk"
+          test ! -e "$HOME/.config/patina/themes/dusk"
       - name: The image's assets render from the theme
         # What iso/live/build.sh renders before lb, without root or live-build: the
         # installer's marks, artwork and stylesheet, the boot menu's theme and splash.

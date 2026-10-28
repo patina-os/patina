@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Turn the AI agent on or off after the install: `on` installs the bundle of the answer
+# through `patina install --bundles`, `off` takes it out of the record and renders the
+# theme again, which drops its launcher, shortcut and command palette entry.
+set -euo pipefail
+
+# shellcheck source=bin/lib.sh
+source "$PATINA_PATH/bin/lib.sh"
+
+usage() {
+  cat << EOU
+usage: patina ai [status] | on [local|cloud] | off
+
+  status      the agent this machine has (the default)
+  on local    opencode with a model Ollama runs on this computer: a few GB of disk,
+              best with 16 GB of memory; PATINA_AI_MODEL=<tag> picks the model
+  on cloud    opencode with a provider you log in to; PATINA_AI_PROVIDER=<id> picks it
+              (ai.cloud.providers in defaults/settings.yaml)
+  on          asks which one on a terminal
+  off         no agent: Meta+A, its launcher and \`ai\` in the command palette go away.
+              What was installed stays; the end of the output says how to remove it
+EOU
+}
+
+status() {
+  local ai
+  ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)"
+  case "$ai" in
+    local) say "ai: local, $(cat "$PATINA_STATE/ai-model" 2> /dev/null || echo '?') through Ollama" ;;
+    cloud) say "ai: cloud, $(cat "$PATINA_STATE/ai-provider" 2> /dev/null || echo '?')" ;;
+    *) say "ai: none; patina ai on turns it on" ;;
+  esac
+}
+
+on() {
+  local mode="${1:-}" bundle
+  if [[ -z "$mode" ]]; then
+    if [[ ! -t 0 || ! -t 1 ]] || ! command -v gum > /dev/null; then
+      die "on needs local or cloud (patina ai --help)"
+    fi
+    mode="$(gum choose --header "AI agent (it asks before it changes anything)" \
+      "local  on this computer, nothing leaves it" "cloud  a provider you log in to")" || exit 0
+    mode="${mode%% *}"
+  fi
+  [[ "$mode" =~ ^(local|cloud)$ ]] || die "the AI agent is local or cloud, not '$mode'"
+  bundle="$(ai_bundle "$mode")" || die "no bundle in manifest/bundles/ answers ai: $mode"
+  PATINA_AI="$mode" exec "$PATINA_PATH/bin/patina-install" --bundles "$bundle"
+}
+
+off() {
+  local b theme
+  [[ "$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)" != none ]] || { status; return; }
+  echo none > "$PATINA_STATE/ai"
+  # The record keeps every bundle installed so far; the AI ones leave it, so the
+  # renderer drops what belongs to the agent and doctor stops checking it.
+  for b in $(all_bundles); do
+    if yq eval -e '.ai' "$PATINA_PATH/manifest/bundles/$b.yaml" > /dev/null 2>&1; then
+      sed -i "/^$b\$/d" "$PATINA_STATE/bundles"
+    fi
+  done
+  say "ai: none"
+  if theme="$(current_theme)"; then
+    "$PATINA_PATH/bin/patina-theme" set "$theme"
+  fi
+  say "ai: opencode, kortex and Ollama stay installed; patina ai on brings the agent back"
+  if command -v ollama > /dev/null; then
+    say "ai: Ollama and its models take the most space; the README's AI section says how to remove them"
+  fi
+}
+
+main() {
+  case "${1:-status}" in
+    status) status ;;
+    on) on "${2:-}" ;;
+    off) off ;;
+    -h | --help) usage ;;
+    *)
+      usage >&2
+      die "unknown argument '$1'"
+      ;;
+  esac
+}
+
+main "$@"

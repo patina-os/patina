@@ -1,14 +1,11 @@
 # The polished-desktop bundle: the app stack from the README, all free software. The
 # package names are Debian 13's; the smoke test installs the bundle on amd64 and arm64.
+# Element is its one Flathub app (about 1 GB with its runtime); Zed and Tauon, which
+# bring two more runtimes, are the extras bundle.
 name: desktop
-description: Curated desktop apps with kitty and the developer tools
+description: Firefox ESR · Thunderbird · Element · kitty · dev tools
 default: true
 packages:
-  - fonts-adobe-sourcesans3 # fonts.ui of defaults/settings.yaml
-  - fonts-jetbrains-mono # fonts.monospace, the text mark and the wallpaper labels
-  - fonts-sora           # the wordmark (branding/wordmark.svg) on the splash
-  - papirus-icon-theme   # aurora's icons; the renderer recolours its folders to the accent
-  - plasma-widgets-addons  # the start menu's Application Dashboard (start_menu.style: dashboard)
   - nextcloud-desktop
   - thunderbird
   - keepassxc
@@ -32,7 +29,5 @@ packages:
   - fastfetch
 flatpaks:
   - im.riot.Riot         # Element
-  - dev.zed.Zed          # Zed editor; telemetry and AI off through defaults/apps.yaml
-  - com.github.taiko2k.tauonmb   # Tauon, the music player; Debian does not package it
 upstream:
   - euro-office          # from Nextcloud's signed apt repository until Flathub carries it
