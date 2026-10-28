@@ -1,8 +1,10 @@
 # Calamares branding for the patina installer: the strings, and the names of the files
 # iso/live/assets.sh renders next to this one from branding/ and the default theme
-# (logo.png, welcome.png, logo-square.svg, wallpaper.png, the slides, stylesheet.qss).
-# assets.sh also fills the version from git and the sidebar colours (style) from the
-# palette, so no colour is typed here. Nothing rendered is committed.
+# (logo.png, welcome.png, logo-square.png, icon-small.svg, wallpaper.png, the slides,
+# the icons, stylesheet.qss). assets.sh also fills the version from git and the sidebar
+# colours (style) from the palette, so no colour is typed here: the steps are
+# transparent over the sidebar's glass, the current one a faint accent with the accent
+# as its text. Nothing rendered is committed.
 ---
 componentName: patina
 
@@ -27,8 +29,8 @@ strings:
   releaseNotesUrl: https://github.com/patina-os/patina/blob/main/CHANGELOG.md
 
 images:
-  productLogo: logo-square.svg      # the square mark: Calamares shows this one at 80x80
-  productIcon: logo-square.svg
+  productLogo: logo-square.png      # the square mark, inset in the 80x80 box Calamares gives it
+  productIcon: icon-small.svg       # the window's icon: the mark itself
   productWelcome: welcome.png       # the name in block letters (branding/export/)
   productWallpaper: wallpaper.png   # the theme's first wallpaper, veiled, behind every page
 

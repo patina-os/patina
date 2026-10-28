@@ -98,6 +98,14 @@ All notable changes to patina are documented here. The format follows
   labels keep the text colour (`start_menu.icons: accent`, or `text` as before).
 - The user's picture is the patina mark while it is Debian's swirl, set through
   AccountsService so the login screen shows it too.
+- The installer looks like the desktop: its sidebar and the bar of Back, Next and
+  Cancel are glass over the wallpaper, blurred under the sidebar, with the start
+  menu's grain over the background. The mark in the sidebar has room around it, and
+  the steps below it are spaced and inset. The current step is a faint green with
+  green text instead of a solid green block, and the icons of the language list, the
+  welcome page's links and About are green.
+- The installer starts in British English; its first page still offers every other
+  language.
 
 ### Fixed
 
@@ -116,6 +124,8 @@ All notable changes to patina are documented here. The format follows
   splash setting. It is set again afterwards.
 - One Flathub app that fails to install (no disk space, Flathub unreachable) no longer
   stops the install: the others follow, and the end says which are missing.
+- The installer's sidebar was set in Qt's fallback font instead of Source Sans 3: the
+  live system's fontconfig now makes the layer's fonts the standard ones.
 
 ### Removed
 

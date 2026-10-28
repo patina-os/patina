@@ -36,8 +36,10 @@ iso/
     root/.config/openbox/rc.xml        openbox with the patina theme for the dialogs
   live/templates/           what assets.sh fills from the theme's palette and the fonts:
                             calamares/ (stylesheet.qss, the wallpaper and the slides as
-                            SVG compositions, ai.svg for the pictures of the AI page),
-                            grub/ (theme.txt, splash.svg), openbox/
+                            SVG compositions, ai.svg for the pictures of the AI page,
+                            logo-square.svg for the sidebar's mark, icons/ in the
+                            accent), grub/ (theme.txt, splash.svg), openbox/,
+                            fontconfig/ (the live system's standard fonts)
   live/assets.sh            renders the above plus branding/ into a build directory: the
                             console mark, the installer's files, the boot menu's theme
                             and splash; no root, so the smoke test runs it too
@@ -55,8 +57,11 @@ iso/
 
 1. Boot the image. The GRUB menu shows the theme's wallpaper and the wordmark. The live
    system starts `patina-ui.service`: an X session on tty7 with Calamares full screen
-   in the theme's palette and fonts, the block-letter name on the welcome page, the square mark in
-   the sidebar, the wallpaper veiled behind every page, four still slides while it
+   in the theme's palette and fonts and in British English (`locales=` in
+   `auto/config`; the welcome page offers the others), the block-letter name on the
+   welcome page, the square mark in the sidebar, the wallpaper veiled behind every
+   page, the sidebar and the button bar as glass over it (the start menu's `glass` and
+   `grain` from `defaults/settings.yaml`), four still slides while it
    installs, the last one thanking the people and projects of `docs/credits.yaml`. The console shows `branding/logo.txt`.
 2. Calamares asks what it must: time zone and keyboard (pre-filled), disk (erase is
    preselected; encryption and manual partitioning are available), the user, and the AI
@@ -107,11 +112,15 @@ sudo iso/live/build.sh arm64            # on an arm64 machine
 
 `build.sh` calls `assets.sh`, which renders everything the image shows from the data:
 `branding/logo.txt` into `/etc/issue.d`, `branding/wordmark.svg` (as a PNG) and
-`icon-small.svg` into the installer's branding, the default theme's wallpapers under a veil as the installer's
+`icon-small.svg` (inset in the sidebar's box) into the installer's branding, the icons
+of `live/templates/calamares/icons/` in the accent, the default theme's wallpapers under a veil as the installer's
 background, four slides (the last one the names of `docs/credits.yaml`), the splash of the boot menu, and the templates under
 `live/templates/` (the Calamares stylesheet, the GRUB theme, the openbox theme) with the
 palette of `themes/<default>/theme.yaml` and the fonts of `defaults/settings.yaml`,
-plus the version and the sidebar colours into `branding.desc` with `yq`. Nothing
+plus the version and the sidebar colours into `branding.desc` with `yq`, and
+`/etc/fonts/local.conf`, which makes the layer's fonts the live system's standard ones:
+Calamares draws its sidebar in Qt's application font, which the stylesheet does not
+reach. Nothing
 generated is committed, no colour is typed by hand, and the marks keep their single
 copies. To see the output without a build: copy `iso/live/config` somewhere and run
 `iso/live/assets.sh <that directory>`; the smoke workflow does the same and checks the
@@ -193,12 +202,17 @@ release, never edited.
 ## Still to verify
 
 - The look on a screen, listed under the release gate above: Calamares scales
-  `logo-square.svg` to 80x80 and `welcome.png` (the block-letter name of
+  `logo-square.png` to 80x80 and `welcome.png` (the block-letter name of
   `branding/export/` rendered with `rsvg-convert`) on the welcome page; `productWallpaper`
   tiles on screens larger than 1920x1080 (if it looks wrong, the veiled wallpaper goes
   and `#mainApp`'s background stays); the stylesheet over Fusion on Calamares' own
   widgets (the partition bars keep Calamares' colours by design); GRUB's `crop` scaling
-  of the splash at live-build's 800x600 mode.
+  of the splash at live-build's 800x600 mode. Written against Calamares 3.3.14's source
+  and still to be seen on a screen: the sidebar's steps (`qproperty-spacing`, margin
+  and padding on `#sidebarMenuApp`, the `#AARRGGBB` style colours), the glass of the
+  sidebar and of the unnamed button bar (`#backgroundWidget > QWidget`), the blurred
+  strip assuming the sidebar's 190 px, and the accent icons of the welcome page's
+  links and About (`qproperty-icon`, applied when Qt polishes the buttons).
 
 - The `packages` module needs working DNS inside the target; Calamares' `mount` module
   binds `/run` and `/etc/resolv.conf` on Debian's own live images, so it should here.

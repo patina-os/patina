@@ -17,13 +17,58 @@ QWidget {
 #mainApp, QMainWindow, QDialog, QMessageBox, QMenu, QWizard {
   background-color: ${BASE00};
 }
-#sidebarApp {
-  background-color: ${BASE00};
-  border-right: 1px solid rgba(${ACCENT_RGB}, 60);
+
+/* The sidebar and the bar of Back, Next and Cancel are glass over the wallpaper, as
+   the desktop's start menu is (start_menu.glass); the wallpaper is blurred under the
+   sidebar already (wallpaper.svg). Both are children of #backgroundWidget, the widget
+   that holds the wallpaper; the bar has no name of its own, so it is the child that is
+   neither the sidebar nor the pages (#viewManager). */
+#backgroundWidget > QWidget {
+  background-color: rgba(${BASE00_RGB}, ${GLASS});
+  border-top: 1px solid rgba(${ACCENT_RGB}, 46);
 }
-#navigationApp {
-  background-color: rgba(${BASE00_RGB}, 220);
-  border-top: 1px solid rgba(${ACCENT_RGB}, 60);
+#backgroundWidget > QWidget#viewManager {
+  background: transparent;
+  border: none;
+}
+#backgroundWidget > QWidget#sidebarApp {
+  background-color: rgba(${BASE00_RGB}, ${GLASS});
+  border: none;
+  border-right: 1px solid rgba(${ACCENT_RGB}, 46);
+}
+#view-button-back, #view-button-next, #view-button-cancel {
+  margin: 12px 0 6px 0;
+}
+#view-button-cancel {
+  margin-right: 22px;
+}
+
+/* The sidebar's steps: Calamares draws each one itself in Qt's application font
+   (/etc/fonts/local.conf makes it the layer's) with the colours of branding.desc's
+   style keys, and a step's block always fills its row. The room around them is ours:
+   the mark sits inset in its 80 px box (logo-square.svg), the list starts below it
+   and keeps the steps apart and off the edges. */
+#sidebarMenuApp {
+  background: transparent;
+  border: none;
+  margin-top: 28px;
+  padding: 0 8px;
+  qproperty-spacing: 6;
+}
+#aboutButton {
+  color: ${BASE04};
+  qproperty-icon: url(/etc/calamares/branding/patina/about.png);
+}
+
+/* The welcome page's links, in the accent like the language icon (welcome.conf). */
+#supportButton {
+  qproperty-icon: url(/etc/calamares/branding/patina/help.png);
+}
+#knownIssuesButton {
+  qproperty-icon: url(/etc/calamares/branding/patina/bugs.png);
+}
+#releaseNotesButton {
+  qproperty-icon: url(/etc/calamares/branding/patina/release.png);
 }
 
 /* the glass panels: the groups a page puts its controls in */

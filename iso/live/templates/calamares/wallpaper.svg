@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1920" height="1080" viewBox="0 0 1920 1080">
-  <!-- productWallpaper: the theme's first wallpaper under a veil, behind every installer page -->
+  <!-- productWallpaper: the theme's first wallpaper under a veil, behind every installer
+       page. Calamares paints it from the window's top-left corner at its own size, so
+       the strip under the sidebar (190 px wide on any screen of 1024 px or more) is
+       blurred here, the way KWin blurs behind the desktop's start menu; the sidebar's
+       glass (stylesheet.qss) lies over it. Then a fine grain, as on the start menu. -->
+  <defs>
+    <clipPath id="sidebar"><rect width="190" height="1080"/></clipPath>
+    <filter id="blur"><feGaussianBlur stdDeviation="18"/></filter>
+    <filter id="grain" x="0" y="0" width="1" height="1">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+  </defs>
   <image xlink:href="wallpaper.png" width="1920" height="1080"/>
+  <g clip-path="url(#sidebar)">
+    <image xlink:href="wallpaper.png" width="1920" height="1080" filter="url(#blur)"/>
+  </g>
   <rect width="1920" height="1080" fill="${BASE00}" fill-opacity="0.68"/>
+  <rect width="1920" height="1080" filter="url(#grain)" opacity="${GRAIN}"/>
 </svg>

@@ -166,7 +166,9 @@ real Plasma desktop, which the same VM run gives.
   the image's first boot uses
 - [x] one look from the boot menu to the desktop, every colour from the default theme's
   palette: the live image's GRUB menu (theme and splash), the installer (a stylesheet
-  down to the partition page, the wordmark, a veiled wallpaper, three still slides), the
+  down to the partition page, the wordmark, a veiled wallpaper, three still slides; after
+  the first VM run the start menu's glass and grain, accent icons, a spaced sidebar and
+  Source Sans 3 as the live system's standard font), the
   login screen (the theme's wallpaper through the backend's sudo path, Source Sans 3), the
   Plasma splash (the wordmark and one accent line), the install TUI and the fastfetch
   greeting. Source Sans 3, Sora and JetBrains Mono are the layer's fonts; the typeset wordmark

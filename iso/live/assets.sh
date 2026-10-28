@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Render what the live image shows, from the data: the console mark, the installer's
-# marks, artwork and stylesheet, the boot menu's theme and splash and the openbox theme,
-# every colour from the default theme's palette (desktops/ renders the same palette for
-# the desktop). `assets.sh <build-dir>` where <build-dir>/config is a copy of
-# iso/live/config; build.sh calls it before lb, the smoke test runs it on its own. Needs
-# yq, rsvg-convert, git and the fonts of defaults/settings.yaml; no root.
+# marks, artwork, icons and stylesheet, the boot menu's theme and splash, the openbox
+# theme and the standard fonts, every colour from the default theme's palette
+# (desktops/ renders the same palette for the desktop). `assets.sh <build-dir>` where
+# <build-dir>/config is a copy of iso/live/config; build.sh calls it before lb, the smoke
+# test runs it on its own. Needs yq, rsvg-convert, git and the fonts of
+# defaults/settings.yaml; no root.
 set -euo pipefail
 
 here="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
@@ -26,6 +27,10 @@ settings="$repo/defaults/settings.yaml"
 theme_dir="$repo/themes/$(yq eval '.theme' "$settings")"
 theme_vars "$theme_dir/theme.yaml" "$settings"
 tpl[VERSION]="$(git -C "$repo" describe --tags --always --dirty 2> /dev/null || echo 0.0.0-unknown)"
+# The installer's glass and grain are the start menu's (start_menu in settings.yaml):
+# percent opacity as Qt's 0-255 alpha, percent grain as an SVG opacity.
+tpl[GLASS]="$(( $(yq eval '.start_menu.glass' "$settings") * 255 / 100 ))"
+tpl[GRAIN]="$(yq eval '.start_menu.grain / 100' "$settings")"
 chroot="$config/includes.chroot"
 branding="$chroot/etc/calamares/branding/patina"
 grub="$config/bootloaders/grub-pc"
@@ -35,8 +40,12 @@ trap 'rm -rf "$tmp"' EXIT
 
 # The console mark, plain: agetty reads backslashes in /etc/issue as escapes, so they
 # are doubled.
-install -d -m 0755 "$chroot/etc/issue.d" "$branding" "$grub/live-theme"
+install -d -m 0755 "$chroot/etc/issue.d" "$chroot/etc/fonts" "$branding" "$grub/live-theme"
 sed 's/\\/\\\\/g' "$repo/branding/logo.txt" > "$chroot/etc/issue.d/10-patina.issue"
+
+# The standard fonts: Qt's application font, which Calamares' sidebar uses, is
+# fontconfig's sans-serif.
+render "$templates/fontconfig/local.conf" "$chroot/etc/fonts/local.conf"
 
 # The pieces the compositions are made of, rendered next to them so an SVG may reference
 # them: the theme's first two wallpapers at 1920x1080 and the wordmark rasterised.
@@ -71,7 +80,18 @@ say "rendering the installer's branding"
 # name in block letters (branding/export), the slides the typeset wordmark.
 cp "$tmp/logo.png" "$branding/logo.png"
 rsvg-convert --width 1120 --output "$branding/welcome.png" "$repo/branding/export/wordmark-blocks.svg"
-cp "$repo/branding/icon-small.svg" "$branding/logo-square.svg"
+# The sidebar's mark: icon-small.svg inset in its box (logo-square.svg), at twice the
+# size Calamares shows it; the window icon is the mark itself.
+cp "$repo/branding/icon-small.svg" "$branding/icon-small.svg"
+cp "$repo/branding/icon-small.svg" "$tmp/icon-small.svg"
+render "$templates/calamares/logo-square.svg" "$tmp/logo-square.svg"
+rsvg-convert --width 160 --height 160 --output "$branding/logo-square.png" "$tmp/logo-square.svg"
+# The icons Calamares shows in the accent instead of its own grey ones: the language
+# (welcome.conf), the welcome page's links and About (stylesheet.qss).
+for icon in "$templates"/calamares/icons/*.svg; do
+  render "$icon" "$tmp/icon.svg"
+  rsvg-convert --width 64 --height 64 --output "$branding/$(basename "$icon" .svg).png" "$tmp/icon.svg"
+done
 compose calamares/wallpaper.svg "$branding/wallpaper.png"
 compose calamares/slide-1.svg "$branding/slide-1.png"
 compose calamares/slide-2.svg "$branding/slide-2.png"
@@ -115,10 +135,10 @@ done
 yq -i "
   .strings.version = \"${tpl[VERSION]}\" |
   .strings.shortVersion = \"${tpl[VERSION]}\" |
-  .style.SidebarBackground = \"${tpl[BASE00]}\" |
+  .style.SidebarBackground = \"#00000000\" |
   .style.SidebarText = \"${tpl[BASE05]}\" |
-  .style.SidebarTextCurrent = \"${tpl[BASE00]}\" |
-  .style.SidebarBackgroundCurrent = \"${tpl[ACCENT]}\"
+  .style.SidebarTextCurrent = \"${tpl[ACCENT]}\" |
+  .style.SidebarBackgroundCurrent = \"#24${tpl[ACCENT]#\#}\"
 " "$branding/branding.desc"
 
 # The boot menu: live-build takes these two files over its stock ones, and its theme.cfg
@@ -133,6 +153,7 @@ install -d -m 0755 "$openbox"
 render "$templates/openbox/themerc" "$openbox/themerc"
 
 # Every placeholder must be gone.
-left="$(grep -lF "\${" "$branding/stylesheet.qss" "$grub/live-theme/theme.txt" "$openbox/themerc" || true)"
+left="$(grep -lF "\${" "$branding/stylesheet.qss" "$grub/live-theme/theme.txt" "$openbox/themerc" \
+  "$chroot/etc/fonts/local.conf" || true)"
 [[ -z "$left" ]] || { echo "assets.sh: unfilled placeholders in: $left" >&2; exit 70; }
 say "done: ${tpl[THEME]} ${tpl[VERSION]}"

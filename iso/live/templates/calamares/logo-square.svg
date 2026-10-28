@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- productLogo: branding/icon-small.svg inset in the 80x80 box Calamares gives the
+     sidebar's mark, so the mark has room above it and towards the steps below. -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="80" height="80" viewBox="0 0 80 80">
+  <image xlink:href="icon-small.svg" x="14" y="20" width="52" height="52"/>
+</svg>
