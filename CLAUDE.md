@@ -99,9 +99,9 @@ packs. Audience: developers and privacy-minded users in the EU.
   menu opens above its button (Kickoff: Plasma places its popups itself, so no KWin
   rule can centre it; Plasma's Application Dashboard, full screen and centred, is an
   option, dark over either mode), its background glass the wallpaper glows through,
-  its icons and the apps' glyphs in the accent, the labels in the text colour; all are
-  knobs in `defaults/settings.yaml`. The user's picture is the mark while it is
-  Debian's.
+  its category icons in the accent, the apps' glyphs in the bar and the menu and the
+  labels in the text colour; all are knobs in `defaults/settings.yaml`. The user's
+  picture is the small mark (`icon-small.svg`) while it is Debian's.
   No automatic tiling on Plasma: that would need a KWin script Debian does not package; a tiling desktop
   is the Hyprland add-on.
 - Speed: the system tuning CachyOS ships as configuration (zram, I/O schedulers, memory
