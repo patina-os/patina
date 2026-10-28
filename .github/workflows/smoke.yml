@@ -154,7 +154,11 @@ jobs:
           test -s "$glyph"
           grep -q '<svg viewBox=' "$glyph"
           grep -q '<svg viewBox=' "$HOME/.local/state/patina/launcher.svg"
-          grep -qiE "$accent|ColorScheme-Accent" "$glyph"
+          # The apps' glyphs keep the text colour; the start menu's categories take the
+          # accent. (A negated command does not stop a step under set -e, hence the if.)
+          if grep -qiE "$accent|ColorScheme-Accent" "$glyph"; then exit 1; fi
+          categories="$data/icons/patina-$theme/32x32/symbolic/categories"
+          grep -qliE "$accent|ColorScheme-Accent" "$categories"/*.svg
           rules="$(kreadconfig6 --file kwinrulesrc --group General --key rules)"
           [[ "$rules" != *patina-window-opacity* ]]
           [[ "$(kreadconfig6 --file plasmarc --group Theme --key name)" == "patina-$theme" ]]
