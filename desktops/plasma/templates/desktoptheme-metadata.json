@@ -1,7 +1,7 @@
 {
     "KPlugin": {
         "Authors": [ { "Name": "patina, after Breeze by the KDE VDG" } ],
-        "Description": "Breeze with grain on the popups, from the ${DISPLAY_NAME} theme of patina",
+        "Description": "Breeze with glass, grain and a faint selection on the popups, from the ${DISPLAY_NAME} theme of patina",
         "EnabledByDefault": true,
         "Id": "patina-${THEME}",
         "License": "LGPL",

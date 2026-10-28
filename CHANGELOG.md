@@ -6,6 +6,16 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The command palette, the start menu and the other popups are a darker glass: 60 %
+  of the window colour (near black in the dark mode, lavender white in the light one)
+  instead of 40 %, so the wallpaper glows through less. The installer's sidebar
+  follows, as its glass is the start menu's.
+- The selected row of the command palette, the start menu and the tray popups is a
+  faint tint of the accent inside a thin edge (`start_menu.selection`, 10 %) instead
+  of Breeze's solid-looking green; apps keep their selection colour.
+
 ## [0.1.0-alpha.2] - 2026-10-28
 
 The second alpha, for testers, and still Path A only. It carries what the first run on

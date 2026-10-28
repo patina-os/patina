@@ -59,8 +59,11 @@ command_palette:
 start_menu:
   style: popup               # popup: a menu above its button | dashboard: full screen, centred
   grain: 6                   # percent of fine noise on the start menu and the other popups; 0 none
-  glass: 40                  # percent opacity of the popups' background where KWin blurs behind
+  glass: 60                  # percent opacity of the popups' background where KWin blurs behind
                              # it (Breeze: 85); lower lets more of the wallpaper glow through
+  selection: 10              # percent of the accent filling the selected row of the start menu,
+                             # the command palette and the other popups (Breeze: 30); its thin
+                             # edge takes four times as much
   icons: accent              # the menu's category icons: accent | text; the apps' glyphs
                              # in the menu and the bar always take the text colour
   folders:

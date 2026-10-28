@@ -400,18 +400,25 @@ elif [[ -n "$variant" ]]; then
 fi
 drop_other_themes "$data/icons/patina-*" "$icons_dir"
 
-# Grain on the start menu (start_menu.grain): Plasma draws every panel popup from one
-# background, so it goes on all of them. A Plasma desktop theme of the theme's own,
-# patina-<theme>, holds Breeze's popup backgrounds with a fine noise tile laid into
-# their centre tile, which Plasma repeats; every other element comes from Breeze, the
-# default theme. Only over the default desktop theme.
+# The popups' look, a Plasma desktop theme of the theme's own, patina-<theme>, over
+# Breeze, the default theme, which gives every element it does not hold. Grain
+# (start_menu.grain): Plasma draws every panel popup, the command palette among them,
+# from one background, so it goes on all of them; the theme holds Breeze's popup
+# backgrounds with a fine noise tile laid into their centre tile, which Plasma repeats.
+# Selection (start_menu.selection): the highlight of Plasma's lists, a faint fill of
+# the accent inside a thin edge in place of Breeze's 30 % fill. Only over the default
+# desktop theme.
 grain="$(yq eval '.start_menu.grain // 0' "$settings")"
 breeze=/usr/share/plasma/desktoptheme/default
 desktoptheme="$data/plasma/desktoptheme/patina-$theme"
-if [[ "${tpl[DESKTOP_THEME]}" == default && "$grain" -gt 0 && -d "$breeze" ]] && command -v rsvg-convert > /dev/null; then
+if [[ "${tpl[DESKTOP_THEME]}" == default && -d "$breeze" ]]; then
   out="$tmp/desktoptheme"
-  render "$templates/grain.svg" "$tmp/grain.svg"
-  rsvg-convert --width 32 --height 32 --output "$tmp/grain.png" "$tmp/grain.svg"
+  img=""
+  if [[ "$grain" -gt 0 ]] && command -v rsvg-convert > /dev/null; then
+    render "$templates/grain.svg" "$tmp/grain.svg"
+    rsvg-convert --width 32 --height 32 --output "$tmp/grain.png" "$tmp/grain.svg"
+    img="$(base64 -w0 "$tmp/grain.png")"
+  fi
   printf -v opacity '%d.%02d' $((grain / 100)) $((grain % 100))
   # Glass (start_menu.glass): Plasma takes the translucent background while KWin's
   # Background Contrast effect blurs behind the popup; there Breeze's 85 % opacity
@@ -425,7 +432,7 @@ if [[ "${tpl[DESKTOP_THEME]}" == default && "$grain" -gt 0 && -d "$breeze" ]] &&
     [[ "$variant" == translucent/dialogs ]] && see="$glass"
     # After the centre's background rect (rect4138 in every variant), an image of the
     # noise at the same place and size; the root gets the xlink namespace it needs.
-    zcat "$breeze/$variant/background.svgz" | awk -v img="$(base64 -w0 "$tmp/grain.png")" -v op="$opacity" -v see="$see" '
+    zcat "$breeze/$variant/background.svgz" | awk -v img="$img" -v op="$opacity" -v see="$see" '
       function attr(tag, name,   m) {
         if (match(tag, "[ \t\n]" name "=\"[^\"]*\"")) {
           m = substr(tag, RSTART + 1, RLENGTH - 1)
@@ -438,7 +445,7 @@ if [[ "${tpl[DESKTOP_THEME]}" == default && "$grain" -gt 0 && -d "$breeze" ]] &&
         doc = $0
         if (doc !~ /xmlns:xlink=/) sub(/<svg/, "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\"", doc)
         if (see != "") gsub(/opacity:0\.85/, "opacity:" see, doc)
-        if (match(doc, /<rect[^>]*id="rect4138"[^>]*\/>/)) {
+        if (img != "" && match(doc, /<rect[^>]*id="rect4138"[^>]*\/>/)) {
           at = RSTART + RLENGTH   # attr() matches again, so the place is kept first
           tag = substr(doc, RSTART, RLENGTH)
           image = "<image x=\"" attr(tag, "x") "\" y=\"" attr(tag, "y") "\" width=\"" attr(tag, "width") \
@@ -449,10 +456,20 @@ if [[ "${tpl[DESKTOP_THEME]}" == default && "$grain" -gt 0 && -d "$breeze" ]] &&
         printf "%s", doc
       }' | gzip -n > "$out/$variant/background.svgz"
   done
+  # The highlight: the row under the pointer or the keyboard (hover) takes the
+  # selection value, its edge four times as much; a pressed row (selected) twice both.
+  selection="$(yq eval '.start_menu.selection // 30' "$settings")"
+  for key in SELECTION_FILL:1 SELECTION_EDGE:4 PRESSED_FILL:2 PRESSED_EDGE:8; do
+    pct=$((selection * ${key#*:} > 100 ? 100 : selection * ${key#*:}))
+    printf -v "tpl[${key%:*}]" '%d.%02d' $((pct / 100)) $((pct % 100))
+  done
+  render "$templates/viewitem.svg" "$tmp/viewitem.svg"
+  mkdir -p "$out/widgets"
+  gzip -n < "$tmp/viewitem.svg" > "$out/widgets/viewitem.svgz"
   cp "$breeze/plasmarc" "$out/plasmarc"
   render "$templates/desktoptheme-metadata.json" "$out/metadata.json"
   if ! diff -rq "$out" "$desktoptheme" > /dev/null 2>&1; then
-    say "writing $desktoptheme (Breeze with grain on the popups)"
+    say "writing $desktoptheme (Breeze with patina's glass, grain and selection)"
     rm -rf "$desktoptheme"
     mkdir -p "$(dirname "$desktoptheme")"
     mv "$out" "$desktoptheme"

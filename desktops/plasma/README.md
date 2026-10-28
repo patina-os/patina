@@ -31,16 +31,22 @@ Files, from `templates/`, each named after the theme:
   `rsvg-convert` writes), so they stand equally tall in the bar. An app installed later gets its glyph at the next `patina theme set`.
   The session uses this icon theme. Without the icon theme installed the renderer
   falls back to Breeze and says so
-- with `start_menu.grain` above 0, a Plasma desktop theme of the theme's own,
-  `~/.local/share/plasma/desktoptheme/patina-<theme>/`: Breeze's four popup
-  backgrounds (`dialogs/background.svgz` and its translucent, opaque and solid forms)
-  with a 32 px noise tile in the text colour (`templates/grain.svg`, rendered to PNG
-  and embedded) laid at that opacity into their centre tile, which Plasma repeats, and
-  Breeze's `plasmarc`; every other element comes from Breeze. Plasma draws all panel
-  popups from that background, so the start menu, the calendar and the tray share the
-  grain. Where KWin's Background Contrast effect blurs behind a popup, Plasma draws
-  the translucent background, whose 85 % opacity becomes `start_menu.glass` (40 by
-  default), so the wallpaper glows through the start menu. KWin's Blur and Background
+- over the default desktop theme, a Plasma desktop theme of the theme's own,
+  `~/.local/share/plasma/desktoptheme/patina-<theme>/`, with Breeze's `plasmarc`; every
+  element it does not hold comes from Breeze. It holds Breeze's four popup backgrounds
+  (`dialogs/background.svgz` and its translucent, opaque and solid forms), with
+  `start_menu.grain` above 0 a 32 px noise tile in the text colour
+  (`templates/grain.svg`, rendered to PNG and embedded) laid at that opacity into their
+  centre tile, which Plasma repeats. Plasma draws all panel popups and the command
+  palette from that background, so the start menu, KRunner, the calendar and the tray
+  share the grain. Where KWin's Background Contrast effect blurs behind a popup, Plasma
+  draws the translucent background, whose 85 % opacity becomes `start_menu.glass` (60
+  by default), so the wallpaper glows through the window colour, near black in the
+  dark mode. It also holds the highlight of Plasma's lists (`widgets/viewitem.svgz`,
+  from `templates/viewitem.svg`): the selected row of the start menu, the command
+  palette and the tray popups is `start_menu.selection` percent of the accent (10 by
+  default; Breeze fills 30) inside a 1 px edge of four times that, a pressed row twice
+  both. Apps keep the colour scheme's selection. KWin's Blur and Background
   Contrast effects (`kwinrc`, `[Plugins]`) are turned on, Plasma's defaults, for a
   desktop where they were off
 - a Konsole colour scheme and profile under `~/.local/share/konsole/`, made the default
