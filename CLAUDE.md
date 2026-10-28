@@ -38,6 +38,11 @@ packs. Audience: developers and privacy-minded users in the EU.
   neither Debian's archive nor Flathub carries may come from its upstream's release
   (the ArtCraft Launcher, chosen by the maintainer in October 2026); it too moves as
   soon as one of them carries it. Opt-in tools that wait for a package instead: cliamp.
+  Deferred in October 2026, to decide later: FileAction (MIT, Metamorfolog/file_action,
+  a converter on a radial wheel) as an opt-in app from its release. Its release ships
+  only an x86_64 tarball (no aarch64, and the `binary` method takes one file, so it
+  waits for an arm64 build and an AppImage upstream), it does not update itself on
+  Linux, and its Office conversions need LibreOffice beside Euro-Office.
 - App stack: Nextcloud client, Euro-Office (the AGPL fork of ONLYOFFICE by a European
   consortium, from Nextcloud's signed apt repository until Flathub carries it), Thunderbird,
   Element, KeePassXC, kitty as the terminal (Ghostty once Debian carries it), Firefox ESR
