@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# The popups' glass is darker (60 %) and Plasma's lists take a faint selection inside a
-# thin edge: render the theme already set here again. Idempotent like `patina theme set`.
+# The popups' glass is darker (60 %) with a light rim, and Plasma's lists take a faint
+# selection inside a thin edge: render the theme already set here again. Idempotent like
+# `patina theme set`.
 set -euo pipefail
 
 # shellcheck source=bin/lib.sh

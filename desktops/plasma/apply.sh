@@ -425,6 +425,12 @@ if [[ "${tpl[DESKTOP_THEME]}" == default && -d "$breeze" ]]; then
   # becomes the glass value, so the wallpaper glows through.
   glass_pct="$(yq eval '.start_menu.glass // 85' "$settings")"
   printf -v glass '%d.%02d' $((glass_pct / 100)) $((glass_pct % 100))
+  # Rim (start_menu.rim): Breeze lays a 1 px strip of the window colour at 50 % along
+  # the straight edges, a dark line round the glass; it becomes the text colour at the
+  # rim value, and each rounded corner gets the same line along its curve.
+  rim_pct="$(yq eval '.start_menu.rim // 0' "$settings")"
+  rim=""
+  [[ "$rim_pct" -gt 0 ]] && printf -v rim '%d.%02d' $((rim_pct / 100)) $((rim_pct % 100))
   for variant in dialogs translucent/dialogs opaque/dialogs solid/dialogs; do
     [[ -f "$breeze/$variant/background.svgz" ]] || continue
     mkdir -p "$out/$variant"
@@ -432,7 +438,9 @@ if [[ "${tpl[DESKTOP_THEME]}" == default && -d "$breeze" ]]; then
     [[ "$variant" == translucent/dialogs ]] && see="$glass"
     # After the centre's background rect (rect4138 in every variant), an image of the
     # noise at the same place and size; the root gets the xlink namespace it needs.
-    zcat "$breeze/$variant/background.svgz" | awk -v img="$img" -v op="$opacity" -v see="$see" '
+    # The rim's strips are the paths at opacity 0.5, the corners path3115 to path3124;
+    # the line along a corner's curve is drawn in that corner's own 6 px square.
+    zcat "$breeze/$variant/background.svgz" | awk -v img="$img" -v op="$opacity" -v see="$see" -v rim="$rim" '
       function attr(tag, name,   m) {
         if (match(tag, "[ \t\n]" name "=\"[^\"]*\"")) {
           m = substr(tag, RSTART + 1, RLENGTH - 1)
@@ -440,11 +448,36 @@ if [[ "${tpl[DESKTOP_THEME]}" == default && -d "$breeze" ]]; then
         }
         return "0"
       }
+      function corner(id, d,   at) {
+        if (match(doc, "<path[^>]*id=\"" id "\"[^>]*/>")) {
+          at = RSTART + RLENGTH
+          doc = substr(doc, 1, at - 1) "<path class=\"ColorScheme-Text\" fill=\"currentColor\" opacity=\"" \
+            rim "\" d=\"" d "\"/>" substr(doc, at)
+        }
+      }
       BEGIN { RS = "\001" }
       {
         doc = $0
         if (doc !~ /xmlns:xlink=/) sub(/<svg/, "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\"", doc)
         if (see != "") gsub(/opacity:0\.85/, "opacity:" see, doc)
+        strips = 0
+        rest = doc
+        doc = ""
+        while (rim != "" && match(rest, /<path[^>]*opacity:0\.5;fill:currentColor[^>]*>/)) {
+          tag = substr(rest, RSTART, RLENGTH)
+          sub(/opacity:0\.5;/, "opacity:" rim ";", tag)
+          sub(/ColorScheme-Background/, "ColorScheme-Text", tag)
+          doc = doc substr(rest, 1, RSTART - 1) tag
+          rest = substr(rest, RSTART + RLENGTH)
+          strips++
+        }
+        doc = doc rest
+        if (strips > 0) {
+          corner("path3115", "M 0,6 C 0,2 2,0 6,0 V 1 C 2.6,1 1,2.6 1,6 Z")
+          corner("path3118", "M 0,0 C 4,0 6,2 6,6 H 5 C 5,2.6 3.4,1 0,1 Z")
+          corner("path3124", "M 0,0 C 0,4 2,6 6,6 V 5 C 2.6,5 1,3.4 1,0 Z")
+          corner("path3121", "M 6,0 C 6,4 4,6 0,6 V 5 C 3.4,5 5,3.4 5,0 Z")
+        }
         if (img != "" && match(doc, /<rect[^>]*id="rect4138"[^>]*\/>/)) {
           at = RSTART + RLENGTH   # attr() matches again, so the place is kept first
           tag = substr(doc, RSTART, RLENGTH)
@@ -469,7 +502,7 @@ if [[ "${tpl[DESKTOP_THEME]}" == default && -d "$breeze" ]]; then
   cp "$breeze/plasmarc" "$out/plasmarc"
   render "$templates/desktoptheme-metadata.json" "$out/metadata.json"
   if ! diff -rq "$out" "$desktoptheme" > /dev/null 2>&1; then
-    say "writing $desktoptheme (Breeze with patina's glass, grain and selection)"
+    say "writing $desktoptheme (Breeze with patina's glass, rim, grain and selection)"
     rm -rf "$desktoptheme"
     mkdir -p "$(dirname "$desktoptheme")"
     mv "$out" "$desktoptheme"

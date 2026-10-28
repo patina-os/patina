@@ -12,6 +12,8 @@ All notable changes to patina are documented here. The format follows
   of the window colour (near black in the dark mode, lavender white in the light one)
   instead of 40 %, so the wallpaper glows through less. The installer's sidebar
   follows, as its glass is the start menu's.
+- The popups' edge is a light hairline of the text colour (`start_menu.rim`, 12 %)
+  that follows the rounded corners, instead of Breeze's darker line along the sides.
 - The selected row of the command palette, the start menu and the tray popups is a
   faint tint of the accent inside a thin edge (`start_menu.selection`, 10 %) instead
   of Breeze's solid-looking green; apps keep their selection colour.

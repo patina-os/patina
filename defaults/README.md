@@ -16,7 +16,7 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   big, a centred or the desktop's own bar, which actions' apps are pinned to it), where
   the command palette opens (the middle of the screen or the top), the start menu (a
   menu above its button or a full-screen dashboard, its folders, AI and self-hosting,
-  its favourites as desktop entries, and the grain, glass and selection on it and the
+  its favourites as desktop entries, and the grain, glass, rim and selection on it and the
   other popups), all as
   desktop-agnostic words the renderer translates. Under `ai`, the AI agent: the answer preselected and taken unattended
   (`mode`: local, cloud or none), the Ollama models offered, in order, each with the

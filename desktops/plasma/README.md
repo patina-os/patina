@@ -42,7 +42,9 @@ Files, from `templates/`, each named after the theme:
   share the grain. Where KWin's Background Contrast effect blurs behind a popup, Plasma
   draws the translucent background, whose 85 % opacity becomes `start_menu.glass` (60
   by default), so the wallpaper glows through the window colour, near black in the
-  dark mode. It also holds the highlight of Plasma's lists (`widgets/viewitem.svgz`,
+  dark mode. Breeze's darker 1 px rim along their edges becomes the text colour at
+  `start_menu.rim` percent (12 by default; 0 keeps Breeze's), a light hairline that
+  follows the rounded corners too. It also holds the highlight of Plasma's lists (`widgets/viewitem.svgz`,
   from `templates/viewitem.svg`): the selected row of the start menu, the command
   palette and the tray popups is `start_menu.selection` percent of the accent (10 by
   default; Breeze fills 30) inside a 1 px edge of four times that, a pressed row twice
