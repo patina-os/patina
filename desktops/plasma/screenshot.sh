@@ -75,18 +75,21 @@ session() {
   sleep "$settle"
   # The theme once more, now inside a session: the live reload through the plasma-apply
   # tools, and the window rule that needs a screen (desktops/plasma/README.md).
+  # With --layout, as the first install runs it, so the start menu shows patina's
+  # favourites in place of the ones Plasma gave the session.
   theme="$("$PATINA_PATH/bin/patina" theme current)"
-  "$PATINA_PATH/bin/patina" theme set "$theme" || true
+  "$PATINA_PATH/bin/patina" theme set "$theme" --layout || true
   sleep 5
   # The Welcome Center a first login opens would show through the windows.
   pkill -u "$(id -u)" -x plasma-welcome || true
 
   # One kitty window split in two: the greeting on the left, btop on the right, its
-  # graphs refreshed four times a second so they fill before the grab. fastfetch asks
-  # kitty for its version and reads the reply itself; give kitty a moment to finish its
-  # own startup first, or a late reply lands on the shell's prompt line.
+  # graphs refreshed four times a second so they fill before the grab. The greeting is
+  # fish's own (fastfetch, desktops/terminal); it asks kitty for its version and reads
+  # the reply itself, so fish waits for kitty to finish its own startup first, or a late
+  # reply lands on the shell's prompt line.
   split="$(mktemp)"
-  printf '%s\n' 'layout splits' "launch fish -C 'sleep 3; fastfetch'" \
+  printf '%s\n' 'layout splits' "launch fish -C 'sleep 3'" \
     'launch --location=vsplit --bias=58 btop --update 250' > "$split"
   kitty --session "$split" &
   kitty_pid=$!

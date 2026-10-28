@@ -108,9 +108,9 @@ even_glyph() {
   mv "$file.even" "$file"
 }
 
-# Give a monochrome icon the colour of start_menu.icons, in place: ink_glyph <svg>. With
-# accent, its one colour becomes the accent and a class that follows the colour scheme's
-# text follows its accent instead, so the glyph stays the accent in either mode.
+# Give a start menu category icon the colour of start_menu.icons, in place: ink_glyph
+# <svg>. With accent, its one colour becomes the accent and a class that follows the
+# colour scheme's text follows its accent instead, so it stays the accent in either mode.
 ink_glyph() {
   [[ "$glyph_ink" == accent ]] || return 0
   sed -i -e "s/#[0-9a-fA-F]\{6\}\b/${tpl[ACCENT]}/g" -e 's/ColorScheme-Text/ColorScheme-Accent/g' "$1"
@@ -355,7 +355,6 @@ if [[ -n "$variant" && -f "/usr/share/icons/$icons_base/index.theme" ]]; then
       fi
       cp -L "$src" "$out/32x32/symbolic/apps/$icon.svg"
       even_glyph "$out/32x32/symbolic/apps/$icon.svg"
-      ink_glyph "$out/32x32/symbolic/apps/$icon.svg"
     done < <(for d in "${app_dirs[@]}"; do
         # the icons of the apps a menu shows: Type=Application, neither NoDisplay nor Hidden
         [[ -d "$d" ]] && awk -F= '
@@ -372,7 +371,8 @@ if [[ -n "$variant" && -f "/usr/share/icons/$icons_base/index.theme" ]]; then
       done 2> /dev/null | sort -u)
   fi
   # The start menu's categories show the icon theme's symbolic category icons; with
-  # start_menu.icons: accent they take the accent like the glyphs.
+  # start_menu.icons: accent they take the accent, while the apps' glyphs in the menu
+  # and the bar keep the text colour.
   if [[ "$glyph_ink" == accent && -d "/usr/share/icons/$icons_base/32x32/symbolic/categories" ]]; then
     mkdir -p "$out/32x32/symbolic/categories"
     cp -L /usr/share/icons/"$icons_base"/32x32/symbolic/categories/*.svg "$out/32x32/symbolic/categories/"
@@ -461,6 +461,10 @@ if [[ "${tpl[DESKTOP_THEME]}" == default && "$grain" -gt 0 && -d "$breeze" ]] &&
   tpl[DESKTOP_THEME]="patina-$theme"
 fi
 drop_other_themes "$data/plasma/desktoptheme/patina-*" "$desktoptheme"
+# The glass needs KWin's Blur and Background Contrast effects, Plasma's defaults; a
+# desktop where they were turned off gets them back.
+kset kwinrc blurEnabled true Plugins
+kset kwinrc contrastEnabled true Plugins
 
 # The look-and-feel package: Plasma's own way to hand a new session its colours,
 # icons, cursors and wallpaper at once, so a fresh user gets the theme at first login.
@@ -846,19 +850,30 @@ if [[ $in_session -eq 1 ]]; then
   # /etc/skel/.face) or none. Set through AccountsService, the way System Settings sets
   # it, which keeps it for the login screen too; a picture the user chose is left alone.
   # Once: the rendered picture in the state directory says it was set.
-  if [[ ! -e "$PATINA_STATE/avatar.png" && ! -e "/var/lib/AccountsService/icons/$USER" ]] &&
-      { [[ ! -e "$HOME/.face" ]] || cmp -s "$HOME/.face" /etc/skel/.face; } &&
+  # It is the small mark (the dots of icon-small.svg), which still reads at the size the
+  # menu shows it, inset so the round crop keeps every dot; a picture patina set before
+  # (the system's copy equals ours) is replaced when it changes.
+  avatar="$PATINA_STATE/avatar.png"
+  face="/var/lib/AccountsService/icons/$USER"
+  if { { [[ ! -e "$avatar" && ! -e "$face" ]] &&
+        { [[ ! -e "$HOME/.face" ]] || cmp -s "$HOME/.face" /etc/skel/.face; }; } ||
+      { [[ -e "$avatar" ]] && cmp -s "$avatar" "$face"; }; } &&
       command -v rsvg-convert > /dev/null && command -v dbus-send > /dev/null; then
+    cp "$PATINA_PATH/branding/icon-small.svg" "$tmp/icon-small.svg"
+    printf '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100"><image xlink:href="icon-small.svg" x="15" y="15" width="70" height="70"/></svg>\n' \
+      > "$tmp/avatar.svg"
     rsvg-convert --width 512 --height 512 --background-color "${tpl[BASE00]}" \
-      --output "$PATINA_STATE/avatar.png" "$PATINA_PATH/branding/icon.svg"
-    if dbus-send --system --print-reply --dest=org.freedesktop.Accounts \
-        "/org/freedesktop/Accounts/User$(id -u)" org.freedesktop.Accounts.User.SetIconFile \
-        "string:$PATINA_STATE/avatar.png" > /dev/null 2>&1; then
-      say "the user's picture: the patina mark"
-      changed
-    else
-      warn "AccountsService did not take the user's picture; System Settings, Users sets one"
-      rm -f "$PATINA_STATE/avatar.png"
+      --output "$tmp/avatar.png" "$tmp/avatar.svg"
+    if ! cmp -s "$tmp/avatar.png" "$avatar"; then
+      if dbus-send --system --print-reply --dest=org.freedesktop.Accounts \
+          "/org/freedesktop/Accounts/User$(id -u)" org.freedesktop.Accounts.User.SetIconFile \
+          "string:$tmp/avatar.png" > /dev/null 2>&1; then
+        cp "$tmp/avatar.png" "$avatar"
+        say "the user's picture: the patina mark"
+        changed
+      else
+        warn "AccountsService did not take the user's picture; System Settings, Users sets one"
+      fi
     fi
   fi
   if [[ $changes -gt 0 ]] && command -v dbus-send > /dev/null; then

@@ -23,10 +23,10 @@ Files, from `templates/`, each named after the theme:
   (`mono`: the Icon= of each installed desktop entry a menu shows, mapped to a glyph,
   `other` for the rest; names the icon theme uses for folders or file types are left
   alone), so the bar, the menu and the title bars are one colour, the colour scheme's
-  text colour, or with `start_menu.icons: accent` (the default) the accent: the glyph's
-  colour and its `ColorScheme-Text` class become the accent, and the icon theme's
-  symbolic category icons, which the start menu's categories show, get the same; the
-  labels keep the text colour. Each glyph, and the start menu's mark, gets a viewBox cut to what it
+  text colour (white in the dark mode, dark in the light one). With
+  `start_menu.icons: accent` (the default) the icon theme's symbolic category icons,
+  which the start menu's categories show, take the accent: their colour and their
+  `ColorScheme-Text` class become the accent; the labels keep the text colour. Each glyph, and the start menu's mark, gets a viewBox cut to what it
   draws, 7/8 of the icon high and centred (the extent from the bounding box of an EPS
   `rsvg-convert` writes), so they stand equally tall in the bar. An app installed later gets its glyph at the next `patina theme set`.
   The session uses this icon theme. Without the icon theme installed the renderer
@@ -39,8 +39,10 @@ Files, from `templates/`, each named after the theme:
   Breeze's `plasmarc`; every other element comes from Breeze. Plasma draws all panel
   popups from that background, so the start menu, the calendar and the tray share the
   grain. Where KWin's Background Contrast effect blurs behind a popup, Plasma draws
-  the translucent background, whose 85 % opacity becomes `start_menu.glass` (60 by
-  default), so the wallpaper glows through the start menu
+  the translucent background, whose 85 % opacity becomes `start_menu.glass` (40 by
+  default), so the wallpaper glows through the start menu. KWin's Blur and Background
+  Contrast effects (`kwinrc`, `[Plugins]`) are turned on, Plasma's defaults, for a
+  desktop where they were off
 - a Konsole colour scheme and profile under `~/.local/share/konsole/`, made the default
   profile in `konsolerc`
 - one Plasma wallpaper package per image under `~/.local/share/wallpapers/`; an SVG or a
@@ -123,10 +125,12 @@ Settings, through `kwriteconfig6`, each written only when it differs:
   (100 by default: only kitty is see-through, by its own background)
 - `ksplashrc` the theme's splash, written again after `plasma-apply-lookandfeel`, which
   reverts the user's splash key and so left KDE's splash after login
-- the user's picture, once and only while it is Debian's (`/etc/skel/.face`) or none:
-  `branding/icon.svg` on the theme's background, rendered to
-  `~/.local/state/patina/avatar.png` and set through AccountsService's `SetIconFile`,
-  as System Settings does, so the start menu and the login screen both show it
+- the user's picture, only while it is Debian's (`/etc/skel/.face`), none, or the one
+  patina set before (the system's copy equals ours): `branding/icon-small.svg`, the
+  dots that still read at the menu's size, inset on the theme's background, rendered
+  to `~/.local/state/patina/avatar.png` and set through AccountsService's
+  `SetIconFile`, as System Settings does, so the start menu and the login screen both
+  show it
 - the command palette's position of `defaults/settings.yaml`: KRunner's `FreeFloating`
   in `krunnerrc`, true for `center` (the middle of the screen), false for `top`
 - global shortcuts in `kglobalshortcutsrc` from `defaults/keybindings.yaml`, each action
@@ -162,8 +166,9 @@ applies at the next login through the look-and-feel package.
 `screenshot.sh <dir>` shows what the renderer produces without a machine to log in to:
 a Plasma X11 session on a virtual framebuffer (`Xvfb`, Mesa's software OpenGL, no GPU
 and no login), `plasmashell` in it, which runs the layout script as a first login
-does, then `patina theme set` once more inside that session (the live reload and the
-window rule, which needs a screen) and the Welcome Center closed. Then three grabs of
+does, then `patina theme set --layout` once more inside that session, as the first
+install runs it (the live reload, the window rule, which needs a screen, and patina's
+favourites in place of Plasma's) and the Welcome Center closed. Then three grabs of
 the whole screen (`scrot`): `desktop.png`, kitty split in two with the fastfetch
 greeting and btop; when `PATINA_SHOT_ASK` holds a request and an AI bundle installed
 kortex, `command-palette.png` on the empty desktop: what Enter on kortex's "Ask the
