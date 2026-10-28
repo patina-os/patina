@@ -7,13 +7,15 @@ finished in, not the order they were prepared in: the image and the device entri
 written as data before the layer's own commands existed, so Phases 3 and 4 already carry
 ticked items while Phase 1 is open.
 
-Status: alpha (`v0.1.0-alpha.1`, Path A only, for testers). The core commands exist and
+Status: alpha (`v0.1.0-alpha.2`, Path A only, for testers). The core commands exist and
 the smoke test runs `patina install` twice in Debian 13 containers on both
 architectures; the live image builds and boots to the installer in CI; the Plasma
 renderer and the themes, aurora by default, render from data and switch without
-leftovers in the same containers. Phase 1's last step, the run on a fresh Debian 13 VM
-with Plasma, is open and handed to the alpha's testers; Phase 2 waits for the same run
-to see the theme on a real desktop; Phase 3 is open.
+leftovers in the same containers. The run on a fresh Debian 13 VM with Plasma that
+closes Phases 1 and 2 passed in October 2026, and what it found is fixed; those fixes
+are checked in CI only, so the alpha's testers' runs confirm them. The image passed its
+first manual install in an amd64 VM, first boot included; Phase 3 waits for the same
+install on arm64.
 
 Settled on this roadmap: the TUI helper is `gum` (Debian 13 ships 0.14 on both
 architectures); the office suite is Euro-Office; the terminal is kitty until Debian
@@ -37,8 +39,8 @@ after the first VM run (Phase 2).
 ## Phase 1: the core commands on x86_64 (Debian 13)
 
 `patina install` without a TUI yet: it installs what the manifest says, through the apt
-backend, Flathub and the upstream recipes, plus the commands around it. The code is in;
-what the ticks below still owe is the "done when" run on a real VM.
+backend, Flathub and the upstream recipes, plus the commands around it. The "done when"
+run on a real VM passed in October 2026.
 
 - [x] `patina install`: the `base` and `desktop` bundles, the Flathub remote and the
   flatpaks, the upstream recipes (npm, uv, the Go `yq` release binary); bundles chosen
@@ -90,18 +92,20 @@ what the ticks below still owe is the "done when" run on a real VM.
 - [x] verified package names: the "illustrative" notes in `manifest/` go away
 - [x] CI: the smoke job runs `patina install` unattended, twice, in the Debian 13
   containers on x86_64 and aarch64 (the ARM plan's first step happens here)
-- [ ] the run that closes the phase: a fresh Debian 13 VM with Plasma, `git clone`,
+- [x] the run that closes the phase: a fresh Debian 13 VM with Plasma, `git clone`,
   `patina install`, a second run, `patina doctor`; what it shows missing goes back into
   the data. The CI containers prove everything but the systemd side (zram, oomd, the
   schedulers, GRUB and the initramfs) and the sudo path as a user; the steps are in
-  `docs/vm-run.md`
+  `docs/vm-run.md`. Passed in October 2026; what it found (the AI opt-in, the extras
+  bundle, the themes' directory, a failing flatpak stopping the install) is fixed and
+  checked in CI, and the testers' runs of 0.1.0-alpha.2 confirm it
 - Done when: a fresh Debian 13 VM with Plasma gets the whole app stack with one command,
   a second run changes nothing, and `patina doctor` reports clean.
 
 ## Phase 2: theming (the Plasma renderer and the first theme)
 
-The code and the data are in; what the ticks still owe, like Phase 1's, is the look on a
-real Plasma desktop, which the same VM run gives.
+The code and the data are in, and the same VM run showed the look on a real Plasma
+desktop.
 
 - [x] `desktops/plasma/apply.sh` and its templates, against Plasma 6.3 as Debian 13
   ships it: colour scheme, Konsole and kitty profiles, GTK and Qt consistency,
@@ -150,10 +154,13 @@ real Plasma desktop, which the same VM run gives.
 - [x] CI: the smoke test checks the rendered files and settings, that setting the theme
   again changes nothing, and that a copy of the theme under another name renders and
   switches back without leftovers
-- [ ] the run that closes the phase: the theme on a real Plasma desktop, the live
+- [x] the run that closes the phase: the theme on a real Plasma desktop, the live
   reload inside a session and the wallpaper through the look-and-feel package at a
   first login; what looks wrong goes back into the data (the same VM run,
-  `docs/vm-run.md`)
+  `docs/vm-run.md`). Passed in October 2026; what it found (the floating bar, every
+  window see-through, the start menu's glass, icons and favourites, KDE's splash after
+  login) is fixed and seen in the desktop workflow's screenshots, and the testers' runs
+  of 0.1.0-alpha.2 confirm it on a real desktop
 - Done when: one theme renders the whole desktop from data, `patina theme set` switches
   and switches back without leftovers, and a theme pack made by copying
   `themes/_template` renders without a code change.
@@ -205,10 +212,11 @@ real Plasma desktop, which the same VM run gives.
   any Plasma desktop), that hands what is typed after `ai` to the agent's `opencode
   serve` and shows the answer and the confirmations in KRunner. Both AI bundles install
   its tagged release (the `git` method of `manifest/upstream.yaml`)
-- [ ] one manual install in a VM per release, until Calamares can be driven unattended
+- [x] one manual install in a VM per release, until Calamares can be driven unattended
   (upstream has no unattended mode; see `iso/README.md`): boot, answer the installer,
   first boot ends in `patina firstboot: done`, and the desktop looks like the
-  screenshot in `docs/screenshots/`
+  screenshot in `docs/screenshots/`. Passed on amd64 in October 2026; it is repeated
+  for every release that attaches the images
 - Done when: boot, answer the installer, finished desktop identical to Path A, in a VM
   on both architectures.
 

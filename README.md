@@ -20,7 +20,9 @@
 **Status: alpha, for testers.** `patina install` installs the app stack, the AI agent
 and the system tuning on Debian 13 and renders the default theme, aurora, into Plasma's
 configuration (checked in CI containers on x86_64 and aarch64 and in a first run on a
-Debian 13 VM, not yet on real hardware); the branded install is still to come. [Testing the alpha](#testing-the-alpha) says how to
+Debian 13 VM, not yet on real hardware). The live image's installer passed its first
+manual install in a VM; the images are handed out from the first release past the
+alphas. [Testing the alpha](#testing-the-alpha) says how to
 help; see the [roadmap](docs/roadmap.md).
 
 ## The agent in the command palette
@@ -110,8 +112,8 @@ Two paths, one layer. If they ever diverge, Path A wins.
 
 | Path | What you do | Status |
 |---|---|---|
-| A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (it asks the theme and the app bundles on a terminal; flags or `--unattended` skip the questions) | alpha (`v0.1.0-alpha.1`): installs the app stack, the system tuning and the theme, checked in CI containers; testers run it on real desktops |
-| B: the patina image | Boot a small live image, answer the installer (disk, user, locale), get the finished desktop. Plasma and the base are downloaded from Debian's mirrors during the install; first boot runs Path A | pre-alpha: the image builds and boots to the installer in CI (x86_64 and aarch64), not handed out yet; the first boot waits for Path A |
+| A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (it asks the theme and the app bundles on a terminal; flags or `--unattended` skip the questions) | alpha (`v0.1.0-alpha.2`): installs the app stack, the system tuning and the theme, checked in CI containers and a first VM run; testers run it on real desktops |
+| B: the patina image | Boot a small live image, answer the installer (disk, user, locale), get the finished desktop. Plasma and the base are downloaded from Debian's mirrors during the install; first boot runs Path A | pre-alpha: the image builds and boots to the installer in CI (x86_64 and aarch64), and one manual install through the installer in an x86_64 VM passed, first boot included; not handed out yet |
 
 ```sh
 sudo apt install git curl
@@ -131,11 +133,12 @@ your PATH and link `patina` there (`ln -s ~/.local/share/patina/bin/patina
 
 ## Testing the alpha
 
-`v0.1.0-alpha.1` is the first release, for people willing to try patina on a fresh
+`v0.1.0-alpha.2` is the current release, for people willing to try patina on a fresh
 Debian 13 with Plasma and report what they see. It is Path A only; the image is not
-handed out yet. Beyond CI containers and a headless Plasma session it has had one run
-on a Debian 13 VM, whose fixes are on `main`, and none on real hardware, so expect rough
-edges, and use a VM with a snapshot or a machine you can reinstall.
+handed out yet. Beyond CI containers and a headless Plasma session it has passed one run
+on a Debian 13 VM, and this alpha carries what that run found, but none on real
+hardware, so expect rough edges, and use a VM with a snapshot or a machine you can
+reinstall.
 
 1. Follow [docs/vm-run.md](docs/vm-run.md): the VM, Debian 13, then `patina install`
    twice, the reboot, the apps and the look, ticking each check. The agents bundle
