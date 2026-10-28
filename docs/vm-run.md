@@ -175,8 +175,9 @@ Log out and back in once, then:
   among the categories; the favourites are Nextcloud, Element, Euro-Office,
   Thunderbird, KeePassXC, kitty (and the agent and Claude Desktop with the agents
   bundle), and none of Debian's (Discover, Dolphin, System Settings, Konqueror); its
-  background is glass, the wallpaper glowing through; its category icons and the
-  apps' glyphs are green, the labels white; the user's picture is the patina mark
+  background is glass, the wallpaper's colour glowing through; its category icons
+  are green, the apps' glyphs and the labels white; the apps by their names alone and
+  one power button at the bottom; the user's picture is the patina dots
 - [ ] the wallpaper is the DeepMind waves; every icon in the bar, the start menu and
   the title bars is a single-colour glyph; the start menu and the calendar show a
   faint grain

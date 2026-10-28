@@ -91,9 +91,13 @@ Files, from `templates/`, each named after the theme:
   defaults, so with `--layout` inside a session the renderer unlinks those (the browser,
   Kontact, System Settings, Dolphin, Discover) and links patina's through the activity
   manager's D-Bus API (`org.kde.ActivityManager.ResourcesLinking`); favourites the user
-  added stay. Kickoff always opens above its button: Plasma places every panel popup
-  itself, so no KWin rule can centre it on the screen; the Application Dashboard is the
-  centred start menu
+  added stay. Kickoff always opens centred above its button (libplasma's
+  `PopupPlasmaWindow` anchors every panel popup to its applet), so with the launcher
+  first among the centred icons it sits left of the screen's centre by half the width
+  of the icons beside it. No KWin rule can centre it: its window has no title and the
+  same class and type (`_KDE_NET_WM_WINDOW_TYPE_APPLET_POPUP`) as the calendar's and
+  the tray's, as the desktop workflow's session showed. The Application Dashboard is
+  the centred start menu
 - with an AI bundle (`ai-local`, `ai-cloud`) or the agents bundle:
   `~/.local/share/applications/patina-agent.desktop`, which opens the command `agent`
   of `defaults/settings.yaml` in the agent's kitty profile; removed again when none of

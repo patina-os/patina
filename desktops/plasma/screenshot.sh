@@ -141,19 +141,6 @@ session() {
     org.kde.PlasmaShell.activateLauncherMenu
   sleep 5
   grab "$dir" start-menu
-  # PROBE (temporary): what KWin knows of the start menu's window, and the effects.
-  {
-    echo "=== probe: windows"
-    xwininfo -root -tree | grep -i -E 'plasmashell|"' | head -60
-    for id in $(xwininfo -root -tree | awk '/plasmashell/ {print $1}'); do
-      echo "--- $id"
-      xprop -id "$id" WM_NAME _NET_WM_NAME WM_CLASS WM_WINDOW_ROLE _NET_WM_WINDOW_TYPE _NET_WM_STATE _KDE_NET_WM_DESKTOP_FILE 2>&1
-      xwininfo -id "$id" | grep -E 'Absolute|Width|Height|Map State'
-    done
-    echo "=== probe: effects"
-    dbus-send --session --print-reply --dest=org.kde.KWin /Effects org.freedesktop.DBus.Properties.Get string:org.kde.kwin.Effects string:loadedEffects 2>&1
-    dbus-send --session --print-reply --dest=org.kde.KWin /KWin org.kde.KWin.supportInformation 2>&1 | grep -i -E 'composit|opengl|blur|contrast' | head -20
-  } >> "$dir/probe.log" 2>&1
   dbus-send --session --type=method_call --dest=org.kde.plasmashell /PlasmaShell \
     org.kde.PlasmaShell.activateLauncherMenu
   "$PATINA_PATH/bin/patina" theme mode "$mode" || true
