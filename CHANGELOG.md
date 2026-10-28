@@ -92,12 +92,16 @@ All notable changes to patina are documented here. The format follows
   (`~/.config/environment.d/60-patina.conf`), so `patina` and the tools it fetches are
   found in every terminal right after the install.
 - Bundle descriptions are short enough for an 80-column terminal; lint checks it.
-- The start menu is glass: where KWin blurs behind it, its background is 60% opaque
-  instead of Breeze's 85% (`start_menu.glass`), so the wallpaper glows through. Its
-  category icons and the apps' glyphs in the bar and the menu take the accent, the
-  labels keep the text colour (`start_menu.icons: accent`, or `text` as before).
-- The user's picture is the patina mark while it is Debian's swirl, set through
-  AccountsService so the login screen shows it too.
+- The start menu is glass: where KWin blurs behind it, its background is 40% opaque
+  instead of Breeze's 85% (`start_menu.glass`), and KWin's Blur and Background
+  Contrast effects are turned on where they were off, so the wallpaper's colour glows
+  through. Its category icons take the accent, the labels and the apps' icons the text
+  colour (`start_menu.icons: accent`, or `text`). It shows the apps by their names
+  alone, in compact lists, with one power button whose menu holds sleep, restart and
+  log out.
+- The user's picture is the small patina mark while it is Debian's swirl, set through
+  AccountsService so the login screen shows it too; a picture patina set before is
+  replaced.
 
 ### Fixed
 
