@@ -5,7 +5,8 @@
 set -euo pipefail
 
 # The live system speaks British English (live-config's locales, read by .xinitrc), so
-# the installer starts in it; its first page offers every other language.
+# the installer starts in it; its first page offers every other language. The boot
+# test repeats this command line (iso/test/boot-test.sh), since QEMU boots past GRUB.
 # amd64 and arm64 (docs/roadmap.md, Phases 2 and 3); build.sh passes the architecture.
 # The kernel flavour is named like the architecture on both.
 arch="${PATINA_ARCH:-amd64}"
