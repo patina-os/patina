@@ -127,7 +127,8 @@ jobs:
         # The scheme's colours are in kdeglobals (where Plasma reads them, not only in
         # the scheme file), the icon theme of the theme carries its folders in the
         # accent and its glyphs at one height, the start menu has its button, folders
-        # and favourites, and the windows their opacity rule.
+        # and favourites, the popups their glass, the glyphs the accent, and no window an
+        # opacity rule (only kitty is see-through, by its own background).
         run: |
           theme="$(yq eval '.theme' defaults/settings.yaml)"
           t="themes/$theme/theme.yaml"
@@ -149,18 +150,21 @@ jobs:
           done
           prepend="$(kreadconfig6 --file kicker-extra-favoritesrc --group General --key Prepend)"
           [[ "$prepend" == *thunderbird.desktop* ]]
-          test -s "$data/icons/patina-$theme/32x32/symbolic/apps/kitty.svg"
-          grep -q '<svg viewBox=' "$data/icons/patina-$theme/32x32/symbolic/apps/kitty.svg"
+          glyph="$data/icons/patina-$theme/32x32/symbolic/apps/kitty.svg"
+          test -s "$glyph"
+          grep -q '<svg viewBox=' "$glyph"
           grep -q '<svg viewBox=' "$HOME/.local/state/patina/launcher.svg"
-          rule=patina-window-opacity
-          opacity="$(kreadconfig6 --file kwinrulesrc --group "$rule" --key opacityinactive)"
-          [[ "$opacity" == "$(yq eval '.windows.opacity.inactive' defaults/settings.yaml)" ]]
-          [[ "$(kreadconfig6 --file kwinrulesrc --group General --key rules)" == *"$rule"* ]]
+          grep -qiE "$accent|ColorScheme-Accent" "$glyph"
+          rules="$(kreadconfig6 --file kwinrulesrc --group General --key rules)"
+          [[ "$rules" != *patina-window-opacity* ]]
           [[ "$(kreadconfig6 --file plasmarc --group Theme --key name)" == "patina-$theme" ]]
           # Captured before grep: grep -q stops at the first match, and with pipefail
           # zcat's SIGPIPE would fail the step.
           background="$(zcat "$data/plasma/desktoptheme/patina-$theme/dialogs/background.svgz")"
           grep -q '<image' <<< "$background"
+          glass="$data/plasma/desktoptheme/patina-$theme/translucent/dialogs/background.svgz"
+          glass="$(zcat "$glass")"
+          grep -q "opacity:0.$(yq eval '.start_menu.glass' defaults/settings.yaml)" <<< "$glass"
           test -s "$data/plasma/desktoptheme/patina-$theme/metadata.json"
       - name: The light mode switches and switches back
         # The default theme carries a light palette: the mode turns the terminal and the

@@ -23,7 +23,10 @@ Files, from `templates/`, each named after the theme:
   (`mono`: the Icon= of each installed desktop entry a menu shows, mapped to a glyph,
   `other` for the rest; names the icon theme uses for folders or file types are left
   alone), so the bar, the menu and the title bars are one colour, the colour scheme's
-  text colour. Each glyph, and the start menu's mark, gets a viewBox cut to what it
+  text colour, or with `start_menu.icons: accent` (the default) the accent: the glyph's
+  colour and its `ColorScheme-Text` class become the accent, and the icon theme's
+  symbolic category icons, which the start menu's categories show, get the same; the
+  labels keep the text colour. Each glyph, and the start menu's mark, gets a viewBox cut to what it
   draws, 7/8 of the icon high and centred (the extent from the bounding box of an EPS
   `rsvg-convert` writes), so they stand equally tall in the bar. An app installed later gets its glyph at the next `patina theme set`.
   The session uses this icon theme. Without the icon theme installed the renderer
@@ -35,7 +38,9 @@ Files, from `templates/`, each named after the theme:
   and embedded) laid at that opacity into their centre tile, which Plasma repeats, and
   Breeze's `plasmarc`; every other element comes from Breeze. Plasma draws all panel
   popups from that background, so the start menu, the calendar and the tray share the
-  grain
+  grain. Where KWin's Background Contrast effect blurs behind a popup, Plasma draws
+  the translucent background, whose 85 % opacity becomes `start_menu.glass` (60 by
+  default), so the wallpaper glows through the start menu
 - a Konsole colour scheme and profile under `~/.local/share/konsole/`, made the default
   profile in `konsolerc`
 - one Plasma wallpaper package per image under `~/.local/share/wallpapers/`; an SVG or a
@@ -77,8 +82,15 @@ Files, from `templates/`, each named after the theme:
   a folder shows the apps of its list that are installed. The menu cache is rebuilt
   (`kbuildsycoca6`) when they change. The favourites, the folders' apps and then
   `start_menu.favorites` as far as they are installed, go into `kicker-extra-favoritesrc`
-  (`Prepend`, a `;`-list): Kickoff puts them before Plasma's own favourites in every new
-  start menu (the first login, `--layout`)
+  (`Prepend`, a `;`-list): Kickoff puts them before Plasma's own favourites in a start
+  menu whose favourites store is still empty (the image's first login). On a desktop
+  that was logged into before patina (Path A) the store already holds Plasma's
+  defaults, so with `--layout` inside a session the renderer unlinks those (the browser,
+  Kontact, System Settings, Dolphin, Discover) and links patina's through the activity
+  manager's D-Bus API (`org.kde.ActivityManager.ResourcesLinking`); favourites the user
+  added stay. Kickoff always opens above its button: Plasma places every panel popup
+  itself, so no KWin rule can centre it on the screen; the Application Dashboard is the
+  centred start menu
 - with an AI bundle (`ai-local`, `ai-cloud`) or the agents bundle:
   `~/.local/share/applications/patina-agent.desktop`, which opens the command `agent`
   of `defaults/settings.yaml` in the agent's kitty profile; removed again when none of
@@ -109,6 +121,12 @@ Settings, through `kwriteconfig6`, each written only when it differs:
   `patina theme set` in a session; for `windows.opacity` below 100 a second rule that
   forces every normal window to that opacity, one share while active and one while not
   (100 by default: only kitty is see-through, by its own background)
+- `ksplashrc` the theme's splash, written again after `plasma-apply-lookandfeel`, which
+  reverts the user's splash key and so left KDE's splash after login
+- the user's picture, once and only while it is Debian's (`/etc/skel/.face`) or none:
+  `branding/icon.svg` on the theme's background, rendered to
+  `~/.local/state/patina/avatar.png` and set through AccountsService's `SetIconFile`,
+  as System Settings does, so the start menu and the login screen both show it
 - the command palette's position of `defaults/settings.yaml`: KRunner's `FreeFloating`
   in `krunnerrc`, true for `center` (the middle of the screen), false for `top`
 - global shortcuts in `kglobalshortcutsrc` from `defaults/keybindings.yaml`, each action

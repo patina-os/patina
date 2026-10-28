@@ -108,6 +108,15 @@ even_glyph() {
   mv "$file.even" "$file"
 }
 
+# Give a monochrome icon the colour of start_menu.icons, in place: ink_glyph <svg>. With
+# accent, its one colour becomes the accent and a class that follows the colour scheme's
+# text follows its accent instead, so the glyph stays the accent in either mode.
+ink_glyph() {
+  [[ "$glyph_ink" == accent ]] || return 0
+  sed -i -e "s/#[0-9a-fA-F]\{6\}\b/${tpl[ACCENT]}/g" -e 's/ColorScheme-Text/ColorScheme-Accent/g' "$1"
+}
+glyph_ink="$(yq eval '.start_menu.icons // "text"' "$settings")"
+
 # The .desktop file an action of defaults/keybindings.yaml launches, through
 # actions.yaml; empty (with a warning) when the action has none or it is not installed.
 app_dirs=("$data/applications" /usr/share/applications /usr/local/share/applications
@@ -346,6 +355,7 @@ if [[ -n "$variant" && -f "/usr/share/icons/$icons_base/index.theme" ]]; then
       fi
       cp -L "$src" "$out/32x32/symbolic/apps/$icon.svg"
       even_glyph "$out/32x32/symbolic/apps/$icon.svg"
+      ink_glyph "$out/32x32/symbolic/apps/$icon.svg"
     done < <(for d in "${app_dirs[@]}"; do
         # the icons of the apps a menu shows: Type=Application, neither NoDisplay nor Hidden
         [[ -d "$d" ]] && awk -F= '
@@ -360,6 +370,15 @@ if [[ -n "$variant" && -f "/usr/share/icons/$icons_base/index.theme" ]]; then
           s == "[Desktop Entry]" && ($1 == "NoDisplay" || $1 == "Hidden") && $2 == "true" { hide = "true" }
           END { flush() }' "$d"/*.desktop
       done 2> /dev/null | sort -u)
+  fi
+  # The start menu's categories show the icon theme's symbolic category icons; with
+  # start_menu.icons: accent they take the accent like the glyphs.
+  if [[ "$glyph_ink" == accent && -d "/usr/share/icons/$icons_base/32x32/symbolic/categories" ]]; then
+    mkdir -p "$out/32x32/symbolic/categories"
+    cp -L /usr/share/icons/"$icons_base"/32x32/symbolic/categories/*.svg "$out/32x32/symbolic/categories/"
+    for f in "$out"/32x32/symbolic/categories/*.svg; do
+      ink_glyph "$f"
+    done
   fi
   # Its index: the icon theme's own directories, its name, and the icon theme first in
   # line for everything that is not a folder.
@@ -394,12 +413,19 @@ if [[ "${tpl[DESKTOP_THEME]}" == default && "$grain" -gt 0 && -d "$breeze" ]] &&
   render "$templates/grain.svg" "$tmp/grain.svg"
   rsvg-convert --width 32 --height 32 --output "$tmp/grain.png" "$tmp/grain.svg"
   printf -v opacity '%d.%02d' $((grain / 100)) $((grain % 100))
+  # Glass (start_menu.glass): Plasma takes the translucent background while KWin's
+  # Background Contrast effect blurs behind the popup; there Breeze's 85 % opacity
+  # becomes the glass value, so the wallpaper glows through.
+  glass_pct="$(yq eval '.start_menu.glass // 85' "$settings")"
+  printf -v glass '%d.%02d' $((glass_pct / 100)) $((glass_pct % 100))
   for variant in dialogs translucent/dialogs opaque/dialogs solid/dialogs; do
     [[ -f "$breeze/$variant/background.svgz" ]] || continue
     mkdir -p "$out/$variant"
+    see=""
+    [[ "$variant" == translucent/dialogs ]] && see="$glass"
     # After the centre's background rect (rect4138 in every variant), an image of the
     # noise at the same place and size; the root gets the xlink namespace it needs.
-    zcat "$breeze/$variant/background.svgz" | awk -v img="$(base64 -w0 "$tmp/grain.png")" -v op="$opacity" '
+    zcat "$breeze/$variant/background.svgz" | awk -v img="$(base64 -w0 "$tmp/grain.png")" -v op="$opacity" -v see="$see" '
       function attr(tag, name,   m) {
         if (match(tag, "[ \t\n]" name "=\"[^\"]*\"")) {
           m = substr(tag, RSTART + 1, RLENGTH - 1)
@@ -411,6 +437,7 @@ if [[ "${tpl[DESKTOP_THEME]}" == default && "$grain" -gt 0 && -d "$breeze" ]] &&
       {
         doc = $0
         if (doc !~ /xmlns:xlink=/) sub(/<svg/, "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\"", doc)
+        if (see != "") gsub(/opacity:0\.85/, "opacity:" see, doc)
         if (match(doc, /<rect[^>]*id="rect4138"[^>]*\/>/)) {
           at = RSTART + RLENGTH   # attr() matches again, so the place is kept first
           tag = substr(doc, RSTART, RLENGTH)
@@ -783,8 +810,55 @@ if [[ $in_session -eq 1 ]]; then
       say "resetting the panels to the theme's layout"
       plasma-apply-lookandfeel --apply "org.patina.$theme" --resetLayout > /dev/null ||
         warn "plasma-apply-lookandfeel --resetLayout failed"
+      # The favourites: kicker-extra-favoritesrc only seeds an empty store, and on a
+      # desktop that was logged into before patina the store holds Plasma's defaults
+      # (Kickoff's main.xml: the browser, Kontact, System Settings, Dolphin, Discover).
+      # They are unlinked and ours linked through the activity manager, which keeps the
+      # favourites of every launcher; the user's own additions stay.
+      if [[ -n "$favorites" ]] && command -v dbus-send > /dev/null; then
+        say "start menu: patina's favourites"
+        link() {
+          dbus-send --session --print-reply --dest=org.kde.ActivityManager \
+            /ActivityManager/Resources/Linking "org.kde.ActivityManager.ResourcesLinking.$1" \
+            string:org.kde.plasma.favorites.applications "string:$2" "string:$3" > /dev/null
+        }
+        for res in preferred://browser applications:org.kde.kontact.desktop \
+            applications:systemsettings.desktop applications:org.kde.dolphin.desktop \
+            applications:org.kde.discover.desktop; do
+          link UnlinkResourceFromActivity "$res" :any || true
+        done
+        IFS=';' read -r -a apps <<< "$favorites"
+        for app in "${apps[@]}"; do
+          link LinkResourceToActivity "applications:$app" :global ||
+            warn "start menu: $app is not among the favourites"
+        done
+      fi
     else
       plasma-apply-lookandfeel --apply "org.patina.$theme" > /dev/null || warn "plasma-apply-lookandfeel failed"
+    fi
+    # Applying a look-and-feel package reverts the user's splash key to its defaults
+    # (lookandfeelmanager.cpp), which left KDE's splash after login; set it again.
+    kset ksplashrc Theme "org.patina.$theme" KSplash
+    kset ksplashrc Engine KSplashQML KSplash
+  fi
+  # The user's picture in the start menu and on the login screen: the patina mark, on the
+  # theme's background, while the user has Debian's (the swirl desktop-base puts into
+  # /etc/skel/.face) or none. Set through AccountsService, the way System Settings sets
+  # it, which keeps it for the login screen too; a picture the user chose is left alone.
+  # Once: the rendered picture in the state directory says it was set.
+  if [[ ! -e "$PATINA_STATE/avatar.png" && ! -e "/var/lib/AccountsService/icons/$USER" ]] &&
+      { [[ ! -e "$HOME/.face" ]] || cmp -s "$HOME/.face" /etc/skel/.face; } &&
+      command -v rsvg-convert > /dev/null && command -v dbus-send > /dev/null; then
+    rsvg-convert --width 512 --height 512 --background-color "${tpl[BASE00]}" \
+      --output "$PATINA_STATE/avatar.png" "$PATINA_PATH/branding/icon.svg"
+    if dbus-send --system --print-reply --dest=org.freedesktop.Accounts \
+        "/org/freedesktop/Accounts/User$(id -u)" org.freedesktop.Accounts.User.SetIconFile \
+        "string:$PATINA_STATE/avatar.png" > /dev/null 2>&1; then
+      say "the user's picture: the patina mark"
+      changed
+    else
+      warn "AccountsService did not take the user's picture; System Settings, Users sets one"
+      rm -f "$PATINA_STATE/avatar.png"
     fi
   fi
   if [[ $changes -gt 0 ]] && command -v dbus-send > /dev/null; then

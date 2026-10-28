@@ -96,8 +96,12 @@ packs. Audience: developers and privacy-minded users in the EU.
   The desktop's shape is a centred bar along the bottom edge as on Windows 11 (never
   floating: a floating bar jumps when a window is maximised), new windows
   centred at one size and the command palette in the middle of the screen; the start
-  menu opens above its button (Kickoff; Plasma's Application Dashboard, full screen,
-  is an option, dark over either mode); all are knobs in `defaults/settings.yaml`.
+  menu opens above its button (Kickoff: Plasma places its popups itself, so no KWin
+  rule can centre it; Plasma's Application Dashboard, full screen and centred, is an
+  option, dark over either mode), its background glass the wallpaper glows through,
+  its icons and the apps' glyphs in the accent, the labels in the text colour; all are
+  knobs in `defaults/settings.yaml`. The user's picture is the mark while it is
+  Debian's.
   No automatic tiling on Plasma: that would need a KWin script Debian does not package; a tiling desktop
   is the Hyprland add-on.
 - Speed: the system tuning CachyOS ships as configuration (zram, I/O schedulers, memory

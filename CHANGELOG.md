@@ -92,6 +92,12 @@ All notable changes to patina are documented here. The format follows
   (`~/.config/environment.d/60-patina.conf`), so `patina` and the tools it fetches are
   found in every terminal right after the install.
 - Bundle descriptions are short enough for an 80-column terminal; lint checks it.
+- The start menu is glass: where KWin blurs behind it, its background is 60% opaque
+  instead of Breeze's 85% (`start_menu.glass`), so the wallpaper glows through. Its
+  category icons and the apps' glyphs in the bar and the menu take the accent, the
+  labels keep the text colour (`start_menu.icons: accent`, or `text` as before).
+- The user's picture is the patina mark while it is Debian's swirl, set through
+  AccountsService so the login screen shows it too.
 
 ### Fixed
 
@@ -102,6 +108,12 @@ All notable changes to patina are documented here. The format follows
   `~/.config/patina/themes`; the fastfetch mark and the start menu's button moved from
   the checkout to `~/.local/state/patina`. A migration moves what an earlier install
   put there.
+- On a desktop that was logged into before patina, the start menu kept Plasma's
+  favourites (Discover, Dolphin, System Settings, the browser): patina's only seeded
+  an empty store. `--layout` (the first install, the migration) now replaces Plasma's
+  defaults with patina's through the activity manager; your own stay.
+- KDE's splash showed after login: applying the look-and-feel package reverted the
+  splash setting. It is set again afterwards.
 - One Flathub app that fails to install (no disk space, Flathub unreachable) no longer
   stops the install: the others follow, and the end says which are missing.
 

@@ -163,15 +163,20 @@ Roll back to "patina-desktop" afterwards.
 
 Log out and back in once, then:
 
-- [ ] the splash: the wordmark and one accent line, on the theme's background
+- [ ] the splash: the wordmark and one accent line, on the theme's background, not
+  KDE's logo; if KDE's shows, `ksplashqml --test --window org.patina.aurora` shows
+  patina's in a window and says why it failed
 - [ ] the login screen: the contour map wallpaper, the words in Source Sans 3
 - [ ] the desktop: the glowing contour map on black, aurora's colour scheme (green
   selections and focus, violet hover), a bar along the bottom edge (it stays there
   when a window is maximised) with the launcher and the pinned files, browser and
   terminal in the middle
 - [ ] the start menu: the patina dots as its button; the AI and Self-hosting folders
-  among the categories; the favourites start with Nextcloud, Element, Euro-Office,
-  Thunderbird, KeePassXC (and the agent and Claude Desktop with the agents bundle)
+  among the categories; the favourites are Nextcloud, Element, Euro-Office,
+  Thunderbird, KeePassXC, kitty (and the agent and Claude Desktop with the agents
+  bundle), and none of Debian's (Discover, Dolphin, System Settings, Konqueror); its
+  background is glass, the wallpaper glowing through; its category icons and the
+  apps' glyphs are green, the labels white; the user's picture is the patina mark
 - [ ] the wallpaper is the DeepMind waves; every icon in the bar, the start menu and
   the title bars is a single-colour glyph; the start menu and the calendar show a
   faint grain
