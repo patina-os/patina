@@ -14,9 +14,10 @@ should be short.
 - patina is a git checkout at `~/.local/share/patina`, its command is `patina`
   (`patina help`). Its state is in `~/.local/state/patina/`.
 - The user's apps, when they kept the default desktop bundle: Dolphin (files), kitty
-  (terminal, with fish), Thunderbird, Nextcloud, Element, KeePassXC, Euro-Office, Zed,
-  and the command-line tools bat, eza, fzf, ripgrep, lazygit, btop, neovim. Apps from
-  Flathub are installed per user (`flatpak --user`).
+  (terminal, with fish), Firefox ESR, Thunderbird, Nextcloud, Element, KeePassXC,
+  Euro-Office, and the command-line tools bat, eza, fzf, ripgrep, lazygit, btop, neovim. Apps from
+  Flathub are installed per user (`flatpak --user`). The opt-in extras bundle adds Zed
+  and Tauon (`patina install --bundles extras`).
 
 ## How to change things
 

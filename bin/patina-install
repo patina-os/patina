@@ -88,11 +88,11 @@ ask() {
   mapfile -t bundles < <(printf 'base\n%s\n' "$(printf '%s\n' "$chosen_lines" | awk 'NF { print $1 }')" | awk 'NF && !seen[$0]++')
   echo
   if [[ -z "${PATINA_AI:-}" ]]; then
+    ai_lines+=("$(printf '%-6s %s' none "No AI agent · patina ai on turns it on later")")
     for mode in local cloud; do
       b="$(ai_bundle "$mode")" || continue
       ai_lines+=("$(printf '%-6s %s' "$mode" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$b.yaml")")")
     done
-    ai_lines+=("$(printf '%-6s %s' none "No AI agent · patina install asks again next time")")
     choice="$(printf '%s\n' "${ai_lines[@]}" | grep "^$ai ")" || choice="${ai_lines[0]}"
     choice="$(gum choose --header "AI agent (Meta+A; it asks before it changes anything)" \
       --selected "$choice" "${ai_lines[@]}")" || exit 0
@@ -231,14 +231,24 @@ install_flatpaks() {
     flatpak remote-add --user --if-not-exists flathub "$remote"
     changed
   fi
+  local missing=()
   for id in "${flatpaks[@]}"; do
     if flatpak_installed "$id"; then
       continue
     fi
     say "flatpak: installing $id"
-    flatpak install --user --noninteractive --assumeyes flathub "$id"
-    changed
+    # One app that fails (no disk space, Flathub unreachable) does not stop the rest.
+    if flatpak install --user --noninteractive --assumeyes flathub "$id"; then
+      changed
+    else
+      missing+=("$id")
+    fi
   done
+  if [[ ${#missing[@]} -gt 0 ]]; then
+    warn "flatpaks: not installed: ${missing[*]}; check the disk space (df -h ~) and run patina install again"
+    failed=1
+    return
+  fi
   say "flatpaks: all ${#flatpaks[@]} installed"
 }
 

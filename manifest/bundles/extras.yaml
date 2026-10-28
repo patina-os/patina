@@ -1,0 +1,11 @@
+# Two Flathub apps with runtimes of their own: Zed runs on the Freedesktop SDK and Tauon
+# on the GNOME platform, together over 2 GB beside desktop's Element. Opt-in for that
+# reason; both are free software.
+name: extras
+description: Zed and Tauon from Flathub · over 2 GB of runtimes
+default: false
+packages: []
+flatpaks:
+  - dev.zed.Zed          # Zed editor; telemetry and AI off through defaults/apps.yaml
+  - com.github.taiko2k.tauonmb   # Tauon, the music player; Debian does not package it
+upstream: []

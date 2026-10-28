@@ -42,17 +42,21 @@ packs. Audience: developers and privacy-minded users in the EU.
   consortium, from Nextcloud's signed apt repository until Flathub carries it), Thunderbird,
   Element, KeePassXC, kitty as the terminal (Ghostty once Debian carries it), Firefox ESR
   (its telemetry, Pocket and sponsored content off by policy), Okular, Gwenview and
-  Haruna, the developer tools from Debian's archive, and Zed and Tauon (the music
-  player) from Flathub, all in the default desktop bundle. The ArtCraft suite (free,
+  Haruna and the developer tools from Debian's archive, all in the default desktop
+  bundle; Zed and Tauon (the music player) from Flathub are the opt-in `extras` bundle,
+  because their runtimes add over 2 GB (October 2026, after the first VM run). The
+  `minimal` bundle (kitty and Firefox ESR) is the small alternative to desktop; the look
+  (fonts, icons) is part of base, so every install has it. The ArtCraft suite (free,
   alpha counterparts of Adobe's and Microsoft's apps) is the opt-in `artcraft` bundle:
   its launcher, which installs and updates the apps the user picks. Gaming is not a
   focus. Agent tools (Claude Code, Codex CLI, opencode, Claude Desktop, Ollama) are an
   opt-in bundle because most of them are proprietary; Ollama is the local backend they
   point at, and their desktop integration is a shortcut and a terminal profile, as data.
   The AI agent is a question of the install (and a page of the installer): opencode, a
-  free agent, with a model Ollama runs on the machine (the default), with a cloud
-  provider the user picks (European ones first, the key in opencode's own login) or
-  none, as the `ai-local` and `ai-cloud` bundles. It asks before every change
+  free agent, with a model Ollama runs on the machine, with a cloud provider the user
+  picks (European ones first, the key in opencode's own login) or none (the default:
+  the agent is opt-in, `patina ai on` turns it on later), as the `ai-local` and
+  `ai-cloud` bundles. It asks before every change
   (`defaults/apps.yaml`) and reads `defaults/agent.md`. Its place in the command
   palette is kortex, a KRunner runner kept in a repository of its own
   (`patina-os/kortex`), which may use what patina's tooling may not (it is Python);
@@ -68,8 +72,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   rendered at apply time, licensed with the repository).
   Dark is the default mode; aurora carries a light mode as data (a `light:` block),
   switched with `patina theme mode`, and the boot menu, the installer, the splash and
-  the login screen stay dark in either. datum (graphite, ice, coral) and amethyst, the
-  first theme, stay as options. No other third-party artwork. Artwork drawn by a
+  the login screen stay dark in either. datum (graphite, ice, coral) stays as an
+  option; amethyst, the first theme, was removed in October 2026. No other third-party artwork. Artwork drawn by a
   script is committed as the SVG it produced, never with the script. The `agent`
   shortcut opens opencode by default (`defaults/settings.yaml`), the free one of the
   agent CLIs. One look from the boot menu to the desktop: the installer, the boot
@@ -85,11 +89,12 @@ packs. Audience: developers and privacy-minded users in the EU.
   for the other screens, `icon.svg` and `icon-small.svg` are the mark as large and
   small icons. The desktop's icons are Papirus as Debian ships it, its
   folders recoloured to the theme's accent and every app's icon a monochrome glyph in
-  the text colour, all at one height, by the renderer; windows are slightly
-  see-through; the start menu and the other panel popups carry a
+  the text colour, all at one height, by the renderer; kitty is the one see-through
+  window (other apps stay opaque); the start menu and the other panel popups carry a
   slight grain. The brand's colours (deep violet, violet, lavender, white, and green
   for the ▲) are aurora's and do not follow a theme.
-  The desktop's shape is a floating centred bar as on Windows 11, new windows
+  The desktop's shape is a centred bar along the bottom edge as on Windows 11 (never
+  floating: a floating bar jumps when a window is maximised), new windows
   centred at one size and the command palette in the middle of the screen; the start
   menu opens above its button (Kickoff; Plasma's Application Dashboard, full screen,
   is an option, dark over either mode); all are knobs in `defaults/settings.yaml`.

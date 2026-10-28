@@ -76,7 +76,7 @@ other files and links never leave the clone. The name
 must be lowercase kebab-case and may not be one of the themes here; every palette must
 be complete and `accent` and `accent_alt` must name palette keys; the names and hints that end up in configuration (`display_name`, `author`,
 the licenses, the `plasma:` hints) must be plain words. The theme lands in
-`~/.local/share/patina/themes/<name>/`, outside the checkout, with a `.source.yaml`
+`~/.config/patina/themes/<name>/`, outside the checkout, with a `.source.yaml`
 that records where it came from. `patina theme install` again, or `patina theme
 update`, fetches it anew; `patina theme remove <name>` deletes it (never the current
 theme, never one of the themes here).

@@ -457,8 +457,8 @@ drop_other_themes "$data/plasma/look-and-feel/org.patina.*" "$lnf"
 # glyphs beside it, in a place that stays when the theme changes.
 cp "$PATINA_PATH/branding/icon-small.svg" "$tmp/launcher.svg"
 even_glyph "$tmp/launcher.svg"
-put "$tmp/launcher.svg" "$data/patina/launcher.svg"
-tpl[LAUNCHER_ICON]="$data/patina/launcher.svg"
+put "$tmp/launcher.svg" "$PATINA_STATE/launcher.svg"
+tpl[LAUNCHER_ICON]="$PATINA_STATE/launcher.svg"
 menu_changes=$changes
 folders=""
 directories=" "
@@ -653,6 +653,15 @@ case "$(yq eval '.command_palette.position' "$settings")" in
   center) kset krunnerrc FreeFloating true General ;;
   top) kset krunnerrc FreeFloating false General ;;
 esac
+# kortex, `ai` in the command palette, only while an AI bundle is installed: `patina ai
+# off` leaves it installed and switched off.
+if [[ -f "$data/krunner/dbusplugins/kortex.desktop" ]]; then
+  if [[ " ${PATINA_BUNDLES:-} " =~ \ (ai-local|ai-cloud)\  ]]; then
+    kset krunnerrc kortexEnabled true Plugins
+  else
+    kset krunnerrc kortexEnabled false Plugins
+  fi
+fi
 # Drop the KWin rule $rule: drop_rule <key>..., its keys and its name in $rules.
 drop_rule() {
   local key
@@ -684,6 +693,12 @@ if [[ "$percent" -gt 0 ]]; then
     kset kwinrulesrc types 1 "$rule"
     kset kwinrulesrc size "$(( BASH_REMATCH[1] * percent / 100 )),$(( BASH_REMATCH[2] * percent / 100 ))" "$rule"
     kset kwinrulesrc sizerule 3 "$rule"
+    # An app that remembers a maximised window (Firefox on a small screen) opens at the
+    # size too; maximising it afterwards stays the user's.
+    kset kwinrulesrc maximizehoriz false "$rule"
+    kset kwinrulesrc maximizehorizrule 3 "$rule"
+    kset kwinrulesrc maximizevert false "$rule"
+    kset kwinrulesrc maximizevertrule 3 "$rule"
     if [[ ",$rules," != *",$rule,"* ]]; then
       kset kwinrulesrc rules "${rules:+$rules,}$rule" General
     fi
@@ -693,7 +708,7 @@ if [[ "$percent" -gt 0 ]]; then
     say "no Plasma session here; the window size rule comes with the next 'patina theme set' inside one"
   fi
 elif [[ -n "$(kreadconfig6 --file kwinrulesrc --group "$rule" --key sizerule)" ]]; then
-  drop_rule Description types size sizerule
+  drop_rule Description types size sizerule maximizehoriz maximizehorizrule maximizevert maximizevertrule
 fi
 
 # Windows a little see-through: a KWin rule forcing the opacity of every normal window,

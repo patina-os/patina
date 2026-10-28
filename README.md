@@ -115,6 +115,7 @@ Two paths, one layer. If they ever diverge, Path A wins.
 sudo apt install git curl
 git clone https://github.com/patina-os/patina.git ~/.local/share/patina
 ~/.local/share/patina/bin/patina install            # the default bundles: base, desktop
+~/.local/share/patina/bin/patina install --bundles minimal   # the look with kitty and Firefox ESR only
 ~/.local/share/patina/bin/patina install --bundles desktop,artcraft   # plus ArtCraft
 ~/.local/share/patina/bin/patina install --all      # every opt-in bundle, agent tools included
 ```
@@ -178,9 +179,8 @@ and the other popups carry a slight grain. It is
 dark by default; `patina theme mode light` switches it to its light palette and
 `patina theme mode dark` back. The mark is text, a summit shaded with the letters of
 patina in violet with a green survey point, so the terminal and the screens show the
-same one. datum (graphite, ice and coral around a contour map) and amethyst, the first
-theme, a purple palette with two abstract wallpapers, stay as options (`patina theme
-set datum`).
+same one. datum (graphite, ice and coral around a contour map) stays as an option
+(`patina theme set datum`).
 Meta plus
 one key opens the terminal (Return), the search (Space), the browser (B), the files (E)
 and the AI agent in its own terminal profile (A);
@@ -197,11 +197,15 @@ install` and every fresh login get the bar; after that your panels are yours, an
 ## The app stack
 
 Nextcloud client, Thunderbird, Element, KeePassXC, Euro-Office (the European, AGPL fork of
-ONLYOFFICE), Firefox ESR (telemetry, Pocket and sponsored content off), Tauon for music,
-Haruna for video, Gwenview for images, Okular for PDFs, kitty as the terminal, a
+ONLYOFFICE), Firefox ESR (telemetry, Pocket and sponsored content off),
+Haruna for video, Gwenview for images, Okular for PDFs, kitty as the terminal and a
 developer kit (fish, starship, bat, eza, fzf, ripgrep, lazygit, btop, zoxide, atuin,
-git-delta, neovim, fastfetch) and the Zed editor, plus the agent tools above. Gaming
-is not a focus.
+git-delta, neovim, fastfetch): the `desktop` bundle. Gaming is not a focus.
+
+Smaller or larger: `minimal` is only kitty and Firefox ESR, for a machine that gets its
+apps elsewhere (the look and the system tuning come with every install), and `extras`
+adds the Zed editor and Tauon for music from Flathub, opt-in because their runtimes
+take over 2 GB.
 
 Opt-in, as an external package: the `artcraft` bundle (`patina install --bundles
 artcraft`) brings the launcher of the [ArtCraft](https://craftingapps.org) suite, free
@@ -218,19 +222,32 @@ ArtCraft Launcher from its release. Ollama is the local backend the agent tools 
 
 ## The AI agent
 
-`patina install` (and the installer's AI page) asks one question: an AI agent on this
-computer, one from a cloud provider, or none. Both agents are
+`patina install` (and the installer's AI page) asks one question: no AI agent, one on
+this computer, or one from a cloud provider. The agent is opt-in: no agent is the
+answer preselected, and `patina ai on` turns one on at any time later. Both agents are
 [opencode](https://opencode.ai), free software:
 
-- **local** (the default): Ollama runs the model on your machine. Setup offers the
+- **none** (the default): no agent. `patina ai on local` or `patina ai on cloud`
+  installs one later, `patina ai off` turns it off again, `patina ai` says which one
+  this machine has.
+- **local**: Ollama runs the model on your machine. Setup offers the
   models of `ai.local.models` in `defaults/settings.yaml` that fit your memory and
   recommends one: NVIDIA's Nemotron 3.5 Bolt E4B, made for agents, from 16 GB, and
   Mistral's Ministral 3 3B below that. Ministral 3 8B and 14B and Qwen 3.5 4B and 9B
-  are the others. Nothing leaves the computer.
+  are the others. Nothing leaves the computer. Ollama with its GPU libraries and the
+  model take several GB of disk and a while to download.
 - **cloud**: a provider you pick, Mistral and other European providers first, then
   Anthropic and OpenAI. You log in with `opencode auth login`; the key stays in
   opencode's own login, patina never sees it.
-- **none**: no agent. `patina install` asks again whenever you run it.
+
+`patina ai off` leaves what was installed in place. Ollama takes the most space; its
+own installer has no uninstall, and these are its documented steps:
+
+```sh
+sudo systemctl disable --now ollama
+sudo rm -rf /etc/systemd/system/ollama.service /usr/local/bin/ollama /usr/local/lib/ollama /usr/share/ollama
+sudo userdel ollama
+```
 
 Meta+A opens it. It reads freely, and asks before anything that changes a file, runs a
 command or reaches a server (`defaults/apps.yaml`); `defaults/agent.md` tells it how

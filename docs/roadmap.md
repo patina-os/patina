@@ -31,7 +31,8 @@ Sans 3 and the wordmark in Sora, and the mark is text, a summit shaded with the 
 of patina (Phase 2; `docs/design/futures.html` keeps the eight directions). Later that
 month aurora, made for OLED screens (true black, green accent, violet second colour, a
 glowing contour map), became the default with a light mode beside its dark one, and the
-marks moved to its violet and green; datum and amethyst are options (Phase 2).
+marks moved to its violet and green; datum is an option, and amethyst was removed
+after the first VM run (Phase 2).
 
 ## Phase 1: the core commands on x86_64 (Debian 13)
 
@@ -128,7 +129,7 @@ real Plasma desktop, which the same VM run gives.
 - [x] `patina theme list|set|current`; `patina install` applies the default theme and
   honours `PATINA_THEME=<name>`
 - [x] themes from git: `patina theme install <git-url>|update|remove`, data only, into
-  `~/.local/share/patina/themes/`, after Omarchy's theme installs
+  `~/.config/patina/themes/`, after Omarchy's theme installs
 - [x] a cheat sheet: `patina keys` and Meta+K, from `defaults/keybindings.yaml` and
   Plasma's essentials as data
 - [x] curated keybindings and settings: the placeholders in `defaults/` became the real

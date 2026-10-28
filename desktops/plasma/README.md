@@ -64,7 +64,7 @@ Files, from `templates/`, each named after the theme:
   Application Dashboard, full screen and centred, for `start_menu.style: dashboard`
   when `plasma-widgets-addons` is installed)
   gets the patina mark as its button (`branding/icon-small.svg`, copied to
-  `~/.local/share/patina/launcher.svg` so it stays when the theme changes), and in
+  `~/.local/state/patina/launcher.svg` so it stays when the theme changes), and in
   Kickoff its favourites as a grid and quiet power buttons;
   every desktop gets the theme's wallpaper, which a first login would not take from the
   package. Plasma runs it for a session that has no panels yet, so the image's first
@@ -103,11 +103,12 @@ Settings, through `kwriteconfig6`, each written only when it differs:
   `LatencyPolicy`, Baloo's indexing (file names under home only, by default)
 - the window defaults of `defaults/settings.yaml`: KWin's placement (`Centered`), and
   for `windows.size` a KWin rule in `kwinrulesrc` that gives every new normal window
-  that share of the screen when it first appears (apps that remember their size keep
-  it afterwards). The rule needs the screen, so it is written inside a session, from
+  that share of the screen, not maximised, when it first appears (an app that
+  remembers a maximised window opens at the size too; the user may maximise it later). The rule needs the screen, so it is written inside a session, from
   `kscreen-doctor` (the output with priority 1); outside one it waits for the next
-  `patina theme set` in a session; for `windows.opacity` a second rule that forces
-  every normal window to that opacity, one share while active and one while not
+  `patina theme set` in a session; for `windows.opacity` below 100 a second rule that
+  forces every normal window to that opacity, one share while active and one while not
+  (100 by default: only kitty is see-through, by its own background)
 - the command palette's position of `defaults/settings.yaml`: KRunner's `FreeFloating`
   in `krunnerrc`, true for `center` (the middle of the screen), false for `top`
 - global shortcuts in `kglobalshortcutsrc` from `defaults/keybindings.yaml`, each action

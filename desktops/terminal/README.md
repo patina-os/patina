@@ -19,14 +19,17 @@ neovim.
 ## What it produces
 
 - kitty: `~/.config/kitty/patina.conf` (colours, fonts, padding and a slightly
-  see-through background), included from `kitty.conf`;
+  see-through background, the one see-through window of the desktop; the size of a new
+  window is left to the desktop), included from `kitty.conf`;
   the include line is added once, above whatever the user keeps there
 - with an AI bundle (`ai-local`, `ai-cloud`) or the agents bundle:
   `~/.config/kitty/patina-agent.conf`, a quieter kitty profile from the same palette
   for the agent; removed again when none of them is installed
-- the fastfetch greeting: `~/.local/share/patina/logo.txt`, the text mark in the
+- the fastfetch greeting: `~/.local/state/patina/logo.txt`, the text mark in the
   brand's colours (`print_logo always`), and `~/.config/fastfetch/config.jsonc`
-  pointing at it with the theme's accent for the labels
+  pointing at it with the theme's accent for the labels; every new kitty window runs it,
+  through two lines added once at the end of `~/.bashrc` and
+  `~/.config/fish/conf.d/patina-greeting.fish`
 - btop: `~/.config/btop/themes/patina-<theme>.theme`, its load gradients running
   from `base0D` through the accent to its second colour (`accent` and `accent_alt`
   of the theme), made `color_theme` in
@@ -39,7 +42,7 @@ neovim.
 - bat: `~/.config/bat/config` with the `base16-256` theme, which draws with the
   terminal's colours
 - the session's environment, `~/.config/environment.d/60-patina.conf`, read by
-  systemd's user manager at login: `FZF_DEFAULT_OPTS=--color=16` and
+  systemd's user manager at login: `~/.local/bin` on the `PATH`, `FZF_DEFAULT_OPTS=--color=16` and
   `BAT_THEME=base16-256` for git-delta. A value the user's shell sets wins
 
 Files in the user's own places (`fastfetch/config.jsonc`, the neovim plugin, the bat

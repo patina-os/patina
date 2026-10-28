@@ -19,6 +19,7 @@ commands:
             and the theme (patina install --help for the flags; asks on a terminal)
   update    Pull the latest patina and run pending migrations
   theme     List, switch, install or remove themes; dark or light (patina theme --help)
+  ai        Turn the AI agent on or off after the install (patina ai --help)
   keys      Show the keyboard shortcuts (Meta+K opens the same in a window)
   doctor    Check the base system and report what patina would change
   credits   Name and thank the people and projects patina is made of
@@ -44,7 +45,7 @@ main() {
   case "$cmd" in
     help | -h | --help) usage ;;
     version | -V | --version) version ;;
-    install | update | theme | keys | doctor | credits | migrate)
+    install | update | theme | ai | keys | doctor | credits | migrate)
       if [[ -x "$PATINA_PATH/bin/patina-$cmd" ]]; then
         exec "$PATINA_PATH/bin/patina-$cmd" "$@"
       fi

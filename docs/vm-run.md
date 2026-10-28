@@ -13,7 +13,13 @@ Any hypervisor works. The commands below run inside the VM.
 ## 1. The VM
 
 - [ ] x86_64, UEFI firmware (not BIOS), Secure Boot may stay off for this run
-- [ ] 4 virtual CPUs, 8 GB of memory (zram is sized from it), a 40 GB disk
+- [ ] 4 virtual CPUs, 8 GB of memory (zram is sized from it), a 40 GB disk: Debian
+  with Plasma takes about 10 GB, the desktop bundle's apps 3 GB more, a local AI
+  model several GB on top; a 20 GB disk runs out during the install
+- [ ] copy and paste between your computer and the VM (SPICE with `spice-vdagent` in
+  the VM), or SSH into it (`openssh-server` in the VM and a forwarded port such as
+  QEMU's `-nic user,hostfwd=tcp::2222-:22`): the checks below are commands to copy and
+  output to paste into the report
 - [ ] the disk on a SATA or NVMe controller, not virtio: the scheduler rules of
   `defaults/system/udev/rules.d/` match `sd*`, `mmcblk*` and `nvme*`, a virtio disk is
   `vda` and would test nothing
@@ -26,7 +32,10 @@ Any hypervisor works. The commands below run inside the VM.
 - [ ] the current Debian 13 netinst image for amd64
 - [ ] leave the root password empty, so the first user gets `sudo`; patina's backend
   commands need it
-- [ ] software selection: "KDE Plasma" and "standard system utilities", nothing else
+- [ ] software selection: "KDE Plasma" and "standard system utilities", nothing else.
+  Debian's KDE Plasma task brings LibreOffice and a set of KDE apps patina does not
+  use; to free their space (optional, about 1 GB):
+  `sudo apt purge 'libreoffice*' && sudo apt autoremove`
 - [ ] after the first login to Plasma: shut down and take a snapshot, "debian-clean". Every
   later run starts from it
 
@@ -60,9 +69,10 @@ script -q -c 'patina install' ~/run1.log
 `script` keeps a log without hiding the terminal from the questions.
 
 - [ ] the questions appear: the wordmark, the version line, the theme (aurora offered
-  first), the app bundles (desktop preselected, agents not), the AI agent (local
-  preselected; answer local on a VM with 8 GB or more, the model is a few GB, else
-  cloud or none and note it), for local the model (the ones that fit the VM's memory,
+  first and preselected), the app bundles (desktop preselected; minimal, extras, agents
+  and artcraft not), the AI agent (none preselected; answer local on a VM with 8 GB
+  or more and enough disk, the model is a few GB, else cloud or none and note it),
+  for local the model (the ones that fit the VM's memory,
   Nemotron 3.5 Bolt E4B first from 16 GB, Ministral 3 3B below), a summary, a yes
 - [ ] sudo asks for the password and nothing else does; no command fails
 - [ ] it ends with `done: N changes`, and `git -C ~/.local/share/patina status --short` is
@@ -79,6 +89,9 @@ script -q -c 'patina install' ~/run1.log
   offers to ask the agent; Enter reopens KRunner on `ai ›` with the answer growing
   there (note whether it reads well or jumps); `ai switch to the light theme` shows an
   Allow / Always / Deny match before anything changes
+- [ ] answered none: `patina ai` says none; `patina ai on cloud` installs opencode and
+  kortex and asks for the login, and `patina ai off` takes Meta+A and `ai` in KRunner
+  away again (opencode and kortex stay installed)
 
 ## 5. The second run and the doctor
 
@@ -119,9 +132,11 @@ Reboot, log in, then compare with `~/before.txt`:
 
 Open each once from the launcher:
 
-- [ ] kitty, Thunderbird, KeePassXC, the Nextcloud client, Element, Zed, Euro-Office
-- [ ] Zed: telemetry and the AI features are off (Settings, or
-  `~/.var/app/dev.zed.Zed/config/zed/settings.json`)
+- [ ] kitty, Firefox ESR, Thunderbird, KeePassXC, the Nextcloud client, Element,
+  Euro-Office
+- [ ] with the extras bundle (`patina install --bundles extras`, over 2 GB): Zed's
+  telemetry and AI features are off (Settings, or
+  `~/.var/app/dev.zed.Zed/config/zed/settings.json`), Tauon starts
 - [ ] Euro-Office: whether it still carries ONLYOFFICE's AI plugin (an open question of
   the roadmap); write down what its plugin manager shows
 - [ ] in kitty: `fish`, `starship`, `bat`, `eza`, `fzf`, `rg`, `lazygit`, `btop`,
@@ -151,8 +166,9 @@ Log out and back in once, then:
 - [ ] the splash: the wordmark and one accent line, on the theme's background
 - [ ] the login screen: the contour map wallpaper, the words in Source Sans 3
 - [ ] the desktop: the glowing contour map on black, aurora's colour scheme (green
-  selections and focus, violet hover), a floating bar centred at the
-  bottom with the launcher and the pinned files, browser and terminal in the middle
+  selections and focus, violet hover), a bar along the bottom edge (it stays there
+  when a window is maximised) with the launcher and the pinned files, browser and
+  terminal in the middle
 - [ ] the start menu: the patina dots as its button; the AI and Self-hosting folders
   among the categories; the favourites start with Nextcloud, Element, Euro-Office,
   Thunderbird, KeePassXC (and the agent and Claude Desktop with the agents bundle)
@@ -163,10 +179,12 @@ Log out and back in once, then:
   folders and its own icon green, tray and toolbar icons in the palette's colours
   (Papirus)
 - [ ] fonts: Source Sans 3 in menus and titles, JetBrains Mono in terminals
-- [ ] a new window (Dolphin, Thunderbird) opens centred at about 70% of the screen
+- [ ] a new window (Dolphin, Thunderbird, kitty, and Firefox, which remembers a
+  maximised window) opens centred at about 70% of the screen; only kitty is
+  see-through
 - [ ] animations are noticeably shorter than stock Plasma's
 - [ ] kitty: the theme's colours, the fastfetch greeting with the mark from
-  `branding/logo.txt`; btop, nvim, `bat`, `fzf` and `delta` in the same colours
+  `branding/logo.txt` in every new window (not in Konsole); btop, nvim, `bat`, `fzf` and `delta` in the same colours
 - [ ] Konsole: the patina profile in the same colours
 - [ ] a GTK app (Thunderbird) and a Flatpak app (Element) follow the colour scheme
 - [ ] every key of `defaults/keybindings.yaml` does what its `names` entry says;
@@ -175,16 +193,16 @@ Log out and back in once, then:
 ## 10. Switching themes in a running session
 
 ```sh
-patina theme set amethyst
+patina theme set datum
 patina theme set aurora
 patina theme set aurora
 patina theme mode light
 patina theme mode dark
 ```
 
-- [ ] the switch to amethyst applies live: colours, wallpaper, kitty, Konsole, without
+- [ ] the switch to datum applies live: colours, wallpaper, kitty, Konsole, without
   logging out; write down anything that waits for the next login
-- [ ] the switch back to aurora leaves nothing of amethyst:
+- [ ] the switch back to aurora leaves nothing of datum:
   `ls ~/.local/share/color-schemes ~/.local/share/konsole ~/.local/share/wallpapers
   ~/.local/share/plasma/look-and-feel` shows only aurora's `patina-aurora*` and
   `org.patina.aurora` entries, and kitty's colours are aurora's again

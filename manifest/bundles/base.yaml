@@ -1,7 +1,8 @@
 # Always installed. Keep this list short: everything else is a bundle the user picks.
+# base alone is patina without apps: the look and the system tuning.
 # Package names are Debian 13's; the smoke test installs them on amd64 and arm64.
 name: base
-description: What patina itself needs to run and the system tuning every install gets
+description: The look and the system tuning · always installed
 default: true
 required: true
 packages:
@@ -12,6 +13,13 @@ packages:
   - flatpak          # Flathub is the source for GUI apps we do not track
   - librsvg2-bin     # rsvg-convert renders a theme's SVG wallpapers (desktops/plasma/apply.sh)
   - gum              # the questions `patina install` asks on a terminal; unattended runs skip it
+  # The look: what the theme renderer draws with, so every install has the whole look
+  # whichever app bundles it takes.
+  - fonts-adobe-sourcesans3  # fonts.ui of defaults/settings.yaml
+  - fonts-jetbrains-mono     # fonts.monospace, the text mark and the wallpaper labels
+  - fonts-sora               # the wordmark (branding/wordmark.svg) on the splash
+  - papirus-icon-theme       # aurora's icons; the renderer recolours its folders to the accent
+  - plasma-widgets-addons    # the start menu's Application Dashboard (start_menu.style: dashboard)
   # System tuning for every install (docs/roadmap.md, Phase 1); the files are data under
   # defaults/system/.
   - systemd-zram-generator   # zram swap with zstd
