@@ -17,6 +17,9 @@ All notable changes to patina are documented here. The format follows
 - The selected row of the command palette, the start menu and the tray popups is a
   faint tint of the accent inside a thin edge (`start_menu.selection`, 10 %) instead
   of Breeze's solid-looking green; apps keep their selection colour.
+- kortex 0.1.1: its icon in the command palette is a solid green summit, the survey
+  point of the mark, instead of a tile with an outline and a prompt line. `patina
+  update` installs it where kortex is installed.
 
 ## [0.1.0-alpha.2] - 2026-10-28
 
