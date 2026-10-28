@@ -110,6 +110,9 @@ All notable changes to patina are documented here. The format follows
   welcome page's links and About are green.
 - The installer starts in British English; its first page still offers every other
   language.
+- The README's screenshots show the new look, taken by CI: the installer's glass
+  sidebar in British English, kitty as the one see-through window, and the glass start
+  menu with its green category icons and the mark as the user's picture.
 
 ### Fixed
 
