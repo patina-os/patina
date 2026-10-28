@@ -72,7 +72,8 @@ Files, from `templates/`, each named after the theme:
   when `plasma-widgets-addons` is installed)
   gets the patina mark as its button (`branding/icon-small.svg`, copied to
   `~/.local/state/patina/launcher.svg` so it stays when the theme changes), and in
-  Kickoff its favourites as a grid and quiet power buttons;
+  Kickoff its favourites as a grid, the apps by their names alone, compact lists and
+  one power button without a caption (shut down; the rest in its menu);
   every desktop gets the theme's wallpaper, which a first login would not take from the
   package. Plasma runs it for a session that has no panels yet, so the image's first
   login starts with it; the first `patina install` inside a session applies it too
