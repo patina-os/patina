@@ -6,6 +6,14 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.2] - 2026-10-28
+
+The second alpha, for testers, and still Path A only. It carries what the first run on
+a Debian 13 VM found: the AI agent is opt-in, Zed and Tauon moved to an opt-in extras
+bundle, the bar no longer floats, only kitty is see-through, and the start menu and the
+installer are glass. The live image passed its first manual install in a VM; the images
+stay in CI until the first release past the alphas.
+
 ### Added
 
 - Credits: `patina credits` names and thanks the people and projects patina is made
@@ -445,5 +453,6 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.1...main
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.2...main
+[0.1.0-alpha.2]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.2
 [0.1.0-alpha.1]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.1

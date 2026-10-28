@@ -143,7 +143,9 @@ files.
   artifact. A missing screenshot is reported, not a failure: the gate is the boot.
 - Manual, once per release: one real install in a VM through the installer, then a first
   boot that ends in `patina firstboot: done`. Calamares has no unattended mode, so
-  this part is not automated; the roadmap keeps it as an open Phase 3 item. The look is
+  this part is not automated; the roadmap keeps it as a Phase 3 item, first passed on
+  amd64 in October 2026 (which showed the target's DNS and the fetched package set
+  enough for first boot). The look is
   part of this check, since the boot test skips GRUB and shows no screen: the boot menu
   in the palette over the splash, readable; the installer's welcome page (the square
   mark in the sidebar, the wordmark on the page, the wallpaper behind, Source Sans 3), the partition
@@ -214,9 +216,6 @@ release, never edited.
   strip assuming the sidebar's 190 px, and the accent icons of the welcome page's
   links and About (`qproperty-icon`, applied when Qt polishes the buttons).
 
-- The `packages` module needs working DNS inside the target; Calamares' `mount` module
-  binds `/run` and `/etc/resolv.conf` on Debian's own live images, so it should here.
-  The manual install is the check.
 - `grub-install` picks the signed images only when `grub-efi-<arch>-signed` and
   `shim-signed` are present in the target; they come from the live system
   (`live/arch/<arch>.list.chroot`) and must survive the `remove` list. The manual
@@ -225,6 +224,4 @@ release, never edited.
   pictures found in the branding directory, and `${gs[packagechooser_ai]}` filled in
   `shellprocess-firstboot.conf`, as the module documentation of that release describes
   them; the manual install is the check (`/etc/patina/firstboot.env` names the answer).
-- Whether the package set the installer fetches is complete for first boot: the first
-  boot of an installed system tells (`patina firstboot: done`).
 - The arm64 image on real hardware: the boot test covers the QEMU `virt` machine only.
