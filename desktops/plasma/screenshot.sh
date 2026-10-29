@@ -34,7 +34,7 @@ PATINA_PATH="${PATINA_PATH:-$(cd "$here/../.." && pwd)}"
 export PATINA_PATH
 settle="${PATINA_SHOT_SETTLE:-25}"
 wait_s="${PATINA_SHOT_WAIT:-240}"
-kortex=io.github.patina21.kortex
+kortex=io.github.patina_os.kortex
 
 # Is a name owned on the session bus? plasmashell owns org.kde.plasmashell once it runs.
 on_bus() {
