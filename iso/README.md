@@ -78,7 +78,9 @@ iso/
    fetched from Debian's mirrors into it (`packages`, the list in
    `modules/packages.conf`), the live tooling and Calamares are removed from it, the
    first-boot unit is enabled (`shellprocess-firstboot.conf`), GRUB is installed with
-   Debian's signed shim.
+   Debian's signed shim into `EFI/debian`, where Debian's packages update it, and shim
+   also at the removable path (`shellprocess-efi-removable.conf`), so the machine boots
+   when the firmware loses its boot entries.
 4. First boot: the service takes tty1 before the login screen, clones this repository
    into the user's `~/.local/share/patina`, links `~/.local/bin/patina` and runs
    `patina install`, which asks the remaining questions on tty1 (the theme and the app
@@ -224,8 +226,11 @@ release, never edited.
 
 - `grub-install` picks the signed images only when `grub-efi-<arch>-signed` and
   `shim-signed` are present in the target; they come from the live system
-  (`live/arch/<arch>.list.chroot`) and must survive the `remove` list. The manual
-  install on a Secure Boot machine is the check.
+  (`live/arch/<arch>.list.chroot`) with `grub-efi-<arch>` and must survive the `remove`
+  list. On amd64 in QEMU with Secure Boot and Microsoft's keys (October 2026): the
+  boot entry is `\EFI\debian\shimx64.efi`, a reinstall of `shim-signed` and the GRUB
+  packages rewrites `EFI/debian` and `EFI/BOOT`, and with the boot entry deleted the
+  machine boots from `EFI/BOOT/BOOTX64.EFI`. A real Secure Boot machine is still the check.
 - The AI page: Calamares 3.3.14's `packagechooser` with the `legacy` method, its
   pictures found in the branding directory, and `${gs[packagechooser_ai]}` filled in
   `shellprocess-firstboot.conf`, as the module documentation of that release describes

@@ -1,6 +1,8 @@
 # Packages only the amd64 live image needs. build.sh copies this file into the
 # package lists; live-build adds the kernel itself (--linux-flavours).
-# Secure Boot: Debian's signed shim and GRUB, installed into the target by Calamares.
+# Secure Boot: Debian's signed shim and GRUB, installed into the target by Calamares, and
+# grub-efi-amd64, whose maintainer scripts put GRUB's updates on the ESP.
+grub-efi-amd64
 grub-efi-amd64-signed
 shim-signed
 # Firmware for x86 laptops and desktops (Debian's non-free-firmware area).
