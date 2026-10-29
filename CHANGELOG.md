@@ -27,6 +27,53 @@ All notable changes to patina are documented here. The format follows
 - kortex 0.1.1: its icon in the command palette is a solid green summit, the survey
   point of the mark, instead of a tile with an outline and a prompt line. `patina
   update` installs it where kortex is installed.
+- datum uses Papirus too, so its folders take its accent and its apps the glyphs.
+- Inactive window titles are in the dimmer text colour (`base04`) instead of the
+  comment colour, readable at about 5:1.
+- The live boot menu marks the selected entry in the accent, and its wordmark sits
+  inside the part a 4:3 screen keeps.
+
+### Fixed
+
+- `patina update` ends with an unattended `patina install` of the bundles installed on
+  the machine, so what the bundles, the system files and the app settings gained since
+  arrives with an update too (Firefox's privacy policies, for instance, never reached
+  machines installed before them). A re-run of `patina install` and its questions start
+  from the bundles installed so far instead of the defaults, so an update never adds a
+  bundle the user left out.
+- The AI agent asks before `cat`, `ls`, `git diff` and `git log`, which could overwrite a
+  file with a redirect or `--output` without asking, before any command with a redirect,
+  and before it fetches a web page. A migration takes the old rules out of
+  `opencode.json`.
+- The image has a Wi-Fi step: a computer offline with a Wi-Fi card gets NetworkManager's
+  `nmtui` in the palette before the installer, which needs the internet and has no page
+  to join a wireless network.
+- The shortcuts that launch an app (Meta+Return, Meta+B, Meta+E, Meta+A, Meta+K and
+  Print) fire on Plasma 6: they were written in Plasma 5's form, which Plasma 6 reads
+  as a sequence of three keys that cannot be typed. Meta+Space opens KRunner, whose
+  entry Plasma 6 keeps outside the apps' directories. `patina update` renders them
+  again.
+- The first `patina install` on a stock Debian asks its questions: it installs gum
+  for them first instead of going on with the defaults.
+- `patina install` finds `sysctl`, `update-initramfs` and `update-grub` in the sbin
+  directories, which a Debian user's PATH lacks, so the boot and initramfs tuning is
+  applied on Path A.
+- The Plasma splash shows the wordmark as drawn: it is a rendering now, as Qt drew the
+  SVG in the wrong fonts and cut off its last letter.
+- `patina keys` and `patina credits` use the accent of the theme and mode in use.
+- In the light mode the marks in the terminal (the fastfetch greeting, `patina help`,
+  `patina credits` and the install questions) print their letters black and the ▲ in
+  aurora light's green; they were white on white.
+- `patina theme install` accepts licence expressions such as aurora's
+  `LicenseRef-Pexels AND CC-BY-SA-4.0`, and switching between two themes whose names
+  share a beginning leaves nothing of the other behind.
+- The image's installer mounts `/proc`, `/sys`, `/dev` and `/run` in the new system
+  (`mount.conf`), without which the bootloader step failed and stopped the install.
+- The installer's slides fit its window, the AI page and the third slide are set in
+  Source Sans 3 instead of a serif, the AI page's texts no longer show Markdown, and
+  the screen no longer goes black during a long install.
+- `iso/live/build.sh` sets its own umask, so a build from a shell with umask 0 makes no
+  world-writable files in the image.
 
 ## [0.1.0-alpha.2] - 2026-10-28
 

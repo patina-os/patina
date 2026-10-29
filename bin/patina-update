@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Update the layer: git pull in the checkout, then the pending migrations.
+# Update the layer: git pull in the checkout, the pending migrations, then an unattended
+# install of the bundles installed here, so an update ends where a fresh install does.
 set -euo pipefail
 
 # shellcheck source=bin/lib.sh
@@ -18,4 +19,11 @@ fi
 say "pulling $(git -C "$PATINA_PATH" rev-parse --abbrev-ref HEAD) in $PATINA_PATH"
 git -C "$PATINA_PATH" pull --ff-only --quiet
 say "now at $(git -C "$PATINA_PATH" describe --tags --always)"
-exec "$PATINA_PATH/bin/patina-migrate"
+"$PATINA_PATH/bin/patina-migrate"
+# What the bundles, the system files and the app settings gained since arrives with an
+# install of what this machine has; it removes nothing and is quiet when nothing changed.
+if [[ ! -e "$PATINA_STATE/installed-at" ]]; then
+  say "patina is not installed here yet: patina install"
+  exit 0
+fi
+exec "$PATINA_PATH/bin/patina-install" --unattended

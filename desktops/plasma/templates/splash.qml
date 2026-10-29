@@ -21,7 +21,7 @@ Rectangle {
 
         Image {
             id: logo
-            source: Qt.resolvedUrl("images/logo.svg")
+            source: Qt.resolvedUrl("images/logo.png")
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             anchors.verticalCenterOffset: -Math.round(parent.height * 0.06)

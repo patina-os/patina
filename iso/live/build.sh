@@ -5,6 +5,9 @@
 # iso/firstboot/, then run lb. Needs root (debootstrap), live-build, yq, rsvg-convert and
 # the fonts; see iso/README.md.
 set -euo pipefail
+# The files this script, assets.sh and live-build create keep these modes in the image and,
+# through unpackfs, in the installed system: never world-writable, whatever the caller's umask.
+umask 022
 
 here="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 repo="$(cd "$here/../.." && pwd)"

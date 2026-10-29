@@ -97,7 +97,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   the text colour, all at one height, by the renderer; kitty is the one see-through
   window (other apps stay opaque); the start menu and the other panel popups carry a
   slight grain. The brand's colours (deep violet, violet, lavender, white, and green
-  for the ▲) are aurora's and do not follow a theme.
+  for the ▲) are aurora's and do not follow a theme; on a light ground the terminal
+  prints the marks' letters black and the ▲ in aurora light's green (October 2026).
   The desktop's shape is a centred bar along the bottom edge as on Windows 11 (never
   floating: a floating bar jumps when a window is maximised), new windows
   centred at one size and the command palette in the middle of the screen; the start
@@ -115,7 +116,9 @@ packs. Audience: developers and privacy-minded users in the EU.
   Plasma-side speed settings are curated defaults like any other.
 - Install model: per user, Omarchy-style. Clone at `~/.local/share/patina`, symlink
   `~/.local/bin/patina`, state in `~/.local/state/patina/`. `PATINA_PATH` overrides.
-- Updates: `git pull` plus versioned migrations (`migrations/`).
+- Updates: `git pull` plus versioned migrations (`migrations/`), then an unattended
+  `patina install` of the bundles installed on the machine, so an update ends where a
+  fresh install does (October 2026).
 - Image: a small live image built with Debian's live-build, with Calamares as the branded
   installer. The live system carries only the installer; Plasma and the base packages
   are fetched from Debian's mirrors during the install, so the image stays under one
@@ -181,7 +184,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
 | `devices/` | the only place for device- or architecture-specific files |
-| `iso/` | live-build configuration, Calamares configuration and branding, the templates `iso/live/assets.sh` renders from the theme (installer artwork, icons and stylesheet, boot menu theme, the live system's fonts), first-boot unit, QEMU boot test (Phase 3) |
+| `iso/` | live-build configuration, Calamares configuration and branding, the templates `iso/live/assets.sh` renders from the theme (installer artwork, icons and stylesheet, boot menu theme, the live system's fonts, the Wi-Fi step's terminal), first-boot unit, QEMU boot test (Phase 3) |
 | `docs/` | roadmap, branding and trademark rules, tested hardware, `credits.yaml` (the people and projects patina is made of: `patina credits`, the installer's last slide and the README's Credits section), the manual VM run that closes Phases 1 and 2 (`vm-run.md`); `design/` keeps design explorations as self-contained HTML pages (`futures.html`: the eight directions of the 2026 redesign, candidates for more themes); `screenshots/` holds the installer, desktop, start menu and command palette screenshots the README shows, taken by the image's boot test and by the desktop workflow's headless Plasma session, refreshed per release |
 | `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), desktop (Path A plus a Plasma X11 session on a virtual framebuffer, screenshots), iso (build, boot test, release; an alpha tag's release has no images) |
 | `.github/ISSUE_TEMPLATE/` | the test report form testers fill in after a run of `docs/vm-run.md` |

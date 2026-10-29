@@ -252,7 +252,9 @@ render() {
 
 # The renderers' two ways of writing: install a rendered file only when it differs
 # (put <src> <dest>), and remove what another theme left (drop_other_themes <glob>
-# <keep-prefix>). Both call the renderer's own say and changed.
+# <keep>: the path to keep, or a prefix ending in "." for one theme's files, so the
+# files of aurora-x never pass for aurora's). Both call the renderer's own say and
+# changed.
 put() {
   local src="$1" dest="$2"
   if cmp -s "$src" "$dest"; then
@@ -267,7 +269,7 @@ drop_other_themes() {
   local pattern="$1" keep="$2" f
   for f in $pattern; do
     [[ -e "$f" ]] || continue
-    [[ "$f" == "$keep"* ]] && continue
+    [[ "$f" == "$keep" || ( "$keep" == *. && "$f" == "$keep"* ) ]] && continue
     say "removing $f (another theme)"
     rm -rf "$f"
     changed
@@ -281,17 +283,37 @@ logo_colour() {
     ( "${COLORTERM:-}" == "truecolor" || "${COLORTERM:-}" == "24bit" ) ]]
 }
 
+# The ground the marks print on, dark or light: the variant the current theme shows in
+# the mode in use (theme_vars' VARIANT). Dark when that cannot be told yet (no Go yq,
+# no theme).
+mark_ground() {
+  local d mode
+  if have_go_yq &&
+      d="$(theme_dir "$(current_theme || yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")")" &&
+      mode="$(current_mode)"; then
+    if theme_has_mode "$d/theme.yaml" "$mode"; then echo "$mode"; else yq eval '.variant' "$d/theme.yaml"; fi
+  else
+    echo dark
+  fi
+}
+
 # The mark, branding/logo.txt, which stays plain text without colour codes (serial
 # console, /etc/issue.d). The colours are added here, at print time, and are the
 # brand's, not the theme's, the same as in branding/wordmark.svg: the rings shade from
 # deep violet (i) through violet (t) to lavender (n, a), the word patina is bold white,
-# the survey point green. `print_logo auto|always`.
+# the survey point green. On a light ground the word is black and the ▲ aurora light's
+# deeper green. `print_logo auto|always [dark|light]`, the ground from mark_ground
+# when not given.
 print_logo() {
   local logo="$PATINA_PATH/branding/logo.txt"
   [[ -r "$logo" ]] || return 0
   if logo_colour "$1"; then
-    local line head word tail part reset=$'\033[0m'
+    local line head word tail part reset=$'\033[0m' ink=$'\033[1;38;2;245;247;249m'
+    local point=$'\033[38;2;60;255;157m'
     local -a parts
+    if [[ "${2:-$(mark_ground)}" == light ]]; then
+      ink=$'\033[1;38;2;0;0;0m' point=$'\033[38;2;8;122;70m'
+    fi
     while IFS= read -r line; do
       head="$line" word="" tail=""
       if [[ "$line" == *patina* ]]; then
@@ -304,9 +326,9 @@ print_logo() {
         part="${part//t/$'\033[38;2;155;107;255m't$reset}"
         part="${part//n/$'\033[38;2;195;162;255m'n$reset}"
         part="${part//a/$'\033[38;2;228;214;255m'a$reset}"
-        parts+=("${part//▲/$'\033[38;2;60;255;157m'▲$reset}")
+        parts+=("${part//▲/$point▲$reset}")
       done
-      printf '%s%s%s\n' "${parts[0]}" "${word:+$'\033[1;38;2;245;247;249m'$word$reset}" "${parts[1]}"
+      printf '%s%s%s\n' "${parts[0]}" "${word:+$ink$word$reset}" "${parts[1]}"
     done < "$logo"
   else
     cat "$logo"
@@ -316,19 +338,23 @@ print_logo() {
 # The wordmark, branding/wordmark.txt: patina in block letters over two contour lines,
 # for the terminal surfaces that show the name (`patina help`, the install questions).
 # The letters print white, the dot of the i (the ▲) green, the lines violet and deep
-# violet.
-# `print_wordmark auto|always`.
+# violet; on a light ground the letters black and the ▲ aurora light's deeper green.
+# `print_wordmark auto|always [dark|light]`, the ground from mark_ground when not given.
 print_wordmark() {
   local file="$PATINA_PATH/branding/wordmark.txt" reset=$'\033[0m' i colour
   [[ -r "$file" ]] || return 0
   if logo_colour "$1"; then
+    local ink=$'\033[38;2;245;247;249m' point=$'\033[38;2;60;255;157m'
     local -a lines
+    if [[ "${2:-$(mark_ground)}" == light ]]; then
+      ink=$'\033[38;2;0;0;0m' point=$'\033[38;2;8;122;70m'
+    fi
     mapfile -t lines < "$file"
     for i in "${!lines[@]}"; do
-      colour=$'\033[38;2;245;247;249m'
+      colour="$ink"
       (( i == ${#lines[@]} - 2 )) && colour=$'\033[38;2;155;107;255m'
       (( i == ${#lines[@]} - 1 )) && colour=$'\033[38;2;109;79;194m'
-      printf '%s%s%s\n' "$colour" "${lines[i]//▲/$'\033[38;2;60;255;157m'▲$colour}" "$reset"
+      printf '%s%s%s\n' "$colour" "${lines[i]//▲/$point▲$colour}" "$reset"
     done
   else
     cat "$file"

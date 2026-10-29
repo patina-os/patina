@@ -26,12 +26,13 @@ keybindings="$PATINA_PATH/defaults/keybindings.yaml"
 desktop="$(yq eval '.desktop' "$PATINA_PATH/defaults/settings.yaml")"
 actions="$PATINA_PATH/desktops/$desktop/actions.yaml"
 
-# The chords in the theme's accent on a colour terminal, plain otherwise.
+# The chords in the accent of the theme and mode in use on a colour terminal, plain
+# otherwise.
 on="" off=""
 if logo_colour auto; then
   if d="$(theme_dir "$(current_theme || yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")")"; then
-    hex="$(yq eval '.palette.base0E' "$d/theme.yaml")"
-    printf -v on '\033[1;38;2;%d;%d;%dm' "0x${hex:1:2}" "0x${hex:3:2}" "0x${hex:5:2}"
+    theme_vars "$d/theme.yaml" "$PATINA_PATH/defaults/settings.yaml" "$(current_mode)"
+    printf -v on '\033[1;38;2;%sm' "${tpl[ACCENT_RGB]//,/;}"
     off=$'\033[0m'
   fi
 fi

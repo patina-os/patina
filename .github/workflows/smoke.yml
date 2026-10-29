@@ -106,7 +106,7 @@ jobs:
           [[ "$(scheme)" == "patina-$theme" ]]
           launch="$(kreadconfig6 --file kglobalshortcutsrc --group services \
             --group kitty.desktop --key _launch)"
-          [[ "$launch" == Meta+Return,* ]]
+          [[ "$launch" == Meta+Return ]]
           bin/patina theme set "$theme" | tee again.txt
           grep -q 'terminal: nothing to do' again.txt
           grep -q 'theme: nothing to do' again.txt
@@ -232,7 +232,7 @@ jobs:
           test -s /usr/local/share/patina/login.png
           splash="$data/plasma/look-and-feel/org.patina.$theme/contents/splash"
           test -s "$splash/Splash.qml"
-          test -s "$splash/images/logo.svg"
+          test -s "$splash/images/logo.png"
           ! grep -q '\${' "$splash/Splash.qml"
           ksplash="$(kreadconfig6 --file ksplashrc --group KSplash --key Theme)"
           [[ "$ksplash" == "org.patina.$theme" ]]
@@ -255,7 +255,7 @@ jobs:
           test -s "$data/applications/patina-keys.desktop"
           launch="$(kreadconfig6 --file kglobalshortcutsrc --group services \
             --group patina-keys.desktop --key _launch)"
-          [[ "$launch" == Meta+K,* ]]
+          [[ "$launch" == Meta+K ]]
           repo="$(mktemp -d)/patina-dusk-theme"
           cp -r themes/datum "$repo"
           sed -i 's/^name: datum/name: dusk/' "$repo/theme.yaml"

@@ -123,7 +123,8 @@ app_dirs=("$data/applications" /usr/share/applications /usr/local/share/applicat
   "$data/flatpak/exports/share/applications" /var/lib/flatpak/exports/share/applications)
 service_installed() {
   local d
-  for d in "${app_dirs[@]}"; do
+  # Plasma 6 keeps KRunner's entry only under kglobalaccel/, not among the apps.
+  for d in "${app_dirs[@]}" "$data/kglobalaccel" /usr/share/kglobalaccel; do
     [[ -f "$d/$1" ]] && return 0
   done
   return 1
@@ -527,7 +528,18 @@ put "$tmp/lnf.defaults" "$lnf/contents/defaults"
 # The splash: the wordmark on the theme's background, one accent line (templates/splash.qml).
 # Always in the dark palette where the theme has one, like the boot menu and the login
 # screen before it: the wordmark is made for a dark ground. A subshell keeps tpl[].
-put "$PATINA_PATH/branding/wordmark.svg" "$lnf/contents/splash/images/logo.svg"
+# Qt draws SVG without Sora or the spacing of the mark's rings, so the splash gets an
+# rsvg rendering, as the installer does (iso/live/assets.sh).
+if command -v rsvg-convert > /dev/null; then
+  rsvg-convert --width 1600 --output "$tmp/splash-logo.png" "$PATINA_PATH/branding/wordmark.svg"
+  put "$tmp/splash-logo.png" "$lnf/contents/splash/images/logo.png"
+else
+  warn "rsvg-convert is missing (librsvg2-bin in the base bundle); the splash has no wordmark"
+fi
+if [[ -e "$lnf/contents/splash/images/logo.svg" ]]; then   # the SVG the splash took before
+  rm "$lnf/contents/splash/images/logo.svg"
+  changed
+fi
 ( theme_vars "$theme_yaml" "$settings" dark && render "$templates/splash.qml" "$tmp/Splash.qml" )
 put "$tmp/Splash.qml" "$lnf/contents/splash/Splash.qml"
 drop_other_themes "$data/plasma/look-and-feel/org.patina.*" "$lnf"
@@ -824,7 +836,10 @@ while IFS= read -r action; do
     fi
     service="$(service_for_action "$action")"
     [[ -n "$service" ]] || continue
-    kset kglobalshortcutsrc _launch "$chord,none,$label" services "$service"
+    # Plasma 6 keeps only the shortcut under [services] (kglobalacceld reads the rest
+    # from the desktop file); a "chord,default,label" triple there is read as a
+    # three-key sequence that can never be typed.
+    kset kglobalshortcutsrc _launch "$chord" services "$service"
   elif [[ -n "$component" ]]; then
     key="$(yq eval ".actions[\"$action\"].key" "$actions")"
     default="$(yq eval ".actions[\"$action\"].default // \"none\"" "$actions")"

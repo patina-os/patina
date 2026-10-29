@@ -146,4 +146,4 @@ activeBlend=${BASE05_RGB}
 activeForeground=${BASE05_RGB}
 inactiveBackground=${BASE00_RGB}
 inactiveBlend=${BASE03_RGB}
-inactiveForeground=${BASE03_RGB}
+inactiveForeground=${BASE04_RGB}

@@ -14,7 +14,8 @@ usage() {
 usage: patina install [--bundles <a,b,...>] [--all] [--list] [--unattended]
 
   --bundles a,b  install these bundles; base is always included, and nothing already
-                 installed is removed. Default: the bundles marked default
+                 installed is removed. Default: the bundles installed here so far, or
+                 the bundles marked default before the first install
   --all          every bundle, the opt-in ones (agents) included
   --list         show the bundles and exit
   --unattended   no questions, defaults for everything (same as PATINA_UNATTENDED=1):
@@ -62,7 +63,7 @@ ask() {
   mode="$(current_mode)"
   theme_vars "$d/theme.yaml" "$PATINA_PATH/defaults/settings.yaml" "$mode"
   tui_colors
-  print_wordmark auto
+  print_wordmark auto "${tpl[VARIANT]}"
   echo
   gum style --foreground "${tpl[BASE04]}" \
     "patina $("$PATINA_PATH/bin/patina" version) · $(basename "$BACKEND" .yaml) · $(uname -m)"
@@ -81,7 +82,7 @@ ask() {
     yq eval -e '.default == true' "$PATINA_PATH/manifest/bundles/$name.yaml" > /dev/null 2>&1 && kind="default"
     lines="$(printf '%-9s %-8s %s' "$name" "($kind)" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$name.yaml")")"
     bundle_lines+=("$lines")
-    [[ "$kind" == default ]] && preselected+=("$lines")
+    [[ " ${bundles[*]} " == *" $name "* ]] && preselected+=("$lines")
   done
   chosen_lines="$(gum choose --no-limit --header "App bundles (x or space toggles, enter confirms)" \
     --selected "$(IFS=,; echo "${preselected[*]}")" "${bundle_lines[@]}")" || exit 0
@@ -382,7 +383,9 @@ install_system() {
   while IFS= read -r cmd; do
     first="${cmd#sudo }"
     first="${first%% *}"
-    if ! command -v "$first" > /dev/null; then
+    # sudo finds commands in the sbin directories, which a Debian user's PATH lacks
+    # (sysctl, update-initramfs, update-grub), so they are looked for there too.
+    if ! PATH="$PATH:/usr/local/sbin:/usr/sbin:/sbin" command -v "$first" > /dev/null; then
       continue   # no GRUB on a Raspberry Pi, for instance
     fi
     if ! run_words "$cmd"; then
@@ -411,7 +414,11 @@ install_apps() {
     yq eval -o=json ".$app.settings" "$apps" > "$tmp"
     if [[ -f "$file" ]]; then
       merged="$(mktemp)"
-      if ! yq eval-all -o=json 'select(fileIndex == 0) * select(fileIndex == 1)' "$file" "$tmp" > "$merged" 2> /dev/null; then
+      # Ours over theirs over ours: the values are patina's, the user's other keys stay,
+      # and patina's keys keep their order in apps.yaml with the user's after them, as
+      # rules where the last match wins (opencode's permissions) need.
+      if ! yq eval-all -o=json 'select(fileIndex == 1) * select(fileIndex == 0) * select(fileIndex == 1)' \
+          "$file" "$tmp" > "$merged" 2> /dev/null; then
         warn "$app: cannot parse $file (comments?); set these by hand: $(yq eval -o=json -I=0 '.' "$tmp")"
         rm -f "$tmp" "$merged"
         continue
@@ -603,9 +610,23 @@ main() {
       [[ -n "${PATINA_AI:-}" ]] || ai="$(yq eval ".ai // \"$ai\"" "$PATINA_PATH/manifest/bundles/$b.yaml")"
     done
   else
-    mapfile -t bundles < <(default_bundles)
-    if [[ -t 0 && -t 1 && -z "$PATINA_UNATTENDED" ]] && command -v gum > /dev/null; then
-      ask
+    # What this machine has (recorded_bundles: the defaults before the first install),
+    # so a re-run or `patina update` never adds the bundles a user left out; one that no
+    # longer exists is skipped.
+    for b in $(recorded_bundles); do
+      [[ -f "$PATINA_PATH/manifest/bundles/$b.yaml" ]] && bundles+=("$b")
+    done
+    if [[ -t 0 && -t 1 && -z "$PATINA_UNATTENDED" ]]; then
+      # The questions need gum (base bundle), which a stock Debian lacks before the
+      # first install: fetch it first, or go on with the defaults without it.
+      if ! command -v gum > /dev/null; then
+        say "installing gum for the questions"
+        { backend_run refresh && backend_run install gum && changed; } ||
+          warn "gum could not be installed; going on with the defaults"
+      fi
+      if command -v gum > /dev/null; then
+        ask
+      fi
     fi
   fi
   if [[ -n "$ai" && "$ai" != none ]]; then

@@ -95,7 +95,7 @@ set_mode() {
 # every wallpaper must be an SVG or PNG under wallpapers/, and nothing may be a link.
 # Anything else in the repository (scripts, configs, hidden files) never leaves the clone.
 install_theme() {
-  local url="$1" tmp src out name key value rel f commit dest mode
+  local url="$1" tmp src out name key value rel f commit dest mode spdx
   tmp="$(mktemp -d)"
   # shellcheck disable=SC2064 # expand $tmp now: it is local to this function
   trap "rm -rf '$tmp'" EXIT
@@ -115,10 +115,15 @@ install_theme() {
     [[ "$value" =~ ^[[:alnum:][:space:].,\'()+_-]{1,60}$ && "$value" != *$'\n'* ]] ||
       die "$key '$value' must be 1-60 letters, digits, spaces and . , ' ( ) + _ -"
   done
-  for key in license artwork_license accent accent_alt \
-      {,dark.,light.}plasma.{icons,cursors,desktop_theme}; do
+  for key in accent accent_alt {,dark.,light.}plasma.{icons,cursors,desktop_theme}; do
     value="$(yq eval ".$key // \"x\"" "$src/theme.yaml")"
     [[ "$value" =~ ^[A-Za-z0-9._+-]{1,60}$ ]] || die "$key '$value' must be a plain identifier"
+  done
+  # Licences are SPDX expressions, such as aurora's "LicenseRef-Pexels AND CC-BY-SA-4.0".
+  spdx='^[A-Za-z0-9.+:() -]{1,80}$'
+  for key in license artwork_license; do
+    value="$(yq eval ".$key // \"x\"" "$src/theme.yaml")"
+    [[ "$value" =~ $spdx ]] || die "$key '$value' must be an SPDX licence expression"
   done
   [[ "$(yq eval '.variant' "$src/theme.yaml")" =~ ^(dark|light)$ ]] || die "variant must be dark or light"
   # The palettes, the theme's own and its other mode's: theme_vars dies on a missing or

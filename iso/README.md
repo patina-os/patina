@@ -32,14 +32,15 @@ iso/
     etc/calamares/branding/patina/   the strings; the marks, artwork, stylesheet and
                             colours next to them are rendered by assets.sh
     etc/systemd/system/patina-ui.service  the installer screen (X, openbox, Calamares)
-    root/.xinitrc                      that session
+    root/.xinitrc                      that session, with the Wi-Fi step before it
     root/.config/openbox/rc.xml        openbox with the patina theme for the dialogs
   live/templates/           what assets.sh fills from the theme's palette and the fonts:
                             calamares/ (stylesheet.qss, the wallpaper and the slides as
                             SVG compositions, ai.svg for the pictures of the AI page,
                             logo-square.svg for the sidebar's mark, icons/ in the
                             accent), grub/ (theme.txt, splash.svg), openbox/,
-                            fontconfig/ (the live system's standard fonts)
+                            fontconfig/ (the live system's standard fonts), xterm/
+                            (the Wi-Fi step's terminal)
   live/assets.sh            renders the above plus branding/ into a build directory: the
                             console mark, the installer's files, the boot menu's theme
                             and splash; no root, so the smoke test runs it too
@@ -63,10 +64,14 @@ iso/
    page, the sidebar and the button bar as glass over it (the start menu's `glass` and
    `grain` from `defaults/settings.yaml`), four still slides while it
    installs, the last one thanking the people and projects of `docs/credits.yaml`. The console shows `branding/logo.txt`.
+   A computer with no network yet but a Wi-Fi card first gets the Wi-Fi step:
+   NetworkManager's `nmtui` full screen in the palette, to pick a network and type its
+   password; Quit starts the installer. Leaving the installer brings the step back
+   while the computer is still offline.
 2. Calamares asks what it must: time zone and keyboard (pre-filled), disk (erase is
    preselected; encryption and manual partitioning are available), the user, and the AI
-   agent (on this computer, preselected from `ai.mode` of `defaults/settings.yaml`,
-   from a cloud provider, or none). The AI page installs nothing: its answer is
+   agent (on this computer, from a cloud provider, or none, preselected from `ai.mode`
+   of `defaults/settings.yaml`: none). The AI page installs nothing: its answer is
    handed to the first boot. The summary page is the last look before anything is
    written.
 3. The live system is copied to disk (`unpackfs`), then Plasma and the base bundle are
