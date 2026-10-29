@@ -38,6 +38,9 @@ All notable changes to patina are documented here. The format follows
   file with a redirect or `--output` without asking, before any command with a redirect,
   and before it fetches a web page. A migration takes the old rules out of
   `opencode.json`.
+- The image has a Wi-Fi step: a computer offline with a Wi-Fi card gets NetworkManager's
+  `nmtui` in the palette before the installer, which needs the internet and has no page
+  to join a wireless network.
 - The shortcuts that launch an app (Meta+Return, Meta+B, Meta+E, Meta+A, Meta+K and
   Print) fire on Plasma 6: they were written in Plasma 5's form, which Plasma 6 reads
   as a sequence of three keys that cannot be typed. Meta+Space opens KRunner, whose

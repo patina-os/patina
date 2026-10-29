@@ -155,8 +155,11 @@ openbox="$chroot/usr/share/themes/patina/openbox-3"
 install -d -m 0755 "$openbox"
 render "$templates/openbox/themerc" "$openbox/themerc"
 
+# The terminal of the Wi-Fi step (root/.xinitrc).
+render "$templates/xterm/Xdefaults" "$chroot/root/.Xdefaults"
+
 # Every placeholder must be gone.
 left="$(grep -lF "\${" "$branding/stylesheet.qss" "$grub/live-theme/theme.txt" "$openbox/themerc" \
-  "$chroot/etc/fonts/local.conf" || true)"
+  "$chroot/etc/fonts/local.conf" "$chroot/root/.Xdefaults" || true)"
 [[ -z "$left" ]] || { echo "assets.sh: unfilled placeholders in: $left" >&2; exit 70; }
 say "done: ${tpl[THEME]} ${tpl[VERSION]}"

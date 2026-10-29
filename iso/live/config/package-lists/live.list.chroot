@@ -28,6 +28,9 @@ xserver-xorg
 xinit
 openbox
 dbus-bin
+# the Wi-Fi step before the installer (root/.xinitrc): nmtui, which network-manager
+# carries, in a terminal
+xterm
 # the layer's fonts, which the installer's stylesheet names, and Noto as glyph fallback
 # (live-build strips whole comment lines only, so no comment goes after a package name)
 fonts-adobe-sourcesans3

@@ -1,0 +1,29 @@
+! The terminal of the live image's Wi-Fi step (root/.xinitrc runs nmtui in it), in the
+! default theme's palette and the layer's monospace font. Rendered into /root/.Xdefaults
+! by iso/live/assets.sh. The colour slots follow the terminal renderer's kitty.conf,
+! except that green and magenta carry the accent and the second colour, so the names in
+! .xinitrc's NEWT_COLORS land on the palette whatever the default theme is.
+XTerm*faceName: ${MONO_FONT}
+XTerm*faceSize: 14
+XTerm*utf8: 1
+XTerm*internalBorder: 32
+XTerm*scrollBar: false
+XTerm*cursorColor: ${ACCENT}
+XTerm*background: ${BASE00}
+XTerm*foreground: ${BASE05}
+XTerm*color0: ${BASE00}
+XTerm*color8: ${BASE03}
+XTerm*color1: ${BASE08}
+XTerm*color9: ${BASE08}
+XTerm*color2: ${ACCENT}
+XTerm*color10: ${ACCENT}
+XTerm*color3: ${BASE0A}
+XTerm*color11: ${BASE0A}
+XTerm*color4: ${BASE0D}
+XTerm*color12: ${BASE0D}
+XTerm*color5: ${ACCENT_ALT}
+XTerm*color13: ${ACCENT_ALT}
+XTerm*color6: ${BASE0C}
+XTerm*color14: ${BASE0C}
+XTerm*color7: ${BASE05}
+XTerm*color15: ${BASE07}
