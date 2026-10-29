@@ -6,6 +6,12 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Apple Silicon Macs are no longer out of scope: they run patina in a virtual machine
+  (Debian 13 for arm64 in UTM, then `patina install`), and natively once Debian's
+  kernel supports them (`docs/hardware.md`).
+
 ## [0.1.0-alpha.4] - 2026-10-29
 
 The fourth alpha, for testers, with what the first run through Try patina for Windows

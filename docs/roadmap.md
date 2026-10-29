@@ -225,7 +225,8 @@ desktop.
 ## Phase 4: ARM hardware
 
 Per-device data under `devices/`, only once a device boots Debian's kernel. Each one has
-a row in `docs/hardware.md`. Apple Silicon is out of scope (Fedora Asahi, not Debian).
+a row in `docs/hardware.md`. Apple Silicon Macs run patina in a virtual machine (UTM),
+like any aarch64 VM; natively they wait for Debian's kernel, as the other waiting rows do.
 
 - [x] `devices/raspberry-pi-4/`: data only, status untested, with the manual validation
   procedure (Debian's official Raspberry Pi image, USB SSD, clean reimage per run)
@@ -327,5 +328,6 @@ default. The contract is in `desktops/hyprland/README.md`.
 ## Non-goals
 
 Own kernel, own package repository, rebuilt packages, own binaries, proprietary or
-US-cloud defaults, snap, Hyprland-first UX, Apple Silicon, supporting bases other than
-Debian before Path A and Path B are stable, a separate "ARM edition".
+US-cloud defaults, snap, Hyprland-first UX, Apple Silicon on a kernel other than
+Debian's, supporting bases other than Debian before Path A and Path B are stable, a
+separate "ARM edition".

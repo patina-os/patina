@@ -97,7 +97,8 @@ repository.
   archive, Flathub or an upstream installer
 - not a kernel, not a package repository, not rebuilt packages: security is the base's job
 - not Hyprland-first: Plasma first; Hyprland may become an add-on later
-- not for Apple Silicon
+- not native on Apple Silicon yet: Macs run it in a virtual machine (Debian 13 for
+  arm64 in UTM), natively once Debian's kernel supports them
 
 ## The stance
 
