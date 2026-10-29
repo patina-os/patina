@@ -1,0 +1,24 @@
+# Try patina for Windows: patina in a QEMU virtual machine on a Windows PC, set up and
+# started by TryPatina.exe (patina-os/win-emulator). Not hardware, but glue all the same:
+# the launcher names the machine in its firmware tables, so patina knows where it runs.
+name: Try patina for Windows (a QEMU virtual machine)
+slug: try-patina-windows
+arch: x86_64
+status: untested
+base_image: https://github.com/patina-os/patina/releases/latest/download/patina-amd64.hybrid.iso
+# Fields of /sys/class/dmi/id that must all match. The launcher passes
+# `-smbios type=1,product=Try patina` to QEMU; other QEMU machines are not matched.
+detect:
+  product_name: Try patina
+kernel_params: []
+extra_packages:
+  - spice-vdagent   # copy and paste with Windows: QEMU's vdagent and its GTK window
+  - kwin-x11        # the Plasma X11 session, the one spice-vdagent shares a clipboard in
+notes: >
+  Stock QEMU from winget on the Windows Hypervisor Platform, UEFI, an NVMe disk and
+  software rendering (no GPU in the guest). The launcher installs patina from the
+  released image with the installer, as on a PC. Copy and paste between Windows and
+  patina goes through spice-vdagent, which shares the clipboard only in an X11 session
+  (its Wayland support is not released), so on this machine the login screen offers the
+  Plasma X11 session first (system/sddm.conf.d/); Wayland stays the default everywhere
+  else.

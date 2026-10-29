@@ -6,6 +6,17 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Try patina for Windows: TryPatina.exe (patina-os/win-emulator) runs patina in a
+  virtual machine on a Windows PC, installed from the released image. Inside that
+  machine `patina install` adds spice-vdagent, so copy and paste works between Windows
+  and patina, and the login screen offers the Plasma X11 session first, the one
+  spice-vdagent shares a clipboard in (`devices/try-patina-windows/`).
+- Device detection: a device's `detect` map names fields of `/sys/class/dmi/id`;
+  `patina install` adds a detected device's `extra_packages` and its `system/` files,
+  and `patina doctor` checks them.
+
 ### Fixed
 
 - kortex 0.1.2 in the command palette: the answer grows on screen in a real KRunner

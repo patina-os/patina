@@ -126,6 +126,13 @@ packs. Audience: developers and privacy-minded users in the EU.
   in CI, published as a GitHub release asset only after that boot test and one manual
   install check. Secure Boot through Debian's signed shim, GRUB and kernel. First boot
   runs the same `patina install` as Path A.
+- Try patina for Windows: TryPatina.exe (`patina-os/win-emulator`, Go, GPL-3.0-or-later)
+  sets up stock QEMU from winget on the Windows Hypervisor Platform, downloads the
+  released amd64 image, checks it against `SHA256SUMS` and lets the installer put patina
+  on a virtual disk, as on a PC; it carries no image of its own (October 2026). The VM is
+  a device (`devices/try-patina-windows/`), detected by the product name the launcher
+  gives it: spice-vdagent for copy and paste and the Plasma X11 session first, because
+  spice-vdagent shares the clipboard only there.
 - ARM: aarch64 is first-class from day one. An "ARM version" is a tested-hardware list
   plus device glue under `devices/`, never a separate release or branch.
 - License: GPL-3.0-or-later. Theme artwork may carry its own license (`artwork_license`).
@@ -200,8 +207,8 @@ Each directory's README is the authority on its file format.
 - Data files end in `.yaml`; GitHub workflows and issue forms keep GitHub's `.yml`; Calamares keeps its
   `.conf` and `branding.desc` names and live-build its `.list.chroot` names, because the
   tools require them. They are YAML all the same and are linted as such. The files under
-  `defaults/system/` are the exception: sysctl, udev and systemd files named by their
-  destination (Firefox's policies are JSON), excluded from the YAML checks; so is `defaults/agent.md`, the agent's
+  `defaults/system/` and `devices/*/system/` are the exception: sysctl, udev, systemd
+  and SDDM files named by their destination (Firefox's policies are JSON), excluded from the YAML checks; so is `defaults/agent.md`, the agent's
   instruction in Markdown, which opencode reads.
 - Entries starting with `_` are templates; tools skip them.
 
@@ -216,7 +223,7 @@ Each directory's README is the authority on its file format.
 - Idempotent: every script may run twice without harm. Check before changing.
 - `sudo` appears only in backend commands from `manifest/backends/`, never elsewhere.
   System files are written only through that path (`system.write`), only from
-  `defaults/system/`, for the keyring and sources file of an `apt-source` recipe, and
+  `defaults/system/` and the `system/` directory of a detected device (`devices/`), for the keyring and sources file of an `apt-source` recipe, and
   for the login screen's wallpaper and the Breeze SDDM theme's `theme.conf.user`
   (`/usr/local/share/patina/login.png`, written by the desktop renderer).
   The scripts drop the `sudo` when they already run as root (a container, first boot).

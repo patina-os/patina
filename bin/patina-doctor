@@ -82,6 +82,10 @@ check_bundles() {
   mapfile -t packages < <(bundle_items packages "${bundles[@]}")
   mapfile -t flatpaks < <(bundle_items flatpaks "${bundles[@]}")
   mapfile -t upstream < <(bundle_items upstream "${bundles[@]}")
+  for p in $(detected_devices); do
+    mapfile -t -O "${#packages[@]}" packages < \
+      <(yq eval '.extra_packages[]?' "$PATINA_PATH/devices/$p/device.yaml")
+  done
   echo "bundles: ${bundles[*]}"
   missing=""
   for p in "${packages[@]}"; do
@@ -113,13 +117,19 @@ check_bundles() {
 }
 
 check_system() {
-  local src rel dest differs=""
+  local dir src dest differs="" d
+  local -a dirs=("$PATINA_PATH/defaults/system")
   echo "system tuning (defaults/system/)"
-  while IFS= read -r src; do
-    rel="${src#"$PATINA_PATH/defaults/system/"}"
-    dest="/etc/$rel"
-    cmp -s "$src" "$dest" || differs="$differs $dest"
-  done < <(find "$PATINA_PATH/defaults/system" -type f | sort)
+  for d in $(detected_devices); do
+    ok "device: $(yq eval '.name' "$PATINA_PATH/devices/$d/device.yaml") (devices/$d/)"
+    [[ ! -d "$PATINA_PATH/devices/$d/system" ]] || dirs+=("$PATINA_PATH/devices/$d/system")
+  done
+  for dir in "${dirs[@]}"; do
+    while IFS= read -r src; do
+      dest="/etc/${src#"$dir/"}"
+      cmp -s "$src" "$dest" || differs="$differs $dest"
+    done < <(find "$dir" -type f | sort)
+  done
   if [[ -z "$differs" ]]; then
     ok "every file in place and identical"
   else
