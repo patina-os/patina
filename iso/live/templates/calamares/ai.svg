@@ -7,7 +7,7 @@
     stroke-opacity="0.5" stroke-width="2"/>
   <text x="64" y="104" font-family="${MONO_FONT}, monospace" font-size="26"
     fill="${ACCENT}">▲ <tspan fill="${BASE04}">agent</tspan></text>
-  <text x="64" y="214" font-family="${UI_FONT}, sans-serif" font-size="60"
+  <text x="64" y="214" font-family="'${UI_FONT}', sans-serif" font-size="60"
     font-weight="600" fill="${BASE05}">${AI_NAME}</text>
   <text x="64" y="276" font-family="${MONO_FONT}, monospace" font-size="24"
     fill="${BASE04}">${AI_DETAIL}</text>

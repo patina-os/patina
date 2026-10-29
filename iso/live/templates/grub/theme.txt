@@ -35,7 +35,7 @@ terminal-font: "Unifont Regular 16"
   height = 48%-80
   item_color = "${BASE05}"
   item_font = "Unifont Regular 16"
-  selected_item_color = "${ACCENT_ALT}"
+  selected_item_color = "${ACCENT}"
   selected_item_font = "Unifont Regular 16"
   item_height = 20
   item_padding = 2

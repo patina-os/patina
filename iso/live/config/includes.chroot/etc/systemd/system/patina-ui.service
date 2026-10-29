@@ -13,7 +13,8 @@ ConditionPathExists=/usr/bin/startx
 Type=simple
 Environment=HOME=/root
 WorkingDirectory=/root
-ExecStart=/usr/bin/startx /root/.xinitrc -- vt7 -keeptty -nolisten tcp
+# -s 0 -dpms: no screen saver and no blanking, the package step alone outlasts X's 10 minutes
+ExecStart=/usr/bin/startx /root/.xinitrc -- vt7 -keeptty -nolisten tcp -s 0 -dpms
 Restart=always
 RestartSec=5
 StandardInput=tty

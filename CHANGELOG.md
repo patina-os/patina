@@ -23,6 +23,8 @@ All notable changes to patina are documented here. The format follows
 - datum uses Papirus too, so its folders take its accent and its apps the glyphs.
 - Inactive window titles are in the dimmer text colour (`base04`) instead of the
   comment colour, readable at about 5:1.
+- The live boot menu marks the selected entry in the accent, and its wordmark sits
+  inside the part a 4:3 screen keeps.
 
 ### Fixed
 
@@ -42,6 +44,13 @@ All notable changes to patina are documented here. The format follows
 - `patina theme install` accepts licence expressions such as aurora's
   `LicenseRef-Pexels AND CC-BY-SA-4.0`, and switching between two themes whose names
   share a beginning leaves nothing of the other behind.
+- The image's installer mounts `/proc`, `/sys`, `/dev` and `/run` in the new system
+  (`mount.conf`), without which the bootloader step failed and stopped the install.
+- The installer's slides fit its window, the AI page and the third slide are set in
+  Source Sans 3 instead of a serif, the AI page's texts no longer show Markdown, and
+  the screen no longer goes black during a long install.
+- `iso/live/build.sh` sets its own umask, so a build from a shell with umask 0 makes no
+  world-writable files in the image.
 
 ## [0.1.0-alpha.2] - 2026-10-28
 

@@ -65,8 +65,8 @@ iso/
    installs, the last one thanking the people and projects of `docs/credits.yaml`. The console shows `branding/logo.txt`.
 2. Calamares asks what it must: time zone and keyboard (pre-filled), disk (erase is
    preselected; encryption and manual partitioning are available), the user, and the AI
-   agent (on this computer, preselected from `ai.mode` of `defaults/settings.yaml`,
-   from a cloud provider, or none). The AI page installs nothing: its answer is
+   agent (on this computer, from a cloud provider, or none, preselected from `ai.mode`
+   of `defaults/settings.yaml`: none). The AI page installs nothing: its answer is
    handed to the first boot. The summary page is the last look before anything is
    written.
 3. The live system is copied to disk (`unpackfs`), then Plasma and the base bundle are

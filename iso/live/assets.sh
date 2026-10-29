@@ -67,10 +67,13 @@ raster "$theme_dir/${wallpapers[0]}" "$tmp/wallpaper.png"
 raster "$theme_dir/${wallpapers[1]:-${wallpapers[0]}}" "$tmp/second.png"
 rsvg-convert --width 1120 --output "$tmp/logo.png" "$repo/branding/wordmark.svg"
 
-compose() {   # compose <template> <out.png>: fill the template, render it over the pieces
+compose() {   # compose <template> <out.png> [width height]: fill the template, render it
   render "$templates/$1" "$tmp/$(basename "$1")"
-  rsvg-convert --width 1920 --height 1080 --output "$2" "$tmp/$(basename "$1")"
+  rsvg-convert --width "${3:-1920}" --height "${4:-1080}" --output "$2" "$tmp/$(basename "$1")"
 }
+# Calamares shows the slides at their own size, centred and cut to the room it has (about
+# 1070x635 on a 1280x800 screen), so they are rendered small enough to be seen whole.
+slide_size=(1024 576)
 
 # Calamares: the marks, the wallpaper behind every page, the slides, the stylesheet, and
 # the sidebar colours and the version in branding.desc.
@@ -93,9 +96,9 @@ for icon in "$templates"/calamares/icons/*.svg; do
   rsvg-convert --width 64 --height 64 --output "$branding/$(basename "$icon" .svg).png" "$tmp/icon.svg"
 done
 compose calamares/wallpaper.svg "$branding/wallpaper.png"
-compose calamares/slide-1.svg "$branding/slide-1.png"
-compose calamares/slide-2.svg "$branding/slide-2.png"
-compose calamares/slide-3.svg "$branding/slide-3.png"
+compose calamares/slide-1.svg "$branding/slide-1.png" "${slide_size[@]}"
+compose calamares/slide-2.svg "$branding/slide-2.png" "${slide_size[@]}"
+compose calamares/slide-3.svg "$branding/slide-3.png" "${slide_size[@]}"
 # The last slide thanks the people and projects of docs/credits.yaml: each group's
 # title, then its names on lines of at most 100 characters.
 credits="$repo/docs/credits.yaml" y=300 tpl[CREDITS]=""
@@ -113,7 +116,7 @@ for ((i = 0; i < $(yq eval '.groups | length' "$credits"); i++)); do
   tpl[CREDITS]+="<text class=\"names\" x=\"280\" y=\"$y\">$line</text>"
   y=$((y + 44))
 done
-compose calamares/slide-4.svg "$branding/slide-4.png"
+compose calamares/slide-4.svg "$branding/slide-4.png" "${slide_size[@]}"
 render "$templates/calamares/stylesheet.qss" "$branding/stylesheet.qss"
 
 # The AI page: its default answer is ai.mode of defaults/settings.yaml, and each answer
@@ -126,8 +129,8 @@ for id in $(yq eval '.items[].id' "$chooser"); do
   tpl[AI_DEMO]=1
   case "$id" in
     local) tpl[AI_DETAIL]="opencode · Ollama · $(yq eval '.ai.local.models[0].model' "$settings")" ;;
-    cloud) tpl[AI_DETAIL]="opencode · $(yq eval '.ai.cloud.providers[0].id + " and " + (.ai.cloud.providers | length - 1 | tostring) + " more"' "$settings")" ;;
-    *) tpl[AI_DETAIL]="patina install offers it again" tpl[AI_DEMO]=0.15 ;;
+    cloud) tpl[AI_DETAIL]="opencode · $(yq eval '.ai.cloud.providers[0].name + " and " + (.ai.cloud.providers | length - 1 | tostring) + " more"' "$settings")" ;;
+    *) tpl[AI_DETAIL]="patina ai on turns it on later" tpl[AI_DEMO]=0.15 ;;
   esac
   render "$templates/calamares/ai.svg" "$tmp/ai-$id.svg"
   rsvg-convert --width 960 --height 540 --output "$branding/ai-$id.png" "$tmp/ai-$id.svg"
