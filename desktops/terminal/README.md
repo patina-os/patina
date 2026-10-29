@@ -26,10 +26,10 @@ neovim.
   `~/.config/kitty/patina-agent.conf`, a quieter kitty profile from the same palette
   for the agent; removed again when none of them is installed
 - the fastfetch greeting: `~/.local/state/patina/logo.txt`, the text mark in the
-  brand's colours (`print_logo always`), and `~/.config/fastfetch/config.jsonc`
-  pointing at it with the theme's accent for the labels; every new kitty window runs it,
-  through two lines added once at the end of `~/.bashrc` and
-  `~/.config/fish/conf.d/patina-greeting.fish`
+  brand's colours for the mode's ground (`print_logo always <variant>`), and
+  `~/.config/fastfetch/config.jsonc` pointing at it with the theme's accent for the
+  labels; every new kitty window runs it, through two lines added once at the end of
+  `~/.bashrc` and `~/.config/fish/conf.d/patina-greeting.fish`
 - btop: `~/.config/btop/themes/patina-<theme>.theme`, its load gradients running
   from `base0D` through the accent to its second colour (`accent` and `accent_alt`
   of the theme), made `color_theme` in

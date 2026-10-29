@@ -41,6 +41,9 @@ All notable changes to patina are documented here. The format follows
 - The Plasma splash shows the wordmark as drawn: it is a rendering now, as Qt drew the
   SVG in the wrong fonts and cut off its last letter.
 - `patina keys` and `patina credits` use the accent of the theme and mode in use.
+- In the light mode the marks in the terminal (the fastfetch greeting, `patina help`,
+  `patina credits` and the install questions) print their letters black and the ▲ in
+  aurora light's green; they were white on white.
 - `patina theme install` accepts licence expressions such as aurora's
   `LicenseRef-Pexels AND CC-BY-SA-4.0`, and switching between two themes whose names
   share a beginning leaves nothing of the other behind.

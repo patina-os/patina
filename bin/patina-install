@@ -62,7 +62,7 @@ ask() {
   mode="$(current_mode)"
   theme_vars "$d/theme.yaml" "$PATINA_PATH/defaults/settings.yaml" "$mode"
   tui_colors
-  print_wordmark auto
+  print_wordmark auto "${tpl[VARIANT]}"
   echo
   gum style --foreground "${tpl[BASE04]}" \
     "patina $("$PATINA_PATH/bin/patina" version) · $(basename "$BACKEND" .yaml) · $(uname -m)"

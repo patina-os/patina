@@ -70,7 +70,7 @@ fi
 
 # fastfetch greets a new terminal with the mark: a coloured copy of branding/logo.txt
 # (the file itself stays plain) and a configuration that points at it.
-print_logo always > "$tmp/logo.txt"
+print_logo always "${tpl[VARIANT]}" > "$tmp/logo.txt"
 put "$tmp/logo.txt" "$PATINA_STATE/logo.txt"
 ours "$templates/fastfetch.jsonc" "$config/fastfetch/config.jsonc"
 # Which runs in every new kitty window: two lines added once at the end of ~/.bashrc

@@ -97,7 +97,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   the text colour, all at one height, by the renderer; kitty is the one see-through
   window (other apps stay opaque); the start menu and the other panel popups carry a
   slight grain. The brand's colours (deep violet, violet, lavender, white, and green
-  for the ▲) are aurora's and do not follow a theme.
+  for the ▲) are aurora's and do not follow a theme; on a light ground the terminal
+  prints the marks' letters black and the ▲ in aurora light's green (October 2026).
   The desktop's shape is a centred bar along the bottom edge as on Windows 11 (never
   floating: a floating bar jumps when a window is maximised), new windows
   centred at one size and the command palette in the middle of the screen; the start

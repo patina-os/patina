@@ -51,7 +51,8 @@ cell is twice as tall as it is wide.
 - Print it with `print_logo` from `bin/lib.sh` (`auto`: colours only on an interactive
   24-bit terminal; `always`: colours in any case, for the file fastfetch shows). The
   colours are the brand's: deep violet for i, violet for t, lavender for n and a, bold
-  white for the word, green for the ▲.
+  white for the word, green for the ▲. On a light ground (the light mode) the word is
+  black and the ▲ aurora light's green `#087a46`; the rings keep their colours.
 
 ## wordmark.txt, the name
 
@@ -79,7 +80,8 @@ columns and 10 lines.
   fonts a browser uses for code lack the quadrant and braille characters, so the
   letters fall apart there; the README shows `wordmark.svg` instead.
 - Print it with `print_wordmark` from `bin/lib.sh` (same `auto` and `always`): the
-  letters white, the ▲ green, the upper line violet and the lower one deep violet.
+  letters white, the ▲ green, the upper line violet and the lower one deep violet. On a
+  light ground the letters are black and the ▲ `#087a46`, as for `logo.txt`.
 
 ## wordmark.svg, icon.svg and icon-small.svg
 
