@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <!-- the picture of one bundle on the apps and more-apps pages
+       (modules/packagechooser-apps.conf, -more.conf), in the slides' style: its name,
+       its line from manifest/bundles/, and how much it brings -->
+  <rect width="960" height="540" rx="24" fill="${BASE01}"/>
+  <rect x="1" y="1" width="958" height="538" rx="23" fill="none" stroke="${BASE02}" stroke-width="2"/>
+  <rect x="64" y="70" width="104" height="44" rx="9" fill="${ACCENT}" fill-opacity="0.12"/>
+  <text x="80" y="101" font-family="${MONO_FONT}, monospace" font-size="22" font-weight="600"
+    fill="${ACCENT}">apps</text>
+  <text x="64" y="224" font-family="'${DISPLAY_FONT}', sans-serif" font-size="68" font-weight="700"
+    letter-spacing="-1.5" fill="${BASE05}">${BUNDLE_NAME}</text>
+  <rect x="64" y="300" width="832" height="3" fill="${BASE05}"/>
+  <text x="64" y="364" font-family="'${UI_FONT}', sans-serif" font-size="30"
+    fill="${BASE05}">${BUNDLE_DETAIL}</text>
+  <text x="64" y="420" font-family="${MONO_FONT}, monospace" font-size="24"
+    fill="${BASE04}">${BUNDLE_COUNT}</text>
+</svg>

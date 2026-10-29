@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="960" height="540" viewBox="0 0 960 540">
+  <!-- the picture of one theme on the theme page (modules/packagechooser-theme.conf),
+       drawn with that theme's palette: its first wallpaper as a desktop, the centred bar
+       in its colours with the accent on the active entry, its name and its eight
+       accent colours -->
+  <defs>
+    <clipPath id="round"><rect width="960" height="540" rx="24"/></clipPath>
+    <linearGradient id="scrim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${BASE00}" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="${BASE00}" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <g clip-path="url(#round)">
+    <image xlink:href="theme-wallpaper.png" width="960" height="540" preserveAspectRatio="xMidYMid slice"/>
+    <rect width="960" height="220" fill="url(#scrim)"/>
+    <rect y="492" width="960" height="48" fill="${BASE00}" fill-opacity="0.92"/>
+    <rect x="404" y="502" width="28" height="28" rx="6" fill="${BASE05}" fill-opacity="0.85"/>
+    <rect x="446" y="502" width="28" height="28" rx="6" fill="${BASE05}" fill-opacity="0.85"/>
+    <rect x="488" y="502" width="28" height="28" rx="6" fill="${ACCENT}"/>
+    <rect x="530" y="502" width="28" height="28" rx="6" fill="${BASE05}" fill-opacity="0.85"/>
+  </g>
+  <rect x="1" y="1" width="958" height="538" rx="23" fill="none" stroke="${BASE02}" stroke-width="2"/>
+  <text x="56" y="110" font-family="'${DISPLAY_FONT}', sans-serif" font-size="64" font-weight="700"
+    letter-spacing="-1.5" fill="${BASE05}">${DISPLAY_NAME}</text>
+  <g transform="translate(56 140)">
+    <rect width="34" height="34" rx="8" fill="${BASE08}"/>
+    <rect x="44" width="34" height="34" rx="8" fill="${BASE09}"/>
+    <rect x="88" width="34" height="34" rx="8" fill="${BASE0A}"/>
+    <rect x="132" width="34" height="34" rx="8" fill="${BASE0B}"/>
+    <rect x="176" width="34" height="34" rx="8" fill="${BASE0C}"/>
+    <rect x="220" width="34" height="34" rx="8" fill="${BASE0D}"/>
+    <rect x="264" width="34" height="34" rx="8" fill="${BASE0E}"/>
+    <rect x="308" width="34" height="34" rx="8" fill="${BASE0F}"/>
+  </g>
+</svg>

@@ -32,7 +32,9 @@ ai: local            # only on the bundles that answer the AI question (local, c
 A bundle with an `ai` key is not a line of the bundle list: it is the answer of the AI
 question of `patina install` and the installer's AI page (`ai-local`, `ai-cloud`). The
 question's answer adds that bundle; `--bundles ai-cloud` and `PATINA_AI=cloud` do the
-same.
+same. Every other bundle that is not required is on the installer's apps or more-apps
+page (`packagechooser-apps.conf` and `-more.conf` under `iso/live/config/`); lint checks
+that none is left out.
 
 Canonical names are the Debian package names, because Debian is the reference base.
 A backend file maps them only where its own name differs. `patina install --list`

@@ -7,6 +7,7 @@ flatpak_remote: https://dl.flathub.org/repo/flathub.flatpakrepo
 fonts:                       # font names only; the desktop bundle installs the packages
   ui: Source Sans 3          # everything the user reads
   monospace: JetBrains Mono  # terminals and details (versions, hostnames, progress)
+  display: Sora              # the wordmark, and the headlines of the installer's slides
 agent: opencode              # what the `agent` keybinding opens (needs an AI or the agents bundle)
 # The AI agent: the question `patina install` asks after the bundles, and the page of
 # the image's installer. local and cloud are the bundles manifest/bundles/ai-*.yaml name

@@ -238,6 +238,7 @@ theme_vars() {
   tpl[DESKTOP_THEME]="$(yq eval "$b.plasma.desktop_theme // .plasma.desktop_theme // \"default\"" "$theme_yaml")"
   tpl[UI_FONT]="$(yq eval '.fonts.ui' "$settings")"
   tpl[MONO_FONT]="$(yq eval '.fonts.monospace' "$settings")"
+  tpl[DISPLAY_FONT]="$(yq eval '.fonts.display' "$settings")"
   tpl[AGENT]="$(yq eval '.agent // "opencode"' "$settings")"
   first="$(yq eval "($b.wallpapers // .wallpapers)[0] // \"\"" "$theme_yaml")"
   tpl[WALLPAPER_FIRST]="${first:+$(cd "$(dirname "$theme_yaml")" && pwd)/$first}"

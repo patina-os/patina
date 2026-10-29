@@ -28,6 +28,9 @@ See `_template/theme.yaml`; every field is commented there. The palette uses bas
 the [tinted-theming](https://github.com/tinted-theming/home) project can be imported by
 copying its `palette` block.
 
+`description`, one sentence, is what the installer's theme page shows beside the theme's
+picture (`iso/live/assets.sh` draws it from the palette and the first wallpaper).
+
 The `plasma.icons` hint names an icon theme as Debian ships it. For one listed in
 `desktops/plasma/icons.yaml` (Papirus), the renderer recolours its folders to the
 theme's accent, so the folders follow every theme without an icon set of its own.

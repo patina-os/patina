@@ -1,6 +1,6 @@
 # Calamares branding for the patina installer: the strings, and the names of the files
 # iso/live/assets.sh renders next to this one from branding/ and the default theme
-# (logo.png, welcome.png, logo-square.png, icon-small.svg, wallpaper.png, the slides,
+# (welcome.png, logo-square.png, icon-small.svg, wallpaper.png, the slides,
 # the icons, stylesheet.qss). assets.sh also fills the version from git and the sidebar
 # colours (style) from the palette, so no colour is typed here: the steps are
 # transparent over the sidebar's glass, the current one a faint accent with the accent
@@ -35,11 +35,39 @@ images:
   productWallpaper: wallpaper.png   # the theme's first wallpaper, veiled, behind every page
 
 # Still images instead of a QML slideshow: nothing to execute, nothing to maintain.
-# Calamares shows them in turn while it installs.
+# Calamares shows them in turn while it installs, a new one every two seconds (a fixed
+# interval in its Slideshow.cpp), so each slide is listed five times: ten seconds to
+# read it, with no change to see in between.
 slideshow:
+  - slide-1.png   # welcome
   - slide-1.png
+  - slide-1.png
+  - slide-1.png
+  - slide-1.png
+  - slide-2.png   # the desktop
   - slide-2.png
+  - slide-2.png
+  - slide-2.png
+  - slide-2.png
+  - slide-3.png   # the command palette and kortex
   - slide-3.png
-  - slide-4.png   # the thanks: docs/credits.yaml
+  - slide-3.png
+  - slide-3.png
+  - slide-3.png
+  - slide-4.png   # the apps
+  - slide-4.png
+  - slide-4.png
+  - slide-4.png
+  - slide-4.png
+  - slide-5.png   # the promises
+  - slide-5.png
+  - slide-5.png
+  - slide-5.png
+  - slide-5.png
+  - slide-6.png   # the thanks: docs/credits.yaml
+  - slide-6.png
+  - slide-6.png
+  - slide-6.png
+  - slide-6.png
 
 style: {}   # filled by assets.sh from the palette: SidebarBackground, SidebarText, ...

@@ -48,7 +48,8 @@ sed 's/\\/\\\\/g' "$repo/branding/logo.txt" > "$chroot/etc/issue.d/10-patina.iss
 render "$templates/fontconfig/local.conf" "$chroot/etc/fonts/local.conf"
 
 # The pieces the compositions are made of, rendered next to them so an SVG may reference
-# them: the theme's first two wallpapers at 1920x1080 and the wordmark rasterised.
+# them: the theme's first wallpaper at 1920x1080 and the name in block letters
+# rasterised.
 mapfile -t wallpapers < <(yq eval '.wallpapers[]?' "$theme_dir/theme.yaml")
 [[ ${#wallpapers[@]} -gt 0 ]] || { echo "assets.sh: the theme has no wallpaper" >&2; exit 65; }
 raster() {   # raster <svg-png-or-jpg> <out.png>: a theme wallpaper at 1920x1080
@@ -64,8 +65,7 @@ raster() {   # raster <svg-png-or-jpg> <out.png>: a theme wallpaper at 1920x1080
 }
 say "rendering the wallpapers of ${tpl[THEME]}"
 raster "$theme_dir/${wallpapers[0]}" "$tmp/wallpaper.png"
-raster "$theme_dir/${wallpapers[1]:-${wallpapers[0]}}" "$tmp/second.png"
-rsvg-convert --width 1120 --output "$tmp/logo.png" "$repo/branding/wordmark.svg"
+rsvg-convert --width 1160 --output "$tmp/blocks.png" "$repo/branding/export/wordmark-blocks.svg"
 
 compose() {   # compose <template> <out.png> [width height]: fill the template, render it
   render "$templates/$1" "$tmp/$(basename "$1")"
@@ -79,10 +79,9 @@ slide_size=(1024 576)
 # the sidebar colours and the version in branding.desc.
 say "rendering the installer's branding"
 # The marks as pictures: Calamares draws SVG with Qt, which knows neither Sora nor the
-# spacing of the mark's rings, so it gets rsvg renderings. The welcome page shows the
-# name in block letters (branding/export), the slides the typeset wordmark.
-cp "$tmp/logo.png" "$branding/logo.png"
-rsvg-convert --width 1120 --output "$branding/welcome.png" "$repo/branding/export/wordmark-blocks.svg"
+# spacing of the mark's rings, so it gets rsvg renderings. The welcome page, the slides
+# and the boot menu show the name in block letters (branding/export).
+cp "$tmp/blocks.png" "$branding/welcome.png"
 # The sidebar's mark: icon-small.svg inset in its box (logo-square.svg), at twice the
 # size Calamares shows it; the window icon is the mark itself.
 cp "$repo/branding/icon-small.svg" "$branding/icon-small.svg"
@@ -96,9 +95,14 @@ for icon in "$templates"/calamares/icons/*.svg; do
   rsvg-convert --width 64 --height 64 --output "$branding/$(basename "$icon" .svg).png" "$tmp/icon.svg"
 done
 compose calamares/wallpaper.svg "$branding/wallpaper.png"
-compose calamares/slide-1.svg "$branding/slide-1.png" "${slide_size[@]}"
-compose calamares/slide-2.svg "$branding/slide-2.png" "${slide_size[@]}"
-compose calamares/slide-3.svg "$branding/slide-3.png" "${slide_size[@]}"
+# The slides: a tour of patina on one ground, with the desktop workflow's screenshots
+# (docs/screenshots/, refreshed every release), so they show the desktop as it is.
+compose calamares/slide-ground.svg "$tmp/ground.png"
+cp "$repo/docs/screenshots/desktop-amd64.png" "$tmp/desktop.png"
+cp "$repo/docs/screenshots/command-palette-amd64.png" "$tmp/palette.png"
+for n in 1 2 3 4 5; do
+  compose "calamares/slide-$n.svg" "$branding/slide-$n.png" "${slide_size[@]}"
+done
 # The last slide thanks the people and projects of docs/credits.yaml: each group's
 # title, then its names on lines of at most 100 characters.
 credits="$repo/docs/credits.yaml" y=300 tpl[CREDITS]=""
@@ -116,7 +120,7 @@ for ((i = 0; i < $(yq eval '.groups | length' "$credits"); i++)); do
   tpl[CREDITS]+="<text class=\"names\" x=\"280\" y=\"$y\">$line</text>"
   y=$((y + 44))
 done
-compose calamares/slide-4.svg "$branding/slide-4.png" "${slide_size[@]}"
+compose calamares/slide-6.svg "$branding/slide-6.png" "${slide_size[@]}"
 render "$templates/calamares/stylesheet.qss" "$branding/stylesheet.qss"
 
 # The AI page: its default answer is ai.mode of defaults/settings.yaml, and each answer
@@ -135,6 +139,53 @@ for id in $(yq eval '.items[].id' "$chooser"); do
   render "$templates/calamares/ai.svg" "$tmp/ai-$id.svg"
   rsvg-convert --width 960 --height 540 --output "$branding/ai-$id.png" "$tmp/ai-$id.svg"
 done
+
+# The apps and more-apps pages: the apps page's default is the bundle marked default,
+# and every bundle gets a picture with its name, its line from manifest/bundles/ and
+# how much it brings; the more-apps page's empty item (nothing picked) one of its own.
+say "rendering the app pages"
+for page in apps more; do
+  chooser="$chroot/etc/calamares/modules/packagechooser-$page.conf"
+  for ((i = 0; i < $(yq eval '.items | length' "$chooser"); i++)); do
+    id="$(yq eval ".items[$i].id" "$chooser")"
+    tpl[BUNDLE_NAME]="$(yq eval ".items[$i].name" "$chooser")"
+    if [[ -z "$id" ]]; then
+      tpl[BUNDLE_DETAIL]="Standard or Minimal is enough to begin."
+      tpl[BUNDLE_COUNT]="patina install adds the others at any time"
+      id=none
+    else
+      bundle="$repo/manifest/bundles/$id.yaml"
+      if [[ "$page" == apps ]] && yq eval -e '.default == true' "$bundle" > /dev/null 2>&1; then
+        yq -i ".default = \"$id\"" "$chooser"
+      fi
+      tpl[BUNDLE_DETAIL]="$(yq eval '.description' "$bundle")"
+      tpl[BUNDLE_COUNT]="$(yq eval '(.packages // [] | length) + (.flatpaks // [] | length) + (.upstream // [] | length)' "$bundle") packages, apps and tools"
+    fi
+    render "$templates/calamares/bundle.svg" "$tmp/bundle-$id.svg"
+    rsvg-convert --width 960 --height 540 --output "$branding/bundle-$id.png" "$tmp/bundle-$id.svg"
+  done
+done
+
+# The theme page: one item per theme of themes/, the default theme preselected, each
+# drawn in its own palette over its first wallpaper (a subshell, so the installer's
+# colours stay the default theme's).
+say "rendering the theme page"
+chooser="$chroot/etc/calamares/modules/packagechooser-theme.conf"
+yq -i ".default = \"$(yq eval '.theme' "$settings")\" | .items = []" "$chooser"
+for dir in "$repo"/themes/[a-z]*/; do
+  name="$(basename "$dir")"
+  NAME="$name" DISPLAY="$(yq eval '.display_name' "$dir/theme.yaml")" \
+    DESCRIPTION="$(yq eval '.description // ""' "$dir/theme.yaml")" yq -i '.items += [{
+      "id": strenv(NAME), "name": strenv(DISPLAY), "description": strenv(DESCRIPTION),
+      "screenshot": "theme-" + strenv(NAME) + ".png"}]' "$chooser"
+  (
+    theme_vars "$dir/theme.yaml" "$settings"
+    raster "$dir/$(yq eval '.wallpapers[0]' "$dir/theme.yaml")" "$tmp/theme-wallpaper.png"
+    render "$templates/calamares/theme.svg" "$tmp/theme-$name.svg"
+    rsvg-convert --width 960 --height 540 --output "$branding/theme-$name.png" "$tmp/theme-$name.svg"
+  )
+done
+
 yq -i "
   .strings.version = \"${tpl[VERSION]}\" |
   .strings.shortVersion = \"${tpl[VERSION]}\" |

@@ -28,7 +28,8 @@ iso/
     etc/calamares/modules/*.conf       one file per step; packages.conf is the list the
                             installer fetches from Debian's mirrors (Plasma and the base
                             bundle) and the live tooling it removes afterwards;
-                            packagechooser-ai.conf the AI page
+                            packagechooser-ai.conf, -apps.conf, -more.conf and
+                            -theme.conf the AI, apps, more-apps and theme pages
     etc/calamares/branding/patina/   the strings; the marks, artwork, stylesheet and
                             colours next to them are rendered by assets.sh
     etc/systemd/system/patina-ui.service  the installer screen (X, openbox, Calamares)
@@ -36,7 +37,8 @@ iso/
     root/.config/openbox/rc.xml        openbox with the patina theme for the dialogs
   live/templates/           what assets.sh fills from the theme's palette and the fonts:
                             calamares/ (stylesheet.qss, the wallpaper and the slides as
-                            SVG compositions, ai.svg for the pictures of the AI page,
+                            SVG compositions on slide-ground.svg, ai.svg, bundle.svg
+                            and theme.svg for the pictures of the four question pages,
                             logo-square.svg for the sidebar's mark, icons/ in the
                             accent), grub/ (theme.txt, splash.svg), openbox/,
                             fontconfig/ (the live system's standard fonts), xterm/
@@ -56,37 +58,47 @@ iso/
 
 ## How an install works
 
-1. Boot the image. The GRUB menu shows the theme's wallpaper and the wordmark. The live
+1. Boot the image. The GRUB menu shows the theme's wallpaper with the block-letter name
+   centred above a centred menu column. The live
    system starts `patina-ui.service`: an X session on tty7 with Calamares full screen
    in the theme's palette and fonts and in British English (`locales=` in
    `auto/config`; the welcome page offers the others), the block-letter name on the
    welcome page, the square mark in the sidebar, the wallpaper veiled behind every
    page, the sidebar and the button bar as glass over it (the start menu's `glass` and
-   `grain` from `defaults/settings.yaml`), four still slides while it
-   installs, the last one thanking the people and projects of `docs/credits.yaml`. The console shows `branding/logo.txt`.
+   `grain` from `defaults/settings.yaml`), and while it installs a tour of patina in six
+   still slides, in the landing page's dark style (patina-os/landing): welcome, the
+   desktop and the command palette with the desktop workflow's screenshots, the apps,
+   the promises, and the thanks to the people and projects of `docs/credits.yaml`.
+   Calamares shows a still slide for two seconds, so `branding.desc` lists each one
+   five times. The console shows `branding/logo.txt`.
    A computer with no network yet but a Wi-Fi card first gets the Wi-Fi step:
    NetworkManager's `nmtui` full screen in the palette, to pick a network and type its
    password; Quit starts the installer. Leaving the installer brings the step back
    while the computer is still offline.
 2. Calamares asks what it must: time zone and keyboard (pre-filled), disk (erase is
-   preselected; encryption and manual partitioning are available), the user, and the AI
+   preselected; encryption and manual partitioning are available), the user, the AI
    agent (on this computer, from a cloud provider, or none, preselected from `ai.mode`
-   of `defaults/settings.yaml`: none). The AI page installs nothing: its answer is
-   handed to the first boot. The summary page is the last look before anything is
-   written.
+   of `defaults/settings.yaml`: none), the apps (Standard, the bundle marked default,
+   or Minimal), more apps (any of the other optional bundles: extras, ArtCraft, the
+   agent tools) and the theme (every theme of `themes/`, the default preselected, each
+   pictured in its own palette). These pages install nothing: their answers are handed
+   to the first boot. The summary page is the last look before anything is written.
 3. The live system is copied to disk (`unpackfs`), then Plasma and the base bundle are
    fetched from Debian's mirrors into it (`packages`, the list in
-   `modules/packages.conf`), the live tooling and Calamares are removed from it, the
+   `modules/packages.conf`, in five installs, smallest first, so the progress bar moves;
+   apt shows nothing while each runs), the live tooling and Calamares are removed from
+   it, SDDM is set up and the hardware clock set (after the packages that bring them), the
    first-boot unit is enabled (`shellprocess-firstboot.conf`), GRUB is installed with
    Debian's signed shim into `EFI/debian`, where Debian's packages update it, and shim
    also at the removable path (`shellprocess-efi-removable.conf`), so the machine boots
    when the firmware loses its boot entries.
 4. First boot: the service takes tty1 before the login screen, clones this repository
    into the user's `~/.local/share/patina`, links `~/.local/bin/patina` and runs
-   `patina install`, which asks the remaining questions on tty1 (the theme and the app
-   bundles, with `gum`, and for a cloud agent the provider and its login;
-   `/etc/patina/firstboot.env` answers them: the installer writes the AI page's answer
-   there as `PATINA_AI`, and more can be added by hand). Then it writes
+   `patina install` with the installer's answers from `/etc/patina/firstboot.env`
+   (`PATINA_AI`, `PATINA_BUNDLES` as `--bundles`, `PATINA_THEME`), so it asks nothing
+   on tty1 but a cloud agent's provider and opencode's own key login. An image older
+   than the apps and theme pages writes `PATINA_AI` alone, and the install asks the
+   theme and the bundles there. Then it writes
    `/var/lib/patina/firstboot-done` and never runs again. A failed clone or install
    prints the Path A command to run by hand and still marks the boot done, so a machine
    never loops on first boot.
@@ -119,10 +131,13 @@ sudo iso/live/build.sh arm64            # on an arm64 machine
 ```
 
 `build.sh` calls `assets.sh`, which renders everything the image shows from the data:
-`branding/logo.txt` into `/etc/issue.d`, `branding/wordmark.svg` (as a PNG) and
-`icon-small.svg` (inset in the sidebar's box) into the installer's branding, the icons
+`branding/logo.txt` into `/etc/issue.d`, the block-letter name of `branding/export/` (as a
+PNG, for the welcome page, the slides and the boot menu) and `icon-small.svg` (inset in
+the sidebar's box) into the installer's branding, the icons
 of `live/templates/calamares/icons/` in the accent, the default theme's wallpapers under a veil as the installer's
-background, four slides (the last one the names of `docs/credits.yaml`), the splash of the boot menu, and the templates under
+background, six slides on one ground (`slide-ground.svg`) with `docs/screenshots/` of the
+desktop and the command palette (the last slide the names of `docs/credits.yaml`), the
+splash of the boot menu, and the templates under
 `live/templates/` (the Calamares stylesheet, the GRUB theme, the openbox theme) with the
 palette of `themes/<default>/theme.yaml` and the fonts of `defaults/settings.yaml`,
 plus the version and the sidebar colours into `branding.desc` with `yq`, and
@@ -158,7 +173,7 @@ files.
   in the palette over the splash, readable; the installer's welcome page (the square
   mark in the sidebar, the wordmark on the page, the wallpaper behind, Source Sans 3), the partition
   page with the manual partition editor's dialog (openbox's patina frame), the
-  install page with the gradient progress bar and the four slides; at first boot the
+  install page with the gradient progress bar and the six slides; at first boot the
   mark on tty1 and the questions; then the login screen with the theme's wallpaper,
   the splash with the wordmark and the accent line, and the desktop in Source Sans 3
   and JetBrains Mono, as `docs/screenshots/desktop-amd64.png` shows it.
@@ -231,8 +246,11 @@ release, never edited.
   boot entry is `\EFI\debian\shimx64.efi`, a reinstall of `shim-signed` and the GRUB
   packages rewrites `EFI/debian` and `EFI/BOOT`, and with the boot entry deleted the
   machine boots from `EFI/BOOT/BOOTX64.EFI`. A real Secure Boot machine is still the check.
-- The AI page: Calamares 3.3.14's `packagechooser` with the `legacy` method, its
-  pictures found in the branding directory, and `${gs[packagechooser_ai]}` filled in
-  `shellprocess-firstboot.conf`, as the module documentation of that release describes
-  them; the manual install is the check (`/etc/patina/firstboot.env` names the answer).
+- The four question pages: Calamares 3.3.14's `packagechooser` with the `legacy`
+  method, its pictures found in the branding directory, the more-apps page in
+  `optionalmultiple` mode (its answer a comma-separated list, empty when nothing is
+  picked: `Config::updateGlobalStorage` inserts the joined list either way, so
+  `${gs[packagechooser_more]}` is always defined), and the answers filled in
+  `shellprocess-firstboot.conf`, as the module's source in that release has it; the
+  manual install is the check (`/etc/patina/firstboot.env` names the answers).
 - The arm64 image on real hardware: the boot test covers the QEMU `virt` machine only.

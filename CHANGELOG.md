@@ -13,12 +13,32 @@ All notable changes to patina are documented here. The format follows
   machine `patina install` adds spice-vdagent, so copy and paste works between Windows
   and patina, and the login screen offers the Plasma X11 session first, the one
   spice-vdagent shares a clipboard in (`devices/try-patina-windows/`).
+- The installer asks for the apps (Standard or Minimal), more apps (Zed and Tauon,
+  ArtCraft, the agent tools) and the theme (each pictured in its own colours), next to
+  the AI agent, and hands the answers to the first boot, which then runs without a
+  question; only a cloud agent still asks its provider and key there.
 - Device detection: a device's `detect` map names fields of `/sys/class/dmi/id`;
   `patina install` adds a detected device's `extra_packages` and its `system/` files,
   and `patina doctor` checks them.
 
+### Changed
+
+- The boot menu shows patina in block letters, large and centred, with the menu as a
+  column under it, at 800x600 as on a wide screen.
+- The installer's slides are a tour of patina instead of the wordmark on a wallpaper:
+  welcome, the desktop, the command palette and kortex (with the screenshots the
+  desktop workflow takes every release), the apps, the three promises, and the thanks.
+  They follow the landing page's dark style: black, green as the one accent, headlines
+  in Sora, no contour map. Each stays ten seconds instead of Calamares' two.
+
 ### Fixed
 
+- The installer set up the login screen before SDDM was installed and failed to set
+  the hardware clock (Debian 13 moved `hwclock` to `util-linux-extra`): both steps run
+  after the packages now, and `util-linux-extra` is one of them.
+- The package step looked stuck for half an hour: apt shows nothing while it runs, and
+  Plasma, the fonts, the firmware and the base tools were one install. They are five
+  now, smallest first, so the progress bar and the step's name move between them.
 - Systems installed from the image get Debian's shim and GRUB updates on the EFI system
   partition: GRUB goes to `EFI/debian` (it went to `EFI/Debian_GNU-Linux`, which
   Debian's packages never update) with `grub-efi-<arch>`, whose maintainer scripts

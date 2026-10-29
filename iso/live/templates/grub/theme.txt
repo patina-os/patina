@@ -27,10 +27,11 @@ terminal-font: "Unifont Regular 16"
   font = "Unifont Regular 16"
 }
 
-# boot menu
+# boot menu: a column centred under the name of the splash (GRUB cannot centre the items
+# themselves, so the column is as wide as the longest of live-build's entries)
 + boot_menu {
-  left = 10%
-  width = 80%
+  left = 50%-160
+  width = 320
   top = 52%
   height = 48%-80
   item_color = "${BASE05}"

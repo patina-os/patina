@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <!-- slide 5, the promises every install comes with, as the landing page makes them -->
+  <image xlink:href="ground.png" width="1920" height="1080"/>
+  <rect x="140" y="214" width="121" height="52" rx="10" fill="${ACCENT}" fill-opacity="0.12"/>
+  <text x="158" y="250" font-family="${MONO_FONT}, monospace" font-size="26" font-weight="600"
+    fill="${ACCENT}">Yours</text>
+  <text font-family="'${DISPLAY_FONT}', sans-serif" font-size="76" font-weight="700"
+    letter-spacing="-2" fill="${BASE05}"><tspan x="140" y="360">Free, private,</tspan><tspan x="140" y="450">and yours to keep.</tspan></text>
+  <rect x="140" y="560" width="520" height="3" fill="${BASE05}"/>
+  <text x="140" y="620" font-family="${MONO_FONT}, monospace" font-size="28" fill="${ACCENT}">01</text>
+  <text x="140" y="692" font-family="'${DISPLAY_FONT}', sans-serif" font-size="50" font-weight="700"
+    letter-spacing="-1" fill="${BASE05}">Free by default</text>
+  <text font-family="'${UI_FONT}', sans-serif" font-size="32" fill="${BASE04}">
+    <tspan x="140" y="756">Every app is free and open</tspan>
+    <tspan x="140" y="802">source. Anything else</tspan>
+    <tspan x="140" y="848">is opt-in.</tspan>
+  </text>
+  <rect x="700" y="560" width="520" height="3" fill="${BASE05}"/>
+  <text x="700" y="620" font-family="${MONO_FONT}, monospace" font-size="28" fill="${ACCENT}">02</text>
+  <text x="700" y="692" font-family="'${DISPLAY_FONT}', sans-serif" font-size="50" font-weight="700"
+    letter-spacing="-1" fill="${BASE05}">Your data, close</text>
+  <text font-family="'${UI_FONT}', sans-serif" font-size="32" fill="${BASE04}">
+    <tspan x="700" y="756">No account, no telemetry.</tspan>
+    <tspan x="700" y="802">Your files sync where</tspan>
+    <tspan x="700" y="848">you choose.</tspan>
+  </text>
+  <rect x="1260" y="560" width="520" height="3" fill="${BASE05}"/>
+  <text x="1260" y="620" font-family="${MONO_FONT}, monospace" font-size="28" fill="${ACCENT}">03</text>
+  <text x="1260" y="692" font-family="'${DISPLAY_FONT}', sans-serif" font-size="50" font-weight="700"
+    letter-spacing="-1" fill="${BASE05}">A trusted base</text>
+  <text font-family="'${UI_FONT}', sans-serif" font-size="32" fill="${BASE04}">
+    <tspan x="1260" y="756">Debian 13 underneath.</tspan>
+    <tspan x="1260" y="802">Security updates come</tspan>
+    <tspan x="1260" y="848">straight from Debian.</tspan>
+  </text>
+</svg>

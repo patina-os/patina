@@ -47,14 +47,17 @@ they are.
 
 - [ ] download `patina-amd64.hybrid.iso` and `SHA256SUMS` from the release;
   `sha256sum -c SHA256SUMS` says `OK`
-- [ ] the boot menu: the theme's wallpaper and the wordmark, readable
+- [ ] the boot menu: the theme's wallpaper, patina in block letters centred above the
+  menu, readable
 - [ ] the installer's welcome page: the square mark in the sidebar, the wordmark on the
   page, the wallpaper behind it
 - [ ] answer the installer: erase disk, a user, the AI page (none, unless you test an
-  agent, as in step 4); the install page shows the progress bar and the slides, and it
+  agent, as in step 4), the apps (Standard), more apps (none) and the theme (aurora);
+  the install page shows the progress bar and the six slides, ten seconds each, and it
   ends without an error
-- [ ] first boot: tty1 shows the mark and asks the theme and the app bundles, and it
-  ends with `patina firstboot: done`; then the login screen with the theme's wallpaper
+- [ ] first boot: tty1 shows the mark and runs without a question (a cloud agent asks
+  its provider and key), and it ends with `patina firstboot: done`; then the login
+  screen with the theme's wallpaper
 - [ ] after the first login: take a snapshot, "patina-installed", and
   `journalctl -b -u patina-firstboot > ~/run1.log` keeps the first run's log for the
   report
