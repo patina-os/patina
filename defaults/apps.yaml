@@ -19,9 +19,11 @@ opencode:
   # OpenAI-compatible endpoint on this machine and the model Ollama's own opencode guide
   # names. Which model opencode uses, the model that fits this machine's memory and the
   # instructions (defaults/agent.md) come from the AI step of `patina install`, which
-  # knows the answer to its question. Permissions: reading runs freely, anything that
-  # changes files or runs a command (ssh to a server included) asks first; a few
-  # read-only commands are allowed. The last matching rule wins, so "*" comes first.
+  # knows the answer to its question. Permissions: reading runs freely (opencode's own
+  # read, list and search tools), anything that changes files, runs a command (ssh to a
+  # server included) or fetches a web page asks first; a few read-only commands are
+  # allowed. The last matching rule wins, so "*" comes first and the redirect rule last:
+  # opencode matches the whole command, so "df *" alone would also allow "df > ~/.profile".
   requires:
     upstream: opencode
   file: ~/.config/opencode/opencode.json
@@ -38,20 +40,17 @@ opencode:
             name: qwen3.5
     permission:
       edit: ask
-      webfetch: allow
+      webfetch: ask
       external_directory: ask
       bash:
         "*": ask
-        "cat *": allow
         "df *": allow
         "free *": allow
-        "git diff*": allow
-        "git log*": allow
         "git status*": allow
-        "ls*": allow
         "lsblk*": allow
         "patina doctor*": allow
         "patina keys*": allow
         "patina theme list*": allow
         "systemctl status *": allow
         "uname *": allow
+        "*>*": ask
