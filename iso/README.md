@@ -85,7 +85,9 @@ iso/
    to the first boot. The summary page is the last look before anything is written.
 3. The live system is copied to disk (`unpackfs`), then Plasma and the base bundle are
    fetched from Debian's mirrors into it (`packages`, the list in
-   `modules/packages.conf`), the live tooling and Calamares are removed from it, the
+   `modules/packages.conf`, in five installs, smallest first, so the progress bar moves;
+   apt shows nothing while each runs), the live tooling and Calamares are removed from
+   it, SDDM is set up and the hardware clock set (after the packages that bring them), the
    first-boot unit is enabled (`shellprocess-firstboot.conf`), GRUB is installed with
    Debian's signed shim into `EFI/debian`, where Debian's packages update it, and shim
    also at the removable path (`shellprocess-efi-removable.conf`), so the machine boots

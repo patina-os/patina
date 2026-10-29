@@ -33,6 +33,12 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- The installer set up the login screen before SDDM was installed and failed to set
+  the hardware clock (Debian 13 moved `hwclock` to `util-linux-extra`): both steps run
+  after the packages now, and `util-linux-extra` is one of them.
+- The package step looked stuck for half an hour: apt shows nothing while it runs, and
+  Plasma, the fonts, the firmware and the base tools were one install. They are five
+  now, smallest first, so the progress bar and the step's name move between them.
 - Systems installed from the image get Debian's shim and GRUB updates on the EFI system
   partition: GRUB goes to `EFI/debian` (it went to `EFI/Debian_GNU-Linux`, which
   Debian's packages never update) with `grub-efi-<arch>`, whose maintainer scripts
