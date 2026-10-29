@@ -35,6 +35,6 @@ wallpapers:
 
 # Per-desktop hints, still data.
 plasma:
-  icons: breeze-dark             # icon theme as packaged by Debian
+  icons: Papirus-Dark            # icon theme as packaged by Debian; its folders take the accent
   cursors: breeze_cursors
   desktop_theme: default         # the panel and widget style; default follows the colour scheme

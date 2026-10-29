@@ -20,6 +20,28 @@ All notable changes to patina are documented here. The format follows
 - kortex 0.1.1: its icon in the command palette is a solid green summit, the survey
   point of the mark, instead of a tile with an outline and a prompt line. `patina
   update` installs it where kortex is installed.
+- datum uses Papirus too, so its folders take its accent and its apps the glyphs.
+- Inactive window titles are in the dimmer text colour (`base04`) instead of the
+  comment colour, readable at about 5:1.
+
+### Fixed
+
+- The shortcuts that launch an app (Meta+Return, Meta+B, Meta+E, Meta+A, Meta+K and
+  Print) fire on Plasma 6: they were written in Plasma 5's form, which Plasma 6 reads
+  as a sequence of three keys that cannot be typed. Meta+Space opens KRunner, whose
+  entry Plasma 6 keeps outside the apps' directories. `patina update` renders them
+  again.
+- The first `patina install` on a stock Debian asks its questions: it installs gum
+  for them first instead of going on with the defaults.
+- `patina install` finds `sysctl`, `update-initramfs` and `update-grub` in the sbin
+  directories, which a Debian user's PATH lacks, so the boot and initramfs tuning is
+  applied on Path A.
+- The Plasma splash shows the wordmark as drawn: it is a rendering now, as Qt drew the
+  SVG in the wrong fonts and cut off its last letter.
+- `patina keys` and `patina credits` use the accent of the theme and mode in use.
+- `patina theme install` accepts licence expressions such as aurora's
+  `LicenseRef-Pexels AND CC-BY-SA-4.0`, and switching between two themes whose names
+  share a beginning leaves nothing of the other behind.
 
 ## [0.1.0-alpha.2] - 2026-10-28
 

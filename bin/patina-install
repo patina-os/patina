@@ -382,7 +382,9 @@ install_system() {
   while IFS= read -r cmd; do
     first="${cmd#sudo }"
     first="${first%% *}"
-    if ! command -v "$first" > /dev/null; then
+    # sudo finds commands in the sbin directories, which a Debian user's PATH lacks
+    # (sysctl, update-initramfs, update-grub), so they are looked for there too.
+    if ! PATH="$PATH:/usr/local/sbin:/usr/sbin:/sbin" command -v "$first" > /dev/null; then
       continue   # no GRUB on a Raspberry Pi, for instance
     fi
     if ! run_words "$cmd"; then
@@ -604,8 +606,17 @@ main() {
     done
   else
     mapfile -t bundles < <(default_bundles)
-    if [[ -t 0 && -t 1 && -z "$PATINA_UNATTENDED" ]] && command -v gum > /dev/null; then
-      ask
+    if [[ -t 0 && -t 1 && -z "$PATINA_UNATTENDED" ]]; then
+      # The questions need gum (base bundle), which a stock Debian lacks before the
+      # first install: fetch it first, or go on with the defaults without it.
+      if ! command -v gum > /dev/null; then
+        say "installing gum for the questions"
+        { backend_run refresh && backend_run install gum && changed; } ||
+          warn "gum could not be installed; going on with the defaults"
+      fi
+      if command -v gum > /dev/null; then
+        ask
+      fi
     fi
   fi
   if [[ -n "$ai" && "$ai" != none ]]; then

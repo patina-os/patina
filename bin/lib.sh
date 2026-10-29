@@ -252,7 +252,9 @@ render() {
 
 # The renderers' two ways of writing: install a rendered file only when it differs
 # (put <src> <dest>), and remove what another theme left (drop_other_themes <glob>
-# <keep-prefix>). Both call the renderer's own say and changed.
+# <keep>: the path to keep, or a prefix ending in "." for one theme's files, so the
+# files of aurora-x never pass for aurora's). Both call the renderer's own say and
+# changed.
 put() {
   local src="$1" dest="$2"
   if cmp -s "$src" "$dest"; then
@@ -267,7 +269,7 @@ drop_other_themes() {
   local pattern="$1" keep="$2" f
   for f in $pattern; do
     [[ -e "$f" ]] || continue
-    [[ "$f" == "$keep"* ]] && continue
+    [[ "$f" == "$keep" || ( "$keep" == *. && "$f" == "$keep"* ) ]] && continue
     say "removing $f (another theme)"
     rm -rf "$f"
     changed
