@@ -4,6 +4,8 @@
 # Desktop-agnostic data; desktops/<desktop>/ renders it.
 name: datum
 display_name: Datum
+# One sentence for the installer's theme page.
+description: Graphite and ice-blue contour lines with one coral accent.
 author: patina contributors
 license: GPL-3.0-or-later      # the theme data
 artwork_license: CC-BY-SA-4.0  # the wallpaper under wallpapers/

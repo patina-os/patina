@@ -2,6 +2,7 @@
 # Colours are desktop-agnostic data; desktops/<desktop>/ renders them.
 name: template                 # directory name: lowercase, kebab-case
 display_name: Template
+description: One sentence, shown on the installer's theme page.  # optional
 author: Your Name
 license: GPL-3.0-or-later      # the theme data; SPDX identifier
 artwork_license: CC-BY-SA-4.0  # wallpapers and other images; SPDX identifier

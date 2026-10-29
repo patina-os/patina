@@ -287,7 +287,8 @@ jobs:
           for f in welcome.png logo-square.png icon-small.svg wallpaper.png slide-1.png \
               slide-2.png slide-3.png slide-4.png slide-5.png slide-6.png stylesheet.qss \
               ai-local.png ai-cloud.png ai-none.png language.png help.png bugs.png release.png \
-              about.png; do
+              about.png bundle-desktop.png bundle-minimal.png bundle-extras.png \
+              bundle-artcraft.png bundle-agents.png bundle-none.png; do
             test -s "$b/$f"
           done
           test -s "$build/config/includes.chroot/etc/fonts/local.conf"
@@ -297,6 +298,18 @@ jobs:
           test -s "$build/config/includes.chroot/etc/issue.d/10-patina.issue"
           chooser="$build/config/includes.chroot/etc/calamares/modules/packagechooser-ai.conf"
           [[ "$(yq eval '.default' "$chooser")" == "$(yq eval '.ai.mode' defaults/settings.yaml)" ]]
+          # The theme page offers every theme, the default first chosen, each with a picture.
+          chooser="$build/config/includes.chroot/etc/calamares/modules/packagechooser-theme.conf"
+          [[ "$(yq eval '.default' "$chooser")" == "$theme" ]]
+          for t in themes/[a-z]*/; do
+            t="$(basename "$t")"
+            yq eval -e ".items[] | select(.id == \"$t\")" "$chooser" > /dev/null
+            test -s "$b/theme-$t.png"
+          done
+          chooser="$build/config/includes.chroot/etc/calamares/modules/packagechooser-apps.conf"
+          yq eval -e ".default as \$d | \$d != \"\"" "$chooser" > /dev/null
+          default="$(yq eval '.default' "$chooser")"
+          yq eval -e '.default == true' "manifest/bundles/$default.yaml" > /dev/null
           current="$(yq eval '.style.SidebarTextCurrent' "$b/branding.desc")"
           accent="$(yq eval '.accent // "base0E"' "themes/$theme/theme.yaml")"
           [[ "$current" == "$(yq eval ".palette.$accent" "themes/$theme/theme.yaml")" ]]

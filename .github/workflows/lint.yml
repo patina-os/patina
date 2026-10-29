@@ -87,6 +87,22 @@ jobs:
             echo "defaults/system/sddm.conf.d/patina.conf does not set Font=$font"
             exit 1
           }
+      - name: The installer's app pages offer every optional bundle, once
+        run: |
+          # The apps and more-apps pages (packagechooser-apps.conf, -more.conf) hand their
+          # ids to `patina install --bundles` at first boot: each must be a bundle that is
+          # neither required nor an AI answer, and no such bundle may be left out.
+          modules=iso/live/config/includes.chroot/etc/calamares/modules
+          offered="$(for page in apps more; do
+            yq eval '.items[].id | select(. != "")' "$modules/packagechooser-$page.conf"
+          done | sort)"
+          optional="$(for f in manifest/bundles/[a-z]*.yaml; do
+            yq eval 'select(.required != true and .ai == null) | .name' "$f"; done | sort)"
+          [[ "$offered" == "$optional" ]] || {
+            echo "offered by the installer:"; echo "$offered"
+            echo "optional bundles:"; echo "$optional"
+            exit 1
+          }
       - name: A device is detected by its own DMI fields and no others
         run: |
           # Each device's detect map, written out as a fake /sys/class/dmi/id, detects

@@ -5,6 +5,8 @@
 # Desktop-agnostic data; desktops/<desktop>/ renders it.
 name: aurora
 display_name: Aurora
+# One sentence for the installer's theme page.
+description: True black with neon green, made for OLED screens, and a light mode as well.
 author: patina contributors
 license: GPL-3.0-or-later      # the theme data
 artwork_license: LicenseRef-Pexels AND CC-BY-SA-4.0  # the photos; the SVGs (README.md)

@@ -57,7 +57,9 @@ packs. Audience: developers and privacy-minded users in the EU.
   focus. Agent tools (Claude Code, Codex CLI, opencode, Claude Desktop, Ollama) are an
   opt-in bundle because most of them are proprietary; Ollama is the local backend they
   point at, and their desktop integration is a shortcut and a terminal profile, as data.
-  The AI agent is a question of the install (and a page of the installer): opencode, a
+  The app bundles, the theme and the AI agent are questions of the install and pages of
+  the installer, so the image's first boot asks nothing more (but a cloud agent's
+  provider and key). The AI agent: opencode, a
   free agent, with a model Ollama runs on the machine, with a cloud provider the user
   picks (European ones first, the key in opencode's own login) or none (the default:
   the agent is opt-in, `patina ai on` turns it on later), as the `ai-local` and

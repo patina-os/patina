@@ -139,6 +139,53 @@ for id in $(yq eval '.items[].id' "$chooser"); do
   render "$templates/calamares/ai.svg" "$tmp/ai-$id.svg"
   rsvg-convert --width 960 --height 540 --output "$branding/ai-$id.png" "$tmp/ai-$id.svg"
 done
+
+# The apps and more-apps pages: the apps page's default is the bundle marked default,
+# and every bundle gets a picture with its name, its line from manifest/bundles/ and
+# how much it brings; the more-apps page's empty item (nothing picked) one of its own.
+say "rendering the app pages"
+for page in apps more; do
+  chooser="$chroot/etc/calamares/modules/packagechooser-$page.conf"
+  for ((i = 0; i < $(yq eval '.items | length' "$chooser"); i++)); do
+    id="$(yq eval ".items[$i].id" "$chooser")"
+    tpl[BUNDLE_NAME]="$(yq eval ".items[$i].name" "$chooser")"
+    if [[ -z "$id" ]]; then
+      tpl[BUNDLE_DETAIL]="Standard or Minimal is enough to begin."
+      tpl[BUNDLE_COUNT]="patina install adds the others at any time"
+      id=none
+    else
+      bundle="$repo/manifest/bundles/$id.yaml"
+      if [[ "$page" == apps ]] && yq eval -e '.default == true' "$bundle" > /dev/null 2>&1; then
+        yq -i ".default = \"$id\"" "$chooser"
+      fi
+      tpl[BUNDLE_DETAIL]="$(yq eval '.description' "$bundle")"
+      tpl[BUNDLE_COUNT]="$(yq eval '(.packages // [] | length) + (.flatpaks // [] | length) + (.upstream // [] | length)' "$bundle") packages, apps and tools"
+    fi
+    render "$templates/calamares/bundle.svg" "$tmp/bundle-$id.svg"
+    rsvg-convert --width 960 --height 540 --output "$branding/bundle-$id.png" "$tmp/bundle-$id.svg"
+  done
+done
+
+# The theme page: one item per theme of themes/, the default theme preselected, each
+# drawn in its own palette over its first wallpaper (a subshell, so the installer's
+# colours stay the default theme's).
+say "rendering the theme page"
+chooser="$chroot/etc/calamares/modules/packagechooser-theme.conf"
+yq -i ".default = \"$(yq eval '.theme' "$settings")\" | .items = []" "$chooser"
+for dir in "$repo"/themes/[a-z]*/; do
+  name="$(basename "$dir")"
+  NAME="$name" DISPLAY="$(yq eval '.display_name' "$dir/theme.yaml")" \
+    DESCRIPTION="$(yq eval '.description // ""' "$dir/theme.yaml")" yq -i '.items += [{
+      "id": strenv(NAME), "name": strenv(DISPLAY), "description": strenv(DESCRIPTION),
+      "screenshot": "theme-" + strenv(NAME) + ".png"}]' "$chooser"
+  (
+    theme_vars "$dir/theme.yaml" "$settings"
+    raster "$dir/$(yq eval '.wallpapers[0]' "$dir/theme.yaml")" "$tmp/theme-wallpaper.png"
+    render "$templates/calamares/theme.svg" "$tmp/theme-$name.svg"
+    rsvg-convert --width 960 --height 540 --output "$branding/theme-$name.png" "$tmp/theme-$name.svg"
+  )
+done
+
 yq -i "
   .strings.version = \"${tpl[VERSION]}\" |
   .strings.shortVersion = \"${tpl[VERSION]}\" |

@@ -57,7 +57,7 @@ section() {
 # as a comma-separated list.
 ask() {
   local current d mode name kind lines choice chosen_lines b
-  local -a theme_lines=() bundle_lines=() preselected=() ai_lines=() provider_lines=() model_lines=()
+  local -a theme_lines=() bundle_lines=() preselected=() ai_lines=() model_lines=()
   current="${PATINA_THEME:-$(current_theme || yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")}"
   d="$(theme_dir "$current")" || die "no theme '$current' under themes/ (try patina theme list)"
   mode="$(current_mode)"
@@ -111,14 +111,7 @@ ask() {
     echo
   fi
   if [[ "$ai" == cloud && -z "${PATINA_AI_PROVIDER:-}" ]]; then
-    mapfile -t provider_lines < <(yq eval '.ai.cloud.providers[] | (.id + "|" + .name)' "$PATINA_PATH/defaults/settings.yaml" |
-      awk -F'|' '{ printf "%-10s %s\n", $1, $2 }')
-    choice="$(printf '%s\n' "${provider_lines[@]}" | grep "^$(cloud_provider) ")" || choice="${provider_lines[0]}"
-    choice="$(gum choose --header "Cloud provider (the key stays in opencode's own login)" \
-      --selected "$choice" "${provider_lines[@]}")" || exit 0
-    PATINA_AI_PROVIDER="${choice%% *}"
-    export PATINA_AI_PROVIDER
-    echo
+    ask_provider || exit 0
   fi
   gum style --border rounded --border-foreground "${tpl[ACCENT]}" --padding "1 3" \
     "$(printf 'theme    %s\nbundles  %s\nai       %s\nbackend  %s (%s)' "$PATINA_THEME" "${bundles[*]}" \
@@ -129,6 +122,21 @@ ask() {
     exit 0
   fi
   tui=1
+}
+
+# The cloud provider question, on a terminal with gum: sets PATINA_AI_PROVIDER; fails
+# when it is left with Esc. The key stays in opencode's own login (install_ai).
+ask_provider() {
+  local choice
+  local -a provider_lines=()
+  mapfile -t provider_lines < <(yq eval '.ai.cloud.providers[] | (.id + "|" + .name)' "$PATINA_PATH/defaults/settings.yaml" |
+    awk -F'|' '{ printf "%-10s %s\n", $1, $2 }')
+  choice="$(printf '%s\n' "${provider_lines[@]}" | grep "^$(cloud_provider) ")" || choice="${provider_lines[0]}"
+  choice="$(gum choose --header "Cloud provider (the key stays in opencode's own login)" \
+    --selected "$choice" "${provider_lines[@]}")" || return 1
+  PATINA_AI_PROVIDER="${choice%% *}"
+  export PATINA_AI_PROVIDER
+  echo
 }
 
 # The cloud provider: PATINA_AI_PROVIDER, else the one the last install recorded, else
@@ -557,7 +565,7 @@ record_state() {
 }
 
 main() {
-  local chosen="" all=0 list=0 b
+  local chosen="" all=0 list=0 b d
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --bundles)
@@ -634,6 +642,17 @@ main() {
         ask
       fi
     fi
+  fi
+  # Bundles given (--bundles, as the image's first boot does with the installer's
+  # answers): no question was asked, so a cloud agent's provider is still open. It is
+  # asked on a terminal; Esc keeps the first of ai.cloud.providers.
+  if [[ $tui -eq 0 && "$ai" == cloud && -z "${PATINA_AI_PROVIDER:-}" && -t 0 && -t 1 &&
+      -z "$PATINA_UNATTENDED" ]] && command -v gum > /dev/null; then
+    if d="$(theme_dir "${PATINA_THEME:-$(current_theme || yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")}")"; then
+      theme_vars "$d/theme.yaml" "$PATINA_PATH/defaults/settings.yaml" "$(current_mode)"
+      tui_colors
+    fi
+    ask_provider || true
   fi
   if [[ -n "$ai" && "$ai" != none ]]; then
     b="$(ai_bundle "$ai")" || die "no bundle in manifest/bundles/ answers ai: $ai"

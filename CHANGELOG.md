@@ -13,6 +13,10 @@ All notable changes to patina are documented here. The format follows
   machine `patina install` adds spice-vdagent, so copy and paste works between Windows
   and patina, and the login screen offers the Plasma X11 session first, the one
   spice-vdagent shares a clipboard in (`devices/try-patina-windows/`).
+- The installer asks for the apps (Standard or Minimal), more apps (Zed and Tauon,
+  ArtCraft, the agent tools) and the theme (each pictured in its own colours), next to
+  the AI agent, and hands the answers to the first boot, which then runs without a
+  question; only a cloud agent still asks its provider and key there.
 - Device detection: a device's `detect` map names fields of `/sys/class/dmi/id`;
   `patina install` adds a detected device's `extra_packages` and its `system/` files,
   and `patina doctor` checks them.

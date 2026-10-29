@@ -185,7 +185,8 @@ desktop.
   network stack and firmware; Plasma and the base bundle are fetched from Debian's
   mirrors during the install
 - [x] Calamares configuration and branding as data: disk, user, locale and keyboard
-  pages; first boot asks the theme
+  pages; the AI agent, the apps, more apps and the theme are pages too (October 2026),
+  so first boot asks only a cloud agent's provider and key
 - [x] first-boot unit and script that run the same `patina install` as Path A
 - [x] the `iso` workflow: native builds on GitHub's x86_64 and aarch64 runners, boot
   test in QEMU, upload to the GitHub release of a tag only when both boot tests passed
