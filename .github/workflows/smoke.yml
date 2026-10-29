@@ -127,8 +127,9 @@ jobs:
         # The scheme's colours are in kdeglobals (where Plasma reads them, not only in
         # the scheme file), the icon theme of the theme carries its folders in the
         # accent and its glyphs at one height, the start menu has its button, folders
-        # and favourites, the popups their glass, the glyphs the accent, and no window an
-        # opacity rule (only kitty is see-through, by its own background).
+        # and favourites, the popups their glass, light rim and faint selection, the
+        # glyphs the accent, and no window an opacity rule (only kitty is see-through,
+        # by its own background).
         run: |
           theme="$(yq eval '.theme' defaults/settings.yaml)"
           t="themes/$theme/theme.yaml"
@@ -169,6 +170,13 @@ jobs:
           glass="$data/plasma/desktoptheme/patina-$theme/translucent/dialogs/background.svgz"
           glass="$(zcat "$glass")"
           grep -q "opacity:0.$(yq eval '.start_menu.glass' defaults/settings.yaml)" <<< "$glass"
+          rim="$(printf '0.%02d' "$(yq eval '.start_menu.rim' defaults/settings.yaml)")"
+          grep -q "opacity=\"$rim\"" <<< "$glass"
+          viewitem="$data/plasma/desktoptheme/patina-$theme/widgets/viewitem.svgz"
+          viewitem="$(zcat "$viewitem")"
+          grep -q 'id="hover-center"' <<< "$viewitem"
+          selection="$(printf '0.%02d' "$(yq eval '.start_menu.selection' defaults/settings.yaml)")"
+          grep -q "opacity=\"$selection\"" <<< "$viewitem"
           test -s "$data/plasma/desktoptheme/patina-$theme/metadata.json"
       - name: The light mode switches and switches back
         # The default theme carries a light palette: the mode turns the terminal and the

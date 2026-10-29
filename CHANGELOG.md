@@ -6,6 +6,21 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The command palette, the start menu and the other popups are a darker glass: 60 %
+  of the window colour (near black in the dark mode, lavender white in the light one)
+  instead of 40 %, so the wallpaper glows through less. The installer's sidebar
+  follows, as its glass is the start menu's.
+- The popups' edge is a light hairline of the text colour (`start_menu.rim`, 12 %)
+  that follows the rounded corners, instead of Breeze's darker line along the sides.
+- The selected row of the command palette, the start menu and the tray popups is a
+  faint tint of the accent inside a thin edge (`start_menu.selection`, 10 %) instead
+  of Breeze's solid-looking green; apps keep their selection colour.
+- kortex 0.1.1: its icon in the command palette is a solid green summit, the survey
+  point of the mark, instead of a tile with an outline and a prompt line. `patina
+  update` installs it where kortex is installed.
+
 ## [0.1.0-alpha.2] - 2026-10-28
 
 The second alpha, for testers, and still Path A only. It carries what the first run on
