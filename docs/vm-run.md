@@ -39,6 +39,26 @@ Any hypervisor works. The commands below run inside the VM.
 - [ ] after the first login to Plasma: shut down and take a snapshot, "debian-clean". Every
   later run starts from it
 
+## 2b. Or: the installer (Path B, instead of steps 2 to 4)
+
+The same VM, from the release's image instead of Debian's. Step 3 has no stock values
+to record here, since first boot already runs `patina install`; steps 5 to 11 follow as
+they are.
+
+- [ ] download `patina-amd64.hybrid.iso` and `SHA256SUMS` from the release;
+  `sha256sum -c SHA256SUMS` says `OK`
+- [ ] the boot menu: the theme's wallpaper and the wordmark, readable
+- [ ] the installer's welcome page: the square mark in the sidebar, the wordmark on the
+  page, the wallpaper behind it
+- [ ] answer the installer: erase disk, a user, the AI page (none, unless you test an
+  agent, as in step 4); the install page shows the progress bar and the slides, and it
+  ends without an error
+- [ ] first boot: tty1 shows the mark and asks the theme and the app bundles, and it
+  ends with `patina firstboot: done`; then the login screen with the theme's wallpaper
+- [ ] after the first login: take a snapshot, "patina-installed", and
+  `journalctl -b -u patina-firstboot > ~/run1.log` keeps the first run's log for the
+  report
+
 ## 3. Before patina
 
 Record the stock values, so the changes are visible afterwards:

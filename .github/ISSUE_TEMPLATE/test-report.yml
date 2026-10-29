@@ -17,7 +17,7 @@ body:
     attributes:
       label: patina version
       description: The output of `patina version`.
-      placeholder: v0.1.0-alpha.1
+      placeholder: v0.1.0-alpha.3
     validations:
       required: true
   - type: dropdown
@@ -49,6 +49,7 @@ body:
       label: Steps that passed
       description: Tick each step of docs/vm-run.md that passed completely.
       options:
+        - label: "2b. The installer (instead of steps 2 to 4)"
         - label: "4. The first run"
         - label: "5. The second run and the doctor"
         - label: "6. After a reboot: the systemd side"

@@ -7,15 +7,15 @@ finished in, not the order they were prepared in: the image and the device entri
 written as data before the layer's own commands existed, so Phases 3 and 4 carried
 ticked items while Phase 1 was still open.
 
-Status: alpha (`v0.1.0-alpha.2`, Path A only, for testers). The core commands exist and
-the smoke test runs `patina install` twice in Debian 13 containers on both
+Status: alpha (`v0.1.0-alpha.3`, for testers: Path A, and Path B on amd64). The core
+commands exist and the smoke test runs `patina install` twice in Debian 13 containers on both
 architectures; the live image builds and boots to the installer in CI; the Plasma
 renderer and the themes, aurora by default, render from data and switch without
 leftovers in the same containers. The run on a fresh Debian 13 VM with Plasma that
 closes Phases 1 and 2 passed in October 2026, and what it found is fixed; those fixes
 are checked in CI only, so the alpha's testers' runs confirm them. The image passed its
-first manual install in an amd64 VM, first boot included; Phase 3 waits for the same
-install on arm64.
+first manual install in an amd64 VM, first boot included, so the alphas from
+`v0.1.0-alpha.3` hand out the amd64 image; Phase 3 waits for the same install on arm64.
 
 Settled on this roadmap: the TUI helper is `gum` (Debian 13 ships 0.14 on both
 architectures); the office suite is Euro-Office; the terminal is kitty until Debian
@@ -256,6 +256,10 @@ a row in `docs/hardware.md`. Apple Silicon is out of scope (Fedora Asahi, not De
   `docs/vm-run.md` and report it with the test report form
   (`.github/ISSUE_TEMPLATE/test-report.yml`). More alphas follow as their reports are
   fixed; the 0.1.0 below waits for the items under it
+- [x] the installer for testers, `v0.1.0-alpha.3`: the `iso` workflow attaches the amd64
+  image to an alpha's release, the one that passed its manual install; testers install
+  from it with step 2b of `docs/vm-run.md`. The arm64 image follows its own install
+  check
 - [ ] `CHANGELOG.md`: the Unreleased section becomes 0.1.0
 - [ ] tag `v0.1.0`; the `iso` workflow attaches both images to the release after the
   boot tests

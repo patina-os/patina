@@ -3,10 +3,10 @@ name: iso
 # Builds the patina live image with live-build in a Debian container on both
 # architectures, boots each image in QEMU (the automated half of the release gate in
 # iso/README.md), and attaches the images to the GitHub release of a tag only when every
-# boot test passed; an alpha tag gets a release without images (Path A only). Pull
-# requests that touch the image run the build and the boot test but never publish. Each
-# boot test leaves a screenshot of the installer screen in its artifact; the one under
-# docs/screenshots/ is copied from there.
+# boot test passed; an alpha tag gets the amd64 image only, the one whose manual install
+# check passed. Pull requests that touch the image run the build and the boot test but
+# never publish. Each boot test leaves a screenshot of the installer screen in its
+# artifact; the one under docs/screenshots/ is copied from there.
 
 on:
   workflow_dispatch:
@@ -125,14 +125,14 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
-      # Alpha tags are Path A only: testers install on stock Debian, the images stay in CI.
-      IMAGES: ${{ !contains(github.ref_name, '-alpha') }}
+      # Alpha tags carry the amd64 image only: it passed its manual install check, the
+      # arm64 one has not yet and stays in CI.
+      IMAGES: ${{ contains(github.ref_name, '-alpha') && 'patina-amd64' || 'patina-*' }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/download-artifact@v4
-        if: env.IMAGES == 'true'
         with:
-          pattern: patina-*
+          pattern: ${{ env.IMAGES }}
           path: image
           merge-multiple: true
       - name: Create the tag's release as a draft, with its section of CHANGELOG.md as notes
@@ -152,7 +152,6 @@ jobs:
           if [[ "$version" == *-* ]]; then flags+=(--prerelease); fi
           gh release view "$tag" > /dev/null 2>&1 || gh release create "$tag" "${flags[@]}"
       - name: Upload the images and their checksums
-        if: env.IMAGES == 'true'
         run: |
           (cd image && sha256sum -- *.iso > SHA256SUMS)
           gh release upload "$GITHUB_REF_NAME" image/*.iso image/SHA256SUMS --clobber

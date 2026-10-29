@@ -6,8 +6,18 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.3] - 2026-10-29
+
+The third alpha, for testers, and the first with the installer: the amd64 live image
+comes with the release, the one that passed its manual install in a VM. The arm64 image
+stays in CI until its own install check.
+
 ### Added
 
+- The installer for testers: the release carries `patina-amd64.hybrid.iso` and its
+  `SHA256SUMS`. Boot it in an x86_64 VM, answer the installer, and first boot runs
+  `patina install`; `docs/vm-run.md` has the run as step 2b, and the test report form
+  a box for it.
 - Every mark as a picture: `branding/export/` now has the large and the small icon,
   the lockup of mark and name, the text mark and the block-letter name as PNG
   (transparent) and JPG (on black) at 512, 1024 and 2048 px, the small icon from 32 px
@@ -475,6 +485,7 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.2...main
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.3...main
+[0.1.0-alpha.3]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.3
 [0.1.0-alpha.2]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.2
 [0.1.0-alpha.1]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.1

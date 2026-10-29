@@ -97,8 +97,9 @@ native build on each, no emulation), then the boot test on a plain runner of the
 architecture, then, for a `v*` tag, the upload of both images and their `SHA256SUMS` to
 that tag's GitHub release (created as a draft when missing, its notes the tag's section
 of `CHANGELOG.md`, a pre-release when the version has a pre-release part). An alpha tag
-(`v0.1.0-alpha.1`) gets the release without images: the alphas are Path A only, and the
-image is handed out once its manual install check has passed. The workflow also runs on
+(`v0.1.0-alpha.3`) gets the amd64 image only: it passed its manual install check, the
+arm64 image has not yet and stays in CI until it does. The release stays a draft until
+the manual install check below has passed on the uploaded image. The workflow also runs on
 every pull request that touches `iso/`, `branding/`, the base bundle or the workflow
 itself, so an image change is built and booted before it is merged; it publishes only
 from a tag. To build by hand on a Debian machine of the target architecture:
