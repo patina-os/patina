@@ -6,6 +6,13 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Every mark as a picture: `branding/export/` now has the large and the small icon,
+  the lockup of mark and name, the text mark and the block-letter name as PNG
+  (transparent) and JPG (on black) at 512, 1024 and 2048 px, the small icon from 32 px
+  up, for slides, avatars and press. `branding/export/README.md` shows them all.
+
 ### Changed
 
 - The command palette, the start menu and the other popups are a darker glass: 60 %

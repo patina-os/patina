@@ -165,15 +165,16 @@ packs. Audience: developers and privacy-minded users in the EU.
   typeset one (it and `icon.svg` repeat the mark's characters, changed together with
   `logo.txt`); scripts print or copy them (`print_logo` and `print_wordmark` in
   `lib.sh`, the image build and the renderer copy the SVG). `branding/export/` holds
-  `wordmark.txt` drawn as outlines (SVG and PNG, for places without its fonts),
-  derived from it and drawn again when it changes
+  `wordmark.txt` drawn as outlines (SVG, for places without its fonts) and every mark
+  as PNG and JPG for places outside patina (`branding/export/README.md`), derived from
+  them and drawn again when one changes
 
 ## Repository map
 
 | Directory | Holds |
 |---|---|
 | `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash; `lib.sh` holds the few functions they share, among them the theme loader and template filler the renderers and the image build use |
-| `branding/` | the marks as data: `logo.txt` (the mark) and `wordmark.txt` (the name in block letters) are what scripts print, `wordmark.svg` (the mark typeset beside patina), `icon.svg` and `icon-small.svg` what screens show; `export/` the block-letter name as outlined SVG and PNG |
+| `branding/` | the marks as data: `logo.txt` (the mark) and `wordmark.txt` (the name in block letters) are what scripts print, `wordmark.svg` (the mark typeset beside patina), `icon.svg` and `icon-small.svg` what screens show; `export/` the block-letter name as outlined SVG, and every mark as PNG and JPG up to 2048 px, shown in its README |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
 | `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `agent.md` the AI agent's standing instruction; `system/` the system tuning files and Firefox's policies |
 | `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, Plasma's `icons.yaml` for the folder colours of an icon theme, one `apply.sh`) and the headless session the desktop workflow screenshots (`screenshot.sh`); `plasma/` first; `terminal/` renders the terminal and its tools for every desktop |
@@ -224,8 +225,9 @@ Each directory's README is the authority on its file format.
 - Read YAML with `yq`; never parse it with grep or sed. Write user config under XDG
   directories, never into the repository checkout.
 - Short, obvious code beats clever code. A function used once is not a function.
-- One data file per concern; no generated files committed. The one exception is
-  `docs/screenshots/`: images CI produces, committed as they come, never edited.
+- One data file per concern; no generated files committed. The exceptions are
+  `docs/screenshots/`, images CI produces, committed as they come, never edited, and
+  `branding/export/`, the marks drawn as pictures, drawn again when a mark changes.
 
 ## Data formats
 

@@ -10,7 +10,8 @@ branding/
   wordmark.svg    the mark typeset beside patina, the mark of screens and the README
   icon.svg        the mark typeset in a square, for icons of 96 px and up
   icon-small.svg  the mark as dots, for 80 px and below
-  export/         wordmark.txt drawn as outlines: SVG and PNG, transparent and dark
+  export/         every mark as a picture: wordmark.txt as outlined SVG, and PNG and JPG
+                  of all five marks, transparent and on black (export/README.md)
 ```
 
 The mark is the summit; the wordmark is the name. Terminals show the mark where there is
@@ -124,3 +125,11 @@ export/
 They are derived from `wordmark.txt`, drawn once by a script and kept as the files it
 produced (the script is not part of the repository, like the wallpapers'); when
 `wordmark.txt` changes they are drawn again, the PNGs with `rsvg-convert --width`.
+
+Beside them `export/` keeps every mark as a bitmap for places that take neither SVG nor
+its fonts (a slide, an avatar, a press article): `icon.svg`, `wordmark.svg` and
+`logo.txt` at 512, 1024 and 2048 px, `icon-small.svg` from 32 px up, and
+`wordmark.txt` at 2048 px too, each as a transparent PNG and as a JPG on aurora's black
+(`-dark-`). [`export/README.md`](export/README.md) shows them all with their files and
+how they are drawn again when a mark changes. Nothing in patina uses them; scripts
+rasterise the SVG themselves.

@@ -23,8 +23,10 @@ and the installer's welcome page show it outlined (`branding/export/`).
 ExtraBold; that lockup is what screens show: the live image's boot menu, the installer's
 slides, the login screen and the Plasma splash. `icon.svg` is the mark in a square for large
 icons, `icon-small.svg` the mark as dots for small ones (the installer's sidebar, a
-window icon). `branding/README.md` has the rules for changing them. There is no bitmap
-logo: the image build and the desktop renderer copy or rasterise the SVG. The marks are
+window icon). `branding/README.md` has the rules for changing them. patina itself uses
+no bitmap logo: the image build and the desktop renderer copy or rasterise the SVG.
+For other places (a slide, an avatar, a press article), `branding/export/` keeps every
+mark as PNG and JPG up to 2048 px, shown with its files in `branding/export/README.md`. The marks are
 ours only, nothing that borrows from Debian's or KDE's.
 
 Wording next to the logo: "a polish layer for KDE Plasma on Debian" or "based on
