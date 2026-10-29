@@ -356,22 +356,28 @@ install_upstream() {
   esac
 }
 
-# The system tuning: every file under defaults/system/ lands at the same path under
-# /etc, through the backend's sudo path. The apply commands run once when a file
-# changed and the machine is booted with systemd; a container gets the files only.
+# The system tuning: every file under defaults/system/, and under system/ of a detected
+# device, lands at the same path under /etc, through the backend's sudo path. The apply
+# commands run once when a file changed and the machine is booted with systemd; a
+# container gets the files only.
 install_system() {
-  local src rel dest changed_here=0 cmd first
-  while IFS= read -r src; do
-    rel="${src#"$PATINA_PATH/defaults/system/"}"
-    dest="/etc/$rel"
-    if cmp -s "$src" "$dest"; then
-      continue
-    fi
-    say "system: writing $dest"
-    backend_run system.write "$src" "$dest"
-    changed_here=1
-    changed
-  done < <(find "$PATINA_PATH/defaults/system" -type f | sort)
+  local dir src dest changed_here=0 cmd first d
+  local -a dirs=("$PATINA_PATH/defaults/system")
+  for d in "${devices[@]}"; do
+    [[ ! -d "$PATINA_PATH/devices/$d/system" ]] || dirs+=("$PATINA_PATH/devices/$d/system")
+  done
+  for dir in "${dirs[@]}"; do
+    while IFS= read -r src; do
+      dest="/etc/${src#"$dir/"}"
+      if cmp -s "$src" "$dest"; then
+        continue
+      fi
+      say "system: writing $dest"
+      backend_run system.write "$src" "$dest"
+      changed_here=1
+      changed
+    done < <(find "$dir" -type f | sort)
+  done
   if [[ $changed_here -eq 0 ]]; then
     say "system: tuning files in place"
     return
@@ -636,6 +642,13 @@ main() {
   say "bundles: ${bundles[*]} ($(basename "$BACKEND" .yaml) backend, $(uname -m))"
 
   mapfile -t packages < <(bundle_items packages "${bundles[@]}")
+  # The device glue of devices/ for this machine: its packages and its system files.
+  mapfile -t devices < <(detected_devices)
+  for b in "${devices[@]}"; do
+    say "device: $(yq eval '.name' "$PATINA_PATH/devices/$b/device.yaml") (devices/$b/)"
+    mapfile -t -O "${#packages[@]}" packages < \
+      <(yq eval '.extra_packages[]?' "$PATINA_PATH/devices/$b/device.yaml")
+  done
   mapfile -t flatpaks < <(bundle_items flatpaks "${bundles[@]}")
   mapfile -t upstream < <(bundle_items upstream "${bundles[@]}")
 

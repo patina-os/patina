@@ -43,7 +43,7 @@ one.
 
 A backend is one YAML file: the `ID` values from `/etc/os-release` it serves, the commands
 for refresh, install and is-installed, the name map, and under `system` the one command
-that writes a system file (`write`, for `defaults/system/`, the keyrings and sources of
+that writes a system file (`write`, for `defaults/system/` and a detected device's `system/`, the keyrings and sources of
 `apt-source` recipes, and the login screen's wallpaper and SDDM override the desktop
 renderer writes) with the commands run after a tuning file changed (`apply`). Every command that needs root starts with `sudo`; the scripts drop it when
 they already run as root. Adding a base means adding a file here (and a container for

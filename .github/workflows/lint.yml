@@ -87,6 +87,24 @@ jobs:
             echo "defaults/system/sddm.conf.d/patina.conf does not set Font=$font"
             exit 1
           }
+      - name: A device is detected by its own DMI fields and no others
+        run: |
+          # Each device's detect map, written out as a fake /sys/class/dmi/id, detects
+          # that device alone; a QEMU machine of its own (Standard PC) detects none.
+          export PATINA_PATH="$PWD"
+          for f in devices/[a-z]*/device.yaml; do
+            yq eval -e '.detect | length > 0' "$f" > /dev/null 2>&1 || continue
+            dmi="$(mktemp -d)"
+            yq eval '.detect | to_entries | .[] | .key + "\t" + .value' "$f" |
+              while IFS=$'\t' read -r key value; do echo "$value" > "$dmi/$key"; done
+            got="$(PATINA_DMI="$dmi" bash -c 'source bin/lib.sh; detected_devices')"
+            [[ "$got" == "$(basename "$(dirname "$f")")" ]] || { echo "$f detects: $got"; exit 1; }
+          done
+          dmi="$(mktemp -d)"
+          echo 'Standard PC (Q35 + ICH9, 2009)' > "$dmi/product_name"
+          echo QEMU > "$dmi/sys_vendor"
+          got="$(PATINA_DMI="$dmi" bash -c 'source bin/lib.sh; detected_devices')"
+          [[ -z "$got" ]] || { echo "a plain QEMU machine detects: $got"; exit 1; }
       - name: The mark and the wordmark have exactly one copy each
         run: |
           # Scripts print branding/logo.txt and wordmark.txt; nothing else may carry
