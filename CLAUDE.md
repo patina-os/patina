@@ -133,8 +133,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   Python jq wrapper and must not be used.
 - The name is final: patina. The 21 it once carried was dropped in October 2026.
   The GitHub account is `patina-os` (renamed from `patina21` in October 2026, before
-  anything was shared); kortex's D-Bus name keeps `io.github.patina21.kortex` until its
-  next release.
+  anything was shared); kortex's D-Bus name is `io.github.patina_os.kortex` since its
+  0.1.2.
 
 ## Principles (non-negotiable)
 

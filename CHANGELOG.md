@@ -6,6 +6,15 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- kortex 0.1.2 in the command palette: the answer grows on screen in a real KRunner
+  (it stayed at its first snapshot), a request opencode cannot list, such as a web
+  fetch, is shown and answered like any other, the first `ai` after a pause takes about
+  3 s instead of 12, and a long command is shown whole before Allow. Its D-Bus name is
+  `io.github.patina_os.kortex` now. `patina update` installs it where kortex is
+  installed.
+
 ## [0.1.0-alpha.3] - 2026-10-29
 
 The third alpha, for testers, and the first with the installer: the amd64 live image

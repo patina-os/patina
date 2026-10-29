@@ -245,8 +245,11 @@ answer preselected, and `patina ai on` turns one on at any time later. Both agen
   models of `ai.local.models` in `defaults/settings.yaml` that fit your memory and
   recommends one: NVIDIA's Nemotron 3.5 Bolt E4B, made for agents, from 16 GB, and
   Mistral's Ministral 3 3B below that. Ministral 3 8B and 14B and Qwen 3.5 4B and 9B
-  are the others. Nothing leaves the computer. Ollama with its GPU libraries and the
-  model take several GB of disk and a while to download.
+  are the others. Your requests and the answers stay on the computer; around them,
+  opencode fetches its list of models from `models.opencode.ai` when it starts and the
+  provider's package from npm on its first request, and KRunner keeps its last queries
+  (kortex's README has the details). Ollama with its GPU libraries and the model take
+  several GB of disk and a while to download.
 - **cloud**: a provider you pick, Mistral and other European providers first, then
   Anthropic and OpenAI. You log in with `opencode auth login`; the key stays in
   opencode's own login, patina never sees it.
