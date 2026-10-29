@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1920" height="1080" viewBox="0 0 1920 1080">
-  <!-- slide 3: the wordmark and the one line branding allows next to it -->
-  <image xlink:href="wallpaper.png" width="1920" height="1080"/>
-  <rect width="1920" height="1080" fill="${BASE00}" fill-opacity="0.7"/>
-  <rect x="440" y="290" width="1040" height="500" rx="24" fill="${BASE01}" fill-opacity="0.75"
-    stroke="${ACCENT}" stroke-opacity="0.5" stroke-width="2"/>
-  <image xlink:href="logo.png" x="680" y="380" width="560" height="160"/>
-  <text x="960" y="660" text-anchor="middle" font-family="'${UI_FONT}', sans-serif" font-size="34"
-    fill="${BASE05}">a polish layer for KDE Plasma on Debian</text>
+  <!-- slide 3, the command palette and kortex: the middle of the desktop workflow's
+       command-palette screenshot (docs/screenshots/), enlarged, and the shortcut -->
+  <defs>
+    <clipPath id="screen"><rect x="860" y="250" width="940" height="529" rx="16"/></clipPath>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%"><feGaussianBlur stdDeviation="30"/></filter>
+  </defs>
+  <image xlink:href="ground.png" width="1920" height="1080"/>
+  <rect x="900" y="320" width="860" height="489" rx="16" fill="#000000" opacity="0.7" filter="url(#shadow)"/>
+  <g clip-path="url(#screen)">
+    <svg x="860" y="250" width="940" height="529" viewBox="520 160 880 495" preserveAspectRatio="xMidYMid slice">
+      <image xlink:href="palette.png" width="1920" height="1080"/>
+    </svg>
+  </g>
+  <rect x="860" y="250" width="940" height="529" rx="16" fill="none" stroke="${BASE02}" stroke-width="2"/>
+  <rect x="140" y="304" width="172" height="52" rx="10" fill="${ACCENT}" fill-opacity="0.12"/>
+  <text x="158" y="340" font-family="${MONO_FONT}, monospace" font-size="26" font-weight="600"
+    fill="${ACCENT}">Just ask</text>
+  <text font-family="'${DISPLAY_FONT}', sans-serif" font-size="76" font-weight="700"
+    letter-spacing="-2" fill="${BASE05}"><tspan x="140" y="450">One shortcut</tspan><tspan x="140" y="540">for everything.</tspan></text>
+  <g font-family="${MONO_FONT}, monospace" font-size="30" fill="${BASE05}">
+    <rect x="140" y="600" width="120" height="58" rx="10" fill="${BASE01}" stroke="${BASE03}" stroke-width="2"/>
+    <text x="200" y="639" text-anchor="middle">Meta</text>
+    <text x="290" y="639" text-anchor="middle" fill="${BASE04}">+</text>
+    <rect x="320" y="600" width="150" height="58" rx="10" fill="${BASE01}" stroke="${BASE03}" stroke-width="2"/>
+    <text x="395" y="639" text-anchor="middle">Space</text>
+  </g>
+  <text font-family="'${UI_FONT}', sans-serif" font-size="36" fill="${BASE04}">
+    <tspan x="140" y="730">Apps, files and settings in one box.</tspan>
+    <tspan x="140" y="782">With the agent on, type <tspan font-family="${MONO_FONT}, monospace" fill="${ACCENT}">ai</tspan> and ask:</tspan>
+    <tspan x="140" y="834">kortex shows every change first.</tspan>
+  </text>
 </svg>

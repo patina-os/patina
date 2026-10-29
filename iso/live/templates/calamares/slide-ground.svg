@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <!-- the ground every slide is drawn on (assets.sh renders it once, as ground.png), in
+       the dark style of the landing page (patina-os/landing): the theme's black, lifted a
+       step towards the bottom, no picture -->
+  <defs>
+    <linearGradient id="lift" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${BASE00}"/>
+      <stop offset="1" stop-color="${BASE01}"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#lift)"/>
+</svg>

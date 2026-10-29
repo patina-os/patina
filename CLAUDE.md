@@ -85,7 +85,10 @@ packs. Audience: developers and privacy-minded users in the EU.
   menu, the login screen and the Plasma splash take their colours from the default
   theme's palette at build or apply time, never by hand; the words are set in Source
   Sans 3, details (versions, hostnames, progress, terminals) in JetBrains Mono, the
-  wordmark in Sora, all from Debian's archive. The mark is text: a summit drawn as
+  wordmark and the installer slides' headlines in Sora (`fonts.display`), all from
+  Debian's archive. The boot menu, the installer's welcome page and its slides show
+  the name in block letters (`branding/export/`); the slides are a tour of patina in
+  the landing page's dark style, with no theme artwork (October 2026). The mark is text: a summit drawn as
   contour rings with the letters of patina (i, t, n, a), the word itself as the summit
   line and the survey point ▲. `branding/logo.txt` holds it for fastfetch and the
   console, `branding/wordmark.txt` the name in block letters for `patina help` and

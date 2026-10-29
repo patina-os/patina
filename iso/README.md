@@ -56,14 +56,19 @@ iso/
 
 ## How an install works
 
-1. Boot the image. The GRUB menu shows the theme's wallpaper and the wordmark. The live
+1. Boot the image. The GRUB menu shows the theme's wallpaper with the block-letter name
+   centred above a centred menu column. The live
    system starts `patina-ui.service`: an X session on tty7 with Calamares full screen
    in the theme's palette and fonts and in British English (`locales=` in
    `auto/config`; the welcome page offers the others), the block-letter name on the
    welcome page, the square mark in the sidebar, the wallpaper veiled behind every
    page, the sidebar and the button bar as glass over it (the start menu's `glass` and
-   `grain` from `defaults/settings.yaml`), four still slides while it
-   installs, the last one thanking the people and projects of `docs/credits.yaml`. The console shows `branding/logo.txt`.
+   `grain` from `defaults/settings.yaml`), and while it installs a tour of patina in six
+   still slides, in the landing page's dark style (patina-os/landing): welcome, the
+   desktop and the command palette with the desktop workflow's screenshots, the apps,
+   the promises, and the thanks to the people and projects of `docs/credits.yaml`.
+   Calamares shows a still slide for two seconds, so `branding.desc` lists each one
+   five times. The console shows `branding/logo.txt`.
    A computer with no network yet but a Wi-Fi card first gets the Wi-Fi step:
    NetworkManager's `nmtui` full screen in the palette, to pick a network and type its
    password; Quit starts the installer. Leaving the installer brings the step back
@@ -119,10 +124,13 @@ sudo iso/live/build.sh arm64            # on an arm64 machine
 ```
 
 `build.sh` calls `assets.sh`, which renders everything the image shows from the data:
-`branding/logo.txt` into `/etc/issue.d`, `branding/wordmark.svg` (as a PNG) and
-`icon-small.svg` (inset in the sidebar's box) into the installer's branding, the icons
+`branding/logo.txt` into `/etc/issue.d`, the block-letter name of `branding/export/` (as a
+PNG, for the welcome page, the slides and the boot menu) and `icon-small.svg` (inset in
+the sidebar's box) into the installer's branding, the icons
 of `live/templates/calamares/icons/` in the accent, the default theme's wallpapers under a veil as the installer's
-background, four slides (the last one the names of `docs/credits.yaml`), the splash of the boot menu, and the templates under
+background, six slides on one ground (`slide-ground.svg`) with `docs/screenshots/` of the
+desktop and the command palette (the last slide the names of `docs/credits.yaml`), the
+splash of the boot menu, and the templates under
 `live/templates/` (the Calamares stylesheet, the GRUB theme, the openbox theme) with the
 palette of `themes/<default>/theme.yaml` and the fonts of `defaults/settings.yaml`,
 plus the version and the sidebar colours into `branding.desc` with `yq`, and
@@ -158,7 +166,7 @@ files.
   in the palette over the splash, readable; the installer's welcome page (the square
   mark in the sidebar, the wordmark on the page, the wallpaper behind, Source Sans 3), the partition
   page with the manual partition editor's dialog (openbox's patina frame), the
-  install page with the gradient progress bar and the four slides; at first boot the
+  install page with the gradient progress bar and the six slides; at first boot the
   mark on tty1 and the questions; then the login screen with the theme's wallpaper,
   the splash with the wordmark and the accent line, and the desktop in Source Sans 3
   and JetBrains Mono, as `docs/screenshots/desktop-amd64.png` shows it.

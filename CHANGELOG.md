@@ -17,6 +17,16 @@ All notable changes to patina are documented here. The format follows
   `patina install` adds a detected device's `extra_packages` and its `system/` files,
   and `patina doctor` checks them.
 
+### Changed
+
+- The boot menu shows patina in block letters, large and centred, with the menu as a
+  column under it, at 800x600 as on a wide screen.
+- The installer's slides are a tour of patina instead of the wordmark on a wallpaper:
+  welcome, the desktop, the command palette and kortex (with the screenshots the
+  desktop workflow takes every release), the apps, the three promises, and the thanks.
+  They follow the landing page's dark style: black, green as the one accent, headlines
+  in Sora, no contour map. Each stays ten seconds instead of Calamares' two.
+
 ### Fixed
 
 - Systems installed from the image get Debian's shim and GRUB updates on the EFI system

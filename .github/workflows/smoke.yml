@@ -284,9 +284,10 @@ jobs:
           cp -r iso/live/config "$build/"
           iso/live/assets.sh "$build"
           b="$build/config/includes.chroot/etc/calamares/branding/patina"
-          for f in logo.png welcome.png logo-square.png icon-small.svg wallpaper.png slide-1.png \
-              slide-2.png slide-3.png slide-4.png stylesheet.qss ai-local.png ai-cloud.png \
-              ai-none.png language.png help.png bugs.png release.png about.png; do
+          for f in welcome.png logo-square.png icon-small.svg wallpaper.png slide-1.png \
+              slide-2.png slide-3.png slide-4.png slide-5.png slide-6.png stylesheet.qss \
+              ai-local.png ai-cloud.png ai-none.png language.png help.png bugs.png release.png \
+              about.png; do
             test -s "$b/$f"
           done
           test -s "$build/config/includes.chroot/etc/fonts/local.conf"

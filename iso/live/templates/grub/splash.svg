@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1920" height="1080" viewBox="0 0 1920 1080">
-  <!-- the boot menu's background: the first wallpaper under a veil, the wordmark top-left
-       of the 4:3 centre (x 240-1680), which GRUB's crop keeps at 800x600 -->
+  <!-- the boot menu's background: the first wallpaper under a veil, and patina in block
+       letters (branding/export/wordmark-blocks.svg) centred above the menu, which starts
+       at 52 % of the height. Centred, it stays whole in GRUB's 4:3 crop at 800x600
+       (x 240-1680) and on a 16:9 screen alike. -->
   <image xlink:href="wallpaper.png" width="1920" height="1080"/>
   <rect width="1920" height="1080" fill="${BASE00}" fill-opacity="0.62"/>
-  <image xlink:href="logo.png" x="360" y="100" width="490" height="140"/>
+  <image xlink:href="blocks.png" x="706" y="120" width="508" height="350"/>
 </svg>
