@@ -309,7 +309,7 @@ jobs:
       - name: Every YAML file parses
         run: |
           git ls-files '*.yaml' '*.yml' '*.conf' '*.desc' \
-            ':!defaults/system/' ':!desktops/*/templates/*' |
+            ':!defaults/system/' ':!devices/*/system/' ':!desktops/*/templates/*' |
           while read -r f; do
             yq eval '.' "$f" > /dev/null || { echo "invalid YAML: $f"; exit 1; }
           done

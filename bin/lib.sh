@@ -122,6 +122,23 @@ bundle_items() {
   done | awk '!seen[$0]++'
 }
 
+# The devices of devices/ this machine is: those with a detect map whose fields of
+# /sys/class/dmi/id (PATINA_DMI overrides the directory) all equal the firmware's. A
+# device without detect is never detected; its README says what to do by hand.
+detected_devices() {
+  local dmi="${PATINA_DMI:-/sys/class/dmi/id}" f key value match
+  for f in "$PATINA_PATH"/devices/[a-z]*/device.yaml; do
+    yq eval -e '.detect | length > 0' "$f" > /dev/null 2>&1 || continue
+    match=1
+    while IFS=$'\t' read -r key value; do
+      if [[ ! "$key" =~ ^[a-z_]+$ || "$(cat "$dmi/$key" 2> /dev/null)" != "$value" ]]; then
+        match=0
+      fi
+    done < <(yq eval '.detect | to_entries | .[] | .key + "\t" + .value' "$f")
+    [[ $match -eq 0 ]] || basename "$(dirname "$f")"
+  done
+}
+
 # Is the system running systemd (a real machine or VM), or is this a container?
 booted_with_systemd() {
   [[ -d /run/systemd/system ]]
