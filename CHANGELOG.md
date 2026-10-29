@@ -19,6 +19,12 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- Systems installed from the image get Debian's shim and GRUB updates on the EFI system
+  partition: GRUB goes to `EFI/debian` (it went to `EFI/Debian_GNU-Linux`, which
+  Debian's packages never update) with `grub-efi-<arch>`, whose maintainer scripts
+  reinstall it, and shim is also put at the removable path, so a machine whose
+  firmware loses its boot entries still boots, with Secure Boot or without. Calamares'
+  own fallback copy, a GRUB image only Debian signs, is gone.
 - kortex 0.1.2 in the command palette: the answer grows on screen in a real KRunner
   (it stayed at its first snapshot), a request opencode cannot list, such as a web
   fetch, is shown and answered like any other, the first `ai` after a pause takes about
