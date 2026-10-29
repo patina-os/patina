@@ -7,7 +7,7 @@ finished in, not the order they were prepared in: the image and the device entri
 written as data before the layer's own commands existed, so Phases 3 and 4 carried
 ticked items while Phase 1 was still open.
 
-Status: alpha (`v0.1.0-alpha.3`, for testers: Path A, and Path B on amd64). The core
+Status: alpha (`v0.1.0-alpha.4`, for testers: Path A, and Path B on amd64). The core
 commands exist and the smoke test runs `patina install` twice in Debian 13 containers on both
 architectures; the live image builds and boots to the installer in CI; the Plasma
 renderer and the themes, aurora by default, render from data and switch without

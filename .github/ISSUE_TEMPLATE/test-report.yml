@@ -17,7 +17,7 @@ body:
     attributes:
       label: patina version
       description: The output of `patina version`.
-      placeholder: v0.1.0-alpha.3
+      placeholder: v0.1.0-alpha.4
     validations:
       required: true
   - type: dropdown

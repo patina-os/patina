@@ -115,7 +115,8 @@ stable at install time, and an old image installs today's layer.
 native build on each, no emulation), then the boot test on a plain runner of the same
 architecture, then, for a `v*` tag, the upload of both images and their `SHA256SUMS` to
 that tag's GitHub release (created as a draft when missing, its notes the tag's section
-of `CHANGELOG.md`, a pre-release when the version has a pre-release part). An alpha tag
+of `CHANGELOG.md`, a pre-release when the version has a pre-release part; a release made
+by hand on GitHub stays as it is and gets those notes only when it has none). An alpha tag
 (`v0.1.0-alpha.3`) gets the amd64 image only: it passed its manual install check, the
 arm64 image has not yet and stays in CI until it does. The release stays a draft until
 the manual install check below has passed on the uploaded image. The workflow also runs on
