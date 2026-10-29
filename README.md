@@ -115,8 +115,8 @@ Two paths, one layer. If they ever diverge, Path A wins.
 
 | Path | What you do | Status |
 |---|---|---|
-| A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (it asks the theme and the app bundles on a terminal; flags or `--unattended` skip the questions) | alpha (`v0.1.0-alpha.3`): installs the app stack, the system tuning and the theme, checked in CI containers and a first VM run; testers run it on real desktops |
-| B: the patina image | Boot a small live image, answer the installer (disk, user, locale), get the finished desktop. Plasma and the base are downloaded from Debian's mirrors during the install; first boot runs Path A | alpha for testers (`v0.1.0-alpha.3`, x86_64 only): the image builds and boots to the installer in CI (x86_64 and aarch64), and a manual install through the installer in an x86_64 VM passed, first boot included; the aarch64 image is not handed out yet |
+| A: on stock Debian | Install Debian 13 with Plasma, `git clone` this repository, run `patina install` (it asks the theme and the app bundles on a terminal; flags or `--unattended` skip the questions) | alpha (`v0.1.0-alpha.4`): installs the app stack, the system tuning and the theme, checked in CI containers and a first VM run; testers run it on real desktops |
+| B: the patina image | Boot a small live image, answer the installer (disk, user, locale), get the finished desktop. Plasma and the base are downloaded from Debian's mirrors during the install; first boot runs Path A | alpha for testers (`v0.1.0-alpha.4`, x86_64 only): the image builds and boots to the installer in CI (x86_64 and aarch64), and a manual install through the installer in an x86_64 VM passed with `v0.1.0-alpha.3`, first boot included; the installer's apps and theme pages of `v0.1.0-alpha.4` wait for testers' runs; the aarch64 image is not handed out yet |
 
 ```sh
 sudo apt install git curl
@@ -137,7 +137,7 @@ your PATH and link `patina` there (`ln -s ~/.local/share/patina/bin/patina
 
 ## Testing the alpha
 
-`v0.1.0-alpha.3` is the current release, for people willing to try patina and report
+`v0.1.0-alpha.4` is the current release, for people willing to try patina and report
 what they see: on a fresh Debian 13 with Plasma (Path A), or from the installer, with
 the release's `patina-amd64.hybrid.iso` in an x86_64 VM (Path B). Beyond CI containers
 and a headless Plasma session it has passed one run on a Debian 13 VM, and this alpha carries what that run found, but none on real

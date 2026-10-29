@@ -135,7 +135,9 @@ jobs:
           pattern: ${{ env.IMAGES }}
           path: image
           merge-multiple: true
-      - name: Create the tag's release as a draft, with its section of CHANGELOG.md as notes
+      - name: The tag's release, with its section of CHANGELOG.md as notes
+        # A release made by hand on GitHub stays as it is, and gets the notes only when
+        # it has none; otherwise the release is created here, as a draft.
         run: |
           tag="$GITHUB_REF_NAME"
           version="${tag#v}"
@@ -147,10 +149,16 @@ jobs:
             echo "CHANGELOG.md has no section for $version"
             exit 1
           }
+          if gh release view "$tag" > /dev/null 2>&1; then
+            if [[ -z "$(gh release view "$tag" --json body --jq .body)" ]]; then
+              gh release edit "$tag" --notes-file "$RUNNER_TEMP/notes.md"
+            fi
+            exit 0
+          fi
           flags=(--draft --title "patina $tag" --notes-file "$RUNNER_TEMP/notes.md")
           # A version with a pre-release part (0.1.0-alpha.1, 0.1.0-rc.1) is a pre-release.
           if [[ "$version" == *-* ]]; then flags+=(--prerelease); fi
-          gh release view "$tag" > /dev/null 2>&1 || gh release create "$tag" "${flags[@]}"
+          gh release create "$tag" "${flags[@]}"
       - name: Upload the images and their checksums
         run: |
           (cd image && sha256sum -- *.iso > SHA256SUMS)

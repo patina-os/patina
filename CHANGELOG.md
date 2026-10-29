@@ -6,6 +6,13 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.4] - 2026-10-29
+
+The fourth alpha, for testers, with what the first run through Try patina for Windows
+showed: the installer asks for the apps and the theme, shows a tour of patina while it
+installs, and the boot menu shows the name in block letters. The amd64 image comes
+with the release, as with the third.
+
 ### Added
 
 - Try patina for Windows: TryPatina.exe (patina-os/win-emulator) runs patina in a
@@ -580,7 +587,8 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.3...main
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.4...main
+[0.1.0-alpha.4]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.4
 [0.1.0-alpha.3]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.3
 [0.1.0-alpha.2]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.2
 [0.1.0-alpha.1]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.1
