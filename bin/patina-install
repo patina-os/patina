@@ -414,7 +414,11 @@ install_apps() {
     yq eval -o=json ".$app.settings" "$apps" > "$tmp"
     if [[ -f "$file" ]]; then
       merged="$(mktemp)"
-      if ! yq eval-all -o=json 'select(fileIndex == 0) * select(fileIndex == 1)' "$file" "$tmp" > "$merged" 2> /dev/null; then
+      # Ours over theirs over ours: the values are patina's, the user's other keys stay,
+      # and patina's keys keep their order in apps.yaml with the user's after them, as
+      # rules where the last match wins (opencode's permissions) need.
+      if ! yq eval-all -o=json 'select(fileIndex == 1) * select(fileIndex == 0) * select(fileIndex == 1)' \
+          "$file" "$tmp" > "$merged" 2> /dev/null; then
         warn "$app: cannot parse $file (comments?); set these by hand: $(yq eval -o=json -I=0 '.' "$tmp")"
         rm -f "$tmp" "$merged"
         continue

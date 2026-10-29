@@ -16,9 +16,11 @@ yq eval '.' "$file" > /dev/null 2>&1 || {
   warn "cannot parse $file (comments?); remove the allow rules \"cat *\", \"ls*\", \"git diff*\" and \"git log*\" by hand"
   exit 0
 }
-yq eval -e '.permission.bash // {} | has("cat *") or has("ls*") or has("git diff*") or has("git log*")' \
-  "$file" > /dev/null 2>&1 || exit 0
+# The keys matched literally: yq reads * in a path or after == as a wildcard, which would
+# also take lsblk* or a rule of the user's such as "lsof *".
+old='^(cat \\*|ls\\*|git diff\\*|git log\\*)$'
+yq eval -e ".permission.bash // {} | to_entries | any_c(.key | test(\"$old\"))" "$file" > /dev/null 2>&1 ||
+  exit 0
 cp "$file" "$file.bak"
-yq eval -i -o=json 'del(.permission.bash["cat *"], .permission.bash["ls*"],
-  .permission.bash["git diff*"], .permission.bash["git log*"])' "$file"
+yq eval -i -o=json ".permission.bash |= with_entries(select(.key | test(\"$old\") | not))" "$file"
 say "opencode: the agent asks before cat, ls, git diff and git log now ($file.bak keeps the old file)"
