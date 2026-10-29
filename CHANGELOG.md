@@ -55,6 +55,8 @@ stays in CI until its own install check.
   file with a redirect or `--output` without asking, before any command with a redirect,
   and before it fetches a web page. A migration takes the old rules out of
   `opencode.json`.
+- The installer's Done restarts into the new system: unticking "Restart now" only
+  brought the installer back to its first page, which looked like a failed install.
 - The image has a Wi-Fi step: a computer offline with a Wi-Fi card gets NetworkManager's
   `nmtui` in the palette before the installer, which needs the internet and has no page
   to join a wireless network.
