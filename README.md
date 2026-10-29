@@ -60,10 +60,12 @@ see-through window, split in two: the fastfetch greeting beside btop.
 
 ![The patina desktop with the aurora theme](docs/screenshots/desktop-amd64.png)
 
-The command palette in the same session, in the middle of the empty desktop:
-`ai install photocraft`, kortex's answer through a real `opencode serve`, and the
-agent's request to run `patina install --bundles artcraft`, waiting for Allow once,
-Always or Deny. The model is kortex's scripted demo model, since CI has none to run.
+The command palette in the same session, in the middle of the empty desktop, dark
+glass with a light hairline round it: `ai install photocraft`, kortex's answer through
+a real `opencode serve` beside kortex's green ▲, and the agent's request to run
+`patina install --bundles artcraft`, selected with a faint green tint and waiting for
+Allow once, Always or Deny. The model is kortex's scripted demo model, since CI has
+none to run.
 
 ![KRunner with kortex in the middle of the desktop: the agent asks before it installs the artcraft bundle for PhotoCraft](docs/screenshots/command-palette-amd64.png)
 
