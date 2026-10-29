@@ -28,6 +28,12 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- `patina update` ends with an unattended `patina install` of the bundles installed on
+  the machine, so what the bundles, the system files and the app settings gained since
+  arrives with an update too (Firefox's privacy policies, for instance, never reached
+  machines installed before them). A re-run of `patina install` and its questions start
+  from the bundles installed so far instead of the defaults, so an update never adds a
+  bundle the user left out.
 - The AI agent asks before `cat`, `ls`, `git diff` and `git log`, which could overwrite a
   file with a redirect or `--output` without asking, before any command with a redirect,
   and before it fetches a web page. A migration takes the old rules out of

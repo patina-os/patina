@@ -14,7 +14,8 @@ usage() {
 usage: patina install [--bundles <a,b,...>] [--all] [--list] [--unattended]
 
   --bundles a,b  install these bundles; base is always included, and nothing already
-                 installed is removed. Default: the bundles marked default
+                 installed is removed. Default: the bundles installed here so far, or
+                 the bundles marked default before the first install
   --all          every bundle, the opt-in ones (agents) included
   --list         show the bundles and exit
   --unattended   no questions, defaults for everything (same as PATINA_UNATTENDED=1):
@@ -81,7 +82,7 @@ ask() {
     yq eval -e '.default == true' "$PATINA_PATH/manifest/bundles/$name.yaml" > /dev/null 2>&1 && kind="default"
     lines="$(printf '%-9s %-8s %s' "$name" "($kind)" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$name.yaml")")"
     bundle_lines+=("$lines")
-    [[ "$kind" == default ]] && preselected+=("$lines")
+    [[ " ${bundles[*]} " == *" $name "* ]] && preselected+=("$lines")
   done
   chosen_lines="$(gum choose --no-limit --header "App bundles (x or space toggles, enter confirms)" \
     --selected "$(IFS=,; echo "${preselected[*]}")" "${bundle_lines[@]}")" || exit 0
@@ -605,7 +606,12 @@ main() {
       [[ -n "${PATINA_AI:-}" ]] || ai="$(yq eval ".ai // \"$ai\"" "$PATINA_PATH/manifest/bundles/$b.yaml")"
     done
   else
-    mapfile -t bundles < <(default_bundles)
+    # What this machine has (recorded_bundles: the defaults before the first install),
+    # so a re-run or `patina update` never adds the bundles a user left out; one that no
+    # longer exists is skipped.
+    for b in $(recorded_bundles); do
+      [[ -f "$PATINA_PATH/manifest/bundles/$b.yaml" ]] && bundles+=("$b")
+    done
     if [[ -t 0 && -t 1 && -z "$PATINA_UNATTENDED" ]]; then
       # The questions need gum (base bundle), which a stock Debian lacks before the
       # first install: fetch it first, or go on with the defaults without it.

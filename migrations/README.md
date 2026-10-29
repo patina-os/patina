@@ -2,7 +2,11 @@
 
 Versioned update steps, Omarchy-style. `patina update` runs `git pull`, then every
 migration that has not run yet, in filename order, and records each one as a marker file
-in `~/.local/state/patina/migrations/`.
+in `~/.local/state/patina/migrations/`; then an unattended `patina install` of the
+bundles installed here. A change to the data (a package added to a bundle, a file under
+`defaults/system/`, an app setting) therefore needs no migration: the install brings
+it. Migrations are for what an install does not undo, such as a file that moved or a
+setting that must go.
 
 Naming: `YYYYMMDDHHMM-<slug>.sh`, for example `202611031400-move-theme-state.sh`. The
 timestamp is when the migration was written (UTC); the slug says what it does.

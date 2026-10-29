@@ -128,8 +128,9 @@ git clone https://github.com/patina-os/patina.git ~/.local/share/patina
 
 `patina install --list` shows the bundles, `patina doctor` checks the result,
 `patina theme list` and `patina theme set <name>` switch the theme (`PATINA_THEME=<name>`
-picks one for the install), and `patina update` runs `git pull` and then any pending
-migrations. Put `~/.local/bin` on
+picks one for the install), and `patina update` runs `git pull`, then any pending
+migrations, then an unattended `patina install` of the bundles you have, so what they
+gained since arrives too. Put `~/.local/bin` on
 your PATH and link `patina` there (`ln -s ~/.local/share/patina/bin/patina
 ~/.local/bin/patina`).
 

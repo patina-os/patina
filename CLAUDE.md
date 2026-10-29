@@ -116,7 +116,9 @@ packs. Audience: developers and privacy-minded users in the EU.
   Plasma-side speed settings are curated defaults like any other.
 - Install model: per user, Omarchy-style. Clone at `~/.local/share/patina`, symlink
   `~/.local/bin/patina`, state in `~/.local/state/patina/`. `PATINA_PATH` overrides.
-- Updates: `git pull` plus versioned migrations (`migrations/`).
+- Updates: `git pull` plus versioned migrations (`migrations/`), then an unattended
+  `patina install` of the bundles installed on the machine, so an update ends where a
+  fresh install does (October 2026).
 - Image: a small live image built with Debian's live-build, with Calamares as the branded
   installer. The live system carries only the installer; Plasma and the base packages
   are fetched from Debian's mirrors during the install, so the image stays under one
