@@ -279,6 +279,28 @@ conversations, `ai ›` shows the current one, and Open in terminal continues a
 conversation in opencode for longer work. Both AI answers install it, from its tagged
 release.
 
+### Services
+
+The agent works with your services through MCP servers. Four are presets, off until you
+turn one on: Linear and Notion sign in through the browser, GitHub with a personal
+access token, and Nextcloud (calendar and tasks, notes, files, contacts, through the
+community [nextcloud-mcp-server](https://pypi.org/project/nextcloud-mcp-server/)) with
+an app password.
+
+```sh
+patina ai connect               # the presets, and which are on
+patina ai connect linear        # sign in through the browser
+patina ai connect nextcloud     # asks for the address, user and app password
+patina ai disconnect linear
+```
+
+Ask the agent to connect one and it runs the same command; a token it leaves to you on a
+terminal, so it never sees one. Tokens are kept in `~/.config/patina/services/`,
+readable by you only, and the agent's configuration names the file, never the token.
+A service connected while the agent works reaches it at once through kortex. Any other
+MCP server goes under `mcp` in `~/.config/opencode/opencode.json`
+([opencode's docs](https://opencode.ai/docs/mcp-servers/)), or ask the agent to add it.
+
 ## FAQ
 
 **Is this a new distribution?** No. It is a layer on Debian and a live image that only

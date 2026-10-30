@@ -55,6 +55,25 @@ check_tools() {
   fi
 }
 
+# The services `patina ai connect` turned on: opencode refuses its whole configuration
+# when a token file one of them names is gone, so the agent would not start at all.
+check_services() {
+  local file="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/opencode.json" name value names missing=""
+  [[ -f "$file" ]] || return 0
+  while IFS=$'\t' read -r name value; do
+    if [[ "$value" =~ \{file:([^}]*)\} && ! -e "${BASH_REMATCH[1]}" ]]; then
+      missing+=" $name"
+    fi
+  done < <(yq eval -o=tsv '.mcp // {} | to_entries | .[] |
+    {"k": .key, "v": (.value | .. | select(tag == "!!str"))} | [.k, .v]' "$file" 2> /dev/null)
+  names="$(yq eval -o=yaml '.mcp // {} | keys | join(" ")' "$file" 2> /dev/null)" || return 0
+  if [[ -n "$missing" ]]; then
+    bad "services whose token file is gone, which stops the agent:$missing (patina ai connect or disconnect each)"
+  elif [[ -n "$names" ]]; then
+    ok "services: $names"
+  fi
+}
+
 check_state() {
   echo "state"
   if [[ -e "$PATINA_STATE/installed-at" ]]; then
@@ -63,6 +82,7 @@ check_state() {
     ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || true)"
     [[ "$ai" != cloud ]] || ai="cloud, $(cat "$PATINA_STATE/ai-provider" 2> /dev/null || true)"
     [[ -z "$ai" ]] || ok "ai agent: $ai"
+    check_services
   else
     bad "no install recorded in $PATINA_STATE (run patina install)"
   fi

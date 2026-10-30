@@ -64,7 +64,11 @@ packs. Audience: developers and privacy-minded users in the EU.
   picks (European ones first, the key in opencode's own login) or none (the default:
   the agent is opt-in, `patina ai on` turns it on later), as the `ai-local` and
   `ai-cloud` bundles. It asks before every change
-  (`defaults/apps.yaml`) and reads `defaults/agent.md`. Its place in the command
+  (`defaults/apps.yaml`) and reads `defaults/agent.md`. It runs what needs root with
+  `sudo -A`, through a password dialog in the theme's colours. The services it works
+  with are MCP presets (Linear, Notion, GitHub, Nextcloud), off until `patina ai
+  connect` turns one on; a token is asked for on a terminal and kept in a file only the
+  user can read (October 2026). Its place in the command
   palette is kortex, a KRunner runner kept in a repository of its own
   (`patina-os/kortex`), which may use what patina's tooling may not (it is Python);
   both AI bundles install its tagged release, pinned in `manifest/upstream.yaml`.
@@ -191,7 +195,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash; `lib.sh` holds the few functions they share, among them the theme loader and template filler the renderers and the image build use |
 | `branding/` | the marks as data: `logo.txt` (the mark) and `wordmark.txt` (the name in block letters) are what scripts print, `wordmark.svg` (the mark typeset beside patina), `icon.svg` and `icon-small.svg` what screens show; `export/` the block-letter name as outlined SVG, and every mark as PNG and JPG up to 2048 px, shown in its README |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
-| `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `agent.md` the AI agent's standing instruction; `system/` the system tuning files and Firefox's policies |
+| `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `services.yaml` the services the AI agent can connect to (MCP presets); `agent.md` the AI agent's standing instruction; `system/` the system tuning files and Firefox's policies |
 | `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, Plasma's `icons.yaml` for the folder colours of an icon theme, one `apply.sh`) and the headless session the desktop workflow screenshots (`screenshot.sh`); Plasma's `askpass.sh`, the AI agent's sudo password dialog; `plasma/` first; `terminal/` renders the terminal and its tools for every desktop |
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |

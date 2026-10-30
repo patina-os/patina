@@ -17,4 +17,5 @@ flatpaks: []
 upstream:
   - opencode
   - kortex
+  - uv   # uvx runs local MCP servers, the Nextcloud preset's (defaults/services.yaml)
   - ollama
