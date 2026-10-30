@@ -8,14 +8,26 @@ All notable changes to patina are documented here. The format follows
 
 ### Added
 
+- Hermes Agent (MIT, Nous Research) as the second AI agent, next to opencode: the AI
+  question asks for the agent, then where its model runs (`hermes-local`,
+  `hermes-cloud`; `patina ai on hermes cloud` later). It comes from its own installer
+  of a pinned release, about 2 GB with its own Python and Node.js; Mistral (through its
+  OpenAI-compatible API), Anthropic and OpenAI are its cloud providers, the key asked
+  for on the terminal and kept in Hermes' own `~/.hermes/.env`. patina sets its
+  approvals to manual and gives it `defaults/agent.md` as its environment hint; kortex
+  talks to it in the command palette and Meta+A opens it. Hermes asks first only before
+  what it counts as dangerous (a folder deleted, root through `sudo -A`), not before
+  every change, which the README says. `patina ai connect` turns services on for it too,
+  from its next conversation.
 - Services for the AI agent: Linear, Notion, GitHub and Nextcloud as MCP presets
   (`defaults/services.yaml`), off until `patina ai connect <service>` turns one on and
   signs in, through the browser or with a token pasted on a terminal and kept in a file
   only the user can read; `patina ai disconnect` turns one off. The agent runs the same
   command when asked (`defaults/agent.md`), `patina doctor` reports a token file that is
   gone, and the AI bundles add uv for the Nextcloud server.
-- kortex 0.1.3 in the command palette: a service connected while it runs reaches the
-  running agent at once, for its next step. `patina update` installs it where kortex is
+- kortex 0.2.0 in the command palette: it talks to Hermes Agent as well as opencode, and
+  a service connected while it runs reaches opencode's running agent at once and
+  Hermes from its next conversation. `patina update` installs it where kortex is
   installed.
 
 - The AI agent can run what needs root: a password dialog (kdialog, in the theme's
@@ -31,6 +43,11 @@ All notable changes to patina are documented here. The format follows
 - Apple Silicon Macs are no longer out of scope: they run patina in a virtual machine
   (Debian 13 for arm64 in UTM, then `patina install`), and natively once Debian's
   kernel supports them (`docs/hardware.md`).
+
+### Fixed
+
+- `patina ai connect linear` (and notion) without a terminal, as the agent runs it,
+  stopped at a question the preset does not have.
 
 ## [0.1.0-alpha.4] - 2026-10-29
 

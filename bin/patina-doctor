@@ -81,6 +81,7 @@ check_state() {
     local ai
     ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || true)"
     [[ "$ai" != cloud ]] || ai="cloud, $(cat "$PATINA_STATE/ai-provider" 2> /dev/null || true)"
+    [[ -z "$ai" || "$ai" == none ]] || ai="$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || echo opencode), $ai"
     [[ -z "$ai" ]] || ok "ai agent: $ai"
     check_services
   else

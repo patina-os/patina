@@ -313,6 +313,26 @@ jobs:
           current="$(yq eval '.style.SidebarTextCurrent' "$b/branding.desc")"
           accent="$(yq eval '.accent // "base0E"' "themes/$theme/theme.yaml")"
           [[ "$current" == "$(yq eval ".palette.$accent" "themes/$theme/theme.yaml")" ]]
+      - name: The second agent, Hermes Agent with a cloud model
+        # `patina ai on hermes cloud` as a user runs it: Hermes from the installer of its
+        # pinned release (as root here, under /usr/local), configured for the first cloud
+        # provider Hermes offers, with manual approvals and agent.md as its environment
+        # hint; kortex talks to it. No key in CI, so it only checks what is written.
+        run: |
+          bin/patina ai on hermes cloud
+          hermes --version
+          config="$HOME/.hermes/config.yaml"
+          entry='[.ai.cloud.providers[] | select(.hermes)][0].hermes.model'
+          entry="$(yq eval -o=json -I=0 "$entry" defaults/settings.yaml)"
+          [[ "$(yq eval -o=json -I=0 '.model' "$config")" == "$entry" ]]
+          [[ "$(yq eval '.approvals.mode' "$config")" == manual ]]
+          [[ "$(yq eval '.agent.environment_hint' "$config")" == "$(cat defaults/agent.md)" ]]
+          [[ "$(cat "$HOME/.config/kortex/agent")" == hermes ]]
+          [[ "$(cat "$HOME/.local/state/patina/ai-agent")" == hermes ]]
+          bin/patina ai | grep -q 'ai: hermes, cloud'
+          bin/patina install --unattended | tee hermes-second-run.txt
+          grep -q 'patina: nothing to do' hermes-second-run.txt
+          bin/patina doctor
       - name: What landed
         run: |
           yq --version

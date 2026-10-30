@@ -18,11 +18,12 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   menu above its button or a full-screen dashboard, its folders, AI and self-hosting,
   its favourites as desktop entries, and the grain, glass, rim and selection on it and the
   other popups), all as
-  desktop-agnostic words the renderer translates. Under `ai`, the AI agent: the answer preselected and taken unattended
-  (`mode`: local, cloud or none), the Ollama models offered, in order, each with the
+  desktop-agnostic words the renderer translates. Under `ai`, the AI agent: the agent and the answer preselected and taken unattended
+  (`agent`: opencode or hermes; `mode`: local, cloud or none), the Ollama models offered, in order, each with the
   memory it needs and its name in the question (the first that fits is recommended,
   and taken when unattended) and the cloud providers in the order they are offered, each with
-  opencode's `provider/model` where patina picks one.
+  opencode's `provider/model` where patina picks one, and, for the ones Hermes offers,
+  its `hermes` entry: the key's name in Hermes' `.env` and Hermes' `model` entry.
 - `apps.yaml`: settings `patina install` merges into applications' own configuration
   files (Zed with telemetry and AI off, opencode pointed at Ollama and asking before
   every change), each with the file it owns and the bundle item that must be installed
@@ -31,15 +32,18 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   until `patina ai connect <name>` turns one on: per service a line for the list, how
   it signs in (`browser`, the agent's own OAuth sign-in, or `token`, asked for on a
   terminal and kept in `~/.config/patina/services/<name>.token`, mode 0600), the
-  values the terminal asks for (`ask`) and opencode's entry for it (`mcp.<name>`),
-  where `${TOKEN_FILE}` and `${<KEY>}` are filled in. The entry names the token file
-  (`{file:...}`), so no token is in a configuration; `patina doctor` reports a token
-  file that is gone, which would stop opencode from starting.
+  values the terminal asks for (`ask`), opencode's entry for it (`mcp.<name>`) and
+  Hermes' (`mcp_servers.<name>`), written for the agents installed, where
+  `${TOKEN_FILE}` and `${<KEY>}` are filled in. opencode's entry names the token file
+  (`{file:...}`), Hermes' a line of its own `~/.hermes/.env` (`${PATINA_<NAME>_TOKEN}`),
+  so no token is in a configuration; `patina doctor` reports a token file that is
+  gone, which would stop opencode from starting.
 - `agent.md`: the AI agent's standing instruction, in the agent's own language: what
   machine it runs on, how a patina desktop is changed (patina's commands, then
   `kwriteconfig6`, apt and Flathub), and that it explains and asks before a change. The
-  AI step of `patina install` names it in opencode's `instructions`; the agent reads it,
-  no script does.
+  AI step of `patina install` names it in opencode's `instructions`, and writes it into
+  Hermes' `agent.environment_hint`, so the user's own `SOUL.md` stays theirs; the agent
+  reads it, no script does.
 - `system/`: the system tuning every install gets, copied from what CachyOS ships as
   configuration: sysctl, udev rules, systemd drop-ins, tmpfiles, initramfs and GRUB
   settings, plus the login screen's static settings (`sddm.conf.d/`: the Wayland session

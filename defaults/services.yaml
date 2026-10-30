@@ -1,11 +1,14 @@
 # Services the AI agent can work with, as MCP servers: presets, off until `patina ai
-# connect <name>` turns one on. Each has a line for the list, how it signs in and
-# opencode's entry for it (`mcp.<name>` in ~/.config/opencode/opencode.json). A
-# browser sign-in leaves the tokens with opencode (`opencode mcp auth`); a token asked
-# for on the terminal is kept in ~/.config/patina/services/<name>.token, readable by
-# the user only, and the entry names that file (`{file:...}`), so the token is in no
-# configuration. `ask` lists the other values the terminal asks for; ${TOKEN_FILE}
-# and ${<KEY>} fill the entry. Linear, Notion and GitHub are US services, never on by
+# connect <name>` turns one on. Each has a line for the list, how it signs in and the
+# agents' entries for it: opencode's (`mcp.<name>` in ~/.config/opencode/opencode.json)
+# and Hermes' (`mcp_servers.<name>` in ~/.hermes/config.yaml), written for the agents
+# installed. A browser sign-in leaves the tokens with the agent (`opencode mcp auth`,
+# `hermes mcp login`). A token asked for on the terminal is kept for opencode in
+# ~/.config/patina/services/<name>.token, which its entry names (`{file:...}`), and for
+# Hermes as PATINA_<NAME>_TOKEN in its own ~/.hermes/.env, which its entry names
+# (`${PATINA_<NAME>_TOKEN}`); both are readable by the user only, and no token is in a
+# configuration. `ask` lists the other values the terminal asks for; ${TOKEN_FILE} and
+# ${<KEY>} fill the entries. Linear, Notion and GitHub are US services, never on by
 # default.
 linear:
   description: Linear · issues and projects
@@ -13,12 +16,18 @@ linear:
   opencode:
     type: remote
     url: https://mcp.linear.app/mcp
+  hermes:
+    url: https://mcp.linear.app/mcp
+    auth: oauth
 notion:
   description: Notion · pages and databases
   sign_in: browser
   opencode:
     type: remote
     url: https://mcp.notion.com/mcp
+  hermes:
+    url: https://mcp.notion.com/mcp
+    auth: oauth
 github:
   description: GitHub · repositories, issues and pull requests
   sign_in: token
@@ -31,6 +40,10 @@ github:
     oauth: false
     headers:
       Authorization: Bearer {file:${TOKEN_FILE}}
+  hermes:
+    url: https://api.githubcopilot.com/mcp/
+    headers:
+      Authorization: Bearer ${PATINA_GITHUB_TOKEN}
 nextcloud:
   # A community server (nextcloud-mcp-server, AGPL-3.0), run by uv from PyPI; Nextcloud
   # makes none of its own. Calendar and tasks, notes, files, contacts, Deck and more.
@@ -49,3 +62,10 @@ nextcloud:
       NEXTCLOUD_HOST: ${HOST}
       NEXTCLOUD_USERNAME: ${LOGIN}
       NEXTCLOUD_PASSWORD: '{file:${TOKEN_FILE}}'
+  hermes:
+    command: uvx
+    args: [nextcloud-mcp-server, run, --transport, stdio]
+    env:
+      NEXTCLOUD_HOST: ${HOST}
+      NEXTCLOUD_USERNAME: ${LOGIN}
+      NEXTCLOUD_PASSWORD: ${PATINA_NEXTCLOUD_TOKEN}

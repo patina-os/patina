@@ -5,7 +5,8 @@
 # Methods:
 #   npm         global package via the base's nodejs and npm, into ~/.local
 #   uv          Python tool via `uv tool install` (uv itself is the `uv` recipe)
-#   script      the upstream's documented install script (the only `curl | sh` allowed)
+#   script      the upstream's documented install script (the only `curl | sh` allowed),
+#               run by bash with the recipe's `args`, if it has any
 #   binary      a single static binary or AppImage from the upstream's release page,
 #               installed to ~/.local/bin; `arch` maps uname -m to the upstream's file name
 #   apt-source  the upstream's own signed apt repository, written as <name>.sources in
@@ -74,6 +75,19 @@ claude-desktop:
     components: main
   package: claude-desktop
   command: claude-desktop
+hermes:
+  # Hermes Agent (MIT, Nous Research), the second AI agent (the hermes-local and
+  # hermes-cloud bundles). The installer of the release tag, pinned to the tag's commit:
+  # the one on Hermes' website is always the newest and needs files an older release
+  # lacks. Per user under ~/.hermes, with its own uv, Python and Node.js (about 2 GB),
+  # without its browser and computer-use parts; it links `hermes` into ~/.local/bin and
+  # updates itself after that (`hermes update`). Hermes refuses to be built as a Python
+  # package, so the uv method cannot install it.
+  method: script
+  url: https://raw.githubusercontent.com/NousResearch/hermes-agent/v2026.9.24/scripts/install.sh
+  args: [--non-interactive, --commit, f97608f178d1ffeca59860195ab7da295f7c8e5f, --skip-browser,
+         --skip-computer-use]
+  command: hermes
 kortex:
   # The AI agent in the command palette: `ai` and a request in KRunner. patina's own
   # project, kept in a repository of its own because it is Python, which patina's
@@ -81,7 +95,7 @@ kortex:
   # Needs python3-dbus and python3-gi, which the AI bundles list.
   method: git
   url: https://github.com/patina-os/kortex.git
-  ref: v0.1.3
+  ref: v0.2.0
   install: install.sh
 ollama:
   # Its installer sets up the ollama service; it asks for sudo itself. Ollama is the

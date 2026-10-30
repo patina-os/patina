@@ -253,11 +253,11 @@ if [[ -n "$login_dir" && -f "$login_dir/contents/images/3840x2160.png" ]]; then
   fi
 fi
 
-# The agent launcher, only with an AI bundle (ai-local, ai-cloud) or the agents bundle
-# installed. It and the cheat sheet's
-# launcher come before the icons, which give every app's desktop entry its glyph. It opens the agent CLI in
-# the kitty profile desktops/terminal/ writes.
-if [[ " ${PATINA_BUNDLES:-} " =~ \ (agents|ai-local|ai-cloud)\  ]]; then
+# The agent launcher, only with an AI bundle (ai-local, ai-cloud, hermes-local,
+# hermes-cloud) or the agents bundle installed. It and the cheat sheet's launcher come
+# before the icons, which give every app's desktop entry its glyph. It opens the agent
+# CLI (Hermes with its bundles) in the kitty profile desktops/terminal/ writes.
+if [[ " ${PATINA_BUNDLES:-} " =~ \ (agents|ai-local|ai-cloud|hermes-local|hermes-cloud)\  ]]; then
   tpl[AGENT_COMMAND]="$(command -v "${tpl[AGENT]}" 2> /dev/null || echo "${tpl[AGENT]}")"
   render "$templates/agent.desktop" "$tmp/agent.desktop"
   put "$tmp/agent.desktop" "$agent_desktop"
@@ -271,7 +271,7 @@ fi
 # session's SUDO_ASKPASS names askpass.sh (kdialog), read at the next login, and the
 # agent and patina's own commands run `sudo -A`.
 askpass_env="$config/environment.d/61-patina-askpass.conf"
-if [[ " ${PATINA_BUNDLES:-} " =~ \ (agents|ai-local|ai-cloud)\  ]]; then
+if [[ " ${PATINA_BUNDLES:-} " =~ \ (agents|ai-local|ai-cloud|hermes-local|hermes-cloud)\  ]]; then
   tpl[ASKPASS]="$here/askpass.sh"
   render "$templates/askpass.conf" "$tmp/askpass.conf"
   put "$tmp/askpass.conf" "$askpass_env"
@@ -771,7 +771,7 @@ esac
 # kortex, `ai` in the command palette, only while an AI bundle is installed: `patina ai
 # off` leaves it installed and switched off.
 if [[ -f "$data/krunner/dbusplugins/kortex.desktop" ]]; then
-  if [[ " ${PATINA_BUNDLES:-} " =~ \ (ai-local|ai-cloud)\  ]]; then
+  if [[ " ${PATINA_BUNDLES:-} " =~ \ (ai-local|ai-cloud|hermes-local|hermes-cloud)\  ]]; then
     kset krunnerrc kortexEnabled true Plugins
   else
     kset krunnerrc kortexEnabled false Plugins
