@@ -31,12 +31,13 @@ agent: hermes        # with `ai`: the agent it installs; opencode when left out
 ```
 
 A bundle with an `ai` key is not a line of the bundle list: it is the answer of the AI
-question of `patina install` and the installer's AI page, the agent and where its
-model runs (`ai-local`, `ai-cloud` for opencode; `hermes-local`, `hermes-cloud` for
-Hermes Agent). The answer adds that bundle; `--bundles hermes-cloud` and
-`PATINA_AI=cloud PATINA_AI_AGENT=hermes` do the same. Every other bundle that is not required is on the installer's apps or more-apps
-page (`packagechooser-apps.conf` and `-more.conf` under `iso/live/config/`); lint checks
-that none is left out.
+question of `patina install` and the installer's agent and AI pages, the agent and
+where its model runs (`ai-local`, `ai-cloud` for opencode; `hermes-local`,
+`hermes-cloud` for Hermes Agent). The answer adds that bundle; `--bundles hermes-cloud`
+and `PATINA_AI=cloud PATINA_AI_AGENT=hermes` do the same, and lint checks that the two
+pages offer every agent and mode an AI bundle answers. Every other bundle that is not
+required is on the installer's apps or more-apps page (`packagechooser-apps.conf` and
+`-more.conf` under `iso/live/config/`); lint checks that none is left out.
 
 Canonical names are the Debian package names, because Debian is the reference base.
 A backend file maps them only where its own name differs. `patina install --list`

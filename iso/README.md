@@ -28,8 +28,9 @@ iso/
     etc/calamares/modules/*.conf       one file per step; packages.conf is the list the
                             installer fetches from Debian's mirrors (Plasma and the base
                             bundle) and the live tooling it removes afterwards;
-                            packagechooser-ai.conf, -apps.conf, -more.conf and
-                            -theme.conf the AI, apps, more-apps and theme pages
+                            packagechooser-agent.conf, -ai.conf, -apps.conf,
+                            -more.conf and -theme.conf the agent, AI, apps, more-apps
+                            and theme pages
     etc/calamares/branding/patina/   the strings; the marks, artwork, stylesheet and
                             colours next to them are rendered by assets.sh
     etc/systemd/system/patina-ui.service  the installer screen (X, openbox, Calamares)

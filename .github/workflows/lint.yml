@@ -103,6 +103,28 @@ jobs:
             echo "optional bundles:"; echo "$optional"
             exit 1
           }
+      - name: The installer's agent and AI pages offer every AI bundle's answer
+        run: |
+          # The agent page (packagechooser-agent.conf) hands its id to the first boot as
+          # PATINA_AI_AGENT and the AI page (-ai.conf) its id as PATINA_AI: together they
+          # must name every AI bundle (its `agent`, opencode when absent, and its `ai`),
+          # and the agent page also offers none.
+          modules=iso/live/config/includes.chroot/etc/calamares/modules
+          for page in agent ai; do
+            key=ai
+            [[ "$page" == ai ]] || key='agent // "opencode"'
+            offered="$(yq eval '.items[].id | select(. != "none")' \
+              "$modules/packagechooser-$page.conf" | sort)"
+            answers="$(for f in manifest/bundles/[a-z]*.yaml; do
+              yq eval "select(.ai != null) | .$key" "$f"; done | sort -u)"
+            [[ "$offered" == "$answers" ]] || {
+              echo "the $page page offers:"; echo "$offered"
+              echo "the AI bundles answer:"; echo "$answers"
+              exit 1
+            }
+          done
+          yq eval -e '.items[] | select(.id == "none")' "$modules/packagechooser-agent.conf" \
+            > /dev/null
       - name: A device is detected by its own DMI fields and no others
         run: |
           # Each device's detect map, written out as a fake /sys/class/dmi/id, detects

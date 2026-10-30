@@ -184,6 +184,8 @@ current_mode() {
 # recorded, else `ai.mode` of defaults/settings.yaml.
 current_ai() {
   local ai="${PATINA_AI:-}"
+  # PATINA_AI_AGENT=none, the installer's agent page, is no agent whatever PATINA_AI says.
+  [[ "${PATINA_AI_AGENT:-}" != none ]] || ai=none
   [[ -n "$ai" ]] || ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || true)"
   [[ -n "$ai" ]] || ai="$(yq eval '.ai.mode // "none"' "$PATINA_PATH/defaults/settings.yaml")"
   [[ "$ai" =~ ^(local|cloud|none)$ ]] || die "the AI agent is local, cloud or none, not '$ai'"
@@ -194,6 +196,7 @@ current_ai() {
 # defaults/settings.yaml.
 current_agent() {
   local agent="${PATINA_AI_AGENT:-}"
+  [[ "$agent" != none ]] || agent=""
   [[ -n "$agent" ]] || agent="$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || true)"
   [[ -n "$agent" ]] || agent="$(yq eval '.ai.agent // "opencode"' "$PATINA_PATH/defaults/settings.yaml")"
   [[ "$agent" =~ ^(opencode|hermes)$ ]] || die "the AI agent is opencode or hermes, not '$agent'"

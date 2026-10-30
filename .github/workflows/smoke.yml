@@ -286,7 +286,8 @@ jobs:
           b="$build/config/includes.chroot/etc/calamares/branding/patina"
           for f in welcome.png logo-square.png icon-small.svg wallpaper.png slide-1.png \
               slide-2.png slide-3.png slide-4.png slide-5.png slide-6.png stylesheet.qss \
-              ai-local.png ai-cloud.png ai-none.png language.png help.png bugs.png release.png \
+              agent-opencode.png agent-hermes.png agent-none.png ai-local.png ai-cloud.png \
+              language.png help.png bugs.png release.png \
               about.png bundle-desktop.png bundle-minimal.png bundle-extras.png \
               bundle-artcraft.png bundle-agents.png bundle-none.png; do
             test -s "$b/$f"
@@ -296,8 +297,15 @@ jobs:
           test -s "$build/config/bootloaders/grub-pc/live-theme/theme.txt"
           test -s "$build/config/includes.chroot/usr/share/themes/patina/openbox-3/themerc"
           test -s "$build/config/includes.chroot/etc/issue.d/10-patina.issue"
-          chooser="$build/config/includes.chroot/etc/calamares/modules/packagechooser-ai.conf"
-          [[ "$(yq eval '.default' "$chooser")" == "$(yq eval '.ai.mode' defaults/settings.yaml)" ]]
+          # The agent and AI pages preselect ai.agent and ai.mode; no agent while ai.mode is
+          # none, and then a model on this computer.
+          mode="$(yq eval '.ai.mode' defaults/settings.yaml)"
+          agent="$(yq eval '.ai.agent' defaults/settings.yaml)"
+          [[ "$mode" != none ]] || agent=none
+          modules="$build/config/includes.chroot/etc/calamares/modules"
+          [[ "$(yq eval '.default' "$modules/packagechooser-agent.conf")" == "$agent" ]]
+          [[ "$mode" != none ]] || mode=local
+          [[ "$(yq eval '.default' "$modules/packagechooser-ai.conf")" == "$mode" ]]
           # The theme page offers every theme, the default first chosen, each with a picture.
           chooser="$build/config/includes.chroot/etc/calamares/modules/packagechooser-theme.conf"
           [[ "$(yq eval '.default' "$chooser")" == "$theme" ]]
