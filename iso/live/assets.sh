@@ -123,18 +123,39 @@ done
 compose calamares/slide-6.svg "$branding/slide-6.png" "${slide_size[@]}"
 render "$templates/calamares/stylesheet.qss" "$branding/stylesheet.qss"
 
-# The AI page: its default answer is ai.mode of defaults/settings.yaml, and each answer
-# gets a picture with its name and what it sets up.
-say "rendering the AI page"
-chooser="$chroot/etc/calamares/modules/packagechooser-ai.conf"
-yq -i ".default = \"$(yq eval '.ai.mode' "$settings")\"" "$chooser"
+# The agent and AI pages: their default answers come from ai.agent and ai.mode of
+# defaults/settings.yaml (no agent, and a model on this computer, while ai.mode is none),
+# and each answer gets a picture with its name, what it sets up and what the agent does
+# with a change: opencode asks, Hermes runs one it does not count as dangerous.
+say "rendering the agent and AI pages"
+mode="$(yq eval '.ai.mode' "$settings")"
+chooser="$chroot/etc/calamares/modules/packagechooser-agent.conf"
+if [[ "$mode" == none ]]; then
+  yq -i '.default = "none"' "$chooser"
+else
+  yq -i ".default = \"$(yq eval '.ai.agent' "$settings")\"" "$chooser"
+fi
+tpl[AI_TAG]=agent
 for id in $(yq eval '.items[].id' "$chooser"); do
   tpl[AI_NAME]="$(yq eval ".items[] | select(.id == \"$id\") | .name" "$chooser")"
   tpl[AI_DEMO]=1
   case "$id" in
-    local) tpl[AI_DETAIL]="opencode · Ollama · $(yq eval '.ai.local.models[0].model' "$settings")" ;;
-    cloud) tpl[AI_DETAIL]="opencode · $(yq eval '.ai.cloud.providers[0].name + " and " + (.ai.cloud.providers | length - 1 | tostring) + " more"' "$settings")" ;;
-    *) tpl[AI_DETAIL]="patina ai on turns it on later" tpl[AI_DEMO]=0.15 ;;
+    opencode) tpl[AI_DETAIL]="free · asks before every change" tpl[AI_ASK]="allow? y/n" ;;
+    hermes) tpl[AI_DETAIL]="free · remembers · asks before risky commands" tpl[AI_ASK]="done" ;;
+    *) tpl[AI_DETAIL]="patina ai on turns one on later" tpl[AI_ASK]="" tpl[AI_DEMO]=0.15 ;;
+  esac
+  render "$templates/calamares/ai.svg" "$tmp/agent-$id.svg"
+  rsvg-convert --width 960 --height 540 --output "$branding/agent-$id.png" "$tmp/agent-$id.svg"
+done
+chooser="$chroot/etc/calamares/modules/packagechooser-ai.conf"
+[[ "$mode" != none ]] || mode=local
+yq -i ".default = \"$mode\"" "$chooser"
+tpl[AI_TAG]=model tpl[AI_ASK]="" tpl[AI_DEMO]=1
+for id in $(yq eval '.items[].id' "$chooser"); do
+  tpl[AI_NAME]="$(yq eval ".items[] | select(.id == \"$id\") | .name" "$chooser")"
+  case "$id" in
+    local) tpl[AI_DETAIL]="Ollama · $(yq eval '.ai.local.models[0].model' "$settings")" ;;
+    cloud) tpl[AI_DETAIL]="$(yq eval '.ai.cloud.providers[0].name' "$settings") first · picked at first boot" ;;
   esac
   render "$templates/calamares/ai.svg" "$tmp/ai-$id.svg"
   rsvg-convert --width 960 --height 540 --output "$branding/ai-$id.png" "$tmp/ai-$id.svg"

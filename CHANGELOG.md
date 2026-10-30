@@ -19,6 +19,9 @@ All notable changes to patina are documented here. The format follows
   what it counts as dangerous (a folder deleted, root through `sudo -A`), not before
   every change, which the README says. `patina ai connect` turns services on for it too,
   from its next conversation.
+- The installer asks for the AI agent on a page of its own (opencode, Hermes Agent or
+  none), each with what sets it apart, then where its model runs; the first boot hands
+  both answers to `patina install` (`PATINA_AI_AGENT`, where none means no agent).
 - Services for the AI agent: Linear, Notion, GitHub and Nextcloud as MCP presets
   (`defaults/services.yaml`), off until `patina ai connect <service>` turns one on and
   signs in, through the browser or with a token pasted on a terminal and kept in a file

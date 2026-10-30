@@ -234,10 +234,10 @@ ArtCraft Launcher from its release. Ollama is the local backend the agent tools 
 
 ## The AI agent
 
-`patina install` (and the installer's AI page) asks which AI agent, if any, and where
-its model runs: on this computer or at a cloud provider. The agent is opt-in: no agent
-is the answer preselected, and `patina ai on` turns one on at any time later. Both are
-free software:
+`patina install` (and the installer's agent and AI pages) asks which AI agent, if any,
+and where its model runs: on this computer or at a cloud provider. The agent is opt-in:
+no agent is the answer preselected, and `patina ai on` turns one on at any time later.
+Both are free software:
 
 - **[opencode](https://opencode.ai)** (MIT), the default agent: it asks before every
   change.

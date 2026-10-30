@@ -26,12 +26,12 @@ app bundles, the AI agent, then a summary and a yes. The theme: PATINA_THEME=<na
 picks one (patina theme list) and skips that question; otherwise the theme already set
 on this machine, or the default of defaults/settings.yaml, is offered first.
 
-The AI agent: PATINA_AI_AGENT=opencode|hermes picks the agent and PATINA_AI=local|cloud|none
-where its model runs; PATINA_AI_MODEL=<tag> the local model and PATINA_AI_PROVIDER=<id>
-the cloud provider (ai.local and ai.cloud in defaults/settings.yaml); otherwise the
-answers of the last install, or ai.agent and ai.mode, are offered first and taken when
-unattended. --bundles adds an agent only when it names an AI bundle (ai-local, ai-cloud,
-hermes-local, hermes-cloud).
+The AI agent: PATINA_AI_AGENT=opencode|hermes picks the agent (none: no agent, whatever
+PATINA_AI says) and PATINA_AI=local|cloud|none where its model runs; PATINA_AI_MODEL=<tag>
+the local model and PATINA_AI_PROVIDER=<id> the cloud provider (ai.local and ai.cloud in
+defaults/settings.yaml); otherwise the answers of the last install, or ai.agent and
+ai.mode, are offered first and taken when unattended. --bundles adds an agent only when
+it names an AI bundle (ai-local, ai-cloud, hermes-local, hermes-cloud).
 EOU
 }
 

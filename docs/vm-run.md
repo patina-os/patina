@@ -51,8 +51,9 @@ they are.
   menu, readable
 - [ ] the installer's welcome page: the square mark in the sidebar, the wordmark on the
   page, the wallpaper behind it
-- [ ] answer the installer: erase disk, a user, the AI page (none, unless you test an
-  agent, as in step 4), the apps (Standard), more apps (none) and the theme (aurora);
+- [ ] answer the installer: erase disk, a user, the agent page (none, unless you test an
+  agent, as in step 4; the AI page after it does not matter then), the apps
+  (Standard), more apps (none) and the theme (aurora);
   the install page shows the progress bar and the six slides, ten seconds each, and it
   ends without an error
 - [ ] first boot: tty1 shows the mark and runs without a question (a cloud agent asks

@@ -9,8 +9,8 @@ done_marker="$state_dir/firstboot-done"
 repo_url="${PATINA_REPO_URL:-https://github.com/patina-os/patina.git}"
 repo_ref="${PATINA_REPO_REF:-main}"
 
-# Answers for `patina install`: the installer writes PATINA_AI, PATINA_BUNDLES and
-# PATINA_THEME (its AI, apps, more-apps and theme pages,
+# Answers for `patina install`: the installer writes PATINA_AI_AGENT, PATINA_AI,
+# PATINA_BUNDLES and PATINA_THEME (its agent, AI, apps, more-apps and theme pages,
 # modules/shellprocess-firstboot.conf), so the install asks nothing but a cloud agent's
 # provider and key; PATINA_AI_PROVIDER and PATINA_UNATTENDED=1 may be added by hand for
 # unattended runs. An image older than those pages writes PATINA_AI alone, and the
@@ -57,11 +57,12 @@ if [[ -n "${PATINA_UNATTENDED:-}" && -r "$clone/branding/logo.txt" ]]; then
 fi
 say "running 'patina install' as $user"
 export PATINA_THEME="${PATINA_THEME:-}" PATINA_UNATTENDED="${PATINA_UNATTENDED:-}" \
-  PATINA_AI="${PATINA_AI:-}" PATINA_AI_PROVIDER="${PATINA_AI_PROVIDER:-}"
+  PATINA_AI_AGENT="${PATINA_AI_AGENT:-}" PATINA_AI="${PATINA_AI:-}" \
+  PATINA_AI_PROVIDER="${PATINA_AI_PROVIDER:-}"
 args=()
 [[ -z "${PATINA_BUNDLES:-}" ]] || args+=(--bundles "$PATINA_BUNDLES")
 if runuser -u "$user" \
-    --whitelist-environment=PATINA_THEME,PATINA_UNATTENDED,PATINA_AI,PATINA_AI_PROVIDER \
+    --whitelist-environment=PATINA_THEME,PATINA_UNATTENDED,PATINA_AI_AGENT,PATINA_AI,PATINA_AI_PROVIDER \
     -- "$clone/bin/patina" install "${args[@]}"; then
   say "done"
 else
