@@ -39,13 +39,16 @@ backend_file() {
 
 # Run a command given as one string from a data file, plus arguments. The string is
 # split on blanks, never eval'ed. A leading sudo is dropped when already root (the CI
-# container, the image's first boot), so the data keeps the shape a user needs.
+# container, the image's first boot), so the data keeps the shape a user needs; without
+# a terminal to ask in (the AI agent runs patina so) it asks through SUDO_ASKPASS.
 run_words() {
   local -a words
   read -ra words <<< "$1"
   shift
   if [[ "${words[0]}" == sudo && "$EUID" -eq 0 ]]; then
     words=("${words[@]:1}")
+  elif [[ "${words[0]}" == sudo && ! -t 0 && -n "${SUDO_ASKPASS:-}" ]]; then
+    words=(sudo -A "${words[@]:1}")
   fi
   "${words[@]}" "$@"
 }
@@ -380,9 +383,9 @@ print_wordmark() {
 }
 
 # Can a file be written through the backend's sudo path right now: root already, sudo
-# without a prompt, or a terminal where sudo may ask once?
+# without a prompt, a terminal where sudo may ask once, or a password dialog?
 system_writable() {
-  [[ "$EUID" -eq 0 ]] || sudo -n true 2> /dev/null || [[ -t 0 ]]
+  [[ "$EUID" -eq 0 ]] || sudo -n true 2> /dev/null || [[ -t 0 ]] || [[ -n "${SUDO_ASKPASS:-}" ]]
 }
 
 # gum's styles from the palette, for the install TUI; call after theme_vars. Flags

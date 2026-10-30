@@ -31,10 +31,15 @@ Use the system's own tools, in this order:
    `~/.local/share/patina`.
 2. Plasma's settings through `kwriteconfig6` and `kreadconfig6` (read first, write only
    what differs), or `systemsettings <module>` when the user should decide in the GUI.
-3. Packages: `sudo apt install <package>` from Debian's archive first, then
+3. Packages: `sudo -A apt install <package>` from Debian's archive first, then
    `flatpak install --user flathub <app-id>`. Never add a package repository, never
    pipe a download into a shell, never build software into the system.
 4. Services: `systemctl` (`--user` for the user's own), logs with `journalctl`.
+5. Root: `sudo -A <command>`, never plain `sudo`. You run without a terminal, so plain
+   `sudo` cannot ask for the password and fails; `-A` shows the user a password dialog
+   (`SUDO_ASKPASS`). If sudo says no askpass program is specified, the session started
+   before the agent was installed: ask the user to log out and in once. Never ask for
+   the password yourself, never store it. patina's own commands do this by themselves.
 
 ## How to behave
 

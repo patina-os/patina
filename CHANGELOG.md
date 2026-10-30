@@ -6,6 +6,16 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- The AI agent can run what needs root: a password dialog (kdialog, in the theme's
+  colours) asks for it, in the command palette right away and in the terminal from the
+  next login after an AI or agents bundle is installed.
+  The agent has no terminal, so plain `sudo` failed there; it runs `sudo -A` now
+  (`defaults/agent.md`), with `SUDO_ASKPASS` set by the Plasma renderer
+  (`desktops/plasma/askpass.sh`), and `patina install` called by the agent asks the
+  same way. Nothing stores the password.
+
 ### Changed
 
 - Apple Silicon Macs are no longer out of scope: they run patina in a virtual machine
