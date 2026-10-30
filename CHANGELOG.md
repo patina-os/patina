@@ -43,6 +43,13 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- The start button sits alone in the centre of the bar and the task icons at its left
+  end, so the start menu opens in the middle of the screen's width. Plasma opens the
+  menu over its button, and with the button leading the centred icons it opened left of
+  the centre, further with every app open. `panel.layout: grouped` in
+  `defaults/settings.yaml` keeps that arrangement, as on Windows 11. A desktop set up
+  before gets the new bar with `patina theme set <name> --layout`, which lays out the
+  panel again.
 - Apple Silicon Macs are no longer out of scope: they run patina in a virtual machine
   (Debian 13 for arm64 in UTM, then `patina install`), and natively once Debian's
   kernel supports them (`docs/hardware.md`).

@@ -1,7 +1,11 @@
 // patina panel layout for Plasma 6, generated into the look-and-feel package from
 // desktops/plasma/templates/layout.js. Plasma runs it for a session that has no panels
-// yet (the first login) and on `patina theme set --layout`. One bar at the bottom, the
-// launcher and the task icons in the centre, the tray and the clock at the right.
+// yet (the first login) and on `patina theme set --layout`. One bar at the bottom: the
+// start button alone in its centre, the task icons at the left end, the tray and the
+// clock at the right; for panel.layout grouped the start button leads the task icons in
+// the centre, as on Windows 11. Plasma centres on the screen whatever sits between a
+// bar's two expanding spacers, and opens the start menu centred above its button, so
+// with the button alone between them the menu opens in the middle of the screen's width.
 var panel = new Panel;
 panel.location = "bottom";
 panel.alignment = "center";
@@ -9,7 +13,18 @@ panel.lengthMode = "fill";
 panel.floating = ${PANEL_FLOATING};
 panel.hiding = "none";
 panel.height = 2 * Math.ceil(gridUnit * 2.5 / 2);
+var grouped = "${PANEL_LAYOUT}" === "grouped";
 
+// The task icons, the apps behind panel.pinned pinned: at the left end, or after the
+// start button when grouped.
+function addTasks() {
+  var tasks = panel.addWidget("org.kde.plasma.icontasks");
+  tasks.currentConfigGroup = ["General"];
+  tasks.writeConfig("launchers", [${PINNED_LAUNCHERS}]);
+}
+if (!grouped) {
+  addTasks();
+}
 panel.addWidget("org.kde.plasma.panelspacer");
 // The start menu (Kickoff, or the Application Dashboard for start_menu.style dashboard):
 // the patina mark as its button, the favourites first (AI and self-hosting, from
@@ -29,9 +44,9 @@ if ("${LAUNCHER_APPLET}" === "org.kde.plasma.kickoff") {
   launcher.writeConfig("showActionButtonCaptions", false);
   launcher.writeConfig("switchCategoryOnHover", true);
 }
-var tasks = panel.addWidget("org.kde.plasma.icontasks");
-tasks.currentConfigGroup = ["General"];
-tasks.writeConfig("launchers", [${PINNED_LAUNCHERS}]);
+if (grouped) {
+  addTasks();
+}
 panel.addWidget("org.kde.plasma.panelspacer");
 panel.addWidget("org.kde.plasma.marginsseparator");
 panel.addWidget("org.kde.plasma.systemtray");

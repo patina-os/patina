@@ -622,9 +622,12 @@ finish() {
 
 # The panel layout, as the look-and-feel package's layout script: Plasma runs it for a
 # session without panels (the first login) and `patina theme set --layout` for an
-# existing one. The pinned launchers are the apps behind the actions panel.pinned names.
+# existing one. The pinned launchers are the apps behind the actions panel.pinned names;
+# panel.layout centered sets the start button alone in the bar's centre, grouped before
+# the task icons there.
 layout="$lnf/contents/layouts/org.kde.plasma.desktop-layout.js"
-if [[ "$(yq eval '.panel.layout' "$settings")" == centered ]]; then
+tpl[PANEL_LAYOUT]="$(yq eval '.panel.layout' "$settings")"
+if [[ "${tpl[PANEL_LAYOUT]}" == centered || "${tpl[PANEL_LAYOUT]}" == grouped ]]; then
   pinned=""
   while IFS= read -r action; do
     service="$(service_for_action "$action")"
@@ -645,7 +648,7 @@ if [[ "$(yq eval '.panel.layout' "$settings")" == centered ]]; then
   render "$templates/layout.js" "$tmp/layout.js"
   put "$tmp/layout.js" "$layout"
 elif [[ -e "$layout" ]]; then
-  say "removing $layout (panel.layout is not centered)"
+  say "removing $layout (panel.layout is ${tpl[PANEL_LAYOUT]})"
   rm -f "$layout"
   changed
 fi

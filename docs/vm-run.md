@@ -193,10 +193,11 @@ Log out and back in once, then:
 - [ ] the login screen: the contour map wallpaper, the words in Source Sans 3
 - [ ] the desktop: the glowing contour map on black, aurora's colour scheme (green
   selections and focus, violet hover), a bar along the bottom edge (it stays there
-  when a window is maximised) with the launcher and the pinned files, browser and
-  terminal in the middle
-- [ ] the start menu: the patina dots as its button; the AI and Self-hosting folders
-  among the categories; the favourites are Nextcloud, Element, Euro-Office,
+  when a window is maximised) with the start button alone in the middle and the pinned
+  files, browser and terminal at the left end
+- [ ] the start menu: the patina dots as its button; it opens in the middle of the
+  screen's width, as far from the left edge as from the right; the AI and
+  Self-hosting folders among the categories; the favourites are Nextcloud, Element, Euro-Office,
   Thunderbird, KeePassXC, kitty (and the agent and Claude Desktop with the agents
   bundle), and none of Debian's (Discover, Dolphin, System Settings, Konqueror); its
   background is glass, the wallpaper's colour glowing through; its category icons

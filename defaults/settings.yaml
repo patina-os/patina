@@ -53,8 +53,8 @@ speed:
   animation_speed: 0.5       # factor on the animation length; 1 is Plasma's default, 0 none
   latency: lowest            # compositor latency: lowest | low | balanced | smooth | smoothest
   file_indexing: names       # off | names | content; names means file names under home only
-# Windows and the panel (the look of a Windows 11 desktop: new windows the same size in
-# the middle, the launcher and the task icons in the centre of the bar).
+# Windows and the panel: new windows the same size in the middle, and the start button
+# alone in the centre of the bar, so the start menu opens centred on the screen.
 windows:
   placement: centered        # where a new window opens: centered | smart (Plasma's own)
   size: 70                   # percent of the screen a new main window takes; 0 keeps the app's size
@@ -62,7 +62,10 @@ windows:
     active: 100              # Only kitty is see-through, by its own background
     inactive: 100            # (desktops/terminal/templates/kitty.conf)
 panel:
-  layout: centered           # centered: launcher and task icons in the middle; plasma: stock bar
+  layout: centered           # centered: the start button alone in the middle, the task icons at
+                             # the left end | grouped: the start button leading the task icons
+                             # in the middle, as on Windows 11 (its menu then opens left of the
+                             # centre) | plasma: the stock bar
   floating: false            # false: along the screen's edge, always; true: Plasma's floating bar
   pinned: [files, browser, terminal]   # actions of keybindings.yaml pinned to the bar, in order
 # The command palette (KRunner on Plasma, kortex's `ai` in it).
