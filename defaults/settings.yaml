@@ -65,7 +65,7 @@ panel:
   layout: centered           # centered: the start button alone in the middle, the task icons at
                              # the left end | grouped: the start button leading the task icons
                              # in the middle, as on Windows 11 (its menu then opens left of the
-                             # centre) | plasma: the stock bar
+                             # centre, but for start_menu.position center) | plasma: the stock bar
   floating: false            # false: along the screen's edge, always; true: Plasma's floating bar
   pinned: [files, browser, terminal]   # actions of keybindings.yaml pinned to the bar, in order
 # The command palette (KRunner on Plasma, kortex's `ai` in it).
@@ -77,6 +77,9 @@ command_palette:
 # entries; favourites not installed are left out, the folders show whatever is installed.
 start_menu:
   style: popup               # popup: a menu above its button | dashboard: full screen, centred
+  position: button           # button: centred above its button, which the centered bar puts in
+                             # the middle | center: in the middle of the screen's width with the
+                             # grouped bar too, moved there by a KWin script of patina's own
   grain: 6                   # percent of fine noise on the start menu and the other popups; 0 none
   glass: 60                  # percent opacity of the popups' background where KWin blurs behind
                              # it (Breeze: 85); lower lets more of the wallpaper glow through

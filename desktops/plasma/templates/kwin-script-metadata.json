@@ -1,0 +1,13 @@
+{
+  "KPackageStructure": "KWin/Script",
+  "KPlugin": {
+    "Id": "patina-start-menu",
+    "Name": "patina start menu",
+    "Description": "Opens the start menu in the middle of the screen's width",
+    "Authors": [{"Name": "patina contributors"}],
+    "License": "GPL-3.0-or-later",
+    "EnabledByDefault": false
+  },
+  "X-Plasma-API": "javascript",
+  "X-Plasma-MainScript": "code/main.js"
+}

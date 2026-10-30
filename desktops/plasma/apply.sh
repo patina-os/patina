@@ -653,6 +653,24 @@ elif [[ -e "$layout" ]]; then
   changed
 fi
 
+# The start menu in the middle of the screen's width for a grouped bar
+# (start_menu.position center): Plasma opens it over its button, left of the centre,
+# and no window rule can move it, so a KWin script of patina's own does. The centred
+# bar puts the button in the middle itself. KWin loads and unloads the script when it
+# reloads its settings; a new version of it runs from the next login.
+kwin_script="$data/kwin/scripts/patina-start-menu"
+if [[ "${tpl[PANEL_LAYOUT]}" == grouped &&
+    "$(yq eval '.start_menu.position // "button"' "$settings")" == center ]]; then
+  put "$templates/kwin-script-metadata.json" "$kwin_script/metadata.json"
+  put "$templates/start-menu.js" "$kwin_script/contents/code/main.js"
+  kset kwinrc patina-start-menuEnabled true Plugins
+elif [[ -d "$kwin_script" ]]; then
+  say "removing $kwin_script (start_menu.position center is for a grouped bar)"
+  rm -rf "$kwin_script"
+  kset kwinrc patina-start-menuEnabled false Plugins
+  changed
+fi
+
 # ---- settings: kdeglobals, kwin, baloo, shortcuts, GTK; through kwriteconfig6 --------
 if ! command -v kwriteconfig6 > /dev/null || ! command -v kreadconfig6 > /dev/null; then
   warn "kwriteconfig6 is missing (is Plasma installed?); the files are in place, the settings are not"

@@ -124,8 +124,11 @@ packs. Audience: developers and privacy-minded users in the EU.
   the middle of the screen's width (October 2026): Plasma places a popup over its
   button itself and no KWin rule can move it, so the Windows 11 arrangement, the
   button leading the task icons in the centre, put the menu left of the centre. That
-  arrangement stays an option (`panel.layout: grouped`), and so does Plasma's
-  Application Dashboard, full screen and centred, dark over either mode. The menu's
+  arrangement stays an option (`panel.layout: grouped`), with `start_menu.position:
+  center` for a menu in the middle there too: a KWin script of patina's own
+  (`desktops/plasma/templates/start-menu.js`), desktop data like the layout script and
+  the one KWin script patina keeps, moves it (October 2026). Plasma's Application
+  Dashboard, full screen and centred, dark over either mode, stays an option too. The menu's
   background is glass the wallpaper glows through, its category icons in the accent,
   the apps' glyphs in the bar and the menu and the labels in the text colour; all are
   knobs in `defaults/settings.yaml`. The user's
