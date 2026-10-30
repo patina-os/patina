@@ -115,14 +115,18 @@ packs. Audience: developers and privacy-minded users in the EU.
   slight grain. The brand's colours (deep violet, violet, lavender, white, and green
   for the ▲) are aurora's and do not follow a theme; on a light ground the terminal
   prints the marks' letters black and the ▲ in aurora light's green (October 2026).
-  The desktop's shape is a centred bar along the bottom edge as on Windows 11 (never
-  floating: a floating bar jumps when a window is maximised), new windows
-  centred at one size and the command palette in the middle of the screen; the start
-  menu opens above its button (Kickoff: Plasma places its popups itself, so no KWin
-  rule can centre it; Plasma's Application Dashboard, full screen and centred, is an
-  option, dark over either mode), its background glass the wallpaper glows through,
-  its category icons in the accent, the apps' glyphs in the bar and the menu and the
-  labels in the text colour; all are knobs in `defaults/settings.yaml`. The user's
+  The desktop's shape is a bar along the bottom edge (never floating: a floating bar
+  jumps when a window is maximised) with the start button alone in its centre and the
+  task icons at its left end, new windows centred at one size and the command palette
+  in the middle of the screen. The start menu opens centred above its button, so in
+  the middle of the screen's width (October 2026): Plasma places a popup over its
+  button itself and no KWin rule can move it, so the Windows 11 arrangement, the
+  button leading the task icons in the centre, put the menu left of the centre. That
+  arrangement stays an option (`panel.layout: grouped`), and so does Plasma's
+  Application Dashboard, full screen and centred, dark over either mode. The menu's
+  background is glass the wallpaper glows through, its category icons in the accent,
+  the apps' glyphs in the bar and the menu and the labels in the text colour; all are
+  knobs in `defaults/settings.yaml`. The user's
   picture is the small mark (`icon-small.svg`) while it is Debian's.
   No automatic tiling on Plasma: that would need a KWin script Debian does not package; a tiling desktop
   is the Hyprland add-on.

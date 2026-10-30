@@ -73,9 +73,11 @@ Files, from `templates/`, each named after the theme:
   `defaults/system/sddm.conf.d/patina.conf` selects Breeze with the layer's font and
   cursor
 - the panel layout in that package (`contents/layouts/org.kde.plasma.desktop-layout.js`)
-  when `panel.layout` is `centered`: one bar at the bottom with the launcher and the
-  icons-only task manager in the middle, the tray and the clock at the right, the apps
-  behind `panel.pinned` pinned. The start menu (Kickoff, a menu above its button; the
+  when `panel.layout` is `centered` or `grouped`: one bar at the bottom with the start
+  button alone in the middle, the icons-only task manager at the left end (`grouped`:
+  the start button and the task manager together in the middle, as on Windows 11), the
+  tray and the clock at the right, the apps behind `panel.pinned` pinned. The start
+  menu (Kickoff, a menu above its button; the
   Application Dashboard, full screen and centred, for `start_menu.style: dashboard`
   when `plasma-widgets-addons` is installed)
   gets the patina mark as its button (`branding/icon-small.svg`, copied to
@@ -100,12 +102,14 @@ Files, from `templates/`, each named after the theme:
   Kontact, System Settings, Dolphin, Discover) and links patina's through the activity
   manager's D-Bus API (`org.kde.ActivityManager.ResourcesLinking`); favourites the user
   added stay. Kickoff always opens centred above its button (libplasma's
-  `PopupPlasmaWindow` anchors every panel popup to its applet), so with the launcher
-  first among the centred icons it sits left of the screen's centre by half the width
-  of the icons beside it. No KWin rule can centre it: its window has no title and the
+  `PopupPlasmaWindow` anchors every panel popup to its applet), and Plasma centres on
+  the screen whatever sits between a bar's two expanding spacers (`panelspacer`'s
+  `optimalSize`), so `centered` puts the button alone between them and the menu opens
+  in the middle of the screen's width, on X11 and Wayland alike. With `grouped` it sits
+  left of the centre by half the width of the icons beside the button, 26 px more for
+  every app that opens. No KWin rule can move it: its window has no title and the
   same class and type (`_KDE_NET_WM_WINDOW_TYPE_APPLET_POPUP`) as the calendar's and
-  the tray's, as the desktop workflow's session showed. The Application Dashboard is
-  the centred start menu
+  the tray's, as the desktop workflow's session showed
 - with an AI bundle (`ai-local`, `ai-cloud`, `hermes-local`, `hermes-cloud`) or the
   agents bundle:
   `~/.local/share/applications/patina-agent.desktop`, which opens the command `agent`

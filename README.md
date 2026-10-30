@@ -205,8 +205,9 @@ in a repository of their own install with `patina theme install <git-url>`, as d
 only. The
 Plasma-side speed settings CachyOS is known for (lowest compositor latency, shorter
 animations, file-name-only indexing, the Wayland session) are curated defaults. So is the
-shape of the desktop: one bar with the launcher and the task icons in the centre, as on
-Windows 11, and new windows that open centred at the same size. The first `patina
+shape of the desktop: one bar with the start button alone in its centre, so the start
+menu opens in the middle, the task icons at its left end, and new windows that open
+centred at the same size. The first `patina
 install` and every fresh login get the bar; after that your panels are yours, and
 `patina theme set <name> --layout` brings the bar back.
 
