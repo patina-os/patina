@@ -110,6 +110,14 @@ Files, from `templates/`, each named after the theme:
   `~/.local/share/applications/patina-agent.desktop`, which opens the command `agent`
   of `defaults/settings.yaml` in the agent's kitty profile; removed again when none of
   them is installed
+- with the same bundles: `~/.config/environment.d/61-patina-askpass.conf` (from
+  `templates/askpass.conf`), which sets the session's `SUDO_ASKPASS` to `askpass.sh` at
+  the next login. The agents run commands without a terminal, so plain `sudo` cannot
+  ask for a password there; they run `sudo -A` (`defaults/agent.md`), and so does
+  patina's own backend path when it has no terminal (`run_words` in `bin/lib.sh`).
+  `askpass.sh` asks with kdialog, which draws in the theme's colours and fonts like any
+  KDE window, with the mark as its window icon; Cancel makes sudo give up. Removed again
+  with the bundles
 - the cheat sheet's launcher, `~/.local/share/applications/patina-keys.desktop` (from
   `templates/keys.desktop`): kitty showing `patina keys` until a key is pressed, bound
   to the `keys` action (Meta+K). The sheet lists the actions of

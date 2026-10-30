@@ -10,6 +10,7 @@ ai: local
 packages:
   - nodejs   # the npm install of opencode
   - npm
+  - kdialog   # the password dialog for the agent's `sudo -A` (desktops/plasma/askpass.sh)
   - python3-dbus   # kortex, the agent in the command palette
   - python3-gi
 flatpaks: []

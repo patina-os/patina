@@ -267,6 +267,20 @@ elif [[ -e "$agent_desktop" ]]; then
   changed
 fi
 
+# sudo's password dialog for the agents, which run commands without a terminal: the
+# session's SUDO_ASKPASS names askpass.sh (kdialog), read at the next login, and the
+# agent and patina's own commands run `sudo -A` there.
+askpass_env="$config/environment.d/61-patina-askpass.conf"
+if [[ " ${PATINA_BUNDLES:-} " =~ \ (agents|ai-local|ai-cloud)\  ]]; then
+  tpl[ASKPASS]="$here/askpass.sh"
+  render "$templates/askpass.conf" "$tmp/askpass.conf"
+  put "$tmp/askpass.conf" "$askpass_env"
+elif [[ -e "$askpass_env" ]]; then
+  say "removing $askpass_env (no AI or agents bundle is installed)"
+  rm -f "$askpass_env"
+  changed
+fi
+
 # The ArtCraft Launcher's menu entry, only with the artcraft bundle: its AppImage in
 # ~/.local/bin brings none of its own.
 launcher_desktop="$data/applications/patina-artcraft-launcher.desktop"

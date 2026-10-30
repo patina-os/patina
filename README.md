@@ -266,7 +266,10 @@ sudo userdel ollama
 
 Meta+A opens it. It reads freely, and asks before anything that changes a file, runs a
 command or reaches a server (`defaults/apps.yaml`); `defaults/agent.md` tells it how
-this machine is put together and how to change it the patina way. In the command
+this machine is put together and how to change it the patina way. What needs root (a
+package, a driver, a system service) it runs with `sudo -A`: a password dialog in the
+theme's colours asks you, from the next login after the agent was installed, since the
+agent has no terminal for sudo to ask in. Nothing stores the password. In the command
 palette (Meta+Space), type `ai` and your request: [kortex](https://github.com/patina-os/kortex),
 a KRunner runner in a repository of its own (so it also serves other Plasma desktops),
 shows the answer there and every action the agent wants to take with Allow once,

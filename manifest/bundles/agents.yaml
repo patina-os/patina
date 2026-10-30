@@ -7,6 +7,7 @@ default: false
 packages:
   - nodejs   # the npm installs below
   - npm
+  - kdialog   # the password dialog for the agent's `sudo -A` (desktops/plasma/askpass.sh)
 flatpaks: []
 upstream:
   - claude-code
