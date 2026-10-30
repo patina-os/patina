@@ -81,7 +81,7 @@ kortex:
   # Needs python3-dbus and python3-gi, which the AI bundles list.
   method: git
   url: https://github.com/patina-os/kortex.git
-  ref: v0.1.2
+  ref: v0.1.3
   install: install.sh
 ollama:
   # Its installer sets up the ollama service; it asks for sudo itself. Ollama is the

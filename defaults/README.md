@@ -27,6 +27,14 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   files (Zed with telemetry and AI off, opencode pointed at Ollama and asking before
   every change), each with the file it owns and the bundle item that must be installed
   for it to apply.
+- `services.yaml`: the services the AI agent can work with as MCP servers, presets off
+  until `patina ai connect <name>` turns one on: per service a line for the list, how
+  it signs in (`browser`, the agent's own OAuth sign-in, or `token`, asked for on a
+  terminal and kept in `~/.config/patina/services/<name>.token`, mode 0600), the
+  values the terminal asks for (`ask`) and opencode's entry for it (`mcp.<name>`),
+  where `${TOKEN_FILE}` and `${<KEY>}` are filled in. The entry names the token file
+  (`{file:...}`), so no token is in a configuration; `patina doctor` reports a token
+  file that is gone, which would stop opencode from starting.
 - `agent.md`: the AI agent's standing instruction, in the agent's own language: what
   machine it runs on, how a patina desktop is changed (patina's commands, then
   `kwriteconfig6`, apt and Flathub), and that it explains and asks before a change. The

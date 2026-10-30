@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Turn the AI agent on or off after the install: `on` installs the bundle of the answer
 # through `patina install --bundles`, `off` takes it out of the record and renders the
-# theme again, which drops its launcher, shortcut and command palette entry.
+# theme again, which drops its launcher, shortcut and command palette entry. `connect`
+# turns on a service the agent can work with (defaults/services.yaml).
 set -euo pipefail
 
 # shellcheck source=bin/lib.sh
@@ -10,7 +11,7 @@ source "$PATINA_PATH/bin/lib.sh"
 
 usage() {
   cat << EOU
-usage: patina ai [status] | on [local|cloud] | off
+usage: patina ai [status] | on [local|cloud] | off | connect [<service>] | disconnect <service>
 
   status      the agent this machine has (the default)
   on local    opencode with a model Ollama runs on this computer: a few GB of disk,
@@ -20,6 +21,13 @@ usage: patina ai [status] | on [local|cloud] | off
   on          asks which one on a terminal
   off         no agent: Meta+A, its launcher and \`ai\` in the command palette go away.
               What was installed stays; the end of the output says how to remove it
+  connect     the services the agent can work with (Linear, Nextcloud, ...), and which
+              are on
+  connect <service>
+              turn one on: sign in through the browser, or paste a token on the
+              terminal (kept readable by you only, never shown to the agent)
+  disconnect <service>
+              turn one off again and forget its sign-in
 EOU
 }
 
@@ -69,11 +77,103 @@ off() {
   fi
 }
 
+services="$PATINA_PATH/defaults/services.yaml"
+opencode_file="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/opencode.json"
+tokens="${XDG_CONFIG_HOME:-$HOME/.config}/patina/services"
+
+# Write opencode's file through yq when the result differs: write_opencode <yq expression>,
+# with the expression's strenv() values in the environment.
+write_opencode() {
+  local tmp
+  tmp="$(mktemp)"
+  if ! yq eval -o=json -I=2 "$1" "$opencode_file" > "$tmp" 2> /dev/null; then
+    rm -f "$tmp"
+    die "cannot parse $opencode_file (comments?); add the service under mcp by hand"
+  fi
+  if cmp -s "$tmp" "$opencode_file"; then
+    rm -f "$tmp"
+    return 1
+  fi
+  cp "$tmp" "$opencode_file"
+  rm -f "$tmp"
+}
+
+services_list() {
+  local name state
+  for name in $(yq eval 'keys | .[]' "$services"); do
+    state=off
+    if [[ -f "$opencode_file" ]] && NAME="$name" yq eval -e '.mcp[strenv(NAME)]' "$opencode_file" > /dev/null 2>&1; then
+      state=on
+    fi
+    printf '  %-10s %-4s %s\n' "$name" "$state" "$(yq eval ".\"$name\".description" "$services")"
+  done
+  say "ai: patina ai connect <service> turns one on; the agent runs it for you too"
+}
+
+connect() {
+  local name="${1:-}" entry key prompt value token
+  if [[ -z "$name" ]]; then
+    services_list
+    return
+  fi
+  yq eval -e ".\"$name\"" "$services" > /dev/null 2>&1 || die "no service '$name'; patina ai connect lists them"
+  [[ -f "$opencode_file" ]] || die "no AI agent on this machine yet; patina ai on first"
+  entry="$(yq eval -o=json -I=0 ".\"$name\".opencode" "$services")"
+  # What the terminal asks: the preset's values, then a token. Only a person types them,
+  # so the agent, which has no terminal, hands this step to the user.
+  if yq eval -e ".\"$name\" | (has(\"ask\") or .sign_in == \"token\")" "$services" > /dev/null 2>&1; then
+    [[ -t 0 && -t 1 ]] ||
+      die "$name needs you at a terminal: run 'patina ai connect $name' there. It asks for $(yq eval ".\"$name\".token" "$services"); the agent never sees it"
+  fi
+  while IFS=$'\t' read -r key prompt; do
+    read -rp "$prompt: " value < /dev/tty
+    [[ -n "$value" ]] || die "$name: nothing entered, nothing changed"
+    entry="$(K="\${$key}" V="$value" yq eval -o=json -I=0 \
+      '(.. | select(tag == "!!str")) |= (split(strenv(K)) | join(strenv(V)))' <<< "$entry")"
+  done < <(yq eval ".\"$name\".ask // [] | .[] | [.key, .prompt] | @tsv" "$services")
+  if [[ "$(yq eval ".\"$name\".sign_in" "$services")" == token ]]; then
+    read -rsp "Paste $(yq eval ".\"$name\".token" "$services"): " token < /dev/tty
+    echo
+    [[ -n "$token" ]] || die "$name: no token entered, nothing changed"
+    mkdir -p "$tokens"
+    (umask 077 && printf '%s\n' "$token" > "$tokens/$name.token")
+    chmod 600 "$tokens/$name.token"
+    entry="$(K="\${TOKEN_FILE}" V="$tokens/$name.token" yq eval -o=json -I=0 \
+      '(.. | select(tag == "!!str")) |= (split(strenv(K)) | join(strenv(V)))' <<< "$entry")"
+  fi
+  if NAME="$name" ENTRY="$entry" write_opencode '.mcp[strenv(NAME)] = (strenv(ENTRY) | from_json)'; then
+    say "ai: $name is on in $opencode_file; kortex hands it to a running agent at once"
+  else
+    say "ai: $name is on"
+  fi
+  if [[ "$(yq eval ".\"$name\".sign_in" "$services")" == browser ]]; then
+    say "ai: sign in to $name in the browser; opencode keeps the sign-in, patina never sees it"
+    opencode mcp auth "$name" || say "ai: not signed in; later: opencode mcp auth $name"
+  fi
+}
+
+disconnect() {
+  local name="${1:-}"
+  [[ -n "$name" ]] || die "disconnect needs a service; patina ai connect lists them"
+  [[ -f "$opencode_file" ]] || die "no AI agent on this machine"
+  if NAME="$name" write_opencode 'del(.mcp[strenv(NAME)])'; then
+    say "ai: $name is off; a running agent keeps it until kortex restarts it (a quiet quarter of an hour)"
+  else
+    say "ai: $name was not on"
+  fi
+  rm -f "$tokens/$name.token"
+  if [[ "$(yq eval ".\"$name\".sign_in // \"\"" "$services")" == browser ]] && command -v opencode > /dev/null; then
+    opencode mcp logout "$name" > /dev/null 2>&1 || true
+  fi
+}
+
 main() {
   case "${1:-status}" in
     status) status ;;
     on) on "${2:-}" ;;
     off) off ;;
+    connect) connect "${2:-}" ;;
+    disconnect) disconnect "${2:-}" ;;
     -h | --help) usage ;;
     *)
       usage >&2

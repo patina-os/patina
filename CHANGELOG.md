@@ -8,6 +8,16 @@ All notable changes to patina are documented here. The format follows
 
 ### Added
 
+- Services for the AI agent: Linear, Notion, GitHub and Nextcloud as MCP presets
+  (`defaults/services.yaml`), off until `patina ai connect <service>` turns one on and
+  signs in, through the browser or with a token pasted on a terminal and kept in a file
+  only the user can read; `patina ai disconnect` turns one off. The agent runs the same
+  command when asked (`defaults/agent.md`), `patina doctor` reports a token file that is
+  gone, and the AI bundles add uv for the Nextcloud server.
+- kortex 0.1.3 in the command palette: a service connected while it runs reaches the
+  running agent at once, for its next step. `patina update` installs it where kortex is
+  installed.
+
 - The AI agent can run what needs root: a password dialog (kdialog, in the theme's
   colours) asks for it, in the command palette right away and in the terminal from the
   next login after an AI or agents bundle is installed.
