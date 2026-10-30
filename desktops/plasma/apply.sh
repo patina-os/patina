@@ -269,12 +269,20 @@ fi
 
 # sudo's password dialog for the agents, which run commands without a terminal: the
 # session's SUDO_ASKPASS names askpass.sh (kdialog), read at the next login, and the
-# agent and patina's own commands run `sudo -A` there.
+# agent and patina's own commands run `sudo -A`.
 askpass_env="$config/environment.d/61-patina-askpass.conf"
 if [[ " ${PATINA_BUNDLES:-} " =~ \ (agents|ai-local|ai-cloud)\  ]]; then
   tpl[ASKPASS]="$here/askpass.sh"
   render "$templates/askpass.conf" "$tmp/askpass.conf"
   put "$tmp/askpass.conf" "$askpass_env"
+  # The running session as well, for what D-Bus and systemd start from now on: kortex
+  # starts its agent on demand, so it has the dialog before the next login.
+  if [[ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]] && command -v dbus-update-activation-environment > /dev/null &&
+    systemctl --user show-environment > /dev/null 2>&1 &&
+    ! systemctl --user show-environment | grep -qxF "SUDO_ASKPASS=$here/askpass.sh"; then
+    dbus-update-activation-environment --systemd "SUDO_ASKPASS=$here/askpass.sh" &&
+      say "the running session's agents get the password dialog"
+  fi
 elif [[ -e "$askpass_env" ]]; then
   say "removing $askpass_env (no AI or agents bundle is installed)"
   rm -f "$askpass_env"

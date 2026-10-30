@@ -112,7 +112,9 @@ Files, from `templates/`, each named after the theme:
   them is installed
 - with the same bundles: `~/.config/environment.d/61-patina-askpass.conf` (from
   `templates/askpass.conf`), which sets the session's `SUDO_ASKPASS` to `askpass.sh` at
-  the next login. The agents run commands without a terminal, so plain `sudo` cannot
+  the next login; in a running session the renderer also hands it to D-Bus and systemd
+  (`dbus-update-activation-environment`), so kortex's agent, which D-Bus starts on
+  demand, has it right away. The agents run commands without a terminal, so plain `sudo` cannot
   ask for a password there; they run `sudo -A` (`defaults/agent.md`), and so does
   patina's own backend path when it has no terminal (`run_words` in `bin/lib.sh`).
   `askpass.sh` asks with kdialog, which draws in the theme's colours and fonts like any
