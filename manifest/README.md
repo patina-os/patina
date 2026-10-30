@@ -27,12 +27,14 @@ flatpaks:            # Flathub application IDs; identical on every base, install
 upstream:            # keys of manifest/upstream.yaml
   - claude-code
 ai: local            # only on the bundles that answer the AI question (local, cloud)
+agent: hermes        # with `ai`: the agent it installs; opencode when left out
 ```
 
 A bundle with an `ai` key is not a line of the bundle list: it is the answer of the AI
-question of `patina install` and the installer's AI page (`ai-local`, `ai-cloud`). The
-question's answer adds that bundle; `--bundles ai-cloud` and `PATINA_AI=cloud` do the
-same. Every other bundle that is not required is on the installer's apps or more-apps
+question of `patina install` and the installer's AI page, the agent and where its
+model runs (`ai-local`, `ai-cloud` for opencode; `hermes-local`, `hermes-cloud` for
+Hermes Agent). The answer adds that bundle; `--bundles hermes-cloud` and
+`PATINA_AI=cloud PATINA_AI_AGENT=hermes` do the same. Every other bundle that is not required is on the installer's apps or more-apps
 page (`packagechooser-apps.conf` and `-more.conf` under `iso/live/config/`); lint checks
 that none is left out.
 
@@ -63,7 +65,9 @@ on PATH (binary, script), the `package` (npm, uv, apt-source), or for a `git` re
 `ref` it was installed at, recorded in the state directory (a new `ref` installs again).
 Everything lands in the user's `~/.local` except an `apt-source` recipe, which goes
 through the backend. The `git` method is for kortex, patina's own runner for KRunner: a
-tagged release, installed per user by the repository's own script.
+tagged release, installed per user by the repository's own script. A `script` recipe
+may pass `args` to the installer, which bash runs: Hermes Agent's installer of its
+release tag takes the tag's commit, so the code is the release's too.
 
 ## Sources, in order of preference
 

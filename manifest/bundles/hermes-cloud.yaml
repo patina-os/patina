@@ -1,0 +1,22 @@
+# The AI agent with a cloud model, with Hermes Agent instead of opencode: the provider
+# picked at install time (defaults/settings.yaml, `ai.cloud`, the ones with a `hermes`
+# entry, Mistral first). The key stays in Hermes' own ~/.hermes/.env. Hermes (MIT) comes
+# from its own installer, pinned to a release (manifest/upstream.yaml); it remembers
+# across conversations and asks first only before a command it counts as dangerous, not
+# before every change. One of the answers to the AI question of `patina install` (the
+# `ai` and `agent` keys), not a line of the bundle list. kortex puts it into KRunner.
+name: hermes-cloud
+description: Hermes Agent with a cloud model · the provider you pick
+default: false
+ai: cloud
+agent: hermes
+packages:
+  - kdialog   # the password dialog for the agent's `sudo -A` (desktops/plasma/askpass.sh)
+  - python3-dbus   # kortex, the agent in the command palette
+  - python3-gi
+  - ripgrep   # Hermes searches files with it
+flatpaks: []
+upstream:
+  - hermes
+  - kortex
+  - uv   # uvx runs local MCP servers, the Nextcloud preset's (defaults/services.yaml)

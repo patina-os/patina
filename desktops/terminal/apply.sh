@@ -57,9 +57,10 @@ if ! grep -qxF 'include patina.conf' "$config/kitty/kitty.conf" 2> /dev/null; th
   changed
 fi
 
-# The agent's quieter kitty profile, only with an AI bundle (ai-local, ai-cloud) or the
-# agents bundle installed; the desktop binds the `agent` action to it.
-if [[ " ${PATINA_BUNDLES:-} " =~ \ (agents|ai-local|ai-cloud)\  ]]; then
+# The agent's quieter kitty profile, only with an AI bundle (ai-local, ai-cloud,
+# hermes-local, hermes-cloud) or the agents bundle installed; the desktop binds the
+# `agent` action to it.
+if [[ " ${PATINA_BUNDLES:-} " =~ \ (agents|ai-local|ai-cloud|hermes-local|hermes-cloud)\  ]]; then
   render "$templates/kitty-agent.conf" "$tmp/kitty-agent.conf"
   put "$tmp/kitty-agent.conf" "$config/kitty/patina-agent.conf"
 elif [[ -e "$config/kitty/patina-agent.conf" ]]; then

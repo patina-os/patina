@@ -190,11 +190,23 @@ current_ai() {
   echo "$ai"
 }
 
-# The bundle that answers the AI question with this mode (its `ai` key); fails for none.
+# The AI agent: PATINA_AI_AGENT, else the one the last install recorded, else ai.agent of
+# defaults/settings.yaml.
+current_agent() {
+  local agent="${PATINA_AI_AGENT:-}"
+  [[ -n "$agent" ]] || agent="$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || true)"
+  [[ -n "$agent" ]] || agent="$(yq eval '.ai.agent // "opencode"' "$PATINA_PATH/defaults/settings.yaml")"
+  [[ "$agent" =~ ^(opencode|hermes)$ ]] || die "the AI agent is opencode or hermes, not '$agent'"
+  echo "$agent"
+}
+
+# The bundle that answers the AI question with this mode and agent (its `ai` and `agent`
+# keys; no `agent` is opencode): ai_bundle <mode> [<agent>]; fails for none.
 ai_bundle() {
   local b
   for b in $(all_bundles); do
-    if [[ "$(yq eval '.ai // ""' "$PATINA_PATH/manifest/bundles/$b.yaml")" == "$1" ]]; then
+    if [[ "$(yq eval '(.ai // "") + " " + (.agent // "opencode")' "$PATINA_PATH/manifest/bundles/$b.yaml")" == \
+        "$1 ${2:-opencode}" ]]; then
       echo "$b"
       return
     fi
@@ -243,6 +255,8 @@ theme_vars() {
   tpl[MONO_FONT]="$(yq eval '.fonts.monospace' "$settings")"
   tpl[DISPLAY_FONT]="$(yq eval '.fonts.display' "$settings")"
   tpl[AGENT]="$(yq eval '.agent // "opencode"' "$settings")"
+  # The agent CLI the `agent` action opens: Hermes while one of its bundles is installed.
+  [[ ! " ${PATINA_BUNDLES:-} " =~ \ hermes-(local|cloud)\  ]] || tpl[AGENT]=hermes
   first="$(yq eval "($b.wallpapers // .wallpapers)[0] // \"\"" "$theme_yaml")"
   tpl[WALLPAPER_FIRST]="${first:+$(cd "$(dirname "$theme_yaml")" && pwd)/$first}"
   for key in 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F; do

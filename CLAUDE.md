@@ -63,15 +63,22 @@ packs. Audience: developers and privacy-minded users in the EU.
   free agent, with a model Ollama runs on the machine, with a cloud provider the user
   picks (European ones first, the key in opencode's own login) or none (the default:
   the agent is opt-in, `patina ai on` turns it on later), as the `ai-local` and
-  `ai-cloud` bundles. It asks before every change
-  (`defaults/apps.yaml`) and reads `defaults/agent.md`. It runs what needs root with
-  `sudo -A`, through a password dialog in the theme's colours. The services it works
+  `ai-cloud` bundles. Hermes Agent (MIT, Nous Research) is the second agent, chosen at
+  the same question, as the `hermes-local` and `hermes-cloud` bundles: from its own
+  installer pinned to a release (it refuses to be built as a package), Mistral through
+  its OpenAI-compatible API then Anthropic and OpenAI as its cloud providers, its
+  approvals manual, `defaults/agent.md` as its `agent.environment_hint`, its own
+  extras (messaging, memory, scheduler) left to `hermes setup`; it asks first only
+  before what it counts as dangerous, and the README says so (October 2026). opencode
+  asks before every change
+  (`defaults/apps.yaml`) and reads `defaults/agent.md`. Either agent runs what needs
+  root with `sudo -A`, through a password dialog in the theme's colours. The services it works
   with are MCP presets (Linear, Notion, GitHub, Nextcloud), off until `patina ai
   connect` turns one on; a token is asked for on a terminal and kept in a file only the
   user can read (October 2026). Its place in the command
   palette is kortex, a KRunner runner kept in a repository of its own
   (`patina-os/kortex`), which may use what patina's tooling may not (it is Python);
-  both AI bundles install its tagged release, pinned in `manifest/upstream.yaml`.
+  every AI bundle installs its tagged release, pinned in `manifest/upstream.yaml`.
 - Look: the default theme is aurora, made for OLED screens (October 2026, after the
   redesign whose eight directions `docs/design/futures.html` keeps): true black with
   panels one step above it, neon green as the accent and violet as the second colour.

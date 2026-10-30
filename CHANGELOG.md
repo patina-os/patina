@@ -8,6 +8,17 @@ All notable changes to patina are documented here. The format follows
 
 ### Added
 
+- Hermes Agent (MIT, Nous Research) as the second AI agent, next to opencode: the AI
+  question asks for the agent, then where its model runs (`hermes-local`,
+  `hermes-cloud`; `patina ai on hermes cloud` later). It comes from its own installer
+  of a pinned release, about 2 GB with its own Python and Node.js; Mistral (through its
+  OpenAI-compatible API), Anthropic and OpenAI are its cloud providers, the key asked
+  for on the terminal and kept in Hermes' own `~/.hermes/.env`. patina sets its
+  approvals to manual and gives it `defaults/agent.md` as its environment hint; kortex
+  talks to it in the command palette and Meta+A opens it. Hermes asks first only before
+  what it counts as dangerous (a folder deleted, root through `sudo -A`), not before
+  every change, which the README says. `patina ai connect` turns services on for it too,
+  from its next conversation.
 - Services for the AI agent: Linear, Notion, GitHub and Nextcloud as MCP presets
   (`defaults/services.yaml`), off until `patina ai connect <service>` turns one on and
   signs in, through the browser or with a token pasted on a terminal and kept in a file
@@ -31,6 +42,11 @@ All notable changes to patina are documented here. The format follows
 - Apple Silicon Macs are no longer out of scope: they run patina in a virtual machine
   (Debian 13 for arm64 in UTM, then `patina install`), and natively once Debian's
   kernel supports them (`docs/hardware.md`).
+
+### Fixed
+
+- `patina ai connect linear` (and notion) without a terminal, as the agent runs it,
+  stopped at a question the preset does not have.
 
 ## [0.1.0-alpha.4] - 2026-10-29
 

@@ -106,7 +106,8 @@ Files, from `templates/`, each named after the theme:
   same class and type (`_KDE_NET_WM_WINDOW_TYPE_APPLET_POPUP`) as the calendar's and
   the tray's, as the desktop workflow's session showed. The Application Dashboard is
   the centred start menu
-- with an AI bundle (`ai-local`, `ai-cloud`) or the agents bundle:
+- with an AI bundle (`ai-local`, `ai-cloud`, `hermes-local`, `hermes-cloud`) or the
+  agents bundle:
   `~/.local/share/applications/patina-agent.desktop`, which opens the command `agent`
   of `defaults/settings.yaml` in the agent's kitty profile; removed again when none of
   them is installed

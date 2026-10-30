@@ -11,14 +11,19 @@ source "$PATINA_PATH/bin/lib.sh"
 
 usage() {
   cat << EOU
-usage: patina ai [status] | on [local|cloud] | off | connect [<service>] | disconnect <service>
+usage: patina ai [status] | on [opencode|hermes] [local|cloud] | off | connect [<service>] | disconnect <service>
 
   status      the agent this machine has (the default)
-  on local    opencode with a model Ollama runs on this computer: a few GB of disk,
+  on local    the agent with a model Ollama runs on this computer: a few GB of disk,
               best with 16 GB of memory; PATINA_AI_MODEL=<tag> picks the model
-  on cloud    opencode with a provider you log in to; PATINA_AI_PROVIDER=<id> picks it
+  on cloud    the agent with a provider you log in to; PATINA_AI_PROVIDER=<id> picks it
               (ai.cloud.providers in defaults/settings.yaml)
-  on          asks which one on a terminal
+  on opencode ...
+              opencode, free, which asks before every change (the default)
+  on hermes ...
+              Hermes Agent, free, which remembers across conversations and asks first
+              only before a command it counts as dangerous; about 2 GB
+  on          asks which on a terminal
   off         no agent: Meta+A, its launcher and \`ai\` in the command palette go away.
               What was installed stays; the end of the output says how to remove it
   connect     the services the agent can work with (Linear, Nextcloud, ...), and which
@@ -32,28 +37,36 @@ EOU
 }
 
 status() {
-  local ai
+  local ai agent
   ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)"
+  agent="$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || echo opencode)"
   case "$ai" in
-    local) say "ai: local, $(cat "$PATINA_STATE/ai-model" 2> /dev/null || echo '?') through Ollama" ;;
-    cloud) say "ai: cloud, $(cat "$PATINA_STATE/ai-provider" 2> /dev/null || echo '?')" ;;
+    local) say "ai: $agent, local, $(cat "$PATINA_STATE/ai-model" 2> /dev/null || echo '?') through Ollama" ;;
+    cloud) say "ai: $agent, cloud, $(cat "$PATINA_STATE/ai-provider" 2> /dev/null || echo '?')" ;;
     *) say "ai: none; patina ai on turns it on" ;;
   esac
 }
 
 on() {
-  local mode="${1:-}" bundle
+  local mode="" agent="" word bundle
+  for word in "$@"; do
+    case "$word" in
+      local | cloud) mode="$word" ;;
+      opencode | hermes) agent="$word" ;;
+      *) die "patina ai on takes opencode or hermes, and local or cloud, not '$word'" ;;
+    esac
+  done
+  [[ -n "$agent" ]] || agent="$(current_agent)"
   if [[ -z "$mode" ]]; then
     if [[ ! -t 0 || ! -t 1 ]] || ! command -v gum > /dev/null; then
       die "on needs local or cloud (patina ai --help)"
     fi
-    mode="$(gum choose --header "AI agent (it asks before it changes anything)" \
+    mode="$(gum choose --header "Where $agent's model runs" \
       "local  on this computer, nothing leaves it" "cloud  a provider you log in to")" || exit 0
     mode="${mode%% *}"
   fi
-  [[ "$mode" =~ ^(local|cloud)$ ]] || die "the AI agent is local or cloud, not '$mode'"
-  bundle="$(ai_bundle "$mode")" || die "no bundle in manifest/bundles/ answers ai: $mode"
-  PATINA_AI="$mode" exec "$PATINA_PATH/bin/patina-install" --bundles "$bundle"
+  bundle="$(ai_bundle "$mode" "$agent")" || die "no bundle in manifest/bundles/ answers ai: $mode with $agent"
+  PATINA_AI="$mode" PATINA_AI_AGENT="$agent" exec "$PATINA_PATH/bin/patina-install" --bundles "$bundle"
 }
 
 off() {
@@ -71,7 +84,7 @@ off() {
   if theme="$(current_theme)"; then
     "$PATINA_PATH/bin/patina-theme" set "$theme"
   fi
-  say "ai: opencode, kortex and Ollama stay installed; patina ai on brings the agent back"
+  say "ai: the agent, kortex and Ollama stay installed; patina ai on brings it back"
   if command -v ollama > /dev/null; then
     say "ai: Ollama and its models take the most space; the README's AI section says how to remove them"
   fi
@@ -79,30 +92,48 @@ off() {
 
 services="$PATINA_PATH/defaults/services.yaml"
 opencode_file="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/opencode.json"
+hermes_home="${HERMES_HOME:-$HOME/.hermes}"
+hermes_file="$hermes_home/config.yaml"
 tokens="${XDG_CONFIG_HOME:-$HOME/.config}/patina/services"
 
-# Write opencode's file through yq when the result differs: write_opencode <yq expression>,
-# with the expression's strenv() values in the environment.
-write_opencode() {
+# Write an agent's file through yq when the result differs: write_config <file> <json|yaml>
+# <yq expression>, with the expression's strenv() values in the environment. Fails when
+# nothing changed.
+write_config() {
   local tmp
   tmp="$(mktemp)"
-  if ! yq eval -o=json -I=2 "$1" "$opencode_file" > "$tmp" 2> /dev/null; then
+  if ! yq eval -o="$2" -I=2 "$3" "$1" > "$tmp" 2> /dev/null; then
     rm -f "$tmp"
-    die "cannot parse $opencode_file (comments?); add the service under mcp by hand"
+    die "cannot parse $1 (comments?); add the service by hand"
   fi
-  if cmp -s "$tmp" "$opencode_file"; then
+  if cmp -s "$tmp" "$1"; then
     rm -f "$tmp"
     return 1
   fi
-  cp "$tmp" "$opencode_file"
+  cp "$tmp" "$1"
   rm -f "$tmp"
+}
+
+# Fill a placeholder in every string of an entry: fill <entry, JSON> <placeholder> <value>.
+fill() {
+  K="$2" V="$3" yq eval -o=json -I=0 '(.. | select(tag == "!!str")) |= (split(strenv(K)) | join(strenv(V)))' <<< "$1"
+}
+
+# Set or drop a line of Hermes' own .env, readable by the user only: hermes_env <name> [<value>].
+hermes_env() {
+  local env="$hermes_home/.env"
+  [[ -f "$env" || $# -gt 1 ]] || return 0
+  (umask 077 && { grep -v "^$1=" "$env" 2> /dev/null || true; [[ $# -lt 2 ]] || printf '%s=%s\n' "$1" "$2"; } > "$env.new")
+  mv "$env.new" "$env"
+  chmod 600 "$env"
 }
 
 services_list() {
   local name state
   for name in $(yq eval 'keys | .[]' "$services"); do
     state=off
-    if [[ -f "$opencode_file" ]] && NAME="$name" yq eval -e '.mcp[strenv(NAME)]' "$opencode_file" > /dev/null 2>&1; then
+    if { [[ -f "$opencode_file" ]] && NAME="$name" yq eval -e '.mcp[strenv(NAME)]' "$opencode_file" > /dev/null 2>&1; } ||
+      { [[ -f "$hermes_file" ]] && NAME="$name" yq eval -e '.mcp_servers[strenv(NAME)]' "$hermes_file" > /dev/null 2>&1; }; then
       state=on
     fi
     printf '  %-10s %-4s %s\n' "$name" "$state" "$(yq eval ".\"$name\".description" "$services")"
@@ -111,14 +142,15 @@ services_list() {
 }
 
 connect() {
-  local name="${1:-}" entry key prompt value token
+  local name="${1:-}" sign_in entry key prompt value token="" i
+  local -a fills=()
   if [[ -z "$name" ]]; then
     services_list
     return
   fi
   yq eval -e ".\"$name\"" "$services" > /dev/null 2>&1 || die "no service '$name'; patina ai connect lists them"
-  [[ -f "$opencode_file" ]] || die "no AI agent on this machine yet; patina ai on first"
-  entry="$(yq eval -o=json -I=0 ".\"$name\".opencode" "$services")"
+  [[ -f "$opencode_file" || -f "$hermes_file" ]] || die "no AI agent on this machine yet; patina ai on first"
+  sign_in="$(yq eval ".\"$name\".sign_in" "$services")"
   # What the terminal asks: the preset's values, then a token. Only a person types them,
   # so the agent, which has no terminal, hands this step to the user.
   if yq eval -e ".\"$name\" | (has(\"ask\") or .sign_in == \"token\")" "$services" > /dev/null 2>&1; then
@@ -126,51 +158,79 @@ connect() {
       die "$name needs you at a terminal: run 'patina ai connect $name' there. It asks for $(yq eval ".\"$name\".token" "$services"); the agent never sees it"
   fi
   while IFS=$'\t' read -r key prompt; do
+    [[ -n "$key" ]] || continue   # yq prints an empty line for a preset without questions
     read -rp "$prompt: " value < /dev/tty
     [[ -n "$value" ]] || die "$name: nothing entered, nothing changed"
-    entry="$(K="\${$key}" V="$value" yq eval -o=json -I=0 \
-      '(.. | select(tag == "!!str")) |= (split(strenv(K)) | join(strenv(V)))' <<< "$entry")"
+    fills+=("\${$key}" "$value")
   done < <(yq eval ".\"$name\".ask // [] | .[] | [.key, .prompt] | @tsv" "$services")
-  if [[ "$(yq eval ".\"$name\".sign_in" "$services")" == token ]]; then
+  if [[ "$sign_in" == token ]]; then
     read -rsp "Paste $(yq eval ".\"$name\".token" "$services"): " token < /dev/tty
     echo
     [[ -n "$token" ]] || die "$name: no token entered, nothing changed"
-    mkdir -p "$tokens"
-    (umask 077 && printf '%s\n' "$token" > "$tokens/$name.token")
-    chmod 600 "$tokens/$name.token"
-    entry="$(K="\${TOKEN_FILE}" V="$tokens/$name.token" yq eval -o=json -I=0 \
-      '(.. | select(tag == "!!str")) |= (split(strenv(K)) | join(strenv(V)))' <<< "$entry")"
   fi
-  if NAME="$name" ENTRY="$entry" write_opencode '.mcp[strenv(NAME)] = (strenv(ENTRY) | from_json)'; then
-    say "ai: $name is on in $opencode_file; kortex hands it to a running agent at once"
-  else
-    say "ai: $name is on"
+  if [[ -f "$opencode_file" ]]; then
+    entry="$(yq eval -o=json -I=0 ".\"$name\".opencode" "$services")"
+    if [[ -n "$token" ]]; then
+      mkdir -p "$tokens"
+      (umask 077 && printf '%s\n' "$token" > "$tokens/$name.token")
+      chmod 600 "$tokens/$name.token"
+      entry="$(fill "$entry" "\${TOKEN_FILE}" "$tokens/$name.token")"
+    fi
+    for ((i = 0; i < ${#fills[@]}; i += 2)); do entry="$(fill "$entry" "${fills[i]}" "${fills[i + 1]}")"; done
+    NAME="$name" ENTRY="$entry" write_config "$opencode_file" json '.mcp[strenv(NAME)] = (strenv(ENTRY) | from_json)' || true
+    say "ai: $name is on for opencode; kortex hands it to a running agent at once"
+    if [[ "$sign_in" == browser ]]; then
+      say "ai: sign in to $name in the browser; opencode keeps the sign-in, patina never sees it"
+      opencode mcp auth "$name" || say "ai: not signed in; later: opencode mcp auth $name"
+    fi
   fi
-  if [[ "$(yq eval ".\"$name\".sign_in" "$services")" == browser ]]; then
-    say "ai: sign in to $name in the browser; opencode keeps the sign-in, patina never sees it"
-    opencode mcp auth "$name" || say "ai: not signed in; later: opencode mcp auth $name"
+  if [[ -f "$hermes_file" ]]; then
+    entry="$(yq eval -o=json -I=0 ".\"$name\".hermes" "$services")"
+    [[ -z "$token" ]] || hermes_env "PATINA_${name^^}_TOKEN" "$token"
+    for ((i = 0; i < ${#fills[@]}; i += 2)); do entry="$(fill "$entry" "${fills[i]}" "${fills[i + 1]}")"; done
+    NAME="$name" ENTRY="$entry" write_config "$hermes_file" yaml '.mcp_servers[strenv(NAME)] = (strenv(ENTRY) | from_json)' || true
+    say "ai: $name is on for Hermes, from its next conversation (kortex starts its gateway again)"
+    if [[ "$sign_in" == browser ]]; then
+      say "ai: sign in to $name in the browser; Hermes keeps the sign-in, patina never sees it"
+      hermes mcp login "$name" || say "ai: not signed in; later: hermes mcp login $name"
+    fi
   fi
 }
 
 disconnect() {
-  local name="${1:-}"
+  local name="${1:-}" off=0
   [[ -n "$name" ]] || die "disconnect needs a service; patina ai connect lists them"
-  [[ -f "$opencode_file" ]] || die "no AI agent on this machine"
-  if NAME="$name" write_opencode 'del(.mcp[strenv(NAME)])'; then
+  [[ -f "$opencode_file" || -f "$hermes_file" ]] || die "no AI agent on this machine"
+  if [[ -f "$opencode_file" ]] && NAME="$name" write_config "$opencode_file" json 'del(.mcp[strenv(NAME)])'; then
+    off=1
+    if [[ "$(yq eval ".\"$name\".sign_in // \"\"" "$services")" == browser ]] && command -v opencode > /dev/null; then
+      opencode mcp logout "$name" > /dev/null 2>&1 || true
+    fi
+  fi
+  if [[ -f "$hermes_file" ]] && NAME="$name" yq eval -e '.mcp_servers[strenv(NAME)]' "$hermes_file" > /dev/null 2>&1; then
+    off=1
+    # Hermes' own command also forgets the sign-in; it asks, and takes yes without a terminal.
+    if command -v hermes > /dev/null; then
+      hermes mcp remove "$name" < /dev/null > /dev/null 2>&1 || true
+    fi
+    NAME="$name" write_config "$hermes_file" yaml 'del(.mcp_servers[strenv(NAME)])' || true
+  fi
+  rm -f "$tokens/$name.token"
+  hermes_env "PATINA_${name^^}_TOKEN"
+  if [[ $off -eq 1 ]]; then
     say "ai: $name is off; a running agent keeps it until kortex restarts it (a quiet quarter of an hour)"
   else
     say "ai: $name was not on"
-  fi
-  rm -f "$tokens/$name.token"
-  if [[ "$(yq eval ".\"$name\".sign_in // \"\"" "$services")" == browser ]] && command -v opencode > /dev/null; then
-    opencode mcp logout "$name" > /dev/null 2>&1 || true
   fi
 }
 
 main() {
   case "${1:-status}" in
     status) status ;;
-    on) on "${2:-}" ;;
+    on)
+      shift
+      on "$@"
+      ;;
     off) off ;;
     connect) connect "${2:-}" ;;
     disconnect) disconnect "${2:-}" ;;

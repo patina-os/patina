@@ -13,6 +13,7 @@ agent: opencode              # what the `agent` keybinding opens (needs an AI or
 # the image's installer. local and cloud are the bundles manifest/bundles/ai-*.yaml name
 # with their `ai` key; the answer is kept in the state directory, PATINA_AI overrides.
 ai:
+  agent: opencode            # opencode | hermes; the agent preselected, and taken unattended
   mode: none                 # local | cloud | none; preselected, and taken when unattended;
                              # `patina ai on` turns the agent on later
   local:                     # Ollama on this machine: the models that fit the memory are
@@ -26,13 +27,27 @@ ai:
       - {model: "qwen3.5", min_memory_gb: 16, name: "Qwen 3.5 9B · Alibaba · 7 GB"}
       - {model: "qwen3.5:4b", min_memory_gb: 8, name: "Qwen 3.5 4B · Alibaba · 4 GB"}
   cloud:                     # offered in this order; `model` is opencode's provider/model,
-    providers:               # without one opencode picks the provider's default
-      - {id: mistral, name: "Mistral (EU · France)", model: "mistral/mistral-large-latest"}
+    providers:               # without one opencode picks the provider's default; Hermes
+                             # offers the ones with a `hermes` entry
+      - id: mistral
+        name: "Mistral (EU · France)"
+        model: "mistral/mistral-large-latest"
+        # Hermes' model entry and the key it reads from its .env: Mistral through Hermes'
+        # `custom` provider, Mistral's OpenAI-compatible API
+        hermes:
+          key: MISTRAL_API_KEY
+          model: {provider: custom, default: mistral-large-latest,
+                  base_url: "https://api.mistral.ai/v1", api_key: "${MISTRAL_API_KEY}"}
       - {id: scaleway, name: "Scaleway (EU · France)"}
       - {id: ovhcloud, name: "OVHcloud (EU · France)"}
       - {id: stackit, name: "STACKIT (EU · Germany)"}
-      - {id: anthropic, name: "Anthropic (US)", model: "anthropic/claude-sonnet-5-5"}
-      - {id: openai, name: "OpenAI (US)"}
+      - id: anthropic
+        name: "Anthropic (US)"
+        model: "anthropic/claude-sonnet-5-5"
+        hermes: {key: ANTHROPIC_API_KEY, model: {provider: anthropic, default: claude-sonnet-5-5}}
+      - id: openai
+        name: "OpenAI (US)"
+        hermes: {key: OPENAI_API_KEY, model: {provider: openai-api, default: gpt-5.5}}
 # The speed settings (docs/roadmap.md, Phase 2), after what CachyOS sets on Plasma.
 speed:
   animation_speed: 0.5       # factor on the animation length; 1 is Plasma's default, 0 none

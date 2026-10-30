@@ -234,14 +234,29 @@ ArtCraft Launcher from its release. Ollama is the local backend the agent tools 
 
 ## The AI agent
 
-`patina install` (and the installer's AI page) asks one question: no AI agent, one on
-this computer, or one from a cloud provider. The agent is opt-in: no agent is the
-answer preselected, and `patina ai on` turns one on at any time later. Both agents are
-[opencode](https://opencode.ai), free software:
+`patina install` (and the installer's AI page) asks which AI agent, if any, and where
+its model runs: on this computer or at a cloud provider. The agent is opt-in: no agent
+is the answer preselected, and `patina ai on` turns one on at any time later. Both are
+free software:
 
-- **none** (the default): no agent. `patina ai on local` or `patina ai on cloud`
-  installs one later, `patina ai off` turns it off again, `patina ai` says which one
-  this machine has.
+- **[opencode](https://opencode.ai)** (MIT), the default agent: it asks before every
+  change.
+- **[Hermes Agent](https://github.com/NousResearch/hermes-agent)** (MIT, Nous
+  Research): it remembers across conversations, and asks first only before a command
+  it counts as dangerous (deleting a folder, formatting a disk, piping a download into
+  a shell, root through `sudo -A`). It edits files, deletes a single file, stops a
+  process or installs an app from Flathub without asking. patina sets its approvals to
+  manual, so no second model decides which commands go through. It comes from its own
+  installer, pinned to a release, and takes about 2 GB with its own Python and
+  Node.js; it updates itself (`hermes update`). Its messaging, memory and scheduler
+  stay as Hermes ships them until you set them up (`hermes setup`); patina sets up
+  none of them.
+
+And where the model runs:
+
+- **none** (the default): no agent. `patina ai on local`, `patina ai on cloud` or
+  `patina ai on hermes cloud` installs one later, `patina ai off` turns it off again,
+  `patina ai` says which one this machine has.
 - **local**: Ollama runs the model on your machine. Setup offers the
   models of `ai.local.models` in `defaults/settings.yaml` that fit your memory and
   recommends one: NVIDIA's Nemotron 3.5 Bolt E4B, made for agents, from 16 GB, and
@@ -252,8 +267,10 @@ answer preselected, and `patina ai on` turns one on at any time later. Both agen
   (kortex's README has the details). Ollama with its GPU libraries and the model take
   several GB of disk and a while to download.
 - **cloud**: a provider you pick, Mistral and other European providers first, then
-  Anthropic and OpenAI. You log in with `opencode auth login`; the key stays in
-  opencode's own login, patina never sees it.
+  Anthropic and OpenAI. With opencode you log in with `opencode auth login`; the key
+  stays in opencode's own login, patina never sees it. Hermes offers Mistral (through
+  its OpenAI-compatible API), Anthropic and OpenAI; the install asks for the key on the
+  terminal and puts it into Hermes' own `~/.hermes/.env`, readable by you only.
 
 `patina ai off` leaves what was installed in place. Ollama takes the most space; its
 own installer has no uninstall, and these are its documented steps:
@@ -264,8 +281,9 @@ sudo rm -rf /etc/systemd/system/ollama.service /usr/local/bin/ollama /usr/local/
 sudo userdel ollama
 ```
 
-Meta+A opens it. It reads freely, and asks before anything that changes a file, runs a
-command or reaches a server (`defaults/apps.yaml`); `defaults/agent.md` tells it how
+Meta+A opens it. opencode reads freely, and asks before anything that changes a file,
+runs a command or reaches a server (`defaults/apps.yaml`); Hermes asks before what it
+counts as dangerous, as above. `defaults/agent.md` tells either how
 this machine is put together and how to change it the patina way. What needs root (a
 package, a driver, a system service) it runs with `sudo -A`, since it has no terminal
 for sudo to ask in: a password dialog in the theme's colours asks you, in the command
@@ -276,8 +294,8 @@ a KRunner runner in a repository of its own (so it also serves other Plasma desk
 shows the answer there and every action the agent wants to take with Allow once,
 Always and Deny, as the animation at the top shows. `ai` alone lists the recent
 conversations, `ai ›` shows the current one, and Open in terminal continues a
-conversation in opencode for longer work. Both AI answers install it, from its tagged
-release.
+conversation in the agent's own interface for longer work. Every AI answer installs it,
+from its tagged release.
 
 ### Services
 
@@ -295,11 +313,14 @@ patina ai disconnect linear
 ```
 
 Ask the agent to connect one and it runs the same command; a token it leaves to you on a
-terminal, so it never sees one. Tokens are kept in `~/.config/patina/services/`,
-readable by you only, and the agent's configuration names the file, never the token.
-A service connected while the agent works reaches it at once through kortex. Any other
-MCP server goes under `mcp` in `~/.config/opencode/opencode.json`
-([opencode's docs](https://opencode.ai/docs/mcp-servers/)), or ask the agent to add it.
+terminal, so it never sees one. Tokens are kept readable by you only, in
+`~/.config/patina/services/` for opencode and in Hermes' own `~/.hermes/.env`, and the
+agent's configuration names them, never the token itself. A service connected while
+the agent works reaches opencode at once through kortex, and Hermes from its next
+conversation. Any other MCP server goes under `mcp` in
+`~/.config/opencode/opencode.json` ([opencode's docs](https://opencode.ai/docs/mcp-servers/))
+or `mcp_servers` in `~/.hermes/config.yaml` (`hermes mcp add`), or ask the agent to add
+it.
 
 ## FAQ
 
