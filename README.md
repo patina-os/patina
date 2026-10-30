@@ -29,21 +29,25 @@ release; the arm64 image stays in CI until its own install check.
 ## The agent in the command palette
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/patina-os/kortex/main/docs/demo/kortex-demo.gif" alt="kortex in KRunner: a question answered, then PhotoCraft installed in two steps, each waiting for Allow once" width="720">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/patina-os/landing/main/assets/kortex-ask-dark.svg">
+    <img src="https://raw.githubusercontent.com/patina-os/landing/main/assets/kortex-ask-light.svg" alt="You ask kortex in plain words, it hands the request to opencode or Hermes, and the finished job comes back: printer fixed, PhotoCraft installed, Linear connected, a ticket filed, today's to-dos, a quiet fan" width="760">
+  </picture>
 </p>
 
 Meta+Space, `ai` and what you want: [kortex](https://github.com/patina-os/kortex), patina's
-KRunner runner, hands the request to the AI agent and shows the answer right in the
-command palette, and every action the agent wants to take as its own line with Allow
-once, Always and Deny. Nothing runs before you choose. Above, `ai install photocraft`:
-the agent knows PhotoCraft comes with the ArtCraft Launcher, patina's `artcraft`
-bundle, asks before it runs `patina install --bundles artcraft`, and asks again before
-it opens the launcher, where you pick PhotoCraft. The agent is
-[opencode](https://opencode.ai), free software, with a model on your machine or from a
-cloud provider you pick, once you turn it on; [The AI agent](#the-ai-agent) says more.
+KRunner runner, hands the request to the AI agent you picked and shows the answer right
+in the command palette, and every action the agent asks about as its own line with
+Allow once, Always and Deny. [opencode](https://opencode.ai) asks before every change;
+[Hermes Agent](https://github.com/NousResearch/hermes-agent) remembers you and asks only
+before a command it counts as dangerous. Both are free software, with a model on your
+machine or from a cloud provider you pick, once you turn one on;
+[The AI agent](#the-ai-agent) says more.
 
-<sub>A replay of a real run of kortex 0.1.0 with opencode and a scripted model; how it
-is made is in kortex's [`docs/demo/`](https://github.com/patina-os/kortex/tree/main/docs/demo).</sub>
+<sub>Examples drawn as a diagram, from patina's [landing page](https://patina-os.github.io/landing/);
+nothing real runs in it. The command palette itself is among the
+[screenshots](#screenshots), and kortex's [README](https://github.com/patina-os/kortex#readme)
+shows a recorded run.</sub>
 
 ## Screenshots
 
@@ -291,8 +295,8 @@ palette right away and in the terminal from the next login after the agent was
 installed. Nothing stores the password. In the command
 palette (Meta+Space), type `ai` and your request: [kortex](https://github.com/patina-os/kortex),
 a KRunner runner in a repository of its own (so it also serves other Plasma desktops),
-shows the answer there and every action the agent wants to take with Allow once,
-Always and Deny, as the animation at the top shows. `ai` alone lists the recent
+shows the answer there and every action the agent asks about with Allow once,
+Always and Deny. `ai` alone lists the recent
 conversations, `ai ›` shows the current one, and Open in terminal continues a
 conversation in the agent's own interface for longer work. Every AI answer installs it,
 from its tagged release.
@@ -304,6 +308,13 @@ turn one on: Linear and Notion sign in through the browser, GitHub with a person
 access token, and Nextcloud (calendar and tasks, notes, files, contacts, through the
 community [nextcloud-mcp-server](https://pypi.org/project/nextcloud-mcp-server/)) with
 an app password.
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/patina-os/landing/main/assets/kortex-things-dark.svg">
+    <img src="https://raw.githubusercontent.com/patina-os/landing/main/assets/kortex-things-light.svg" alt="kortex works with one thing at a time: your printer, settings and apps on the PC, your Nextcloud, Linear and GitHub online" width="500">
+  </picture>
+</p>
 
 ```sh
 patina ai connect               # the presets, and which are on
