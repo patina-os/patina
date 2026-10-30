@@ -8,6 +8,13 @@ All notable changes to patina are documented here. The format follows
 
 ### Added
 
+- With an AI agent turned on, any search in the start menu ends with "Ask the agent:
+  …" (search, ask, fix), below the apps and files Plasma finds: Enter sends it to the
+  agent and opens the conversation in the command palette, where its answer and Allow
+  once, Always and Deny are. `ai ›` in the start menu opens the conversation there too.
+  The start menu's own "Search…" is libplasma's and no setting changes it, so the row
+  says it instead. kortex 0.3.0; the start menu takes it from the next login, and
+  nothing reaches the agent before Enter.
 - Hermes Agent (MIT, Nous Research) as the second AI agent, next to opencode: the AI
   question asks for the agent, then where its model runs (`hermes-local`,
   `hermes-cloud`; `patina ai on hermes cloud` later). It comes from its own installer

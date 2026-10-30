@@ -78,7 +78,9 @@ packs. Audience: developers and privacy-minded users in the EU.
   user can read (October 2026). Its place in the command
   palette is kortex, a KRunner runner kept in a repository of its own
   (`patina-os/kortex`), which may use what patina's tooling may not (it is Python);
-  every AI bundle installs its tagged release, pinned in `manifest/upstream.yaml`.
+  every AI bundle installs its tagged release, pinned in `manifest/upstream.yaml`. Any
+  search in the start menu ends with asking the agent (search, ask, fix), which hands
+  it to the command palette; the menu's "Search…" is libplasma's and stays (October 2026).
 - Look: the default theme is aurora, made for OLED screens (October 2026, after the
   redesign whose eight directions `docs/design/futures.html` keeps): true black with
   panels one step above it, neon green as the accent and violet as the second colour.

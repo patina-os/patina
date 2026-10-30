@@ -298,8 +298,10 @@ installed. Nothing stores the password. In the command
 palette (Meta+Space), type `ai` and your request: [kortex](https://github.com/patina-os/kortex),
 a KRunner runner in a repository of its own (so it also serves other Plasma desktops),
 shows the answer there and every action the agent asks about with Allow once,
-Always and Deny. `ai` alone lists the recent
-conversations, `ai ›` shows the current one, and Open in terminal continues a
+Always and Deny. In the start menu any search ends with "Ask the agent" (search, ask,
+fix), below the apps and files it finds; Enter hands it to the command palette. `ai`
+alone lists the recent conversations, `ai ›` shows the current one, and Open in
+terminal continues a
 conversation in the agent's own interface for longer work. Every AI answer installs it,
 from its tagged release.
 

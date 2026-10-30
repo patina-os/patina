@@ -113,6 +113,9 @@ script -q -c 'patina install' ~/run1.log
   offers to ask the agent; Enter reopens KRunner on `ai ›` with the answer growing
   there (note whether it reads well or jumps); `ai switch to the light theme` shows an
   Allow / Always / Deny match before anything changes
+- [ ] with either agent, in the start menu (Meta): `fix my wifi` ends with "Ask the
+  agent: fix my wifi", below what Plasma finds; Enter closes the menu and opens the
+  conversation in the command palette
 - [ ] answered none: `patina ai` says none; `patina ai on cloud` installs opencode and
   kortex and asks for the login, and `patina ai off` takes Meta+A and `ai` in KRunner
   away again (opencode and kortex stay installed)
