@@ -60,8 +60,9 @@ blurred wallpaper, with the AI agent's page among the steps:
 
 The finished desktop, as the `desktop` workflow captures it (amd64, a Plasma X11
 session on a virtual framebuffer after `patina install`): aurora, the default theme,
-with its wallpaper, the centred bar of one-colour icons and kitty, the one
-see-through window, split in two: the fastfetch greeting beside btop.
+with its wallpaper, the bar of one-colour icons with the start button alone in its
+centre and the pinned apps at its left end, and kitty, the one see-through window,
+split in two: the fastfetch greeting beside btop.
 
 ![The patina desktop with the aurora theme](docs/screenshots/desktop-amd64.png)
 
@@ -75,9 +76,9 @@ none to run.
 ![KRunner with kortex in the middle of the desktop: the agent asks before it installs the artcraft bundle for PhotoCraft](docs/screenshots/command-palette-amd64.png)
 
 The start menu in aurora's light mode (`patina theme mode light`), over its own
-DeepMind wallpaper: glass the wallpaper glows through, the category icons in the
-accent, the apps by their names alone, and the small patina mark as the user's
-picture while it is Debian's.
+DeepMind wallpaper, open in the middle of the screen's width above its button: glass
+the wallpaper glows through, the category icons in the accent, the apps by their names
+alone, and the small patina mark as the user's picture while it is Debian's.
 
 ![The patina start menu in the light mode](docs/screenshots/start-menu-amd64.png)
 
