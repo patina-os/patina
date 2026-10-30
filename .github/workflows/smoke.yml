@@ -205,6 +205,27 @@ jobs:
           bin/patina theme mode dark
           grep -qx "background $dark_bg" "$HOME/.config/kitty/patina.conf"
           test ! -e "$light_wp"
+      - name: The start menu's KWin script comes and goes with start_menu.position
+        # The default (button, with the centered bar) installs no KWin script; the
+        # grouped bar with start_menu.position center installs patina's and turns it on
+        # in kwinrc, and back to the defaults it is gone and turned off.
+        run: |
+          theme="$(yq eval '.theme' defaults/settings.yaml)"
+          script="$HOME/.local/share/kwin/scripts/patina-start-menu"
+          enabled() { kreadconfig6 --file kwinrc --group Plugins --key patina-start-menuEnabled; }
+          test ! -e "$script"
+          saved="$(mktemp)"
+          cp defaults/settings.yaml "$saved"
+          yq eval -i '.panel.layout = "grouped" | .start_menu.position = "center"' \
+            defaults/settings.yaml
+          bin/patina theme set "$theme"
+          test -s "$script/metadata.json"
+          grep -q 'workspace.windowAdded' "$script/contents/code/main.js"
+          [[ "$(enabled)" == true ]]
+          cp "$saved" defaults/settings.yaml
+          bin/patina theme set "$theme"
+          test ! -e "$script"
+          [[ "$(enabled)" == false ]]
       - name: The terminal and its tools rendered
         # desktops/terminal/: kitty carries the palette, btop and neovim get their own
         # files, and neovim loads the colour scheme when nothing else chose one.

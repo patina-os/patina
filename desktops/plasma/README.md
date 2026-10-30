@@ -110,6 +110,17 @@ Files, from `templates/`, each named after the theme:
   every app that opens. No KWin rule can move it: its window has no title and the
   same class and type (`_KDE_NET_WM_WINDOW_TYPE_APPLET_POPUP`) as the calendar's and
   the tray's, as the desktop workflow's session showed
+- with `panel.layout: grouped` and `start_menu.position: center`, a KWin script of
+  patina's own, `~/.local/share/kwin/scripts/patina-start-menu/` (from
+  `templates/start-menu.js` and `templates/kwin-script-metadata.json`), turned on in
+  `kwinrc` (`[Plugins] patina-start-menuEnabled`): it moves the start menu to the
+  middle of the screen's width once Plasma has placed it over its button, and again
+  when Plasma places it anew (a resize). Name and class cannot tell the start menu from
+  the bar's other popups, so it takes the panel popup that opens in the left three
+  quarters of the screen; the tray's and the clock's open at its right end. Any other
+  value, or the centered bar, which centres the button itself, removes it and turns it
+  off. KWin loads and unloads it when it reloads its settings; a new version of it runs
+  from the next login
 - with an AI bundle (`ai-local`, `ai-cloud`, `hermes-local`, `hermes-cloud`) or the
   agents bundle:
   `~/.local/share/applications/patina-agent.desktop`, which opens the command `agent`

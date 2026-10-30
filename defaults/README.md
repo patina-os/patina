@@ -16,7 +16,8 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   big, the bar: the start button alone in its centre or leading the task icons there,
   or the desktop's own, and which actions' apps are pinned to it), where
   the command palette opens (the middle of the screen or the top), the start menu (a
-  menu above its button or a full-screen dashboard, its folders, AI and self-hosting,
+  menu above its button, or moved to the middle of the screen's width for the grouped
+  bar, or a full-screen dashboard, its folders, AI and self-hosting,
   its favourites as desktop entries, and the grain, glass, rim and selection on it and the
   other popups), all as
   desktop-agnostic words the renderer translates. Under `ai`, the AI agent: the agent and the answer preselected and taken unattended

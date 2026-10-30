@@ -8,6 +8,13 @@ All notable changes to patina are documented here. The format follows
 
 ### Added
 
+- `start_menu.position: center` in `defaults/settings.yaml` opens the start menu in the
+  middle of the screen's width with the Windows 11 bar as well (`panel.layout:
+  grouped`, the start button leading the task icons): a KWin script of patina's own
+  moves it there once Plasma has placed it over its button. The default stays
+  `button`, since the centred bar already puts the button, and so the menu, in the
+  middle. Set both and run `patina theme set <name> --layout`, which lays out the bar
+  again.
 - With an AI agent turned on, any search in the start menu ends with "Ask the agent:
   …" (search, ask, fix), below the apps and files Plasma finds: Enter sends it to the
   agent and opens the conversation in the command palette, where its answer and Allow
