@@ -100,6 +100,9 @@ All notable changes to patina are documented here. The format follows
   "Source Sans 3 10" each time.
 - `patina ai connect linear` (and notion) without a terminal, as the agent runs it,
   stopped at a question the preset does not have.
+- "Open in terminal" on the agent's answer in the command palette, and Dolphin's "Open
+  Terminal Here", opened Konsole, which Debian's Plasma brings, rather than kitty:
+  Plasma's terminal is kitty now wherever a bundle installed it.
 
 ## [0.1.0-alpha.4] - 2026-10-29
 

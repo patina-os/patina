@@ -153,7 +153,9 @@ Settings, through `kwriteconfig6`, each written only when it differs:
   copy them only with a display and never for a scheme whose name is already set, so
   a palette change or a mode switch would not arrive), accent colour, fonts from
   `defaults/settings.yaml`,
-  look-and-feel package, widget style, icon theme; `kcminputrc` the cursor theme,
+  look-and-feel package, widget style, icon theme, and kitty as the terminal Plasma
+  opens for others (`TerminalApplication`, when a bundle brought kitty: Dolphin's "Open
+  Terminal Here", kortex's "Open in terminal"); `kcminputrc` the cursor theme,
   `plasmarc` the desktop theme, `kscreenlockerrc` the wallpaper for the lock screen,
   `kcm-about-distrorc` the variant About this System shows under Debian's name (patina,
   and `patina credits` for who made it)

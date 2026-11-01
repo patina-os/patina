@@ -756,6 +756,13 @@ kset kdeglobals Theme "${tpl[ICONS]}" Icons
 kset kcminputrc cursorTheme "${tpl[CURSORS]}" Mouse
 kset plasmarc name "${tpl[DESKTOP_THEME]}" Theme
 kset konsolerc DefaultProfile "patina-$theme.profile" "Desktop Entry"
+# The terminal Plasma opens for others (Dolphin's "Open Terminal Here", kortex's "Open
+# in terminal") is kitty, patina's, where a bundle brought it; Konsole comes with
+# Debian's Plasma and would be the one otherwise.
+if command -v kitty > /dev/null; then
+  kset kdeglobals TerminalApplication kitty General
+  kset kdeglobals TerminalService kitty.desktop General
+fi
 if [[ -n "$favorites" ]]; then
   kset kicker-extra-favoritesrc Prepend "$favorites" General
 else
