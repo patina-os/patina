@@ -234,14 +234,18 @@ bootstrap_yq() {
 }
 
 list_bundles() {
-  local b f kind
+  local b f kind width=0
+  # The names in a column as wide as the longest (hermes-local is wider than eight).
+  for b in $(all_bundles); do
+    (( ${#b} <= width )) || width=${#b}
+  done
   for b in $(all_bundles); do
     f="$PATINA_PATH/manifest/bundles/$b.yaml"
     kind=opt-in
     yq eval -e '.default == true' "$f" > /dev/null 2>&1 && kind=default
     yq eval -e '.required == true' "$f" > /dev/null 2>&1 && kind=always
     yq eval -e '.ai' "$f" > /dev/null 2>&1 && kind=ai
-    printf '%-8s %-9s %s\n' "$b" "($kind)" "$(yq eval '.description' "$f")"
+    printf '%-*s %-9s %s\n' "$width" "$b" "($kind)" "$(yq eval '.description' "$f")"
   done
 }
 
