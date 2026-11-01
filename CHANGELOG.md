@@ -98,6 +98,9 @@ All notable changes to patina are documented here. The format follows
   GTK settings as changed after every login: they are written as Plasma's GTK bridge
   writes them (`true`, "Source Sans 3,  10"), which rewrote patina's `1` and
   "Source Sans 3 10" each time.
+- After a failed install (Debian's mirror out of reach, say), the installer's next try
+  offered no "Erase disk": the first try had turned the new system's swap on, and the
+  disk counted as in use. The installer turns every swap off before it starts.
 - The installer's disk page and summary showed the partitions' names black on black:
   Calamares draws them in black whatever the stylesheet says, so the legend under the
   bars sits on a light card now. Its steps no longer outgrow the sidebar on a 1280x800

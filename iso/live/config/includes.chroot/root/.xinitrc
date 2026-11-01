@@ -35,6 +35,11 @@ if [[ -z "$(ip route show default 2> /dev/null)" ]] &&
     xterm -maximized -title "Connect to Wi-Fi, then Quit to start the installer" \
       -e nmtui connect || true
 fi
+# Calamares' mount step turns the new system's swap on for the live system, which has
+# none of its own, and nothing turns it off: after a failed install the next try found
+# the disk in use and offered no "Erase disk". A fresh start of the installer finds
+# every swap off.
+swapoff -a 2> /dev/null || true
 dbus-run-session -- calamares &
 session_pid=$!
 until pgrep -x calamares > /dev/null; do
