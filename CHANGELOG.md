@@ -98,6 +98,13 @@ All notable changes to patina are documented here. The format follows
   GTK settings as changed after every login: they are written as Plasma's GTK bridge
   writes them (`true`, "Source Sans 3,  10"), which rewrote patina's `1` and
   "Source Sans 3 10" each time.
+- The image's first boot shows the patina mark on tty1 again (it printed it only for an
+  unattended run, and the installer's answers make it ask nothing that would), says
+  that sudo asks for the password given to the installer, and keeps everything the
+  install prints in `/var/log/patina-firstboot.log`: the journal had none of it, so
+  the log `docs/vm-run.md` asked testers for was empty. The clone gets three tries a
+  little apart, and a failed clone or install is held on tty1 until Enter, where the
+  login screen covered it at once.
 - After a failed install (Debian's mirror out of reach, say), the installer's next try
   offered no "Erase disk": the first try had turned the new system's swap on, and the
   disk counted as in use. The installer turns every swap off before it starts.

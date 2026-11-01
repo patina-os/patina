@@ -6,6 +6,7 @@ set -euo pipefail
 
 state_dir=/var/lib/patina
 done_marker="$state_dir/firstboot-done"
+log=/var/log/patina-firstboot.log
 repo_url="${PATINA_REPO_URL:-https://github.com/patina-os/patina.git}"
 repo_ref="${PATINA_REPO_REF:-main}"
 
@@ -19,8 +20,18 @@ repo_ref="${PATINA_REPO_REF:-main}"
 [[ -r /etc/patina/firstboot.env ]] && source /etc/patina/firstboot.env
 
 say() {
-  # The console (tty1 here) and, with console=ttyS0, the serial line the test watches.
+  # The console (tty1 here) and, with console=ttyS0, the serial line the test watches;
+  # the journal too (journalctl -u patina-firstboot), for a test report.
   printf 'patina firstboot: %s\n' "$*" | tee /dev/console >/dev/null 2>&1 || true
+  logger -t patina-firstboot -- "$*" 2>/dev/null || true
+}
+
+# A failure is said on tty1, and the login screen would cover it at once: hold it there
+# until Enter, or for five minutes, so it can be read.
+hold() {
+  say "$*"
+  printf '\nPress Enter to go on to the login screen.\n'
+  read -r -t 300 _ || true
 }
 
 finish() {
@@ -32,40 +43,57 @@ clear 2>/dev/null || true
 # The user Calamares created: the first regular account with a home directory.
 user="$(getent passwd | awk -F: '$3 >= 1000 && $3 < 60000 && $6 ~ /^\/home\// { print $1; exit }')"
 if [[ -z "$user" ]]; then
-  say "no regular user found; run 'git clone $repo_url' and 'patina install' by hand"
+  hold "no regular user found; run 'git clone $repo_url' and 'patina install' by hand"
   finish
   exit 0
 fi
 home="$(getent passwd "$user" | cut -d: -f6)"
 clone="$home/.local/share/patina"
 
+# The network can come up a little after network-online.target (Wi-Fi, a slow DHCP
+# server, DNS), so the clone gets three tries before it gives up.
 if [[ ! -d "$clone/.git" ]]; then
-  say "cloning $repo_url ($repo_ref) for $user"
   runuser -u "$user" -- mkdir -p "$home/.local/share" "$home/.local/bin"
-  if ! runuser -u "$user" -- git clone --branch "$repo_ref" "$repo_url" "$clone"; then
-    say "clone failed (no network?); log in and run Path A by hand: git clone $repo_url"
-    finish
-    exit 0
-  fi
+  for try in 1 2 3; do
+    say "cloning $repo_url ($repo_ref) for $user"
+    runuser -u "$user" -- git clone --branch "$repo_ref" "$repo_url" "$clone" && break
+    rm -rf "$clone"
+    if [[ $try -eq 3 ]]; then
+      hold "the clone failed (no network?); log in and run Path A by hand:" \
+        "git clone $repo_url ~/.local/share/patina, then ~/.local/share/patina/bin/patina install"
+      finish
+      exit 0
+    fi
+    sleep $((try * 20))
+  done
 fi
 runuser -u "$user" -- ln -sfn "$clone/bin/patina" "$home/.local/bin/patina"
 
-# The mark on the console; the questions `patina install` asks print it themselves.
-if [[ -n "${PATINA_UNATTENDED:-}" && -r "$clone/branding/logo.txt" ]]; then
+# The mark on the console, unless the install asks its questions, which print it
+# themselves: the installer's answers (PATINA_BUNDLES) or an unattended run ask none.
+if [[ -n "${PATINA_UNATTENDED:-}${PATINA_BUNDLES:-}" && -r "$clone/branding/logo.txt" ]]; then
   cat "$clone/branding/logo.txt"
   echo
 fi
-say "running 'patina install' as $user"
+# sudo asks for the password the installer set, as on Path A, on this terminal.
+say "running 'patina install' as $user; sudo asks for $user's password, the one" \
+  "given to the installer; the output is kept in $log"
 export PATINA_THEME="${PATINA_THEME:-}" PATINA_UNATTENDED="${PATINA_UNATTENDED:-}" \
   PATINA_AI_AGENT="${PATINA_AI_AGENT:-}" PATINA_AI="${PATINA_AI:-}" \
   PATINA_AI_PROVIDER="${PATINA_AI_PROVIDER:-}"
 args=()
 [[ -z "${PATINA_BUNDLES:-}" ]] || args+=(--bundles "$PATINA_BUNDLES")
-if runuser -u "$user" \
-    --whitelist-environment=PATINA_THEME,PATINA_UNATTENDED,PATINA_AI_AGENT,PATINA_AI,PATINA_AI_PROVIDER \
-    -- "$clone/bin/patina" install "${args[@]}"; then
+# script(1) keeps what the install prints, as docs/vm-run.md does for Path A, and gives
+# it a terminal of its own, so its questions and sudo's password prompt still work. A
+# run by hand adds to the log.
+command="$(printf '%q ' runuser -u "$user" \
+  --whitelist-environment=PATINA_THEME,PATINA_UNATTENDED,PATINA_AI_AGENT,PATINA_AI,PATINA_AI_PROVIDER \
+  -- "$clone/bin/patina" install "${args[@]}")"
+[[ -e "$log" ]] || install -m 0600 /dev/null "$log"
+if SHELL=/bin/bash script --quiet --append --flush --return --command "$command" "$log"; then
   say "done"
 else
-  say "patina install exited with an error; run 'patina install' again after logging in"
+  hold "patina install exited with an error (its output: sudo less -R $log);" \
+    "log in and run 'patina install' again"
 fi
 finish

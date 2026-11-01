@@ -56,12 +56,13 @@ they are.
   (Standard), more apps (none) and the theme (aurora);
   the install page shows the progress bar and the six slides, ten seconds each, and it
   ends without an error
-- [ ] first boot: tty1 shows the mark and runs without a question (a cloud agent asks
-  its provider and key), and it ends with `patina firstboot: done`; then the login
-  screen with the theme's wallpaper
+- [ ] first boot: tty1 shows the mark, and sudo asks for the password you gave the
+  installer (again if the install outlasts sudo's 15 minutes between two steps); no
+  other question (a cloud agent asks its provider and key), and it ends with
+  `patina firstboot: done`; then the login screen with the theme's wallpaper
 - [ ] after the first login: take a snapshot, "patina-installed", and
-  `journalctl -b -u patina-firstboot > ~/run1.log` keeps the first run's log for the
-  report
+  `sudo cat /var/log/patina-firstboot.log > ~/run1.log` keeps the first run's log for
+  the report (`journalctl -b -u patina-firstboot` has its steps and warnings)
 
 ## 3. Before patina
 

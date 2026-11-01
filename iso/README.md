@@ -99,12 +99,19 @@ iso/
    into the user's `~/.local/share/patina`, links `~/.local/bin/patina` and runs
    `patina install` with the installer's answers from `/etc/patina/firstboot.env`
    (`PATINA_AI`, `PATINA_BUNDLES` as `--bundles`, `PATINA_THEME`), so it asks nothing
-   on tty1 but a cloud agent's provider and opencode's own key login. An image older
+   on tty1 but the user's password for sudo, as Path A's install does (the password
+   given to the installer), and a cloud agent's provider and opencode's own key login.
+   The mark is printed first, since the install itself asks no question that would
+   print it. An image older
    than the apps and theme pages writes `PATINA_AI` alone, and the install asks the
-   theme and the bundles there. Then it writes
-   `/var/lib/patina/firstboot-done` and never runs again. A failed clone or install
-   prints the Path A command to run by hand and still marks the boot done, so a machine
-   never loops on first boot.
+   theme and the bundles there. What the install prints is kept in
+   `/var/log/patina-firstboot.log` (root's, through `script`, as `docs/vm-run.md` keeps
+   Path A's), its steps in the journal. Then it writes
+   `/var/lib/patina/firstboot-done` and never runs again. The clone gets three tries a
+   little apart, for a network that comes up late; a failed clone or install says what
+   to run by hand and holds that on tty1 until Enter (or five minutes), before the
+   login screen covers it, and still marks the boot done, so a machine never loops on
+   first boot.
 
 That is Path A, executed for the user. The image carries only the installer, its
 configuration, the network stack and firmware, so it stays under a gigabyte (873 MB
