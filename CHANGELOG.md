@@ -70,6 +70,9 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- Meta+A opens the agent the machine has: after `patina ai on opencode` on a machine
+  that had Hermes Agent, it still opened Hermes, since the record of installed bundles
+  keeps Hermes' bundle, while kortex talked to opencode.
 - The bar's show-desktop button at its right end is a glyph in the text colour like the
   rest of the bar, not a green block: its symbolic icon fell back to the desktop folder
   in the accent, which patina's icon theme holds.
