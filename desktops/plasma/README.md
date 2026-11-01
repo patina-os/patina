@@ -19,7 +19,9 @@ Files, from `templates/`, each named after the theme:
   own, `~/.local/share/icons/patina-<theme>/`: it inherits that icon theme and holds
   only its folder icons, recoloured to the accent (the accent, 80 % and 35 % of it in
   place of the icon theme's blues, following link chains such as inode-directory ->
-  folder -> folder-blue), and a monochrome glyph under the name of every app's icon
+  folder -> folder-blue), with the icon theme's own symbolic glyphs of those folders
+  beside them (a symbolic name falls back to the coloured folder in the first theme
+  that has it, so the bar's show-desktop button was a green block), and a monochrome glyph under the name of every app's icon
   (`mono`: the Icon= of each installed desktop entry a menu shows, mapped to a glyph,
   `other` for the rest; names the icon theme uses for folders or file types are left
   alone), so the bar, the menu and the title bars are one colour, the colour scheme's

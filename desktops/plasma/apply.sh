@@ -363,6 +363,16 @@ if [[ -n "$variant" && -f "/usr/share/icons/$icons_base/index.theme" ]]; then
     cp -L "${links[@]}" "$out/$size/places/"
     sed -i "${sed_args[@]}" "$out/$size/places"/*.svg
   done
+  # A symbolic name falls back to the name without -symbolic in the first icon theme
+  # that has it, this one with its coloured folders, before the icon theme it inherits
+  # is asked: the bar's show-desktop button (user-desktop-symbolic) came out as the green
+  # desktop folder. So the symbolic glyphs of those folders come along, unchanged.
+  for f in "$out"/*/places/*.svg; do
+    g="/usr/share/icons/$icons_base/32x32/symbolic/places/$(basename "$f" .svg)-symbolic.svg"
+    [[ -e "$g" && ! -e "$out/32x32/symbolic/places/${g##*/}" ]] || continue
+    mkdir -p "$out/32x32/symbolic/places"
+    cp -L "$g" "$out/32x32/symbolic/places/"
+  done
   # Every app in one colour (mono in icons.yaml): the icon each installed desktop entry
   # names becomes a glyph of the icon theme, which takes the colour scheme's text
   # colour. A name the icon theme also uses outside its apps (a folder, a file type) is

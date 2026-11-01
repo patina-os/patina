@@ -70,6 +70,9 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- The bar's show-desktop button at its right end is a glyph in the text colour like the
+  rest of the bar, not a green block: its symbolic icon fell back to the desktop folder
+  in the accent, which patina's icon theme holds.
 - Plasma's own shortcuts keep working beside patina's: Alt+F4 closes a window again
   next to Meta+Q, Alt+Space and Alt+F2 open the command palette next to Meta+Space,
   Meta+W the overview next to Meta+Tab, and Meta+Shift+S takes a screenshot next to
