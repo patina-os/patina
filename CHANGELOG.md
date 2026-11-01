@@ -57,6 +57,9 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- The image's boot menu says what it starts: Install patina, and Install patina
+  (fail-safe mode). They were live-build's "Live system (amd64)" and "Live system
+  (amd64 fail-safe mode)", though the image has no live system to use.
 - The start button sits alone in the centre of the bar and the task icons at its left
   end, so the start menu opens in the middle of the screen's width. Plasma opens the
   menu over its button, and with the button leading the centred icons it opened left of

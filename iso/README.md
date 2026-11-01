@@ -22,7 +22,8 @@ iso/
                             the live system; not part of the image
   live/arch/<arch>.list.chroot  the few per-architecture packages (signed GRUB and shim,
                             microcode); build.sh copies the right one in
-  live/config/hooks/        one build hook: boot the live system into the installer
+  live/config/hooks/        two build hooks: boot the live system into the installer,
+                            and name the boot menu's entries Install patina
   live/config/includes.chroot/
     etc/calamares/settings.conf        the pages shown and the steps run
     etc/calamares/modules/*.conf       one file per step; packages.conf is the list the
@@ -60,7 +61,9 @@ iso/
 ## How an install works
 
 1. Boot the image. The GRUB menu shows the theme's wallpaper with the block-letter name
-   centred above a centred menu column. The live
+   centred above a centred menu column: Install patina, Install patina (fail-safe
+   mode, live-build's options for awkward firmware) and Utilities (the firmware's
+   settings, a check of the boot medium). The live
    system starts `patina-ui.service`: an X session on tty7 with Calamares full screen
    in the theme's palette and fonts and in British English (`locales=` in
    `auto/config`; the welcome page offers the others), the block-letter name on the

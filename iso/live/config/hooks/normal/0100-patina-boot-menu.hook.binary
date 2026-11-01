@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# live-build hook, run once in the image's binary tree before the ISO and its checksums
+# are made: name the boot menu's entries for what they start. live-build calls them
+# "Live system (<arch>)", but the image has no live system to use, only the installer.
+set -euo pipefail
+
+sed -i -E \
+  -e 's/"Live system \(([a-z0-9]+) fail-safe mode\)"/"Install patina (fail-safe mode)"/' \
+  -e 's/"Live system \(([a-z0-9]+)\)"/"Install patina"/' \
+  boot/grub/grub.cfg
+grep -q '"Install patina"' boot/grub/grub.cfg || {
+  echo "0100-patina-boot-menu: no live entry to name in boot/grub/grub.cfg" >&2
+  exit 1
+}

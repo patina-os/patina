@@ -48,7 +48,7 @@ they are.
 - [ ] download `patina-amd64.hybrid.iso` and `SHA256SUMS` from the release;
   `sha256sum -c SHA256SUMS` says `OK`
 - [ ] the boot menu: the theme's wallpaper, patina in block letters centred above the
-  menu, readable
+  menu, readable; its first entry is Install patina
 - [ ] the installer's welcome page: the square mark in the sidebar, the wordmark on the
   page, the wallpaper behind it
 - [ ] answer the installer: erase disk, a user, the agent page (none, unless you test an
