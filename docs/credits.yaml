@@ -98,6 +98,10 @@ groups:
         by: Anomaly, the team behind SST
         for: the AI agent, free software
         url: https://opencode.ai
+      - name: Hermes Agent
+        by: Nous Research
+        for: the second AI agent, free software
+        url: https://github.com/NousResearch/hermes-agent
       - name: Ollama
         by: the Ollama team
         for: running the agent's model on this machine

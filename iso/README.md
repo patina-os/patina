@@ -22,7 +22,8 @@ iso/
                             the live system; not part of the image
   live/arch/<arch>.list.chroot  the few per-architecture packages (signed GRUB and shim,
                             microcode); build.sh copies the right one in
-  live/config/hooks/        one build hook: boot the live system into the installer
+  live/config/hooks/        two build hooks: boot the live system into the installer,
+                            and name the boot menu's entries Install patina
   live/config/includes.chroot/
     etc/calamares/settings.conf        the pages shown and the steps run
     etc/calamares/modules/*.conf       one file per step; packages.conf is the list the
@@ -60,7 +61,9 @@ iso/
 ## How an install works
 
 1. Boot the image. The GRUB menu shows the theme's wallpaper with the block-letter name
-   centred above a centred menu column. The live
+   centred above a centred menu column: Install patina, Install patina (fail-safe
+   mode, live-build's options for awkward firmware) and Utilities (the firmware's
+   settings, a check of the boot medium). The live
    system starts `patina-ui.service`: an X session on tty7 with Calamares full screen
    in the theme's palette and fonts and in British English (`locales=` in
    `auto/config`; the welcome page offers the others), the block-letter name on the
@@ -89,7 +92,9 @@ iso/
    `modules/packages.conf`, in five installs, smallest first, so the progress bar moves;
    apt shows nothing while each runs), the live tooling and Calamares are removed from
    it, SDDM is set up and the hardware clock set (after the packages that bring them), the
-   first-boot unit is enabled (`shellprocess-firstboot.conf`), GRUB is installed with
+   first-boot unit is enabled and what the image added for the installer alone (its
+   configuration and branding, the installer screen, the console's mark) and apt's
+   download cache are removed (`shellprocess-firstboot.conf`), GRUB is installed with
    Debian's signed shim into `EFI/debian`, where Debian's packages update it, and shim
    also at the removable path (`shellprocess-efi-removable.conf`), so the machine boots
    when the firmware loses its boot entries.
@@ -97,12 +102,19 @@ iso/
    into the user's `~/.local/share/patina`, links `~/.local/bin/patina` and runs
    `patina install` with the installer's answers from `/etc/patina/firstboot.env`
    (`PATINA_AI`, `PATINA_BUNDLES` as `--bundles`, `PATINA_THEME`), so it asks nothing
-   on tty1 but a cloud agent's provider and opencode's own key login. An image older
+   on tty1 but the user's password for sudo, as Path A's install does (the password
+   given to the installer), and a cloud agent's provider and opencode's own key login.
+   The mark is printed first, since the install itself asks no question that would
+   print it. An image older
    than the apps and theme pages writes `PATINA_AI` alone, and the install asks the
-   theme and the bundles there. Then it writes
-   `/var/lib/patina/firstboot-done` and never runs again. A failed clone or install
-   prints the Path A command to run by hand and still marks the boot done, so a machine
-   never loops on first boot.
+   theme and the bundles there. What the install prints is kept in
+   `/var/log/patina-firstboot.log` (root's, through `script`, as `docs/vm-run.md` keeps
+   Path A's), its steps in the journal. Then it writes
+   `/var/lib/patina/firstboot-done` and never runs again. The clone gets three tries a
+   little apart, for a network that comes up late; a failed clone or install says what
+   to run by hand and holds that on tty1 until Enter (or five minutes), before the
+   login screen covers it, and still marks the boot done, so a machine never loops on
+   first boot.
 
 That is Path A, executed for the user. The image carries only the installer, its
 configuration, the network stack and firmware, so it stays under a gigabyte (873 MB
@@ -228,18 +240,16 @@ release, never edited.
 
 ## Still to verify
 
-- The look on a screen, listed under the release gate above: Calamares scales
-  `logo-square.png` to 80x80 and `welcome.png` (the block-letter name of
-  `branding/export/` rendered with `rsvg-convert`) on the welcome page; `productWallpaper`
-  tiles on screens larger than 1920x1080 (if it looks wrong, the veiled wallpaper goes
-  and `#mainApp`'s background stays); the stylesheet over Fusion on Calamares' own
-  widgets (the partition bars keep Calamares' colours by design); GRUB's `crop` scaling
-  of the splash at live-build's 800x600 mode. Written against Calamares 3.3.14's source
-  and still to be seen on a screen: the sidebar's steps (`qproperty-spacing`, margin
-  and padding on `#sidebarMenuApp`, the `#AARRGGBB` style colours), the glass of the
-  sidebar and of the unnamed button bar (`#backgroundWidget > QWidget`), the blurred
-  strip assuming the sidebar's 190 px, and the accent icons of the welcome page's
-  links and About (`qproperty-icon`, applied when Qt polishes the buttons).
+- The look on a real screen. Seen in QEMU at 1280x800 in November 2026, through a
+  whole install: the boot menu over its splash at 800x600, the welcome page with the
+  square mark and the block-letter name, the wallpaper veiled behind every page, the
+  sidebar's steps and the glass of the sidebar and the button bar, the accent icons,
+  the five question pages and their pictures, the six slides, and the finished page.
+  That run found the partition legend black on black (Calamares draws its names in
+  black whatever the style says; it has a light card now) and the steps outgrowing the
+  sidebar (no spacing now). Still to see: `productWallpaper` on screens larger than
+  1920x1080 (if it tiles, the veiled wallpaper goes and `#mainApp`'s background
+  stays), and a laptop's own screen and scaling.
 
 - `grub-install` picks the signed images only when `grub-efi-<arch>-signed` and
   `shim-signed` are present in the target; they come from the live system

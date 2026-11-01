@@ -58,8 +58,9 @@ packs. Audience: developers and privacy-minded users in the EU.
   opt-in bundle because most of them are proprietary; Ollama is the local backend they
   point at, and their desktop integration is a shortcut and a terminal profile, as data.
   The app bundles, the theme and the AI agent are questions of the install and pages of
-  the installer, so the image's first boot asks nothing more (but a cloud agent's
-  provider and key). The AI agent: opencode, a
+  the installer, so the image's first boot asks nothing more but the user's password,
+  which sudo asks for there as on Path A (accepted in November 2026), and a cloud
+  agent's provider and key. The AI agent: opencode, a
   free agent, with a model Ollama runs on the machine, with a cloud provider the user
   picks (European ones first, the key in opencode's own login) or none (the default:
   the agent is opt-in, `patina ai on` turns it on later), as the `ai-local` and

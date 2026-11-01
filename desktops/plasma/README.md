@@ -19,7 +19,9 @@ Files, from `templates/`, each named after the theme:
   own, `~/.local/share/icons/patina-<theme>/`: it inherits that icon theme and holds
   only its folder icons, recoloured to the accent (the accent, 80 % and 35 % of it in
   place of the icon theme's blues, following link chains such as inode-directory ->
-  folder -> folder-blue), and a monochrome glyph under the name of every app's icon
+  folder -> folder-blue), with the icon theme's own symbolic glyphs of those folders
+  beside them (a symbolic name falls back to the coloured folder in the first theme
+  that has it, so the bar's show-desktop button was a green block), and a monochrome glyph under the name of every app's icon
   (`mono`: the Icon= of each installed desktop entry a menu shows, mapped to a glyph,
   `other` for the rest; names the icon theme uses for folders or file types are left
   alone), so the bar, the menu and the title bars are one colour, the colour scheme's
@@ -101,7 +103,10 @@ Files, from `templates/`, each named after the theme:
   defaults, so with `--layout` inside a session the renderer unlinks those (the browser,
   Kontact, System Settings, Dolphin, Discover) and links patina's through the activity
   manager's D-Bus API (`org.kde.ActivityManager.ResourcesLinking`); favourites the user
-  added stay. Kickoff always opens centred above its button (libplasma's
+  added stay. The layout script also writes their order for the start menu it makes
+  (`kactivitymanagerd-statsrc`, `Favorites-…instance-<id>-global`), since a new start
+  menu keeps none and would show linked favourites in any order; Kickoff reads it when
+  Plasma starts, so the order arrives with the next login. Kickoff always opens centred above its button (libplasma's
   `PopupPlasmaWindow` anchors every panel popup to its applet), and Plasma centres on
   the screen whatever sits between a bar's two expanding spacers (`panelspacer`'s
   `optimalSize`), so `centered` puts the button alone between them and the menu opens
@@ -148,7 +153,9 @@ Settings, through `kwriteconfig6`, each written only when it differs:
   copy them only with a display and never for a scheme whose name is already set, so
   a palette change or a mode switch would not arrive), accent colour, fonts from
   `defaults/settings.yaml`,
-  look-and-feel package, widget style, icon theme; `kcminputrc` the cursor theme,
+  look-and-feel package, widget style, icon theme, and kitty as the terminal Plasma
+  opens for others (`TerminalApplication`, when a bundle brought kitty: Dolphin's "Open
+  Terminal Here", kortex's "Open in terminal"); `kcminputrc` the cursor theme,
   `plasmarc` the desktop theme, `kscreenlockerrc` the wallpaper for the lock screen,
   `kcm-about-distrorc` the variant About this System shows under Debian's name (patina,
   and `patina credits` for who made it)
@@ -176,8 +183,11 @@ Settings, through `kwriteconfig6`, each written only when it differs:
   through `actions.yaml`: a `.desktop` file's `_launch` (kitty, KRunner, Dolphin,
   Spectacle, the default web browser from `xdg-settings`, the agent launcher, the cheat
   sheet) or a KWin,
-  ksmserver or plasmashell action. A service that is not installed is skipped with a
-  warning; Plasma's own chords that collide are unbound (`unbind` in `actions.yaml`)
+  ksmserver or plasmashell action. Plasma's own chord for the action (an app's
+  `X-KDE-Shortcuts`, an action's `default`) keeps working beside patina's: Alt+F4
+  still closes a window, Alt+Space still opens KRunner, Meta+W the overview. A service
+  that is not installed is skipped with a warning; Plasma's own chords that collide
+  are unbound (`unbind` in `actions.yaml`)
 - GTK 3 and 4 `settings.ini`: Breeze, the icon and cursor theme, the font, dark or light
   after the mode in use (`patina theme mode`); Plasma's own bridge (`kde-config-gtk-style`) syncs the
   colours from there. A Flatpak override lets apps read `kdeglobals`, so Qt apps from
@@ -193,10 +203,15 @@ disagree on a colour.
 
 ## Reload
 
-Inside a running Plasma session the renderer calls `plasma-apply-lookandfeel`,
-`plasma-apply-cursortheme` and `plasma-apply-wallpaperimage`, tells the running apps
-over D-Bus that the palette changed (`KGlobalSettings.notifyChange`), so colours,
-cursor and wallpaper change at once, and asks KWin over D-Bus to reload its settings. `--layout` adds `--resetLayout`, which replaces the user's panels with the
+Inside a running Plasma session, after a run that changed something, the renderer
+calls `plasma-apply-lookandfeel` and `plasma-apply-cursortheme`, tells the running apps
+over D-Bus that the palette changed (`KGlobalSettings.notifyChange`), so colours and
+cursor change at once, and asks KWin over D-Bus to reload its settings; a run that
+changes nothing leaves the session alone, so what the user changed since stays. The
+wallpaper (`plasma-apply-wallpaperimage`) is put on the desktop when the theme or the
+mode brings another one than the one patina put there last
+(`~/.local/state/patina/wallpaper`), so `patina update` keeps a wallpaper the user
+picked. `--layout` adds `--resetLayout`, which replaces the user's panels with the
 theme's layout. Shortcuts are read at login; the renderer says so. Outside a session (first boot, a container) everything
 applies at the next login through the look-and-feel package.
 

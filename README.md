@@ -382,7 +382,8 @@ are grateful for it. Thank you:
   ONLYOFFICE, which it is built on; Mozilla's Firefox and Thunderbird; Element;
   KeePassXC; kitty; Zed; Tauon; ArtCraft; and the terminal's tools: fish, starship,
   bat, eza, fzf, ripgrep, lazygit, btop, zoxide, atuin, delta, Neovim and fastfetch.
-- The AI agent: [opencode](https://opencode.ai) (Anomaly, the team behind SST),
+- The AI agents: [opencode](https://opencode.ai) (Anomaly, the team behind SST) and
+  [Hermes Agent](https://github.com/NousResearch/hermes-agent) (Nous Research),
   [Ollama](https://ollama.com), and [Anthropic](https://www.anthropic.com) for Claude,
   which helped write patina, and for Claude Code and Claude Desktop.
 - Artwork and type: Google DeepMind and Domhnall Malone for aurora's two wallpapers

@@ -15,7 +15,8 @@ Any hypervisor works. The commands below run inside the VM.
 - [ ] x86_64, UEFI firmware (not BIOS), Secure Boot may stay off for this run
 - [ ] 4 virtual CPUs, 8 GB of memory (zram is sized from it), a 40 GB disk: Debian
   with Plasma takes about 10 GB, the desktop bundle's apps 3 GB more, a local AI
-  model several GB on top; a 20 GB disk runs out during the install
+  model several GB on top; the installer refuses a disk under 29 GiB, which a 32 GB
+  drive passes
 - [ ] copy and paste between your computer and the VM (SPICE with `spice-vdagent` in
   the VM), or SSH into it (`openssh-server` in the VM and a forwarded port such as
   QEMU's `-nic user,hostfwd=tcp::2222-:22`): the checks below are commands to copy and
@@ -48,7 +49,7 @@ they are.
 - [ ] download `patina-amd64.hybrid.iso` and `SHA256SUMS` from the release;
   `sha256sum -c SHA256SUMS` says `OK`
 - [ ] the boot menu: the theme's wallpaper, patina in block letters centred above the
-  menu, readable
+  menu, readable; its first entry is Install patina
 - [ ] the installer's welcome page: the square mark in the sidebar, the wordmark on the
   page, the wallpaper behind it
 - [ ] answer the installer: erase disk, a user, the agent page (none, unless you test an
@@ -56,12 +57,13 @@ they are.
   (Standard), more apps (none) and the theme (aurora);
   the install page shows the progress bar and the six slides, ten seconds each, and it
   ends without an error
-- [ ] first boot: tty1 shows the mark and runs without a question (a cloud agent asks
-  its provider and key), and it ends with `patina firstboot: done`; then the login
-  screen with the theme's wallpaper
+- [ ] first boot: tty1 shows the mark, and sudo asks for the password you gave the
+  installer (again if the install outlasts sudo's 15 minutes between two steps); no
+  other question (a cloud agent asks its provider and key), and it ends with
+  `patina firstboot: done`; then the login screen with the theme's wallpaper
 - [ ] after the first login: take a snapshot, "patina-installed", and
-  `journalctl -b -u patina-firstboot > ~/run1.log` keeps the first run's log for the
-  report
+  `sudo cat /var/log/patina-firstboot.log > ~/run1.log` keeps the first run's log for
+  the report (`journalctl -b -u patina-firstboot` has its steps and warnings)
 
 ## 3. Before patina
 

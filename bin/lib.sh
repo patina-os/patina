@@ -258,8 +258,12 @@ theme_vars() {
   tpl[MONO_FONT]="$(yq eval '.fonts.monospace' "$settings")"
   tpl[DISPLAY_FONT]="$(yq eval '.fonts.display' "$settings")"
   tpl[AGENT]="$(yq eval '.agent // "opencode"' "$settings")"
-  # The agent CLI the `agent` action opens: Hermes while one of its bundles is installed.
-  [[ ! " ${PATINA_BUNDLES:-} " =~ \ hermes-(local|cloud)\  ]] || tpl[AGENT]=hermes
+  # The agent CLI the `agent` action opens: Hermes while it is this machine's agent and
+  # one of its bundles is installed. The record keeps every bundle installed so far, so a
+  # machine that went back to opencode (`patina ai on opencode`) still lists Hermes'.
+  if [[ " ${PATINA_BUNDLES:-} " =~ \ hermes-(local|cloud)\  && "$(current_agent)" == hermes ]]; then
+    tpl[AGENT]=hermes
+  fi
   first="$(yq eval "($b.wallpapers // .wallpapers)[0] // \"\"" "$theme_yaml")"
   tpl[WALLPAPER_FIRST]="${first:+$(cd "$(dirname "$theme_yaml")" && pwd)/$first}"
   for key in 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F; do
@@ -278,12 +282,13 @@ theme_vars() {
 }
 
 # Fill the ${NAME} placeholders of a template from tpl[]: render <template> <out>.
-# Plain bash, no eval, no envsubst.
+# Plain bash, no eval, no envsubst. The value is quoted: bash 5.2 (patsub_replacement)
+# reads an unquoted & in it as the placeholder itself, so "A & B" came out "A ${NAME} B".
 render() {
   local text name
   text="$(< "$1")"
   for name in "${!tpl[@]}"; do
-    text="${text//\$\{$name\}/${tpl[$name]}}"
+    text="${text//\$\{$name\}/"${tpl[$name]}"}"
   done
   printf '%s\n' "$text" > "$2"
 }

@@ -92,7 +92,7 @@ set_mode() {
 # A theme from git, as data only. The clone stays in a temporary directory; what lands
 # under $PATINA_THEMES is checked and copied file by file: the names and hints the
 # renderer writes into configuration must be plain words, the palette must be colours,
-# every wallpaper must be an SVG or PNG under wallpapers/, and nothing may be a link.
+# every wallpaper must be an SVG, PNG or JPEG under wallpapers/, and nothing may be a link.
 # Anything else in the repository (scripts, configs, hidden files) never leaves the clone.
 install_theme() {
   local url="$1" tmp src out name key value rel f commit dest mode spdx

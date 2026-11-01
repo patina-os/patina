@@ -11,6 +11,10 @@ list_only=0
 case "${1:-}" in
   "") ;;
   --list) list_only=1 ;;
+  -h | --help)
+    echo "usage: patina migrate [--list]"
+    exit 0
+    ;;
   *)
     echo "usage: patina migrate [--list]" >&2
     exit 1

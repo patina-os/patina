@@ -14,7 +14,9 @@ type=1,product=Try patina`), which `patina install` reads from
 `/sys/class/dmi/id/product_name`. On that machine, and only there, it also:
 
 - installs `spice-vdagent`, which shares the clipboard with QEMU's GTK window through
-  QEMU's built-in vdagent (no SPICE client is needed on Windows);
+  QEMU's built-in vdagent (no SPICE client is needed on Windows). The window has the
+  Windows clipboard from QEMU 11.1 on, when the launcher asks for it (`-display
+  gtk,clipboard=on`); the Windows builds of QEMU before 11.1 have none;
 - installs `kwin-x11` and writes `system/sddm.conf.d/try-patina.conf`, so the login
   screen offers the Plasma X11 session first: spice-vdagent shares the clipboard only in
   an X11 session (its Wayland support is not released). Plasma (Wayland) stays on the
@@ -28,6 +30,10 @@ type=1,product=Try patina`), which `patina install` reads from
   Windows Hypervisor Platform does not pass AVX through.
 - The disk is an NVMe disk, not virtio, so the I/O scheduler rules of
   `defaults/system/udev/` apply as on a laptop.
+- Logging in automatically (the installer's checkbox) starts the Wayland session,
+  where copy and paste does not work: the installer writes the automatic login's
+  session (`plasma`) to `/etc/sddm.conf`, which SDDM reads after `/etc/sddm.conf.d/`.
+  Leave it off, or log out and pick Plasma (X11) on the login screen.
 
 ## Validation
 

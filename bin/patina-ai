@@ -171,8 +171,9 @@ connect() {
   if [[ -f "$opencode_file" ]]; then
     entry="$(yq eval -o=json -I=0 ".\"$name\".opencode" "$services")"
     if [[ -n "$token" ]]; then
-      mkdir -p "$tokens"
-      (umask 077 && printf '%s\n' "$token" > "$tokens/$name.token")
+      # Private from the start: in a directory others could write, a token file could
+      # be theirs before patina writes the token into it.
+      (umask 077 && mkdir -p "$tokens" && printf '%s\n' "$token" > "$tokens/$name.token")
       chmod 600 "$tokens/$name.token"
       entry="$(fill "$entry" "\${TOKEN_FILE}" "$tokens/$name.token")"
     fi

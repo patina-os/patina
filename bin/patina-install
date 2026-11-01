@@ -234,14 +234,18 @@ bootstrap_yq() {
 }
 
 list_bundles() {
-  local b f kind
+  local b f kind width=0
+  # The names in a column as wide as the longest (hermes-local is wider than eight).
+  for b in $(all_bundles); do
+    (( ${#b} <= width )) || width=${#b}
+  done
   for b in $(all_bundles); do
     f="$PATINA_PATH/manifest/bundles/$b.yaml"
     kind=opt-in
     yq eval -e '.default == true' "$f" > /dev/null 2>&1 && kind=default
     yq eval -e '.required == true' "$f" > /dev/null 2>&1 && kind=always
     yq eval -e '.ai' "$f" > /dev/null 2>&1 && kind=ai
-    printf '%-8s %-9s %s\n' "$b" "($kind)" "$(yq eval '.description' "$f")"
+    printf '%-*s %-9s %s\n' "$width" "$b" "($kind)" "$(yq eval '.description' "$f")"
   done
 }
 
@@ -305,8 +309,12 @@ add_apt_source() {
   sources_dir="$(yq eval -e '.apt_source.sources_dir' "$BACKEND" 2> /dev/null)" ||
     die "$(basename "$BACKEND") cannot add apt sources; $key needs an apt base"
   tmp="$(mktemp)"
-  fetch "$keyurl" "$tmp"
-  if ! cmp -s "$tmp" "$keyring"; then
+  # This runs as a condition, where set -e does not stop it: a failed download would
+  # replace a good keyring with an empty file, and apt would refuse the source.
+  if ! fetch "$keyurl" "$tmp"; then
+    [[ -s "$keyring" ]] || die "$key: cannot download its signing key from $keyurl"
+    warn "$key: cannot download its signing key now; keeping $keyring"
+  elif ! cmp -s "$tmp" "$keyring"; then
     say "$key: writing $keyring"
     backend_run system.write "$tmp" "$keyring"
     changed_here=1

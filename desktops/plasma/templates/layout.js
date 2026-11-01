@@ -44,6 +44,15 @@ if ("${LAUNCHER_APPLET}" === "org.kde.plasma.kickoff") {
   launcher.writeConfig("showActionButtonCaptions", false);
   launcher.writeConfig("switchCategoryOnHover", true);
 }
+// The favourites in their order: the menu keeps an order of its own per start menu, and
+// one made here has none yet, so the favourites linked into a store that is not empty
+// (Path A: `patina theme set --layout` in a session) would show in any order.
+if ("${FAVORITES_ORDER}" !== "") {
+  var menu = "${LAUNCHER_APPLET}" === "org.kde.plasma.kickoff" ? "kickoff" : "kicker";
+  var order = ConfigFile("kactivitymanagerd-statsrc",
+    "Favorites-org.kde.plasma." + menu + ".favorites.instance-" + launcher.id + "-global");
+  order.writeEntry("ordering", "${FAVORITES_ORDER}");
+}
 if (grouped) {
   addTasks();
 }

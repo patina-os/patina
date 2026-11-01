@@ -129,6 +129,17 @@ service_installed() {
   done
   return 1
 }
+# The chords an app's desktop file brings itself (X-KDE-Shortcuts of its [Desktop
+# Entry]), comma-separated, from where kglobalacceld reads them first; empty for none.
+own_shortcuts() {
+  local d
+  for d in "$data/kglobalaccel" /usr/share/kglobalaccel "${app_dirs[@]}"; do
+    if [[ -f "$d/$1" ]]; then
+      awk -F= '/^\[/ { s = ($0 == "[Desktop Entry]") } s && $1 == "X-KDE-Shortcuts" { print $2; exit }' "$d/$1"
+      return
+    fi
+  done
+}
 service_for_action() {
   local action="$1" service
   service="$(yq eval ".actions[\"$action\"].service // \"\"" "$actions")"
@@ -351,6 +362,16 @@ if [[ -n "$variant" && -f "/usr/share/icons/$icons_base/index.theme" ]]; then
     mkdir -p "$out/$size/places"
     cp -L "${links[@]}" "$out/$size/places/"
     sed -i "${sed_args[@]}" "$out/$size/places"/*.svg
+  done
+  # A symbolic name falls back to the name without -symbolic in the first icon theme
+  # that has it, this one with its coloured folders, before the icon theme it inherits
+  # is asked: the bar's show-desktop button (user-desktop-symbolic) came out as the green
+  # desktop folder. So the symbolic glyphs of those folders come along, unchanged.
+  for f in "$out"/*/places/*.svg; do
+    g="/usr/share/icons/$icons_base/32x32/symbolic/places/$(basename "$f" .svg)-symbolic.svg"
+    [[ -e "$g" && ! -e "$out/32x32/symbolic/places/${g##*/}" ]] || continue
+    mkdir -p "$out/32x32/symbolic/places"
+    cp -L "$g" "$out/32x32/symbolic/places/"
   done
   # Every app in one colour (mono in icons.yaml): the icon each installed desktop entry
   # names becomes a glyph of the icon theme, which takes the colour scheme's text
@@ -635,6 +656,7 @@ if [[ "${tpl[PANEL_LAYOUT]}" == centered || "${tpl[PANEL_LAYOUT]}" == grouped ]]
     pinned="$pinned${pinned:+, }\"applications:$service\""
   done < <(yq eval '.panel.pinned[]?' "$settings")
   tpl[PINNED_LAUNCHERS]="$pinned"
+  tpl[FAVORITES_ORDER]="${favorites//;/,}"
   # The Application Dashboard comes with plasma-widgets-addons (the desktop bundle);
   # without it Plasma would show a broken applet in the bar, so Kickoff stands in.
   tpl[LAUNCHER_APPLET]=org.kde.plasma.kickoff
@@ -734,6 +756,13 @@ kset kdeglobals Theme "${tpl[ICONS]}" Icons
 kset kcminputrc cursorTheme "${tpl[CURSORS]}" Mouse
 kset plasmarc name "${tpl[DESKTOP_THEME]}" Theme
 kset konsolerc DefaultProfile "patina-$theme.profile" "Desktop Entry"
+# The terminal Plasma opens for others (Dolphin's "Open Terminal Here", kortex's "Open
+# in terminal") is kitty, patina's, where a bundle brought it; Konsole comes with
+# Debian's Plasma and would be the one otherwise.
+if command -v kitty > /dev/null; then
+  kset kdeglobals TerminalApplication kitty General
+  kset kdeglobals TerminalService kitty.desktop General
+fi
 if [[ -n "$favorites" ]]; then
   kset kicker-extra-favoritesrc Prepend "$favorites" General
 else
@@ -881,12 +910,28 @@ while IFS= read -r action; do
     [[ -n "$service" ]] || continue
     # Plasma 6 keeps only the shortcut under [services] (kglobalacceld reads the rest
     # from the desktop file); a "chord,default,label" triple there is read as a
-    # three-key sequence that can never be typed.
-    kset kglobalshortcutsrc _launch "$chord" services "$service"
+    # three-key sequence that can never be typed. The app's own chords (X-KDE-Shortcuts)
+    # keep working beside patina's, a tab between each: Alt+Space and Alt+F2 still open
+    # KRunner. An entry that comes out as the app's own is left out, as kglobalacceld
+    # leaves it out at login.
+    own="$(own_shortcuts "$service")"
+    active="$chord"
+    IFS=, read -r -a keys <<< "$own"
+    for k in "${keys[@]}"; do
+      [[ -z "$k" || $'\t'"$active"$'\t' == *$'\t'"$k"$'\t'* ]] || active+=$'\t'"$k"
+    done
+    if [[ "$active" == "${own//,/$'\t'}" ]]; then
+      kdel kglobalshortcutsrc _launch services "$service"
+    else
+      kset kglobalshortcutsrc _launch "$active" services "$service"
+    fi
   elif [[ -n "$component" ]]; then
     key="$(yq eval ".actions[\"$action\"].key" "$actions")"
     default="$(yq eval ".actions[\"$action\"].default // \"none\"" "$actions")"
-    kset kglobalshortcutsrc "$key" "$chord,$default,$label" "$component"
+    # Plasma's own chord keeps working beside patina's: Alt+F4 still closes a window.
+    active="$chord"
+    [[ "$default" == none || "$default" == "$chord" ]] || active+=$'\t'"$default"
+    kset kglobalshortcutsrc "$key" "$active,$default,$label" "$component"
   else
     warn "$action: no Plasma binding in $actions; skipping"
   fi
@@ -896,15 +941,17 @@ while IFS=$'\t' read -r component key default label; do
 done < <(yq eval '.unbind[] | [.component, .key, .default, .label] | @tsv' "$actions")
 
 # GTK apps: Plasma's own bridge (kde-config-gtk-style) syncs the colours; the theme,
-# icons, cursor and font names are set here so they are right before it runs.
-prefer_dark=0
-[[ "${tpl[VARIANT]}" == dark ]] && prefer_dark=1
+# icons, cursor and font names are set here so they are right before it runs. The
+# values are written as the bridge writes them at every login (true or false, the font
+# as "family, style size"), so a run inside a session finds them unchanged.
+prefer_dark=false
+[[ "${tpl[VARIANT]}" == dark ]] && prefer_dark=true
 for v in gtk-3.0 gtk-4.0; do
   kset "$config/$v/settings.ini" gtk-theme-name Breeze Settings
   kset "$config/$v/settings.ini" gtk-application-prefer-dark-theme "$prefer_dark" Settings
   kset "$config/$v/settings.ini" gtk-icon-theme-name "${tpl[ICONS]}" Settings
   kset "$config/$v/settings.ini" gtk-cursor-theme-name "${tpl[CURSORS]}" Settings
-  kset "$config/$v/settings.ini" gtk-font-name "${tpl[UI_FONT]} 10" Settings
+  kset "$config/$v/settings.ini" gtk-font-name "${tpl[UI_FONT]},  10" Settings
 done
 # Qt apps from Flathub read the colour scheme when they may see kdeglobals.
 if command -v flatpak > /dev/null &&
@@ -916,7 +963,9 @@ fi
 
 # ---- a running Plasma session picks the theme up now ---------------------------------
 if [[ $in_session -eq 1 ]]; then
-  if command -v plasma-apply-lookandfeel > /dev/null; then
+  # Only after a change (or for --layout): applying the package also resets what it
+  # names, so a run that changes nothing leaves the user's own choices since alone.
+  if [[ $changes -gt 0 || "${PATINA_LAYOUT:-}" == 1 ]] && command -v plasma-apply-lookandfeel > /dev/null; then
     if [[ "${PATINA_LAYOUT:-}" == 1 ]]; then
       # Replaces this user's panels with the layout script above.
       say "resetting the panels to the theme's layout"
@@ -993,11 +1042,23 @@ if [[ $in_session -eq 1 ]]; then
     dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange \
       int32:0 int32:0 2> /dev/null || warn "the running apps were not told about the new colours"
   fi
-  command -v plasma-apply-cursortheme > /dev/null &&
-    { plasma-apply-cursortheme "${tpl[CURSORS]}" > /dev/null || warn "plasma-apply-cursortheme failed"; }
-  if [[ -n "$wallpaper_dir" ]] && command -v plasma-apply-wallpaperimage > /dev/null; then
-    plasma-apply-wallpaperimage "$wallpaper_dir/contents/images/3840x2160.png" > /dev/null ||
+  if [[ $changes -gt 0 ]] && command -v plasma-apply-cursortheme > /dev/null; then
+    plasma-apply-cursortheme "${tpl[CURSORS]}" > /dev/null || warn "plasma-apply-cursortheme failed"
+  fi
+  # The wallpaper when the theme or the mode brings another one than the one patina put
+  # on the desktop last (the state directory keeps which), so `patina update` keeps a
+  # wallpaper the user picked since.
+  wallpaper_set="$PATINA_STATE/wallpaper"
+  if [[ -n "$wallpaper_dir" && "$(cat "$wallpaper_set" 2> /dev/null || true)" != "$wallpaper_dir" ]] &&
+      command -v plasma-apply-wallpaperimage > /dev/null; then
+    if plasma-apply-wallpaperimage "$wallpaper_dir/contents/images/3840x2160.png" > /dev/null; then
+      mkdir -p "$PATINA_STATE"
+      echo "$wallpaper_dir" > "$wallpaper_set"
+      say "wallpaper: $(basename "$wallpaper_dir")"
+      changed
+    else
       warn "plasma-apply-wallpaperimage failed"
+    fi
   fi
   [[ $changes -eq 0 ]] || say "shortcuts apply at the next login"
 elif [[ "${PATINA_LAYOUT:-}" == 1 ]]; then

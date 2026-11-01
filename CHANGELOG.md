@@ -57,6 +57,12 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- The installer asks for a disk of at least 29 GiB, which every drive sold as 32 GB
+  has, up from 20: after swap, 20 left about 15.5 GB, too little for the desktop
+  bundle with a local model and Hermes Agent.
+- The image's boot menu says what it starts: Install patina, and Install patina
+  (fail-safe mode). They were live-build's "Live system (amd64)" and "Live system
+  (amd64 fail-safe mode)", though the image has no live system to use.
 - The start button sits alone in the centre of the bar and the task icons at its left
   end, so the start menu opens in the middle of the screen's width. Plasma opens the
   menu over its button, and with the button leading the centred icons it opened left of
@@ -70,8 +76,81 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- A theme or a setting with an & in a name the renderers fill in (a start menu folder
+  "Office & Docs", a theme's author) is written as it is; bash 5.2 put the placeholder
+  in place of the &.
+- `patina update` and `patina install` inside a Plasma session keep a wallpaper you
+  picked, and no longer apply the look-and-feel package or the cursor when nothing
+  changed (which reset a window decoration or cursor chosen since): the wallpaper
+  changes with the theme or the mode only, and the first run after this update puts
+  the theme's on once more.
+- Meta+A opens the agent the machine has: after `patina ai on opencode` on a machine
+  that had Hermes Agent, it still opened Hermes, since the record of installed bundles
+  keeps Hermes' bundle, while kortex talked to opencode.
+- The bar's show-desktop button at its right end is a glyph in the text colour like the
+  rest of the bar, not a green block: its symbolic icon fell back to the desktop folder
+  in the accent, which patina's icon theme holds.
+- Plasma's own shortcuts keep working beside patina's: Alt+F4 closes a window again
+  next to Meta+Q, Alt+Space and Alt+F2 open the command palette next to Meta+Space,
+  Meta+W the overview next to Meta+Tab, and Meta+Shift+S takes a screenshot next to
+  Print. patina's chords had replaced them. After a login, `patina theme set` in the
+  session no longer reports Dolphin's and Spectacle's shortcuts as changed. The cheat
+  sheet names Meta+Esc for the system monitor, Plasma 6's chord, not Ctrl+Esc.
+- The start menu's favourites keep their order (the agent, then self-hosting, then
+  kitty) on a desktop that had a start menu before patina: the start menu `patina theme
+  set --layout` makes, the first `patina install` among them, showed them in any
+  order. It takes the order from the next login.
+- `patina theme set` and `patina update` inside a Plasma session no longer report the
+  GTK settings as changed after every login: they are written as Plasma's GTK bridge
+  writes them (`true`, "Source Sans 3,  10"), which rewrote patina's `1` and
+  "Source Sans 3 10" each time.
+- The image's first boot shows the patina mark on tty1 again (it printed it only for an
+  unattended run, and the installer's answers make it ask nothing that would), says
+  that sudo asks for the password given to the installer, and keeps everything the
+  install prints in `/var/log/patina-firstboot.log`: the journal had none of it, so
+  the log `docs/vm-run.md` asked testers for was empty. The clone gets three tries a
+  little apart, and a failed clone or install is held on tty1 until Enter, where the
+  login screen covered it at once.
+- After a failed install (Debian's mirror out of reach, say), the installer's next try
+  offered no "Erase disk": the first try had turned the new system's swap on, and the
+  disk counted as in use. The installer turns every swap off before it starts.
+- The installer's disk page and summary showed the partitions' names black on black:
+  Calamares draws them in black whatever the stylesheet says, so the legend under the
+  bars sits on a light card now. Its steps no longer outgrow the sidebar on a 1280x800
+  screen (Finish was cut off, and more so on a laptop's 768 lines), and an item just
+  picked in a list (a keyboard layout, an agent, an app) no longer dims to dark text
+  on a dark ground while the pointer is still over it.
+- A system installed from the image kept what the image added for its installer alone:
+  Calamares' configuration and branding, the openbox theme and root's openbox
+  settings, the patina mark on the console's login prompt (which Path A never writes),
+  and about a gigabyte of downloaded packages in apt's cache. The installer removes
+  them before the first boot.
+- The credits (`patina credits`, the installer's last slide and the README) name Hermes
+  Agent and Nous Research, the second AI agent patina installs.
+- kortex 0.3.1 in the command palette. The Allow row read the command as styled text,
+  so anything between `<` and `>` vanished from it and a command that removed a folder
+  could read as a harmless one; it shows the whole command as it will run now, and
+  Always says what it lets through (allowing `echo one | sh` allowed every `sh`), with
+  an icon of its own. A service connected while kortex runs reached the agent without
+  its token; KRunner opened again by itself after a start menu search; the agent's
+  server outlived a session that ended without a logout; and `patina ai on hermes`
+  reached a running kortex only after a quiet quarter of an hour. `patina update`
+  installs it where kortex is installed.
 - `patina ai connect linear` (and notion) without a terminal, as the agent runs it,
   stopped at a question the preset does not have.
+- "Open in terminal" on the agent's answer in the command palette, and Dolphin's "Open
+  Terminal Here", opened Konsole, which Debian's Plasma brings, rather than kitty:
+  Plasma's terminal is kitty now wherever a bundle installed it.
+- `patina update --help`, `patina doctor --help` and `patina migrate --help` print
+  their help and succeed; they failed. `patina install --list` keeps its columns at
+  the Hermes bundles' longer names.
+- The folder `patina ai connect` keeps the services' tokens in is made private as it
+  is created; under a permissive umask it was readable by others for a moment (the
+  token files themselves always were the user's alone).
+- When Nextcloud's server dropped the connection while `patina install` or `patina
+  update` fetched Euro-Office's signing key, patina wrote an empty key in place of the
+  good one, and apt refused Euro-Office's updates until the next run. It keeps the key
+  it has now and says so.
 
 ## [0.1.0-alpha.4] - 2026-10-29
 
