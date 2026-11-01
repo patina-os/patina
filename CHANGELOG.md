@@ -127,6 +127,15 @@ All notable changes to patina are documented here. The format follows
   them before the first boot.
 - The credits (`patina credits`, the installer's last slide and the README) name Hermes
   Agent and Nous Research, the second AI agent patina installs.
+- kortex 0.3.1 in the command palette. The Allow row read the command as styled text,
+  so anything between `<` and `>` vanished from it and a command that removed a folder
+  could read as a harmless one; it shows the whole command as it will run now, and
+  Always says what it lets through (allowing `echo one | sh` allowed every `sh`), with
+  an icon of its own. A service connected while kortex runs reached the agent without
+  its token; KRunner opened again by itself after a start menu search; the agent's
+  server outlived a session that ended without a logout; and `patina ai on hermes`
+  reached a running kortex only after a quiet quarter of an hour. `patina update`
+  installs it where kortex is installed.
 - `patina ai connect linear` (and notion) without a terminal, as the agent runs it,
   stopped at a question the preset does not have.
 - "Open in terminal" on the agent's answer in the command palette, and Dolphin's "Open
