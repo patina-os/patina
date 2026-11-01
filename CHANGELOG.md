@@ -73,6 +73,11 @@ All notable changes to patina are documented here. The format follows
 - A theme or a setting with an & in a name the renderers fill in (a start menu folder
   "Office & Docs", a theme's author) is written as it is; bash 5.2 put the placeholder
   in place of the &.
+- `patina update` and `patina install` inside a Plasma session keep a wallpaper you
+  picked, and no longer apply the look-and-feel package or the cursor when nothing
+  changed (which reset a window decoration or cursor chosen since): the wallpaper
+  changes with the theme or the mode only, and the first run after this update puts
+  the theme's on once more.
 - Meta+A opens the agent the machine has: after `patina ai on opencode` on a machine
   that had Hermes Agent, it still opened Hermes, since the record of installed bundles
   keeps Hermes' bundle, while kortex talked to opencode.

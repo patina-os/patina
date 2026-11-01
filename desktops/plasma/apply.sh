@@ -956,7 +956,9 @@ fi
 
 # ---- a running Plasma session picks the theme up now ---------------------------------
 if [[ $in_session -eq 1 ]]; then
-  if command -v plasma-apply-lookandfeel > /dev/null; then
+  # Only after a change (or for --layout): applying the package also resets what it
+  # names, so a run that changes nothing leaves the user's own choices since alone.
+  if [[ $changes -gt 0 || "${PATINA_LAYOUT:-}" == 1 ]] && command -v plasma-apply-lookandfeel > /dev/null; then
     if [[ "${PATINA_LAYOUT:-}" == 1 ]]; then
       # Replaces this user's panels with the layout script above.
       say "resetting the panels to the theme's layout"
@@ -1033,11 +1035,23 @@ if [[ $in_session -eq 1 ]]; then
     dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange \
       int32:0 int32:0 2> /dev/null || warn "the running apps were not told about the new colours"
   fi
-  command -v plasma-apply-cursortheme > /dev/null &&
-    { plasma-apply-cursortheme "${tpl[CURSORS]}" > /dev/null || warn "plasma-apply-cursortheme failed"; }
-  if [[ -n "$wallpaper_dir" ]] && command -v plasma-apply-wallpaperimage > /dev/null; then
-    plasma-apply-wallpaperimage "$wallpaper_dir/contents/images/3840x2160.png" > /dev/null ||
+  if [[ $changes -gt 0 ]] && command -v plasma-apply-cursortheme > /dev/null; then
+    plasma-apply-cursortheme "${tpl[CURSORS]}" > /dev/null || warn "plasma-apply-cursortheme failed"
+  fi
+  # The wallpaper when the theme or the mode brings another one than the one patina put
+  # on the desktop last (the state directory keeps which), so `patina update` keeps a
+  # wallpaper the user picked since.
+  wallpaper_set="$PATINA_STATE/wallpaper"
+  if [[ -n "$wallpaper_dir" && "$(cat "$wallpaper_set" 2> /dev/null || true)" != "$wallpaper_dir" ]] &&
+      command -v plasma-apply-wallpaperimage > /dev/null; then
+    if plasma-apply-wallpaperimage "$wallpaper_dir/contents/images/3840x2160.png" > /dev/null; then
+      mkdir -p "$PATINA_STATE"
+      echo "$wallpaper_dir" > "$wallpaper_set"
+      say "wallpaper: $(basename "$wallpaper_dir")"
+      changed
+    else
       warn "plasma-apply-wallpaperimage failed"
+    fi
   fi
   [[ $changes -eq 0 ]] || say "shortcuts apply at the next login"
 elif [[ "${PATINA_LAYOUT:-}" == 1 ]]; then

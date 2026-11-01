@@ -201,10 +201,15 @@ disagree on a colour.
 
 ## Reload
 
-Inside a running Plasma session the renderer calls `plasma-apply-lookandfeel`,
-`plasma-apply-cursortheme` and `plasma-apply-wallpaperimage`, tells the running apps
-over D-Bus that the palette changed (`KGlobalSettings.notifyChange`), so colours,
-cursor and wallpaper change at once, and asks KWin over D-Bus to reload its settings. `--layout` adds `--resetLayout`, which replaces the user's panels with the
+Inside a running Plasma session, after a run that changed something, the renderer
+calls `plasma-apply-lookandfeel` and `plasma-apply-cursortheme`, tells the running apps
+over D-Bus that the palette changed (`KGlobalSettings.notifyChange`), so colours and
+cursor change at once, and asks KWin over D-Bus to reload its settings; a run that
+changes nothing leaves the session alone, so what the user changed since stays. The
+wallpaper (`plasma-apply-wallpaperimage`) is put on the desktop when the theme or the
+mode brings another one than the one patina put there last
+(`~/.local/state/patina/wallpaper`), so `patina update` keeps a wallpaper the user
+picked. `--layout` adds `--resetLayout`, which replaces the user's panels with the
 theme's layout. Shortcuts are read at login; the renderer says so. Outside a session (first boot, a container) everything
 applies at the next login through the look-and-feel package.
 
