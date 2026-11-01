@@ -897,15 +897,17 @@ while IFS=$'\t' read -r component key default label; do
 done < <(yq eval '.unbind[] | [.component, .key, .default, .label] | @tsv' "$actions")
 
 # GTK apps: Plasma's own bridge (kde-config-gtk-style) syncs the colours; the theme,
-# icons, cursor and font names are set here so they are right before it runs.
-prefer_dark=0
-[[ "${tpl[VARIANT]}" == dark ]] && prefer_dark=1
+# icons, cursor and font names are set here so they are right before it runs. The
+# values are written as the bridge writes them at every login (true or false, the font
+# as "family, style size"), so a run inside a session finds them unchanged.
+prefer_dark=false
+[[ "${tpl[VARIANT]}" == dark ]] && prefer_dark=true
 for v in gtk-3.0 gtk-4.0; do
   kset "$config/$v/settings.ini" gtk-theme-name Breeze Settings
   kset "$config/$v/settings.ini" gtk-application-prefer-dark-theme "$prefer_dark" Settings
   kset "$config/$v/settings.ini" gtk-icon-theme-name "${tpl[ICONS]}" Settings
   kset "$config/$v/settings.ini" gtk-cursor-theme-name "${tpl[CURSORS]}" Settings
-  kset "$config/$v/settings.ini" gtk-font-name "${tpl[UI_FONT]} 10" Settings
+  kset "$config/$v/settings.ini" gtk-font-name "${tpl[UI_FONT]},  10" Settings
 done
 # Qt apps from Flathub read the colour scheme when they may see kdeglobals.
 if command -v flatpak > /dev/null &&

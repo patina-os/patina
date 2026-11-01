@@ -74,6 +74,10 @@ All notable changes to patina are documented here. The format follows
   kitty) on a desktop that had a start menu before patina: the start menu `patina theme
   set --layout` makes, the first `patina install` among them, showed them in any
   order. It takes the order from the next login.
+- `patina theme set` and `patina update` inside a Plasma session no longer report the
+  GTK settings as changed after every login: they are written as Plasma's GTK bridge
+  writes them (`true`, "Source Sans 3,  10"), which rewrote patina's `1` and
+  "Source Sans 3 10" each time.
 - `patina ai connect linear` (and notion) without a terminal, as the agent runs it,
   stopped at a question the preset does not have.
 
