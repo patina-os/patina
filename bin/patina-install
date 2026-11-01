@@ -309,8 +309,12 @@ add_apt_source() {
   sources_dir="$(yq eval -e '.apt_source.sources_dir' "$BACKEND" 2> /dev/null)" ||
     die "$(basename "$BACKEND") cannot add apt sources; $key needs an apt base"
   tmp="$(mktemp)"
-  fetch "$keyurl" "$tmp"
-  if ! cmp -s "$tmp" "$keyring"; then
+  # This runs as a condition, where set -e does not stop it: a failed download would
+  # replace a good keyring with an empty file, and apt would refuse the source.
+  if ! fetch "$keyurl" "$tmp"; then
+    [[ -s "$keyring" ]] || die "$key: cannot download its signing key from $keyurl"
+    warn "$key: cannot download its signing key now; keeping $keyring"
+  elif ! cmp -s "$tmp" "$keyring"; then
     say "$key: writing $keyring"
     backend_run system.write "$tmp" "$keyring"
     changed_here=1

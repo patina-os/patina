@@ -138,6 +138,10 @@ All notable changes to patina are documented here. The format follows
 - The folder `patina ai connect` keeps the services' tokens in is made private as it
   is created; under a permissive umask it was readable by others for a moment (the
   token files themselves always were the user's alone).
+- When Nextcloud's server dropped the connection while `patina install` or `patina
+  update` fetched Euro-Office's signing key, patina wrote an empty key in place of the
+  good one, and apt refused Euro-Office's updates until the next run. It keeps the key
+  it has now and says so.
 
 ## [0.1.0-alpha.4] - 2026-10-29
 
