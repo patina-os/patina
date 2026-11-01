@@ -70,6 +70,12 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- Plasma's own shortcuts keep working beside patina's: Alt+F4 closes a window again
+  next to Meta+Q, Alt+Space and Alt+F2 open the command palette next to Meta+Space,
+  Meta+W the overview next to Meta+Tab, and Meta+Shift+S takes a screenshot next to
+  Print. patina's chords had replaced them. After a login, `patina theme set` in the
+  session no longer reports Dolphin's and Spectacle's shortcuts as changed. The cheat
+  sheet names Meta+Esc for the system monitor, Plasma 6's chord, not Ctrl+Esc.
 - The start menu's favourites keep their order (the agent, then self-hosting, then
   kitty) on a desktop that had a start menu before patina: the start menu `patina theme
   set --layout` makes, the first `patina install` among them, showed them in any

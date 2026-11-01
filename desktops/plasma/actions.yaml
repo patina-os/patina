@@ -1,11 +1,14 @@
 # How the Plasma renderer binds the actions of defaults/keybindings.yaml, as data read by
 # apply.sh. Each action is one of:
-#   service: a .desktop file; the chord becomes its _launch shortcut in kglobalshortcutsrc.
-#            The value default-web-browser resolves through `xdg-settings`. A service
-#            whose desktop file is not installed is warned about and skipped.
+#   service: a .desktop file; the chord becomes its _launch shortcut in kglobalshortcutsrc,
+#            beside the app's own chords (X-KDE-Shortcuts of its desktop file), which
+#            keep working: Alt+Space and Alt+F2 still open KRunner. The value
+#            default-web-browser resolves through `xdg-settings`. A service whose
+#            desktop file is not installed is warned about and skipped.
 #   component + key: a kglobalaccel component (kwin, ksmserver, plasmashell) and the
-#            action key in that component. `default` is Plasma's own chord, kept in the
-#            reset-to-default field; `label` is the friendly name Plasma shows.
+#            action key in that component. `default` is Plasma's own chord: it keeps
+#            working beside patina's (Alt+F4 still closes a window) and is what
+#            reset-to-default restores; `label` is the friendly name Plasma shows.
 # An action of defaults/keybindings.yaml that is missing here is warned about, not fatal.
 actions:
   terminal:
@@ -75,5 +78,5 @@ cheatsheet:
   - {chord: "Meta+.", name: "Emoji"}
   - {chord: "Meta+P", name: "Switch displays"}
   - {chord: "Meta+Shift+Print", name: "Screenshot of a region"}
-  - {chord: "Ctrl+Esc", name: "System monitor"}
+  - {chord: "Meta+Esc", name: "System monitor"}
   - {chord: "Ctrl+Alt+Del", name: "Log out, restart or shut down"}

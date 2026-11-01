@@ -129,6 +129,17 @@ service_installed() {
   done
   return 1
 }
+# The chords an app's desktop file brings itself (X-KDE-Shortcuts of its [Desktop
+# Entry]), comma-separated, from where kglobalacceld reads them first; empty for none.
+own_shortcuts() {
+  local d
+  for d in "$data/kglobalaccel" /usr/share/kglobalaccel "${app_dirs[@]}"; do
+    if [[ -f "$d/$1" ]]; then
+      awk -F= '/^\[/ { s = ($0 == "[Desktop Entry]") } s && $1 == "X-KDE-Shortcuts" { print $2; exit }' "$d/$1"
+      return
+    fi
+  done
+}
 service_for_action() {
   local action="$1" service
   service="$(yq eval ".actions[\"$action\"].service // \"\"" "$actions")"
@@ -882,12 +893,28 @@ while IFS= read -r action; do
     [[ -n "$service" ]] || continue
     # Plasma 6 keeps only the shortcut under [services] (kglobalacceld reads the rest
     # from the desktop file); a "chord,default,label" triple there is read as a
-    # three-key sequence that can never be typed.
-    kset kglobalshortcutsrc _launch "$chord" services "$service"
+    # three-key sequence that can never be typed. The app's own chords (X-KDE-Shortcuts)
+    # keep working beside patina's, a tab between each: Alt+Space and Alt+F2 still open
+    # KRunner. An entry that comes out as the app's own is left out, as kglobalacceld
+    # leaves it out at login.
+    own="$(own_shortcuts "$service")"
+    active="$chord"
+    IFS=, read -r -a keys <<< "$own"
+    for k in "${keys[@]}"; do
+      [[ -z "$k" || $'\t'"$active"$'\t' == *$'\t'"$k"$'\t'* ]] || active+=$'\t'"$k"
+    done
+    if [[ "$active" == "${own//,/$'\t'}" ]]; then
+      kdel kglobalshortcutsrc _launch services "$service"
+    else
+      kset kglobalshortcutsrc _launch "$active" services "$service"
+    fi
   elif [[ -n "$component" ]]; then
     key="$(yq eval ".actions[\"$action\"].key" "$actions")"
     default="$(yq eval ".actions[\"$action\"].default // \"none\"" "$actions")"
-    kset kglobalshortcutsrc "$key" "$chord,$default,$label" "$component"
+    # Plasma's own chord keeps working beside patina's: Alt+F4 still closes a window.
+    active="$chord"
+    [[ "$default" == none || "$default" == "$chord" ]] || active+=$'\t'"$default"
+    kset kglobalshortcutsrc "$key" "$active,$default,$label" "$component"
   else
     warn "$action: no Plasma binding in $actions; skipping"
   fi

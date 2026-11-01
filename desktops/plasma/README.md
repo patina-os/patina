@@ -179,8 +179,11 @@ Settings, through `kwriteconfig6`, each written only when it differs:
   through `actions.yaml`: a `.desktop` file's `_launch` (kitty, KRunner, Dolphin,
   Spectacle, the default web browser from `xdg-settings`, the agent launcher, the cheat
   sheet) or a KWin,
-  ksmserver or plasmashell action. A service that is not installed is skipped with a
-  warning; Plasma's own chords that collide are unbound (`unbind` in `actions.yaml`)
+  ksmserver or plasmashell action. Plasma's own chord for the action (an app's
+  `X-KDE-Shortcuts`, an action's `default`) keeps working beside patina's: Alt+F4
+  still closes a window, Alt+Space still opens KRunner, Meta+W the overview. A service
+  that is not installed is skipped with a warning; Plasma's own chords that collide
+  are unbound (`unbind` in `actions.yaml`)
 - GTK 3 and 4 `settings.ini`: Breeze, the icon and cursor theme, the font, dark or light
   after the mode in use (`patina theme mode`); Plasma's own bridge (`kde-config-gtk-style`) syncs the
   colours from there. A Flatpak override lets apps read `kdeglobals`, so Qt apps from
