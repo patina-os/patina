@@ -57,6 +57,9 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- The installer asks for a disk of at least 29 GiB, which every drive sold as 32 GB
+  has, up from 20: after swap, 20 left about 15.5 GB, too little for the desktop
+  bundle with a local model and Hermes Agent.
 - The image's boot menu says what it starts: Install patina, and Install patina
   (fail-safe mode). They were live-build's "Live system (amd64)" and "Live system
   (amd64 fail-safe mode)", though the image has no live system to use.

@@ -15,7 +15,8 @@ Any hypervisor works. The commands below run inside the VM.
 - [ ] x86_64, UEFI firmware (not BIOS), Secure Boot may stay off for this run
 - [ ] 4 virtual CPUs, 8 GB of memory (zram is sized from it), a 40 GB disk: Debian
   with Plasma takes about 10 GB, the desktop bundle's apps 3 GB more, a local AI
-  model several GB on top; a 20 GB disk runs out during the install
+  model several GB on top; the installer refuses a disk under 29 GiB, which a 32 GB
+  drive passes
 - [ ] copy and paste between your computer and the VM (SPICE with `spice-vdagent` in
   the VM), or SSH into it (`openssh-server` in the VM and a forwarded port such as
   QEMU's `-nic user,hostfwd=tcp::2222-:22`): the checks below are commands to copy and
