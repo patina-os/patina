@@ -129,6 +129,12 @@ All notable changes to patina are documented here. The format follows
 - "Open in terminal" on the agent's answer in the command palette, and Dolphin's "Open
   Terminal Here", opened Konsole, which Debian's Plasma brings, rather than kitty:
   Plasma's terminal is kitty now wherever a bundle installed it.
+- `patina update --help`, `patina doctor --help` and `patina migrate --help` print
+  their help and succeed; they failed. `patina install --list` keeps its columns at
+  the Hermes bundles' longer names.
+- The folder `patina ai connect` keeps the services' tokens in is made private as it
+  is created; under a permissive umask it was readable by others for a moment (the
+  token files themselves always were the user's alone).
 
 ## [0.1.0-alpha.4] - 2026-10-29
 
