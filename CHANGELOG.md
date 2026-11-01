@@ -98,6 +98,12 @@ All notable changes to patina are documented here. The format follows
   GTK settings as changed after every login: they are written as Plasma's GTK bridge
   writes them (`true`, "Source Sans 3,  10"), which rewrote patina's `1` and
   "Source Sans 3 10" each time.
+- The installer's disk page and summary showed the partitions' names black on black:
+  Calamares draws them in black whatever the stylesheet says, so the legend under the
+  bars sits on a light card now. Its steps no longer outgrow the sidebar on a 1280x800
+  screen (Finish was cut off, and more so on a laptop's 768 lines), and an item just
+  picked in a list (a keyboard layout, an agent, an app) no longer dims to dark text
+  on a dark ground while the pointer is still over it.
 - A system installed from the image kept what the image added for its installer alone:
   Calamares' configuration and branding, the openbox theme and root's openbox
   settings, the patina mark on the console's login prompt (which Path A never writes),

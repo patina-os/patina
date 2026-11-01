@@ -47,13 +47,15 @@ QWidget {
    (/etc/fonts/local.conf makes it the layer's) with the colours of branding.desc's
    style keys, and a step's block always fills its row. The room around them is ours:
    the mark sits inset in its 80 px box (logo-square.svg), the list starts below it
-   and keeps the steps apart and off the edges. */
+   and keeps the steps off the edges. No spacing between the rows: thirteen steps
+   with any spacing outgrow the sidebar of a 1280x800 screen and the list scrolls, so
+   Finish is cut off on a laptop's 768 lines. */
 #sidebarMenuApp {
   background: transparent;
   border: none;
   margin-top: 28px;
   padding: 0 8px;
-  qproperty-spacing: 6;
+  qproperty-spacing: 0;
 }
 #aboutButton {
   color: ${BASE04};
@@ -175,6 +177,13 @@ QTreeView::item:selected, QListView::item:selected, QTableView::item:selected {
 QTreeView::item:hover, QListView::item:hover {
   background-color: rgba(${ACCENT_RGB}, 50);
 }
+/* after the hover rule, which would otherwise dim the item just clicked, still under
+   the pointer, and leave its dark text on a dark ground */
+QTreeView::item:selected:hover, QListView::item:selected:hover,
+QTableView::item:selected:hover {
+  background-color: ${ACCENT};
+  color: ${BASE00};
+}
 QHeaderView::section {
   background-color: ${BASE02};
   color: ${BASE04};
@@ -184,6 +193,14 @@ QHeaderView::section {
 #partitionBarView {
   background: transparent;
   border: none;
+}
+/* The legend under the partition bars (the disk page, the summary): Calamares draws
+   each partition's name in black and its size in grey whatever the stylesheet says
+   (PartitionLabelsView::drawLabel), so the legend gets a light card of its own, the
+   palette's lightest colour, on which both can be read. */
+PartitionLabelsView {
+  background-color: ${BASE07};
+  border-radius: 6px;
 }
 
 /* the one glowing line: progress */

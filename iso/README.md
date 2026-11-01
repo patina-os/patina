@@ -230,18 +230,16 @@ release, never edited.
 
 ## Still to verify
 
-- The look on a screen, listed under the release gate above: Calamares scales
-  `logo-square.png` to 80x80 and `welcome.png` (the block-letter name of
-  `branding/export/` rendered with `rsvg-convert`) on the welcome page; `productWallpaper`
-  tiles on screens larger than 1920x1080 (if it looks wrong, the veiled wallpaper goes
-  and `#mainApp`'s background stays); the stylesheet over Fusion on Calamares' own
-  widgets (the partition bars keep Calamares' colours by design); GRUB's `crop` scaling
-  of the splash at live-build's 800x600 mode. Written against Calamares 3.3.14's source
-  and still to be seen on a screen: the sidebar's steps (`qproperty-spacing`, margin
-  and padding on `#sidebarMenuApp`, the `#AARRGGBB` style colours), the glass of the
-  sidebar and of the unnamed button bar (`#backgroundWidget > QWidget`), the blurred
-  strip assuming the sidebar's 190 px, and the accent icons of the welcome page's
-  links and About (`qproperty-icon`, applied when Qt polishes the buttons).
+- The look on a real screen. Seen in QEMU at 1280x800 in November 2026, through a
+  whole install: the boot menu over its splash at 800x600, the welcome page with the
+  square mark and the block-letter name, the wallpaper veiled behind every page, the
+  sidebar's steps and the glass of the sidebar and the button bar, the accent icons,
+  the five question pages and their pictures, the six slides, and the finished page.
+  That run found the partition legend black on black (Calamares draws its names in
+  black whatever the style says; it has a light card now) and the steps outgrowing the
+  sidebar (no spacing now). Still to see: `productWallpaper` on screens larger than
+  1920x1080 (if it tiles, the veiled wallpaper goes and `#mainApp`'s background
+  stays), and a laptop's own screen and scaling.
 
 - `grub-install` picks the signed images only when `grub-efi-<arch>-signed` and
   `shim-signed` are present in the target; they come from the live system
