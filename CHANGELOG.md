@@ -98,6 +98,8 @@ All notable changes to patina are documented here. The format follows
   GTK settings as changed after every login: they are written as Plasma's GTK bridge
   writes them (`true`, "Source Sans 3,  10"), which rewrote patina's `1` and
   "Source Sans 3 10" each time.
+- The credits (`patina credits`, the installer's last slide and the README) name Hermes
+  Agent and Nous Research, the second AI agent patina installs.
 - `patina ai connect linear` (and notion) without a terminal, as the agent runs it,
   stopped at a question the preset does not have.
 - "Open in terminal" on the agent's answer in the command palette, and Dolphin's "Open
