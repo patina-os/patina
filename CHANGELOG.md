@@ -98,6 +98,11 @@ All notable changes to patina are documented here. The format follows
   GTK settings as changed after every login: they are written as Plasma's GTK bridge
   writes them (`true`, "Source Sans 3,  10"), which rewrote patina's `1` and
   "Source Sans 3 10" each time.
+- A system installed from the image kept what the image added for its installer alone:
+  Calamares' configuration and branding, the openbox theme and root's openbox
+  settings, the patina mark on the console's login prompt (which Path A never writes),
+  and about a gigabyte of downloaded packages in apt's cache. The installer removes
+  them before the first boot.
 - The credits (`patina credits`, the installer's last slide and the README) name Hermes
   Agent and Nous Research, the second AI agent patina installs.
 - `patina ai connect linear` (and notion) without a terminal, as the agent runs it,

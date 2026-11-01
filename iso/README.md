@@ -89,7 +89,9 @@ iso/
    `modules/packages.conf`, in five installs, smallest first, so the progress bar moves;
    apt shows nothing while each runs), the live tooling and Calamares are removed from
    it, SDDM is set up and the hardware clock set (after the packages that bring them), the
-   first-boot unit is enabled (`shellprocess-firstboot.conf`), GRUB is installed with
+   first-boot unit is enabled and what the image added for the installer alone (its
+   configuration and branding, the installer screen, the console's mark) and apt's
+   download cache are removed (`shellprocess-firstboot.conf`), GRUB is installed with
    Debian's signed shim into `EFI/debian`, where Debian's packages update it, and shim
    also at the removable path (`shellprocess-efi-removable.conf`), so the machine boots
    when the firmware loses its boot entries.
