@@ -70,6 +70,9 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- A theme or a setting with an & in a name the renderers fill in (a start menu folder
+  "Office & Docs", a theme's author) is written as it is; bash 5.2 put the placeholder
+  in place of the &.
 - Meta+A opens the agent the machine has: after `patina ai on opencode` on a machine
   that had Hermes Agent, it still opened Hermes, since the record of installed bundles
   keeps Hermes' bundle, while kortex talked to opencode.

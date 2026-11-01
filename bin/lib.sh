@@ -282,12 +282,13 @@ theme_vars() {
 }
 
 # Fill the ${NAME} placeholders of a template from tpl[]: render <template> <out>.
-# Plain bash, no eval, no envsubst.
+# Plain bash, no eval, no envsubst. The value is quoted: bash 5.2 (patsub_replacement)
+# reads an unquoted & in it as the placeholder itself, so "A & B" came out "A ${NAME} B".
 render() {
   local text name
   text="$(< "$1")"
   for name in "${!tpl[@]}"; do
-    text="${text//\$\{$name\}/${tpl[$name]}}"
+    text="${text//\$\{$name\}/"${tpl[$name]}"}"
   done
   printf '%s\n' "$text" > "$2"
 }
