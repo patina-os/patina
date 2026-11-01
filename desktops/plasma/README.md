@@ -101,7 +101,10 @@ Files, from `templates/`, each named after the theme:
   defaults, so with `--layout` inside a session the renderer unlinks those (the browser,
   Kontact, System Settings, Dolphin, Discover) and links patina's through the activity
   manager's D-Bus API (`org.kde.ActivityManager.ResourcesLinking`); favourites the user
-  added stay. Kickoff always opens centred above its button (libplasma's
+  added stay. The layout script also writes their order for the start menu it makes
+  (`kactivitymanagerd-statsrc`, `Favorites-…instance-<id>-global`), since a new start
+  menu keeps none and would show linked favourites in any order; Kickoff reads it when
+  Plasma starts, so the order arrives with the next login. Kickoff always opens centred above its button (libplasma's
   `PopupPlasmaWindow` anchors every panel popup to its applet), and Plasma centres on
   the screen whatever sits between a bar's two expanding spacers (`panelspacer`'s
   `optimalSize`), so `centered` puts the button alone between them and the menu opens

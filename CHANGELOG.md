@@ -70,6 +70,10 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- The start menu's favourites keep their order (the agent, then self-hosting, then
+  kitty) on a desktop that had a start menu before patina: the start menu `patina theme
+  set --layout` makes, the first `patina install` among them, showed them in any
+  order. It takes the order from the next login.
 - `patina ai connect linear` (and notion) without a terminal, as the agent runs it,
   stopped at a question the preset does not have.
 

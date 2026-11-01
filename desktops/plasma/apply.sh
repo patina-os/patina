@@ -635,6 +635,7 @@ if [[ "${tpl[PANEL_LAYOUT]}" == centered || "${tpl[PANEL_LAYOUT]}" == grouped ]]
     pinned="$pinned${pinned:+, }\"applications:$service\""
   done < <(yq eval '.panel.pinned[]?' "$settings")
   tpl[PINNED_LAUNCHERS]="$pinned"
+  tpl[FAVORITES_ORDER]="${favorites//;/,}"
   # The Application Dashboard comes with plasma-widgets-addons (the desktop bundle);
   # without it Plasma would show a broken applet in the bar, so Kickoff stands in.
   tpl[LAUNCHER_APPLET]=org.kde.plasma.kickoff
