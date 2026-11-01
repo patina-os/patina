@@ -54,9 +54,13 @@ grab() {
 # environment is the one a Plasma login sets, so the renderer sees a session
 # (XDG_CURRENT_DESKTOP, the bus) and Qt draws on X.
 session() {
-  local dir="$1" waited=0 theme session_pid split kitty_pid query mode
+  local dir="$1" waited=0 theme session_pid split kitty_pid query mode dirs
   export XDG_SESSION_TYPE=x11 XDG_CURRENT_DESKTOP=KDE KDE_FULL_SESSION=true \
     KDE_SESSION_VERSION=6 DESKTOP_SESSION=plasmax11 QT_QPA_PLATFORM=xcb
+  # The data directories a login gets from flatpak's environment generator, so the apps
+  # from Flathub (Element) are in the start menu, as on a desktop.
+  dirs="$(flatpak --print-updated-env 2> /dev/null | sed -n 's/^XDG_DATA_DIRS=//p' || true)"
+  [[ -z "$dirs" ]] || export XDG_DATA_DIRS="$dirs"
   startplasma-x11 &
   session_pid=$!
   until on_bus org.kde.plasmashell; do
