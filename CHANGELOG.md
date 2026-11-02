@@ -82,6 +82,9 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- The start menu's Help category shows its icon in the accent like the other
+  categories, a question mark; it was an information sign in the text colour, an icon
+  from outside the category icons the accent reaches.
 - A change to the start menu's folders made outside a Plasma session (over SSH, in the
   desktop workflow's screenshot session) no longer empties the start menu and turns the
   bar's launchers into question marks: the menu cache was rebuilt without Plasma's menu

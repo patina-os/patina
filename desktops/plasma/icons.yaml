@@ -8,7 +8,9 @@
 # colour; `apps` names the glyph for an icon, every other app gets `other`. The
 # renderer writes ~/.local/share/icons/patina-<theme>/, which inherits the icon theme
 # and holds only the recoloured folders and the glyphs; an icon theme not named here
-# is used as it is.
+# is used as it is. `categories` maps the icon a start menu category's directory entry
+# names to a glyph of the icon theme's categories, where that icon lies elsewhere in it:
+# the category glyphs are the ones that take the accent (start_menu.icons).
 Papirus-Dark: &papirus
   variant: blue
   colors:
@@ -42,5 +44,7 @@ Papirus-Dark: &papirus
       spectacle: camera-photo-symbolic
       utilities-system-monitor: utilities-system-monitor-symbolic
       kdeconnect: phone-symbolic
+  categories:
+    help-about-symbolic: system-help-symbolic              # Help (kf5-help.directory), an action
 Papirus-Light: *papirus
 Papirus: *papirus

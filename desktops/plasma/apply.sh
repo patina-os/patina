@@ -631,6 +631,27 @@ for f in "$data"/desktop-directories/patina-*.directory; do
   rm -f "$f"
   changed
 done
+# A category of the menu whose icon the icon theme keeps outside its category glyphs
+# (Help names help-about-symbolic, an action) gets the category glyph icons.yaml names,
+# so it takes the accent like the others: a copy of its directory entry under the same
+# name, which the user's data directory puts before the system's.
+overrides=" "
+while IFS=$'\t' read -r from to; do
+  [[ -f "/usr/share/icons/$icons_base/32x32/symbolic/categories/$to.svg" ]] || continue
+  while IFS= read -r f; do
+    { printf '# patina: %s in place of %s (desktops/plasma/icons.yaml)\n' "$to" "$from"
+      sed "s/^Icon=$from\$/Icon=$to/" "$f"; } > "$tmp/category.directory"
+    put "$tmp/category.directory" "$data/desktop-directories/${f##*/}"
+    overrides="$overrides$data/desktop-directories/${f##*/} "
+  done < <(grep -lxF "Icon=$from" /usr/share/desktop-directories/*.directory 2> /dev/null)
+done < <(yq eval ".[\"$icons_base\"].categories // {} | to_entries | .[] | [.key, .value] | @tsv" "$here/icons.yaml")
+for f in "$data"/desktop-directories/*.directory; do
+  [[ -e "$f" && "$f" != */patina-*.directory && "$overrides" != *" $f "* ]] || continue
+  [[ "$(head -n 1 "$f")" == "# patina: "* ]] || continue
+  say "removing $f (no category icon of icons.yaml for it)"
+  rm -f "$f"
+  changed
+done
 tpl[MENU_FOLDERS]="${folders%$'\n'}"
 render "$templates/start-menu.menu" "$tmp/start-menu.menu"
 put "$tmp/start-menu.menu" "$config/menus/applications-merged/patina-start-menu.menu"

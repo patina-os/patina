@@ -28,7 +28,12 @@ Files, from `templates/`, each named after the theme:
   text colour (white in the dark mode, dark in the light one). With
   `start_menu.icons: accent` (the default) the icon theme's symbolic category icons,
   which the start menu's categories show, take the accent: their colour and their
-  `ColorScheme-Text` class become the accent; the labels keep the text colour. Each glyph, and the start menu's mark, gets a viewBox cut to what it
+  `ColorScheme-Text` class become the accent; the labels keep the text colour. A
+  category whose directory entry names an icon from elsewhere in the icon theme (Help:
+  `help-about-symbolic`, an action) gets the category glyph `icons.yaml` names for it
+  under `categories` (`system-help-symbolic`), through a copy of the entry under the
+  same name in `~/.local/share/desktop-directories/`, its first line a `# patina:`
+  comment; the renderer removes such a copy again when no mapping applies. Each glyph, and the start menu's mark, gets a viewBox cut to what it
   draws, 7/8 of the icon high and centred (the extent from the bounding box of an EPS
   `rsvg-convert` writes), so they stand equally tall in the bar. An app installed later gets its glyph at the next `patina theme set`.
   The session uses this icon theme. Without the icon theme installed the renderer
