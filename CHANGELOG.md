@@ -82,6 +82,11 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- `patina theme set` and `patina update` outside a Plasma session (over SSH) no longer
+  write the widget style, the icon theme and the desktop theme again after the session
+  applied the look-and-feel package, which moves them to `~/.config/kdedefaults/`: the
+  renderer reads that directory as a session does, so a second run reports nothing to
+  do.
 - A theme or a setting with an & in a name the renderers fill in (a start menu folder
   "Office & Docs", a theme's author) is written as it is; bash 5.2 put the placeholder
   in place of the &.

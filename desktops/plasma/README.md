@@ -147,7 +147,10 @@ Files, from `templates/`, each named after the theme:
   `defaults/keybindings.yaml` and Plasma's own chords worth knowing, kept as words under
   `cheatsheet` in `actions.yaml`
 
-Settings, through `kwriteconfig6`, each written only when it differs:
+Settings, through `kwriteconfig6`, each written only when it differs from what a session
+reads: the renderer puts `~/.config/kdedefaults/` first in `XDG_CONFIG_DIRS`, as
+`startplasma` does, because applying the look-and-feel package moves the values it names
+there, so a run over SSH or in the screenshot session finds them unchanged as well:
 
 - `kdeglobals`: colour scheme and every colour of it (`plasma-apply-colorscheme` would
   copy them only with a display and never for a scheme whose name is already set, so

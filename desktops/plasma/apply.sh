@@ -19,6 +19,15 @@ config="${XDG_CONFIG_HOME:-$HOME/.config}"
 data="${XDG_DATA_HOME:-$HOME/.local/share}"
 agent_desktop="$data/applications/patina-agent.desktop"
 changes=0
+# Applying the look-and-feel package moves the values it names into ~/.config/kdedefaults/
+# and drops them from the user's files; a session reads them there because startplasma
+# puts that directory first in XDG_CONFIG_DIRS. Outside a session (over SSH, the
+# screenshot session's own shell) kreadconfig6 would find those keys unset, and every
+# run would write them again; with the same directories it reads what the session reads.
+case ":${XDG_CONFIG_DIRS:-}:" in
+  *":$config/kdedefaults:"*) ;;
+  *) export XDG_CONFIG_DIRS="$config/kdedefaults:${XDG_CONFIG_DIRS:-/etc/xdg}" ;;
+esac
 
 # shellcheck source=bin/lib.sh
 source "$PATINA_PATH/bin/lib.sh"
