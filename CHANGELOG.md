@@ -140,6 +140,10 @@ All notable changes to patina are documented here. The format follows
   started (Hermes Agent takes up to a minute) or answered slowly, KRunner got nothing
   from kortex and could give up on it; it shows "Waiting for the agent…" now, and the
   conversation as soon as it arrives.
+- kortex 0.3.3: `AI ›` and a tab after `ai` in the command palette work as `ai ›` and
+  a space do (`AI ›` asked the agent about "›"), and Allow or Deny on a request
+  answered elsewhere, in the agent's terminal say, no longer shows that the request
+  did not reach the agent.
 - `patina ai connect linear` (and notion) without a terminal, as the agent runs it,
   stopped at a question the preset does not have.
 - "Open in terminal" on the agent's answer in the command palette, and Dolphin's "Open
