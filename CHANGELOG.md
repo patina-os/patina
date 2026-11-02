@@ -161,6 +161,9 @@ All notable changes to patina are documented here. The format follows
   login to `/etc/sddm.conf.d/kde_settings.conf`, where Plasma's Login Screen settings
   keep it, rather than `/etc/sddm.conf`, which SDDM reads after every other file, so
   the device's own file chooses the session.
+- The installer's progress bar keeps its percentage readable once the bar passes it:
+  the light figures stood on the neon green and vanished from half way on. The bar is
+  filled translucent now, with a glowing leading edge.
 
 ## [0.1.0-alpha.4] - 2026-10-29
 
