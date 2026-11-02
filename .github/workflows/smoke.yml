@@ -255,7 +255,9 @@ jobs:
           grep -qxF "color_theme = \"$btop_theme\"" "$config/btop/btop.conf"
           test -s "$config/bat/config"
           test -s "$config/environment.d/60-patina.conf"
-          if grep -rq '\${' "$config/kitty" "$config/btop/themes" "$config/nvim"; then
+          test -s "$config/kitty/kitty.app.png"   # kitty's window icon, the terminal glyph
+          # Text files only (-I): the window icon's bytes may hold a "${" by chance.
+          if grep -rqI '\${' "$config/kitty" "$config/btop/themes" "$config/nvim"; then
             exit 1   # a placeholder the renderer did not fill
           fi
           colors="$(nvim --headless +'lua io.write(vim.g.colors_name)' +qa 2>&1)"
