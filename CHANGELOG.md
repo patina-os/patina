@@ -129,6 +129,10 @@ All notable changes to patina are documented here. The format follows
   GTK settings as changed after every login: they are written as Plasma's GTK bridge
   writes them (`true`, "Source Sans 3,  10"), which rewrote patina's `1` and
   "Source Sans 3 10" each time.
+- Nor do they report a global shortcut as changed on every run: patina took Meta+Tab
+  from "Walk through activities" (`next activity`), an action Plasma 6.3 no longer
+  has, so the session dropped the entry and the next run wrote it back. Plasma 6.3
+  gives activities no Meta+Tab, so patina's overview has it without that.
 - The image's first boot shows the patina mark on tty1 again (it printed it only for an
   unattended run, and the installer's answers make it ask nothing that would), says
   that sudo asks for the password given to the installer, and keeps everything the
