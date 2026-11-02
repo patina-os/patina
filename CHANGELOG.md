@@ -57,6 +57,12 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- aurora's light mode reads better: its orange, yellow and cyan, and the text of an
+  inactive selection on the green, reach 4.5:1 on its lavender white, and the grey of
+  comments and the shell's suggestions 3:1, each a little darker in the same hue (the
+  green accent with them). On that ground the mark's rings in the terminal greeting
+  and `patina credits` are darker violets, the palest at 3:1; the two lavender rings
+  hardly showed. The dark mode and datum are unchanged.
 - The installer asks for a disk of at least 29 GiB, which every drive sold as 32 GB
   has, up from 20: after swap, 20 left about 15.5 GB, too little for the desktop
   bundle with a local model and Hermes Agent.

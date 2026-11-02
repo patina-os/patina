@@ -117,7 +117,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   window (other apps stay opaque); the start menu and the other panel popups carry a
   slight grain. The brand's colours (deep violet, violet, lavender, white, and green
   for the ▲) are aurora's and do not follow a theme; on a light ground the terminal
-  prints the marks' letters black and the ▲ in aurora light's green (October 2026).
+  prints the marks' letters black and the ▲ in aurora light's green (October 2026),
+  and the rings in darker shades of their violets, the palest at 3:1 (November 2026).
   The desktop's shape is a bar along the bottom edge (never floating: a floating bar
   jumps when a window is maximised) with the start button alone in its centre and the
   task icons at its left end, new windows centred at one size and the command palette

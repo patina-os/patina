@@ -48,23 +48,24 @@ plasma:
   cursors: breeze_cursors
   desktop_theme: default         # the panel and widget style; default follows the colour scheme
 
-# The light mode, `patina theme mode light`: the same roles on lavender white. Keys left
+# The light mode, `patina theme mode light`: the same roles on lavender white, every
+# colour that carries text at 4.5:1 or more on base00 (base03, a hint, at 3:1). Keys left
 # out here (accent, accent_alt, cursors) come from above.
 light:
   palette:
     base00: "#f7f6fb"  # default background: lavender white
     base01: "#eeecf5"  # lighter background: panels, title bars, menus
     base02: "#e0dcec"  # selection background in editors, buttons
-    base03: "#a9a3bd"  # comments, invisibles
+    base03: "#928bab"  # comments, invisibles; 3:1 on base00, a hint that still reads
     base04: "#6b6585"  # dark foreground: status bars
     base05: "#2a2638"  # default foreground
     base06: "#1a1726"  # light foreground (darker in a light palette)
     base07: "#0d0b14"  # lightest slot, darkest ink
     base08: "#d1264a"  # red: errors, deleted
-    base09: "#c4620f"  # orange: constants
-    base0A: "#957600"  # yellow: classes, search
-    base0B: "#087a46"  # green: strings, added; the accent, deep enough for white text on it
-    base0C: "#0e8277"  # cyan: regular expressions, escapes
+    base09: "#b2590e"  # orange: constants
+    base0A: "#8b6e00"  # yellow: classes, search
+    base0B: "#077141"  # green: strings, added; the accent, under white and base02 text at 4.5:1
+    base0C: "#0e7f75"  # cyan: regular expressions, escapes
     base0D: "#3559d6"  # blue: functions, links
     base0E: "#7c3aed"  # magenta: keywords; the violet of the second colour
     base0F: "#a21caf"  # orchid: deprecated, embedded tags

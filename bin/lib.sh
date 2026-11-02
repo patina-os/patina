@@ -349,18 +349,24 @@ mark_ground() {
 # console, /etc/issue.d). The colours are added here, at print time, and are the
 # brand's, not the theme's, the same as in branding/wordmark.svg: the rings shade from
 # deep violet (i) through violet (t) to lavender (n, a), the word patina is bold white,
-# the survey point green. On a light ground the word is black and the ▲ aurora light's
-# deeper green. `print_logo auto|always [dark|light]`, the ground from mark_ground
-# when not given.
+# the survey point green. On a light ground the word is black, the ▲ aurora light's
+# deeper green, and the rings shade from the same deep violet through darker violets,
+# so the palest (a) still reads at 3:1. `print_logo auto|always [dark|light]`, the
+# ground from mark_ground when not given.
 print_logo() {
   local logo="$PATINA_PATH/branding/logo.txt"
   [[ -r "$logo" ]] || return 0
   if logo_colour "$1"; then
     local line head word tail part reset=$'\033[0m' ink=$'\033[1;38;2;245;247;249m'
-    local point=$'\033[38;2;60;255;157m'
+    local point=$'\033[38;2;60;255;157m' ring_i=$'\033[38;2;109;79;194m'
+    local ring_t=$'\033[38;2;155;107;255m' ring_n=$'\033[38;2;195;162;255m'
+    local ring_a=$'\033[38;2;228;214;255m'
     local -a parts
     if [[ "${2:-$(mark_ground)}" == light ]]; then
-      ink=$'\033[1;38;2;0;0;0m' point=$'\033[38;2;8;122;70m'
+      ink=$'\033[1;38;2;0;0;0m' point=$'\033[38;2;7;113;65m'
+      # #8348ff, #965dff and #a374ff: 4.5, 3.7 and 3 to 1 on aurora light's #f7f6fb
+      ring_t=$'\033[38;2;131;72;255m' ring_n=$'\033[38;2;150;93;255m'
+      ring_a=$'\033[38;2;163;116;255m'
     fi
     while IFS= read -r line; do
       head="$line" word="" tail=""
@@ -370,10 +376,10 @@ print_logo() {
       parts=()
       for part in "$head" "$tail"; do
         # The escape codes hold no i, t or n, so each pass leaves the earlier ones alone.
-        part="${part//i/$'\033[38;2;109;79;194m'i$reset}"
-        part="${part//t/$'\033[38;2;155;107;255m't$reset}"
-        part="${part//n/$'\033[38;2;195;162;255m'n$reset}"
-        part="${part//a/$'\033[38;2;228;214;255m'a$reset}"
+        part="${part//i/${ring_i}i$reset}"
+        part="${part//t/${ring_t}t$reset}"
+        part="${part//n/${ring_n}n$reset}"
+        part="${part//a/${ring_a}a$reset}"
         parts+=("${part//▲/$point▲$reset}")
       done
       printf '%s%s%s\n' "${parts[0]}" "${word:+$ink$word$reset}" "${parts[1]}"
@@ -395,7 +401,7 @@ print_wordmark() {
     local ink=$'\033[38;2;245;247;249m' point=$'\033[38;2;60;255;157m'
     local -a lines
     if [[ "${2:-$(mark_ground)}" == light ]]; then
-      ink=$'\033[38;2;0;0;0m' point=$'\033[38;2;8;122;70m'
+      ink=$'\033[38;2;0;0;0m' point=$'\033[38;2;7;113;65m'
     fi
     mapfile -t lines < "$file"
     for i in "${!lines[@]}"; do
