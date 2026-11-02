@@ -82,6 +82,10 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- A change to the start menu's folders made outside a Plasma session (over SSH, in the
+  desktop workflow's screenshot session) no longer empties the start menu and turns the
+  bar's launchers into question marks: the menu cache was rebuilt without Plasma's menu
+  and held no apps, and a session reading the same data directories took it.
 - `patina theme set` and `patina update` outside a Plasma session (over SSH) no longer
   write the widget style, the icon theme and the desktop theme again after the session
   applied the look-and-feel package, which moves them to `~/.config/kdedefaults/`: the

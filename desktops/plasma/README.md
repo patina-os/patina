@@ -95,7 +95,8 @@ Files, from `templates/`, each named after the theme:
   directory entry each under `~/.local/share/desktop-directories/patina-<id>.directory`
   and `~/.config/menus/applications-merged/patina-start-menu.menu`, which fills them;
   a folder shows the apps of its list that are installed. The menu cache is rebuilt
-  (`kbuildsycoca6`) when they change. The favourites, the folders' apps and then
+  (`kbuildsycoca6`) when they change, from Plasma's menu (`XDG_MENU_PREFIX=plasma-`, as
+  `startplasma` sets it, also outside a session). The favourites, the folders' apps and then
   `start_menu.favorites` as far as they are installed, go into `kicker-extra-favoritesrc`
   (`Prepend`, a `;`-list): Kickoff puts them before Plasma's own favourites in a start
   menu whose favourites store is still empty (the image's first login). On a desktop

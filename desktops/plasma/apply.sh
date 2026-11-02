@@ -28,6 +28,11 @@ case ":${XDG_CONFIG_DIRS:-}:" in
   *":$config/kdedefaults:"*) ;;
   *) export XDG_CONFIG_DIRS="$config/kdedefaults:${XDG_CONFIG_DIRS:-/etc/xdg}" ;;
 esac
+# The menu cache (kbuildsycoca6, below) reads Plasma's menu, plasma-applications.menu,
+# by the prefix startplasma sets. Without it there is no applications.menu, and a cache
+# rebuilt there held no apps at all; a session with the same data directories reads the
+# same cache file, so its start menu went empty and the bar's launchers unknown.
+export XDG_MENU_PREFIX="${XDG_MENU_PREFIX:-plasma-}"
 
 # shellcheck source=bin/lib.sh
 source "$PATINA_PATH/bin/lib.sh"
