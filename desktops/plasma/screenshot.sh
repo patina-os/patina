@@ -12,8 +12,8 @@ usage() {
 usage: screenshot.sh <dir>
 
 Run as the user the layer is installed for (patina install), on a machine or in a
-container with Plasma: Xvfb, startplasma-x11, scrot, kitty, fastfetch, fish, btop,
-dbus-run-session and dbus-send. No display or login is needed. Writes into <dir>:
+container with Plasma: Xvfb, startplasma-x11, scrot, xdotool, kitty, fastfetch, fish,
+btop, dbus-run-session and dbus-send. No display or login is needed. Writes into <dir>:
   desktop.png          kitty split in two, the greeting beside btop
   command-palette.png  KRunner on the agent's answer to PATINA_SHOT_ASK, through
                        kortex, on the empty desktop; only when PATINA_SHOT_ASK is set
@@ -54,7 +54,7 @@ grab() {
 # environment is the one a Plasma login sets, so the renderer sees a session
 # (XDG_CURRENT_DESKTOP, the bus) and Qt draws on X.
 session() {
-  local dir="$1" waited=0 theme session_pid split kitty_pid query mode dirs
+  local dir="$1" waited=0 theme session_pid split kitty_pid query mode dirs width height
   export XDG_SESSION_TYPE=x11 XDG_CURRENT_DESKTOP=KDE KDE_FULL_SESSION=true \
     KDE_SESSION_VERSION=6 DESKTOP_SESSION=plasmax11 QT_QPA_PLATFORM=xcb
   # The data directories a login gets from flatpak's environment generator, so the apps
@@ -76,6 +76,12 @@ session() {
     waited=$((waited + 5))
   done
   echo "screenshot: plasmashell up after ${waited}s"
+  # The pointer rests where Xvfb puts it, in the middle of the screen, which is where
+  # the start menu's search field and the command palette open: its tooltip (Ctrl+F)
+  # and hover would be in the pictures. It goes to the right of the middle, over the
+  # empty desktop, away from the screen's edges and corners KWin acts on.
+  read -r width height < <(xdotool getdisplaygeometry)
+  xdotool mousemove $((width * 7 / 8)) $((height / 3))
   sleep "$settle"
   # The theme once more, now inside a session: the live reload through the plasma-apply
   # tools, and the window rule that needs a screen (desktops/plasma/README.md).
@@ -164,7 +170,7 @@ size="${PATINA_SHOT_SIZE:-1920x1080}"
 [[ "$size" =~ ^([0-9]+)x([0-9]+)$ ]] || { echo "screenshot: PATINA_SHOT_SIZE is not WIDTHxHEIGHT: $size" >&2; exit 64; }
 width="${BASH_REMATCH[1]}"
 height="${BASH_REMATCH[2]}"
-for tool in Xvfb startplasma-x11 scrot kitty fastfetch fish btop dbus-run-session dbus-send; do
+for tool in Xvfb startplasma-x11 scrot xdotool kitty fastfetch fish btop dbus-run-session dbus-send; do
   command -v "$tool" > /dev/null || { echo "screenshot: $tool missing" >&2; exit 69; }
 done
 if [[ -n "${PATINA_SHOT_ASK:-}" && ! -f "${XDG_DATA_HOME:-$HOME/.local/share}/krunner/dbusplugins/kortex.desktop" ]]; then

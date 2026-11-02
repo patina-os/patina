@@ -237,7 +237,9 @@ a Plasma X11 session on a virtual framebuffer (`Xvfb`, Mesa's software OpenGL, n
 and no login), `plasmashell` in it, which runs the layout script as a first login
 does, then `patina theme set --layout` once more inside that session, as the first
 install runs it (the live reload, the window rule, which needs a screen, and patina's
-favourites in place of Plasma's) and the Welcome Center closed. Then three grabs of
+favourites in place of Plasma's) and the Welcome Center closed, and the pointer moved
+from the middle of the screen, where Xvfb leaves it, to the empty desktop on the right
+(`xdotool`), so no tooltip or hover is in the pictures. Then three grabs of
 the whole screen (`scrot`): `desktop.png`, kitty split in two with the fastfetch
 greeting and btop; when `PATINA_SHOT_ASK` holds a request and an AI bundle installed
 kortex, `command-palette.png` on the empty desktop: what Enter on kortex's "Ask the
