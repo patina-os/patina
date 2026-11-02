@@ -67,7 +67,13 @@ Files, from `templates/`, each named after the theme:
 - a look-and-feel package, `~/.local/share/plasma/look-and-feel/org.patina.<theme>/`,
   whose `defaults` name the colour scheme, icons, cursors, desktop theme, decoration,
   splash and wallpaper, so a fresh session (the image's first login) starts in the
-  theme; its `contents/splash/Splash.qml`, from `templates/splash.qml`, is the Plasma
+  theme; its `contents/previews/` hold the pictures System Settings shows for it among
+  the global themes, the card (`preview.png`, 600x337) and the full screen
+  (`fullscreenpreview.jpg`, 1920x1080, PNG data under the name the package format
+  fixes: `rsvg-convert` writes no JPEG and Qt reads an image by its content), both the
+  mode's first wallpaper with the bar along the bottom edge in the window colour and the
+  mark in its centre (`templates/look-and-feel-preview.svg`); without them Plasma showed
+  Breeze's, the package it falls back to; its `contents/splash/Splash.qml`, from `templates/splash.qml`, is the Plasma
   splash: the wordmark (`branding/wordmark.svg`) on the theme's background and one
   accent line that grows as Plasma starts, the one piece of code a theme renders; it
   takes the dark palette in either mode, since the wordmark is made for a dark ground

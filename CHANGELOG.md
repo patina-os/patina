@@ -82,6 +82,9 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- patina's global theme shows a picture of its own in System Settings (Appearance,
+  Global Theme), on its card and in its full-screen preview: its wallpaper with the bar
+  and the mark. Both showed Breeze's desktop.
 - kitty's title bar shows the terminal glyph in the text colour like every other
   window's, not kitty's own coloured cat, on X11 (the Plasma X11 session, the VM
   of Try patina): the renderer gives kitty a window icon, `~/.config/kitty/kitty.app.png`.

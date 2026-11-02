@@ -582,6 +582,24 @@ render "$templates/look-and-feel-metadata.json" "$tmp/lnf.json"
 put "$tmp/lnf.json" "$lnf/metadata.json"
 render "$templates/look-and-feel-defaults" "$tmp/lnf.defaults"
 put "$tmp/lnf.defaults" "$lnf/contents/defaults"
+# Its previews, the pictures System Settings shows for it among the global themes, the
+# card and the full screen, at the sizes of Breeze's: the desktop's wallpaper with the
+# bar along the bottom edge and the mark in its centre (templates/look-and-feel-preview.svg).
+# Without them Plasma took Breeze's, the package it falls back to. rsvg reads no file
+# outside the SVG's own directory, so the wallpaper and the mark sit beside it. The full
+# screen one is PNG data under the .jpg name the package format gives it: rsvg-convert
+# writes no JPEG, and Qt reads an image by its content.
+if [[ -n "$wallpaper_dir" && -f "$wallpaper_dir/contents/images/3840x2160.png" ]] &&
+    command -v rsvg-convert > /dev/null; then
+  mkdir -p "$tmp/preview"
+  cp "$wallpaper_dir/contents/images/3840x2160.png" "$tmp/preview/wallpaper.png"
+  cp "$PATINA_PATH/branding/icon-small.svg" "$tmp/preview/mark.svg"
+  render "$templates/look-and-feel-preview.svg" "$tmp/preview/preview.svg"
+  rsvg-convert --width 600 --height 337 --output "$tmp/preview.png" "$tmp/preview/preview.svg"
+  put "$tmp/preview.png" "$lnf/contents/previews/preview.png"
+  rsvg-convert --width 1920 --height 1080 --output "$tmp/preview-full.png" "$tmp/preview/preview.svg"
+  put "$tmp/preview-full.png" "$lnf/contents/previews/fullscreenpreview.jpg"
+fi
 # The splash: the wordmark on the theme's background, one accent line (templates/splash.qml).
 # Always in the dark palette where the theme has one, like the boot menu and the login
 # screen before it: the wordmark is made for a dark ground. A subshell keeps tpl[].
