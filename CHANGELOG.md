@@ -164,6 +164,10 @@ All notable changes to patina are documented here. The format follows
 - The installer's progress bar keeps its percentage readable once the bar passes it:
   the light figures stood on the neon green and vanished from half way on. The bar is
   filled translucent now, with a glowing leading edge.
+- `patina doctor` reports a kortex that its own `uninstall.sh` removed, and the next
+  `patina install` installs it again; both went by the release patina had recorded,
+  which the uninstall leaves. A `git` recipe in `manifest/upstream.yaml` names the
+  files its install leaves (`data_files`), and they are checked as well.
 
 ## [0.1.0-alpha.4] - 2026-10-29
 

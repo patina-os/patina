@@ -72,7 +72,7 @@ flatpak_installed() {
 # Is the tool of a manifest/upstream.yaml recipe installed? Each method has its own trace;
 # a git recipe's is the ref patina install recorded, so a new ref counts as missing.
 upstream_installed() {
-  local key="$1" method command package ref
+  local key="$1" method command package ref file
   method="$(yq eval ".$key.method" "$PATINA_PATH/manifest/upstream.yaml")"
   command="$(yq eval ".$key.command // \"\"" "$PATINA_PATH/manifest/upstream.yaml")"
   package="$(yq eval ".$key.package // \"\"" "$PATINA_PATH/manifest/upstream.yaml")"
@@ -83,8 +83,13 @@ upstream_installed() {
     uv) command -v uv > /dev/null && uv tool list 2> /dev/null | grep -q "^$package " ;;
     apt-source) package_installed "$package" ;;
     git)
+      # The ref recorded at install time, and the files the install left, which the
+      # repository's own uninstall script may have removed since.
       ref="$(yq eval ".$key.ref" "$PATINA_PATH/manifest/upstream.yaml")"
-      [[ "$(cat "$PATINA_STATE/upstream/$key" 2> /dev/null)" == "$ref" ]]
+      [[ "$(cat "$PATINA_STATE/upstream/$key" 2> /dev/null)" == "$ref" ]] || return 1
+      while IFS= read -r file; do
+        [[ -e "${XDG_DATA_HOME:-$HOME/.local/share}/$file" ]] || return 1
+      done < <(yq eval ".$key.data_files // [] | .[]" "$PATINA_PATH/manifest/upstream.yaml")
       ;;
     *) die "unknown upstream method '$method' for $key" ;;
   esac
