@@ -155,6 +155,12 @@ All notable changes to patina are documented here. The format follows
   update` fetched Euro-Office's signing key, patina wrote an empty key in place of the
   good one, and apt refused Euro-Office's updates until the next run. It keeps the key
   it has now and says so.
+- In Try patina for Windows, logging in automatically (the installer's checkbox)
+  started the Wayland session, where copy and paste with Windows does not work; it
+  starts Plasma (X11) now, like the login screen. The installer writes the automatic
+  login to `/etc/sddm.conf.d/kde_settings.conf`, where Plasma's Login Screen settings
+  keep it, rather than `/etc/sddm.conf`, which SDDM reads after every other file, so
+  the device's own file chooses the session.
 
 ## [0.1.0-alpha.4] - 2026-10-29
 
