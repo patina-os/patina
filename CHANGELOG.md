@@ -136,6 +136,10 @@ All notable changes to patina are documented here. The format follows
   server outlived a session that ended without a logout; and `patina ai on hermes`
   reached a running kortex only after a quiet quarter of an hour. `patina update`
   installs it where kortex is installed.
+- kortex 0.3.2: the command palette no longer waits for the agent. While the agent
+  started (Hermes Agent takes up to a minute) or answered slowly, KRunner got nothing
+  from kortex and could give up on it; it shows "Waiting for the agent…" now, and the
+  conversation as soon as it arrives.
 - `patina ai connect linear` (and notion) without a terminal, as the agent runs it,
   stopped at a question the preset does not have.
 - "Open in terminal" on the agent's answer in the command palette, and Dolphin's "Open
