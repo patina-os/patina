@@ -63,12 +63,12 @@ jobs:
           iso/live/build.sh "${{ matrix.arch }}" "$GITHUB_WORKSPACE/iso/build/live"
       - name: Keep the build log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: iso-build-log-${{ matrix.arch }}
           path: iso/build/live/build.log
           if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: patina-${{ matrix.arch }}
           path: iso/build/live/*.iso
@@ -91,7 +91,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: patina-${{ matrix.arch }}
           path: image
@@ -107,7 +107,7 @@ jobs:
         run: iso/test/boot-test.sh image/*.iso "$RUNNER_TEMP/boot-test"
       - name: Keep the serial log and the screenshot of the installer screen
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: boot-test-${{ matrix.arch }}
           path: |
@@ -130,7 +130,7 @@ jobs:
       IMAGES: ${{ contains(github.ref_name, '-alpha') && 'patina-amd64' || 'patina-*' }}
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: ${{ env.IMAGES }}
           path: image
