@@ -34,6 +34,10 @@ jobs:
       # flatpak runs its post-install triggers in a bubblewrap sandbox, which needs
       # namespaces the default container profile forbids.
       options: --privileged
+    env:
+      # The container sets no locale (C), and every Qt tool, kreadconfig6 and
+      # kwriteconfig6 among them, warns that Qt depends on a UTF-8 one.
+      LANG: C.UTF-8
     steps:
       - name: Install what Path A starts from
         # The README asks for git and curl; a stock Debian desktop has them, the bare

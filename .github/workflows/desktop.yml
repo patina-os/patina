@@ -38,6 +38,10 @@ jobs:
     container:
       image: debian:13
       options: --privileged   # flatpak's bubblewrap sandbox, as in the smoke workflow
+    env:
+      # The container sets no locale (C), and every Qt tool, kwriteconfig6 among them,
+      # warns that Qt depends on a UTF-8 one; sudo keeps LANG for the user's steps.
+      LANG: C.UTF-8
     steps:
       - name: Install Plasma and what Path A starts from
         # Plasma as Debian ships it (the X11 session and its window manager) with the

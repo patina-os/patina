@@ -184,6 +184,9 @@ if [[ -z "${XDG_RUNTIME_DIR:-}" || ! -w "${XDG_RUNTIME_DIR:-}" ]]; then
 fi
 # Software OpenGL (Mesa's llvmpipe), so KWin composites without a GPU.
 export LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe
+# Qt wants a UTF-8 locale and warns at every start of one of its tools without one; a
+# container sets none (C). A machine's own UTF-8 locale stays.
+[[ "$(locale charmap 2> /dev/null)" == UTF-8 ]] || export LANG=C.UTF-8
 rm -f "$dir/start-menu.png" "$dir/desktop.png" "$dir/command-palette.png"
 log="$dir/session.log"
 work="$(mktemp -d)"
