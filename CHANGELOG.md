@@ -82,6 +82,10 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- kitty's title bar shows the terminal glyph in the text colour like every other
+  window's, not kitty's own coloured cat, on X11 (the Plasma X11 session, the VM
+  of Try patina): the renderer gives kitty a window icon, `~/.config/kitty/kitty.app.png`.
+  A `kitty.app.png` of your own stays.
 - The start menu's Help category shows its icon in the accent like the other
   categories, a question mark; it was an information sign in the text colour, an icon
   from outside the category icons the accent reaches.
