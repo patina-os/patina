@@ -1,7 +1,10 @@
 # Tools installed from their upstream installers, used only when no packaged version is
 # worth using. Every entry names its `method` and, for the is-installed check, the
 # `command` it puts on PATH (binary, script) or the `package` it installs (npm, uv,
-# apt-source); a git recipe is checked by the `ref` recorded when it was installed.
+# apt-source); a git recipe is checked by the `ref` recorded when it was installed and
+# its `data_files`, the files its install script leaves under the user's data directory
+# (${XDG_DATA_HOME:-~/.local/share}), so a release removed by its own uninstall script
+# is missing again.
 # Methods:
 #   npm         global package via the base's nodejs and npm, into ~/.local
 #   uv          Python tool via `uv tool install` (uv itself is the `uv` recipe)
@@ -95,8 +98,14 @@ kortex:
   # Needs python3-dbus and python3-gi, which the AI bundles list.
   method: git
   url: https://github.com/patina-os/kortex.git
-  ref: v0.3.2
+  ref: v0.3.3
   install: install.sh
+  # What install.sh of that ref leaves: the program, D-Bus's activation file and
+  # KRunner's plugin file; kortex's uninstall.sh removes them.
+  data_files:
+    - kortex/kortex.py
+    - dbus-1/services/io.github.patina_os.kortex.service
+    - krunner/dbusplugins/kortex.desktop
 ollama:
   # Its installer sets up the ollama service; it asks for sudo itself. Ollama is the
   # local backend the agent tools point at (defaults/apps.yaml).

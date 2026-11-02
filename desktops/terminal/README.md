@@ -22,6 +22,12 @@ neovim.
   see-through background, the one see-through window of the desktop; the size of a new
   window is left to the desktop), included from `kitty.conf`;
   the include line is added once, above whatever the user keeps there
+- kitty's window icon, `~/.config/kitty/kitty.app.png`, which kitty reads at start and
+  X11 title bars show: the terminal glyph of the theme's icon theme
+  (`utilities-terminal-symbolic` of its `plasma.icons`, the glyph the desktop shows
+  for kitty) in the palette's text colour (`base05`), rendered with `rsvg-convert`, in
+  place of kitty's own coloured cat. A copy in `~/.local/state/patina/` tells it from a
+  `kitty.app.png` of the user's own, which stays
 - with an AI bundle (`ai-local`, `ai-cloud`) or the agents bundle:
   `~/.config/kitty/patina-agent.conf`, a quieter kitty profile from the same palette
   for the agent; removed again when none of them is installed
@@ -56,5 +62,5 @@ kitty reads its configuration at start (`ctrl+shift+F5` reloads a running one); 
 and neovim pick the theme up at their next start; the environment file applies from the
 next login. Nothing is restarted for the user.
 
-Tools it calls: none beyond bash, coreutils, `sed` and the Go `yq`. Nothing is
-downloaded.
+Tools it calls: none beyond bash, coreutils, `sed`, the Go `yq` and `rsvg-convert`
+(`librsvg2-bin`, in the base bundle). Nothing is downloaded.

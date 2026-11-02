@@ -20,5 +20,5 @@ notes: >
   released image with the installer, as on a PC. Copy and paste between Windows and
   patina goes through spice-vdagent, which shares the clipboard only in an X11 session
   (its Wayland support is not released), so on this machine the login screen offers the
-  Plasma X11 session first (system/sddm.conf.d/); Wayland stays the default everywhere
-  else.
+  Plasma X11 session first and the automatic login starts it (system/sddm.conf.d/);
+  Wayland stays the default everywhere else.

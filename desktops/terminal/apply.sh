@@ -57,6 +57,25 @@ if ! grep -qxF 'include patina.conf' "$config/kitty/kitty.conf" 2> /dev/null; th
   changed
 fi
 
+# kitty's window icon, which it reads from kitty.app.png in its configuration directory
+# and which X11 title bars show: the terminal glyph of the theme's icon theme in the
+# text colour, as the desktop draws every other app's, in place of kitty's coloured cat.
+# A kitty.app.png of the user's own (not the copy in the state directory) stays.
+icon="$config/kitty/kitty.app.png"
+glyph="/usr/share/icons/${tpl[ICONS]}/32x32/symbolic/apps/utilities-terminal-symbolic.svg"
+if [[ -e "$icon" ]] && ! cmp -s "$icon" "$PATINA_STATE/kitty.app.png"; then
+  say "kitty: keeping your own window icon, $icon"
+elif [[ -f "$glyph" ]] && command -v rsvg-convert > /dev/null; then
+  sed "s/#[0-9a-fA-F]\{6\}\b/${tpl[BASE05]}/g" "$glyph" > "$tmp/kitty-icon.svg"
+  rsvg-convert --width 128 --height 128 --output "$tmp/kitty.app.png" "$tmp/kitty-icon.svg"
+  put "$tmp/kitty.app.png" "$icon"
+  cmp -s "$icon" "$PATINA_STATE/kitty.app.png" || install -D -m 0644 "$icon" "$PATINA_STATE/kitty.app.png"
+elif [[ -e "$icon" ]]; then
+  say "removing $icon (${tpl[ICONS]} has no terminal glyph)"
+  rm -f "$icon" "$PATINA_STATE/kitty.app.png"
+  changed
+fi
+
 # The agent's quieter kitty profile, only with an AI bundle (ai-local, ai-cloud,
 # hermes-local, hermes-cloud) or the agents bundle installed; the desktop binds the
 # `agent` action to it.

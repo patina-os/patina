@@ -117,7 +117,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   window (other apps stay opaque); the start menu and the other panel popups carry a
   slight grain. The brand's colours (deep violet, violet, lavender, white, and green
   for the ▲) are aurora's and do not follow a theme; on a light ground the terminal
-  prints the marks' letters black and the ▲ in aurora light's green (October 2026).
+  prints the marks' letters black and the ▲ in aurora light's green (October 2026),
+  and the rings in darker shades of their violets, the palest at 3:1 (November 2026).
   The desktop's shape is a bar along the bottom edge (never floating: a floating bar
   jumps when a window is maximised) with the start button alone in its centre and the
   task icons at its left end, new windows centred at one size and the command palette
@@ -219,7 +220,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `devices/` | the only place for device- or architecture-specific files |
 | `iso/` | live-build configuration, Calamares configuration and branding, the templates `iso/live/assets.sh` renders from the theme (installer artwork, icons and stylesheet, boot menu theme, the live system's fonts, the Wi-Fi step's terminal), first-boot unit, QEMU boot test (Phase 3) |
 | `docs/` | roadmap, branding and trademark rules, tested hardware, `credits.yaml` (the people and projects patina is made of: `patina credits`, the installer's last slide and the README's Credits section), the manual VM run that closes Phases 1 and 2 (`vm-run.md`); `design/` keeps design explorations as self-contained HTML pages (`futures.html`: the eight directions of the 2026 redesign, candidates for more themes); `screenshots/` holds the installer, desktop, start menu and command palette screenshots the README shows, taken by the image's boot test and by the desktop workflow's headless Plasma session, refreshed per release |
-| `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), desktop (Path A plus a Plasma X11 session on a virtual framebuffer, screenshots), iso (build, boot test, release; an alpha tag's release has no images) |
+| `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), desktop (Path A plus a Plasma X11 session on a virtual framebuffer, screenshots), iso (build, boot test, release; an alpha tag's release has the amd64 image only) |
 | `.github/ISSUE_TEMPLATE/` | the test report form testers fill in after a run of `docs/vm-run.md` |
 
 Each directory's README is the authority on its file format.

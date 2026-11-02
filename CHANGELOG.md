@@ -57,6 +57,12 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- aurora's light mode reads better: its orange, yellow and cyan, and the text of an
+  inactive selection on the green, reach 4.5:1 on its lavender white, and the grey of
+  comments and the shell's suggestions 3:1, each a little darker in the same hue (the
+  green accent with them). On that ground the mark's rings in the terminal greeting
+  and `patina credits` are darker violets, the palest at 3:1; the two lavender rings
+  hardly showed. The dark mode and datum are unchanged.
 - The installer asks for a disk of at least 29 GiB, which every drive sold as 32 GB
   has, up from 20: after swap, 20 left about 15.5 GB, too little for the desktop
   bundle with a local model and Hermes Agent.
@@ -76,6 +82,25 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- patina's global theme shows a picture of its own in System Settings (Appearance,
+  Global Theme), on its card and in its full-screen preview: its wallpaper with the bar
+  and the mark. Both showed Breeze's desktop.
+- kitty's title bar shows the terminal glyph in the text colour like every other
+  window's, not kitty's own coloured cat, on X11 (the Plasma X11 session, the VM
+  of Try patina): the renderer gives kitty a window icon, `~/.config/kitty/kitty.app.png`.
+  A `kitty.app.png` of your own stays.
+- The start menu's Help category shows its icon in the accent like the other
+  categories, a question mark; it was an information sign in the text colour, an icon
+  from outside the category icons the accent reaches.
+- A change to the start menu's folders made outside a Plasma session (over SSH, in the
+  desktop workflow's screenshot session) no longer empties the start menu and turns the
+  bar's launchers into question marks: the menu cache was rebuilt without Plasma's menu
+  and held no apps, and a session reading the same data directories took it.
+- `patina theme set` and `patina update` outside a Plasma session (over SSH) no longer
+  write the widget style, the icon theme and the desktop theme again after the session
+  applied the look-and-feel package, which moves them to `~/.config/kdedefaults/`: the
+  renderer reads that directory as a session does, so a second run reports nothing to
+  do.
 - A theme or a setting with an & in a name the renderers fill in (a start menu folder
   "Office & Docs", a theme's author) is written as it is; bash 5.2 put the placeholder
   in place of the &.
@@ -104,6 +129,10 @@ All notable changes to patina are documented here. The format follows
   GTK settings as changed after every login: they are written as Plasma's GTK bridge
   writes them (`true`, "Source Sans 3,  10"), which rewrote patina's `1` and
   "Source Sans 3 10" each time.
+- Nor do they report a global shortcut as changed on every run: patina took Meta+Tab
+  from "Walk through activities" (`next activity`), an action Plasma 6.3 no longer
+  has, so the session dropped the entry and the next run wrote it back. Plasma 6.3
+  gives activities no Meta+Tab, so patina's overview has it without that.
 - The image's first boot shows the patina mark on tty1 again (it printed it only for an
   unattended run, and the installer's answers make it ask nothing that would), says
   that sudo asks for the password given to the installer, and keeps everything the
@@ -140,6 +169,10 @@ All notable changes to patina are documented here. The format follows
   started (Hermes Agent takes up to a minute) or answered slowly, KRunner got nothing
   from kortex and could give up on it; it shows "Waiting for the agent…" now, and the
   conversation as soon as it arrives.
+- kortex 0.3.3: `AI ›` and a tab after `ai` in the command palette work as `ai ›` and
+  a space do (`AI ›` asked the agent about "›"), and Allow or Deny on a request
+  answered elsewhere, in the agent's terminal say, no longer shows that the request
+  did not reach the agent.
 - `patina ai connect linear` (and notion) without a terminal, as the agent runs it,
   stopped at a question the preset does not have.
 - "Open in terminal" on the agent's answer in the command palette, and Dolphin's "Open
@@ -155,6 +188,19 @@ All notable changes to patina are documented here. The format follows
   update` fetched Euro-Office's signing key, patina wrote an empty key in place of the
   good one, and apt refused Euro-Office's updates until the next run. It keeps the key
   it has now and says so.
+- In Try patina for Windows, logging in automatically (the installer's checkbox)
+  started the Wayland session, where copy and paste with Windows does not work; it
+  starts Plasma (X11) now, like the login screen. The installer writes the automatic
+  login to `/etc/sddm.conf.d/kde_settings.conf`, where Plasma's Login Screen settings
+  keep it, rather than `/etc/sddm.conf`, which SDDM reads after every other file, so
+  the device's own file chooses the session.
+- The installer's progress bar keeps its percentage readable once the bar passes it:
+  the light figures stood on the neon green and vanished from half way on. The bar is
+  filled translucent now, with a glowing leading edge.
+- `patina doctor` reports a kortex that its own `uninstall.sh` removed, and the next
+  `patina install` installs it again; both went by the release patina had recorded,
+  which the uninstall leaves. A `git` recipe in `manifest/upstream.yaml` names the
+  files its install leaves (`data_files`), and they are checked as well.
 
 ## [0.1.0-alpha.4] - 2026-10-29
 

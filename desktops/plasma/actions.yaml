@@ -52,15 +52,14 @@ actions:
     label: Lock Session
 
 # Plasma defaults that use a chord the curated keybindings take; they are set to none.
+# Only actions Plasma still registers: kglobalacceld drops an entry for any other at
+# login, and writing it back made every run inside a session report a change. Meta+Tab
+# (overview) needs none: Plasma 6.3 walks through activities with no default chord.
 unbind:
   - component: plasmashell
     key: manage activities
     default: Meta+Q
     label: Show Activity Switcher
-  - component: plasmashell
-    key: next activity
-    default: Meta+Tab
-    label: Walk through activities
 
 # Plasma's own chords worth knowing, for the cheat sheet (`patina keys`, Meta+K): the
 # defaults of Plasma 6 that patina leaves as they are. Words only; nothing is bound here.

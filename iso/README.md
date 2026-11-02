@@ -91,7 +91,10 @@ iso/
    fetched from Debian's mirrors into it (`packages`, the list in
    `modules/packages.conf`, in five installs, smallest first, so the progress bar moves;
    apt shows nothing while each runs), the live tooling and Calamares are removed from
-   it, SDDM is set up and the hardware clock set (after the packages that bring them), the
+   it, SDDM is set up and the hardware clock set (after the packages that bring them; the
+   automatic login, when the user page asks for it, goes to
+   `/etc/sddm.conf.d/kde_settings.conf`, where Plasma's Login Screen settings keep it, so
+   a device's own SDDM file can still choose the session), the
    first-boot unit is enabled and what the image added for the installer alone (its
    configuration and branding, the installer screen, the console's mark) and apt's
    download cache are removed (`shellprocess-firstboot.conf`), GRUB is installed with
@@ -187,7 +190,8 @@ files.
   in the palette over the splash, readable; the installer's welcome page (the square
   mark in the sidebar, the wordmark on the page, the wallpaper behind, Source Sans 3), the partition
   page with the manual partition editor's dialog (openbox's patina frame), the
-  install page with the gradient progress bar and the six slides; at first boot the
+  install page with the gradient progress bar (its percentage readable over the
+  chunk) and the six slides; at first boot the
   mark on tty1 and the questions; then the login screen with the theme's wallpaper,
   the splash with the wordmark and the accent line, and the desktop in Source Sans 3
   and JetBrains Mono, as `docs/screenshots/desktop-amd64.png` shows it.

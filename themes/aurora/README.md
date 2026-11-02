@@ -37,8 +37,11 @@ The start menu and the other panel popups carry a slight grain (6 %,
 ## Light mode
 
 The `light:` block holds a second palette with the same roles on lavender white
-(`#f7f6fb`): a deeper green (`#087a46`) that carries white text, the violet `#7c3aed`,
-Papirus Light with folders in that green, and its own wallpaper. `patina theme mode light` switches to it,
+(`#f7f6fb`): a deeper green (`#077141`) that carries white text, the violet `#7c3aed`,
+Papirus Light with folders in that green, and its own wallpaper. Every colour that
+carries text reads at 4.5:1 or more on the lavender white (WCAG AA), and so does an
+inactive selection's text (`base02`) on the green; the grey of comments and hints
+(`base03`) reads at 3:1. `patina theme mode light` switches to it,
 `patina theme mode dark` back; the choice is kept for every later `patina theme set`.
 The boot menu, the installer, the Plasma splash and the login screen stay dark in
 either mode: the marks are made for a dark ground.
