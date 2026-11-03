@@ -149,10 +149,11 @@ packs. Audience: developers and privacy-minded users in the EU.
   fresh install does (October 2026).
 - Onboarding: KDE's Welcome Center stays off (its daemon module, in `kded5rc`) and out
   of the start menu (`start_menu.hidden`), with its Konqi and Debian's name. patina's
-  welcome (`patina welcome`) opens once at the
-  first login, in kitty beside btop as on the README's picture of the desktop, and
-  from then on from the start menu: the AI agent, the agent tools, the agent's
-  services, the bundles the machine lacks, and the first keys. Each step runs
+  welcome (`patina welcome`) opens at every login until its "Don't open at login" is
+  picked (November 2026, after it opened at the first login only), in kitty beside
+  btop as on the README's picture of the desktop, and from the start menu: the AI
+  agent, the agent tools, the agent's services, the bundles the machine lacks, and
+  the first keys. Each step runs
   `patina ai` or `patina install`, which ask as always, and a shell takes the
   welcome's half when it ends; btop is in the minimal bundle for it (November 2026).
 - Image: a small live image built with Debian's live-build, with Calamares as the branded

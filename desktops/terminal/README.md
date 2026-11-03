@@ -35,7 +35,10 @@ neovim.
   brand's colours for the mode's ground (`print_logo always <variant>`), and
   `~/.config/fastfetch/config.jsonc` pointing at it with the theme's accent for the
   labels; every new kitty window runs it, through two lines added once at the end of
-  `~/.bashrc` and `~/.config/fish/conf.d/patina-greeting.fish`
+  `~/.bashrc` and `~/.config/fish/conf.d/patina-greeting.fish`. Its Terminal line says
+  `kitty` as written data, not fastfetch's terminal module, which asks kitty for its
+  version over the terminal on Debian: on a slow machine (Try patina's VM) the answer
+  arrived after fastfetch stopped waiting and was printed on the shell's prompt
 - btop: `~/.config/btop/themes/patina-<theme>.theme`, its load gradients running
   from `base0D` through the accent to its second colour (`accent` and `accent_alt`
   of the theme), made `color_theme` in

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# The welcome at the first login, in kitty beside btop: the AI agent, the agent tools, services, more apps and the keys.
+# The welcome at each login, in kitty beside btop: the AI agent, the agent tools, services, more apps and the keys.
 set -euo pipefail
 
 # shellcheck source=bin/lib.sh
@@ -11,15 +11,18 @@ usage() {
 usage: patina welcome [--window | --login]
 
   (none)    the welcome on this terminal: turn on the AI agent, add the agent tools,
-            connect a service for the agent, add more apps, show the keys. Each step
-            runs patina ai or patina install, which ask as always
+            connect a service for the agent, add more apps, show the keys, and open
+            at login or not. Each step runs patina ai or patina install, which ask as
+            always
   --window  the welcome in a kitty window of its own, beside btop: the start menu's
             "Welcome to patina". When it ends, a shell takes its place
-  --login   the same, at the first login only (the session's autostart entry)
+  --login   the same at a login, unless its "Don't open at login" was picked (the
+            session's autostart entry)
 EOU
 }
 
-marker="$PATINA_STATE/welcomed"
+# Picked "Don't open at login": the welcome stays in the start menu only.
+off="$PATINA_STATE/welcome-off"
 settings="$PATINA_PATH/defaults/settings.yaml"
 keybindings="$PATINA_PATH/defaults/keybindings.yaml"
 
@@ -37,13 +40,10 @@ window() {
   exec kitty --class patina-welcome --title "Welcome to patina" --session - <<< "$session"
 }
 
-# The first login: the welcome once, then never again on its own (the start menu keeps
-# it). Without kitty there is no window to open, and the next login tries again.
+# A login: the welcome, until its menu turns that off. Without kitty there is no window.
 login() {
-  [[ ! -e "$marker" ]] || exit 0
+  [[ ! -e "$off" ]] || exit 0
   command -v kitty > /dev/null || exit 0
-  mkdir -p "$PATINA_STATE"
-  date -u +%FT%TZ > "$marker"
   window
 }
 
@@ -74,32 +74,32 @@ left_bundles() {
   done
 }
 
-# The agent, as `patina ai` says it, without the "patina: ai: " in front.
-agent_now() {
-  local line
-  line="$("$PATINA_PATH/bin/patina-ai" status)"
-  echo "${line#patina: ai: }"
-}
-
-# The steps the menu offers now, one line each: the step, then what it does, short
-# enough for half of the window.
+# The steps the menu offers now, one line each: the step, then what it does in at most
+# 64 characters, so a line fits the welcome's half of the window (79 columns in Try
+# patina's 1920x1080, beside btop's 80).
 steps() {
-  local left
-  if [[ "$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)" == none ]]; then
-    printf '%-9s %s\n' agent "Turn on the AI agent · opencode or Hermes, on this computer or in a cloud"
+  local ai left
+  ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)"
+  if [[ "$ai" == none ]]; then
+    printf '%-9s %s\n' agent "Turn on the AI agent · opencode or Hermes, local or cloud"
   else
-    printf '%-9s %s\n' agent "Change the AI agent · now $(agent_now)"
-    printf '%-9s %s\n' services "Connect a service for the agent · $(yq eval \
+    printf '%-9s %s\n' agent "Change the AI agent · now $(cat "$PATINA_STATE/ai-agent" 2> /dev/null || echo opencode), $ai"
+    printf '%-9s %s\n' services "A service for the agent · $(yq eval \
       '[.[].description | split(" · ") | .[0]] | join(", ")' "$PATINA_PATH/defaults/services.yaml")"
   fi
   if ! recorded_bundles | grep -qx agents; then
-    printf '%-9s %s\n' tools "The agent tools · $(yq eval '.description' "$PATINA_PATH/manifest/bundles/agents.yaml")"
+    printf '%-9s %s\n' tools "Add $(yq eval '.description | sub(" · "; ", ")' "$PATINA_PATH/manifest/bundles/agents.yaml")"
   fi
   left="$(left_bundles | paste -sd, - | sed 's/,/, /g')"
   if [[ -n "$left" ]]; then
     printf '%-9s %s\n' apps "More apps · $left"
   fi
   printf '%-9s %s\n' keys "All the keyboard shortcuts"
+  if [[ -e "$off" ]]; then
+    printf '%-9s %s\n' login "Open at every login again"
+  else
+    printf '%-9s %s\n' login "Don't open at login (the start menu keeps it)"
+  fi
   printf '%-9s %s\n' close "Close the welcome"
 }
 
@@ -167,6 +167,16 @@ welcome() {
       tools) tools_step ;;
       apps) apps_step ;;
       keys) "$PATINA_PATH/bin/patina-keys" ;;
+      login)
+        if [[ -e "$off" ]]; then
+          rm -f "$off"
+          say "the welcome opens at every login again"
+        else
+          mkdir -p "$PATINA_STATE"
+          date -u +%FT%TZ > "$off"
+          say "the welcome no longer opens at login; \"Welcome to patina\" in the start menu opens it"
+        fi
+        ;;
       *) break ;;
     esac
   done
