@@ -6,6 +6,8 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.6] - 2026-11-03
+
 ### Added
 
 - patina's welcome, `patina welcome`: at the first login a kitty window opens split in
@@ -833,7 +835,8 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.5...main
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.6...main
+[0.1.0-alpha.6]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.6
 [0.1.0-alpha.5]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.5
 [0.1.0-alpha.4]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.4
 [0.1.0-alpha.3]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.3
