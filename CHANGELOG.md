@@ -6,6 +6,10 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The Plasma splash shows the mark alone, its rings without the word beside them.
+
 ### Fixed
 
 - The first boot after the installer or Try patina's disk clones patina without the files

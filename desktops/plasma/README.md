@@ -74,9 +74,10 @@ Files, from `templates/`, each named after the theme:
   mode's first wallpaper with the bar along the bottom edge in the window colour and the
   mark in its centre (`templates/look-and-feel-preview.svg`); without them Plasma showed
   Breeze's, the package it falls back to; its `contents/splash/Splash.qml`, from `templates/splash.qml`, is the Plasma
-  splash: the wordmark (`branding/wordmark.svg`) on the theme's background and one
-  accent line that grows as Plasma starts, the one piece of code a theme renders; it
-  takes the dark palette in either mode, since the wordmark is made for a dark ground
+  splash: the mark alone (`branding/icon.svg`, its rings without the word beside them)
+  on the theme's background and one accent line that grows as Plasma starts, the one
+  piece of code a theme renders; it takes the dark palette in either mode, since the
+  mark is made for a dark ground
 - the login screen: SDDM runs as its own user, so the theme's first wallpaper is written
   to `/usr/local/share/patina/login.png` and the Breeze SDDM theme's
   `theme.conf.user` (from `templates/sddm-theme.conf.user`) next to Plasma's own theme,

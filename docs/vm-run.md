@@ -268,6 +268,7 @@ sudo -iu patina-test bash -c '
   user's run, so nothing asks for it
 - [ ] logging in as `patina-test` for the first time gives the wallpaper, the colour
   scheme and the centred bar at once, without a second login
+- [ ] the splash before the desktop shows the mark alone, its rings without the word
 
 ## 12. After the run
 

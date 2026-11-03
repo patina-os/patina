@@ -111,7 +111,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   the install questions, outlined in `branding/export/` for the README's header and
   the installer's welcome page; `branding/wordmark.svg` sets the mark beside patina
   for the other screens, `icon.svg` and `icon-small.svg` are the mark as large and
-  small icons. The desktop's icons are Papirus as Debian ships it, its
+  small icons; the Plasma splash shows the mark alone (`icon.svg`, November 2026).
+  The desktop's icons are Papirus as Debian ships it, its
   folders recoloured to the theme's accent and every app's icon a monochrome glyph in
   the text colour, all at one height, by the renderer; kitty is the one see-through
   window (other apps stay opaque); the start menu and the other panel popups carry a
