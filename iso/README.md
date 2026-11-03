@@ -52,8 +52,14 @@ iso/
                             assets.sh's output and firstboot/, then runs lb
   firstboot/                the systemd unit and script that run Path A on first boot;
                             build.sh puts them into the image, Calamares enables the unit
+  disk/build.sh             Try patina's disk image (below): the installer's system,
+                            without an account, as a compressed qcow2
+  disk/choices.sh           the installer's pages as patina-setup.json, for Try patina's
+                            setup window, from a live build directory
   test/boot-test.sh         the automated release gate: the image boots to the installer;
                             it also takes the screenshot of the installer screen
+  test/disk-test.sh         the same for the disk image: its first boot sets an account up
+                            from answers as Try patina hands them over
   test/list-packages.sh     every package the manifest and the image name, for the apt
                             dry run in the smoke workflow
 ```
@@ -163,6 +169,40 @@ copies. To see the output without a build: copy `iso/live/config` somewhere and 
 `iso/live/assets.sh <that directory>`; the smoke workflow does the same and checks the
 files.
 
+## Try patina's disk image
+
+TryPatina.exe (`patina-os/win-emulator`) starts patina in a virtual machine on Windows.
+Instead of running the installer in it, it boots `patina-amd64.qcow2`, which
+`disk/build.sh` makes: the disk the installer leaves, built with debootstrap from the
+same lists (the live system's without what the installer removes, the architecture's,
+and what `modules/packages.conf` installs), the first boot armed, shim and GRUB where
+the installer puts them (`EFI/debian` and the removable path), without an account, and
+without firmware and microcode, which a virtual machine has no hardware for. The disk is
+128 GiB, the launcher's ceiling, and costs only what is written; a compressed qcow2 of
+it is what the launcher downloads and keeps, under a layer for the machine's changes.
+What the installer's pages ask, the launcher asks on Windows (the account, the language,
+keyboard and time zone, the apps, the AI agent and the theme) and hands to the guest,
+whose first boot sets them up (`devices/try-patina-windows/`) before Path A runs as
+always. The window shows the installer's own pages: `disk/choices.sh` writes them, as
+`assets.sh` filled them in, with their pictures, the default theme's palette and the
+fonts, to `patina-setup.json`, a release asset beside the image. GitHub takes no
+release file of 2 GiB or more, so the disk is published in parts of 1900 MiB
+(`patina-amd64.qcow2.001` and on); `SHA256SUMS` names each part and the whole, and the
+launcher checks both as it joins them.
+
+```sh
+sudo iso/disk/build.sh amd64 iso/build/disk                     # half an hour or so
+iso/test/disk-test.sh iso/build/disk/patina-amd64.qcow2         # its first boot
+iso/disk/choices.sh iso/build/live iso/build/patina-setup.json  # after live/build.sh
+```
+
+The build needs root and loop devices, nothing a privileged container lacks: it mounts
+only the system's ext4 and writes the EFI system partition with mtools. GRUB cannot
+install itself on a loop device, so the build copies Debian's signed shim and GRUB where
+the installer's step puts them, with a configuration for the one kernel, and the disk's
+first boot runs `grub-install` and `update-grub` on its real disk. The workflow runs
+build and boot test on the runner itself, for KVM.
+
 ## The release gate
 
 - Automated: `test/boot-test.sh <iso>` boots the image in QEMU with the serial console
@@ -191,6 +231,11 @@ files.
   mark on tty1 and the questions; then the login screen with the theme's wallpaper,
   the splash with the wordmark and the accent line, and the desktop in Source Sans 3
   and JetBrains Mono, as `docs/screenshots/desktop-amd64.png` shows it.
+- Automated, for Try patina's disk image: `test/disk-test.sh` boots it as the launcher
+  does (UEFI, shim and GRUB from the disk, an NVMe disk over it, the product name
+  `Try patina`) with an answered setup and waits for the account step to report on the
+  serial port that it set up the account with the language, keyboard and time zone it
+  was given. The workflow runs it after the build; the release takes the disk only then.
 - A failing build or test is simply not published; Path A users are never affected.
 
 ## Screenshots

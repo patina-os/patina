@@ -8,6 +8,17 @@ All notable changes to patina are documented here. The format follows
 
 ### Added
 
+- Try patina's disk image: every release has `patina-amd64.qcow2`, the system the
+  installer leaves on a disk (Debian with Plasma and the base packages, the first boot
+  armed), without an account and without firmware, built from the image's own lists
+  (`iso/disk/build.sh`) and booted in CI with an answered setup. TryPatina.exe asks on
+  Windows what the installer asks, in a setup window with the installer's own pages
+  (`patina-setup.json`, beside the image), and boots the disk; its first boot sets up
+  the account, the language, the keyboard and the time zone from those answers and then
+  runs `patina install` as always (`devices/try-patina-windows/firstboot/`). The
+  installer no longer runs in the virtual machine, where it had to fetch Plasma through
+  QEMU's network for half an hour; it stays available from the launcher's menu.
+
 - `start_menu.position: center` in `defaults/settings.yaml` opens the start menu in the
   middle of the screen's width with the Windows 11 bar as well (`panel.layout:
   grouped`, the start button leading the task icons): a KWin script of patina's own

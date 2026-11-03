@@ -2,10 +2,38 @@
 
 patina in a QEMU virtual machine on a Windows 10 or 11 PC (x86_64), set up and started by
 TryPatina.exe from [patina-os/win-emulator](https://github.com/patina-os/win-emulator).
-The launcher installs stock QEMU with winget, downloads the released
-`patina-amd64.hybrid.iso`, checks it against the release's `SHA256SUMS`, and boots it
-next to an empty virtual disk. The installer puts patina on that disk as on a PC, and
-first boot runs `patina install` as always.
+The launcher installs stock QEMU with winget, asks in a setup window what patina's
+installer asks on a PC, downloads the released `patina-amd64.qcow2`, checks it against
+the release's `SHA256SUMS`, and starts it under a layer that keeps the machine's
+changes. The disk is the system the installer leaves (`iso/disk/`), without an account;
+its first boot sets the account up from the setup's answers, then runs `patina install`
+as always. The launcher can also install from `patina-amd64.hybrid.iso` with the
+installer, as on a PC: from its menu, or by itself for a release without the disk.
+
+## The setup's answers
+
+TryPatina.exe hands the answers to the guest once, as QEMU firmware configuration
+(`-fw_cfg name=opt/io.github.patina_os/setup,file=…`), a file of one `KEY=value` per line:
+
+| Key | Value | The installer's page |
+|---|---|---|
+| `PATINA_USER` | the login name: small letters, digits, `-` and `_` | Users |
+| `PATINA_FULLNAME` | the user's name | Users |
+| `PATINA_PASSWORD` | the password, also sudo's | Users |
+| `PATINA_HOSTNAME` | optional; `<user>-patina` without it | Users |
+| `PATINA_LOCALE` | a glibc locale such as `de_DE.UTF-8`, Windows' by default | Location |
+| `PATINA_KEYBOARD_LAYOUT`, `PATINA_KEYBOARD_VARIANT` | XKB, such as `de` and `nodeadkeys`, Windows' by default | Keyboard |
+| `PATINA_TIMEZONE` | an IANA zone such as `Europe/Berlin`, Windows' by default | Location |
+| `PATINA_AI_AGENT`, `PATINA_AI`, `PATINA_BUNDLES`, `PATINA_THEME` | as the installer writes them to `/etc/patina/firstboot.env` | AI agent, AI model, Apps and More apps, Theme |
+
+The window shows the installer's own pages, which the image build publishes as
+`patina-setup.json` (`iso/disk/choices.sh`): their words in English and German, their
+pictures and defaults, the default theme's palette and the fonts. `firstboot/` holds the
+step that reads the answers (`patina-vm-setup.sh` and its unit), run once before patina's
+first boot and the login screen. It checks every value against what Debian has and keeps
+the image's own (British English, a US keyboard, UTC) where one does not fit, and reports
+on the machine's first serial port, which the launcher keeps as `serial.log` in its data
+folder and reads to delete the answers once the guest says `patina vm setup: done`.
 
 ## What this directory adds
 
@@ -30,15 +58,18 @@ type=1,product=Try patina`), which `patina install` reads from
   Windows Hypervisor Platform does not pass AVX through.
 - The disk is an NVMe disk, not virtio, so the I/O scheduler rules of
   `defaults/system/udev/` apply as on a laptop.
-- Logging in automatically (the installer's checkbox) starts the Wayland session,
-  where copy and paste does not work: the installer writes the automatic login's
-  session (`plasma`) to `/etc/sddm.conf`, which SDDM reads after `/etc/sddm.conf.d/`.
-  Leave it off, or log out and pick Plasma (X11) on the login screen.
+- Logging in automatically (the installer's checkbox; the setup window has none) starts
+  the Wayland session, where copy and paste does not work: the installer writes the
+  automatic login's session (`plasma`) to `/etc/sddm.conf`, which SDDM reads after
+  `/etc/sddm.conf.d/`. Leave it off, or log out and pick Plasma (X11) on the login
+  screen.
 
 ## Validation
 
-1. On a Windows PC with the Windows Hypervisor Platform turned on, run TryPatina.exe and
-   install patina in the window that opens.
+1. On a Windows PC with the Windows Hypervisor Platform turned on, run TryPatina.exe,
+   answer its setup window and wait for patina's first boot to end at the login screen.
+   Once, use "Install with patina's installer…" from its menu and install patina in the
+   window that opens.
 2. After the first login: `cat /sys/class/dmi/id/product_name` prints `Try patina`,
    `patina doctor` names the device and is clean, `echo $XDG_SESSION_TYPE` prints `x11`.
 3. Copy text in Windows and paste it in kitty, then the other way round.
