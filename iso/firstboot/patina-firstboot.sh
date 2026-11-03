@@ -56,7 +56,11 @@ if [[ ! -d "$clone/.git" ]]; then
   runuser -u "$user" -- mkdir -p "$home/.local/share" "$home/.local/bin"
   for try in 1 2 3; do
     say "cloning $repo_url ($repo_ref) for $user"
-    runuser -u "$user" -- git clone --branch "$repo_ref" "$repo_url" "$clone" && break
+    # Without the files of old commits (a partial clone, a quarter of the full one's
+    # size, which still updates and names its version), and a clone that stalls below
+    # 1 KB/s for a minute ends and is tried again: a virtual machine's network can stop.
+    runuser -u "$user" -- git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=60 \
+      clone --filter=blob:none --branch "$repo_ref" "$repo_url" "$clone" && break
     rm -rf "$clone"
     if [[ $try -eq 3 ]]; then
       hold "the clone failed (no network?); log in and run Path A by hand:" \

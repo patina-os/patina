@@ -6,6 +6,13 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- The first boot after the installer or Try patina's disk clones patina without the files
+  of old commits, 19 MB instead of 76 MB, and a clone that stalls for a minute ends and is
+  tried again: in a virtual machine on Windows the clone looked frozen. The checkout
+  updates and names its version as before.
+
 ## [0.1.0-alpha.5] - 2026-11-03
 
 ### Added
