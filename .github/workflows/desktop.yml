@@ -75,6 +75,10 @@ jobs:
         run: |
           sudo -u patina -H env PATINA_AI=cloud \
             bin/patina install --unattended --bundles desktop
+          # KDE's Welcome Center, which plasma-desktop brings, is out of the start menu
+          # (start_menu.hidden): its copy in the user's data directory has NoDisplay.
+          grep -qx NoDisplay=true \
+            /home/patina/.local/share/applications/org.kde.plasma-welcome.desktop
       - name: The desktop as pictures
         # The command palette's picture needs an answer, and CI has no model to give
         # one: kortex's scripted demo model (docs/demo/demo_llm.py at a fixed commit,

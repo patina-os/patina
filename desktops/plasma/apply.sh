@@ -648,6 +648,26 @@ elif [[ -e "$welcome_autostart" ]]; then
   changed
 fi
 kset kded5rc autoload false Module-kded_plasma-welcome
+
+# The apps the start menu leaves out (start_menu.hidden), KDE's Welcome Center first: a
+# copy of each one's entry with NoDisplay=true, which the user's data directory puts
+# before the system's, so the menu and its search skip it and it still starts when
+# asked. A copy no longer listed, or of an app no longer installed, goes again.
+hidden=" "
+while IFS= read -r app; do
+  [[ -f "/usr/share/applications/$app" ]] || continue
+  { printf '# patina: hidden from the start menu (start_menu.hidden)\n'
+    sed '/^NoDisplay=/d; /^\[Desktop Entry\]$/a NoDisplay=true' "/usr/share/applications/$app"; } > "$tmp/hidden.desktop"
+  put "$tmp/hidden.desktop" "$data/applications/$app"
+  hidden="$hidden$data/applications/$app "
+done < <(yq eval '.start_menu.hidden[]?' "$settings")
+for f in "$data"/applications/*.desktop; do
+  [[ -e "$f" && "$hidden" != *" $f "* ]] || continue
+  [[ "$(head -n 1 "$f")" == "# patina: hidden from the start menu"* ]] || continue
+  say "removing $f (not in start_menu.hidden)"
+  rm -f "$f"
+  changed
+done
 folders=""
 directories=" "
 while IFS=$'\t' read -r id name icon; do

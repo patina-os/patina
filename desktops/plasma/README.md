@@ -167,6 +167,11 @@ Files, from `templates/`, each named after the theme:
   off: `autoload=false` for its daemon module (`[Module-kded_plasma-welcome]` in
   `kded5rc`, the file KDE 6 still reads), which is what starts it at a first login and
   after a Plasma upgrade
+- the apps the start menu leaves out (`start_menu.hidden` in `defaults/settings.yaml`,
+  KDE's Welcome Center first): a copy of each one's entry under
+  `~/.local/share/applications/`, `NoDisplay=true` added and a first line that says
+  so, which the user's data directory puts before the system's; the menu and its search
+  skip it, and it still starts when asked. A copy no longer listed goes again
 
 Settings, through `kwriteconfig6`, each written only when it differs from what a session
 reads: the renderer puts `~/.config/kdedefaults/` first in `XDG_CONFIG_DIRS`, as

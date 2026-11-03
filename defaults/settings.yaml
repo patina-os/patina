@@ -110,3 +110,5 @@ start_menu:
     - kitty.desktop
     - dev.zed.Zed.desktop                              # the extras bundle
     - patina-artcraft-launcher.desktop                 # the ArtCraft Launcher (the artcraft bundle)
+  hidden:                    # apps kept out of the menu and its search; they start when asked
+    - org.kde.plasma-welcome.desktop                   # KDE's Welcome Center (patina welcome)
