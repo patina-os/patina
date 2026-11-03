@@ -147,8 +147,9 @@ packs. Audience: developers and privacy-minded users in the EU.
 - Updates: `git pull` plus versioned migrations (`migrations/`), then an unattended
   `patina install` of the bundles installed on the machine, so an update ends where a
   fresh install does (October 2026).
-- Onboarding: KDE's Welcome Center stays off (its daemon module, in `kded5rc`), with
-  its Konqi and Debian's name. patina's welcome (`patina welcome`) opens once at the
+- Onboarding: KDE's Welcome Center stays off (its daemon module, in `kded5rc`) and out
+  of the start menu (`start_menu.hidden`), with its Konqi and Debian's name. patina's
+  welcome (`patina welcome`) opens once at the
   first login, in kitty beside btop as on the README's picture of the desktop, and
   from then on from the start menu: the AI agent, the agent tools, the agent's
   services, the bundles the machine lacks, and the first keys. Each step runs

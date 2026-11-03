@@ -23,6 +23,10 @@ All notable changes to patina are documented here. The format follows
 - KDE's Welcome Center no longer opens at the first login (or after a Plasma upgrade)
   with Konqi and "Welcome to Debian GNU/Linux with KDE Plasma": patina turns its
   daemon module off, and patina's welcome takes its place.
+- KDE's Welcome Center ("Begrüßungsassistent" in German) is out of the start menu and
+  its search, so "Welcome to patina" is the one welcome there; it still starts when
+  asked (`plasma-welcome`). The apps the menu leaves out are data:
+  `start_menu.hidden` in `defaults/settings.yaml`.
 - The Plasma splash shows the mark alone, its rings without the word beside them.
 - `patina ai on` without arguments asks which agent, opencode or Hermes, before where
   its model runs, as its help said.
