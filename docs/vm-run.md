@@ -61,6 +61,9 @@ they are.
   installer (again if the install outlasts sudo's 15 minutes between two steps); no
   other question (a cloud agent asks its provider and key), and it ends with
   `patina firstboot: done`; then the login screen with the theme's wallpaper
+- [ ] on a snapshot taken before first boot: turn the VM off while tty1 says
+  `cloning`; the next start clones again and runs `patina install`, rather than
+  leaving plain Debian
 - [ ] after the first login: take a snapshot, "patina-installed", and
   `sudo cat /var/log/patina-firstboot.log > ~/run1.log` keeps the first run's log for
   the report (`journalctl -b -u patina-firstboot` has its steps and warnings)

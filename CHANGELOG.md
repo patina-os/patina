@@ -12,6 +12,11 @@ All notable changes to patina are documented here. The format follows
   of old commits, 19 MB instead of 76 MB, and a clone that stalls for a minute ends and is
   tried again: in a virtual machine on Windows the clone looked frozen. The checkout
   updates and names its version as before.
+- A machine turned off during the first boot's clone no longer ends up as plain Debian
+  for good: the clone goes to a directory of its own and takes its place only when
+  complete, where a half one made `patina install` fail and the first boot count as done.
+  A failed clone or install now leaves the first boot armed, and the next start tries
+  again, three starts in all, before it leaves Path A to be run by hand.
 
 ## [0.1.0-alpha.5] - 2026-11-03
 

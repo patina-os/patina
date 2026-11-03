@@ -6,6 +6,9 @@ set -euo pipefail
 
 state_dir=/var/lib/patina
 done_marker="$state_dir/firstboot-done"
+# A start that fails leaves the first boot armed for the next one, up to this many.
+tries_file="$state_dir/firstboot-tries"
+max_tries=3
 log=/var/log/patina-firstboot.log
 repo_url="${PATINA_REPO_URL:-https://github.com/patina-os/patina.git}"
 repo_ref="${PATINA_REPO_REF:-main}"
@@ -37,6 +40,24 @@ hold() {
 finish() {
   mkdir -p "$state_dir"
   date -u +%FT%TZ > "$done_marker"
+  rm -f "$tries_file"
+}
+
+# A failure ends this start and leaves the first boot armed, so the next start tries
+# again; after the last of max_tries it gets out of the way, and Path A by hand is left.
+# retry_later <what failed> <what to do by hand>
+retry_later() {
+  local tries
+  mkdir -p "$state_dir"
+  tries=$(($(cat "$tries_file" 2>/dev/null || echo 0) + 1))
+  echo "$tries" > "$tries_file"
+  if [[ $tries -lt $max_tries ]]; then
+    hold "$1; the next start tries again (try $tries of $max_tries), or log in and $2"
+  else
+    hold "$1, at the last of $max_tries starts; log in and $2"
+    finish
+  fi
+  exit 0
 }
 
 clear 2>/dev/null || true
@@ -51,22 +72,28 @@ home="$(getent passwd "$user" | cut -d: -f6)"
 clone="$home/.local/share/patina"
 
 # The network can come up a little after network-online.target (Wi-Fi, a slow DHCP
-# server, DNS), so the clone gets three tries before it gives up.
+# server, DNS), so the clone gets three tries before this start gives up. It goes to a
+# directory of its own and takes its place only when complete: a machine turned off in
+# the middle of it left a checkout without its files, which patina install then failed
+# on, and the first boot counted as done.
 if [[ ! -d "$clone/.git" ]]; then
   runuser -u "$user" -- mkdir -p "$home/.local/share" "$home/.local/bin"
   for try in 1 2 3; do
+    rm -rf "$clone.new"
     say "cloning $repo_url ($repo_ref) for $user"
     # Without the files of old commits (a partial clone, a quarter of the full one's
     # size, which still updates and names its version), and a clone that stalls below
     # 1 KB/s for a minute ends and is tried again: a virtual machine's network can stop.
-    runuser -u "$user" -- git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=60 \
-      clone --filter=blob:none --branch "$repo_ref" "$repo_url" "$clone" && break
-    rm -rf "$clone"
+    if runuser -u "$user" -- git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=60 \
+      clone --filter=blob:none --branch "$repo_ref" "$repo_url" "$clone.new"; then
+      rm -rf "$clone"
+      runuser -u "$user" -- mv "$clone.new" "$clone"
+      break
+    fi
+    rm -rf "$clone.new"
     if [[ $try -eq 3 ]]; then
-      hold "the clone failed (no network?); log in and run Path A by hand:" \
-        "git clone $repo_url ~/.local/share/patina, then ~/.local/share/patina/bin/patina install"
-      finish
-      exit 0
+      retry_later "the clone failed (no network?)" \
+        "run Path A by hand: git clone $repo_url ~/.local/share/patina, then ~/.local/share/patina/bin/patina install"
     fi
     sleep $((try * 20))
   done
@@ -81,7 +108,7 @@ if [[ -n "${PATINA_UNATTENDED:-}${PATINA_BUNDLES:-}" && -r "$clone/branding/logo
 fi
 # sudo asks for the password the installer set, as on Path A, on this terminal.
 say "running 'patina install' as $user; sudo asks for $user's password, the one" \
-  "given to the installer; the output is kept in $log"
+  "given to the installer (or to Try patina's setup); the output is kept in $log"
 export PATINA_THEME="${PATINA_THEME:-}" PATINA_UNATTENDED="${PATINA_UNATTENDED:-}" \
   PATINA_AI_AGENT="${PATINA_AI_AGENT:-}" PATINA_AI="${PATINA_AI:-}" \
   PATINA_AI_PROVIDER="${PATINA_AI_PROVIDER:-}"
@@ -97,7 +124,6 @@ command="$(printf '%q ' runuser -u "$user" \
 if SHELL=/bin/bash script --quiet --append --flush --return --command "$command" "$log"; then
   say "done"
 else
-  hold "patina install exited with an error (its output: sudo less -R $log);" \
-    "log in and run 'patina install' again"
+  retry_later "patina install exited with an error (its output: sudo less -R $log)" "run 'patina install' again"
 fi
 finish
