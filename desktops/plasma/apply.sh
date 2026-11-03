@@ -630,23 +630,17 @@ put "$tmp/launcher.svg" "$PATINA_STATE/launcher.svg"
 tpl[LAUNCHER_ICON]="$PATINA_STATE/launcher.svg"
 menu_changes=$changes
 
-# patina's welcome (bin/patina-welcome) in the start menu, and at the first login: an
-# autostart entry, written until that login has shown it once. KDE's Welcome Center,
+# patina's welcome (bin/patina-welcome) in the start menu, and at each login an
+# autostart entry, which opens it until its "Don't open at login" is picked (state, so
+# the entry stays as it is). KDE's Welcome Center,
 # which a first login opened with Konqi and Debian's name, stays off: its daemon module,
 # the one that starts it, is not loaded (kded5rc, the name KDE 6 still reads).
-tpl[WELCOME_FLAG]=--window
-render "$templates/welcome.desktop" "$tmp/welcome.desktop"
-put "$tmp/welcome.desktop" "$data/applications/patina-welcome.desktop"
-welcome_autostart="$config/autostart/patina-welcome.desktop"
-if [[ ! -e "$PATINA_STATE/welcomed" ]]; then
-  tpl[WELCOME_FLAG]=--login
-  render "$templates/welcome.desktop" "$tmp/welcome-login.desktop"
-  put "$tmp/welcome-login.desktop" "$welcome_autostart"
-elif [[ -e "$welcome_autostart" ]]; then
-  say "removing $welcome_autostart (the first login showed the welcome)"
-  rm -f "$welcome_autostart"
-  changed
-fi
+for flag in window login; do
+  tpl[WELCOME_FLAG]="--$flag"
+  render "$templates/welcome.desktop" "$tmp/welcome-$flag.desktop"
+done
+put "$tmp/welcome-window.desktop" "$data/applications/patina-welcome.desktop"
+put "$tmp/welcome-login.desktop" "$config/autostart/patina-welcome.desktop"
 kset kded5rc autoload false Module-kded_plasma-welcome
 
 # The apps the start menu leaves out (start_menu.hidden), KDE's Welcome Center first: a

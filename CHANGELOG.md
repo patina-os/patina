@@ -6,6 +6,14 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- patina's welcome opens at every login, not only at the first, until its new "Don't
+  open at login" is picked; "Open at every login again" in it, from the start menu's
+  "Welcome to patina", brings it back. A machine updated from 0.1.0-alpha.6 shows it
+  at its next login again. Its menu lines are shorter, so none is cut off at the edge
+  of its half of the window.
+
 ### Fixed
 
 - A new kitty window no longer shows a line like `^[P1+r6b697474792d7175` on its prompt

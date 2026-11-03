@@ -61,10 +61,10 @@ session() {
   # from Flathub (Element) are in the start menu, as on a desktop.
   dirs="$(flatpak --print-updated-env 2> /dev/null | sed -n 's/^XDG_DATA_DIRS=//p' || true)"
   [[ -z "$dirs" ]] || export XDG_DATA_DIRS="$dirs"
-  # patina's welcome, which a first login opens beside btop (bin/patina-welcome), would
-  # cover the desktop: this session counts as a later login.
+  # patina's welcome, which a login opens beside btop (bin/patina-welcome), would cover
+  # the desktop: it is turned off for this session, as its "Don't open at login" does.
   mkdir -p "${XDG_STATE_HOME:-$HOME/.local/state}/patina"
-  date -u +%FT%TZ > "${XDG_STATE_HOME:-$HOME/.local/state}/patina/welcomed"
+  date -u +%FT%TZ > "${XDG_STATE_HOME:-$HOME/.local/state}/patina/welcome-off"
   startplasma-x11 &
   session_pid=$!
   until on_bus org.kde.plasmashell; do
