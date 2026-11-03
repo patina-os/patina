@@ -13,6 +13,8 @@ devices/<slug>/
   README.md         how to get Debian onto it, known caveats (recommended)
   system/           system files, installed under /etc at the same path (as
                     defaults/system/ is) when `patina` detects the device (optional)
+  firstboot/        what a disk image made for the device carries for its first boot,
+                    before `patina install` (Try patina's, iso/disk/; optional)
   *.sh              glue scripts, only when data cannot express it (firmware extraction)
 ```
 

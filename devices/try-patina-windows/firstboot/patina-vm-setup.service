@@ -1,0 +1,21 @@
+# First boot of Try patina's disk image (iso/disk/): the account, language, keyboard and
+# time zone TryPatina.exe asked for on Windows, before patina's own first boot runs
+# `patina install` for that account and before the login screen. Installed and enabled
+# in the image by iso/disk/build.sh. Runs once: the script writes
+# /var/lib/patina/vm-setup-done.
+[Unit]
+Description=patina on Try patina: the account and language from Windows
+Documentation=https://github.com/patina-os/patina/tree/main/devices/try-patina-windows
+ConditionPathExists=!/var/lib/patina/vm-setup-done
+After=systemd-udevd.service local-fs.target
+Before=patina-firstboot.service display-manager.service systemd-user-sessions.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/lib/patina/vm-setup.sh
+StandardOutput=journal+console
+StandardError=journal+console
+
+[Install]
+WantedBy=multi-user.target

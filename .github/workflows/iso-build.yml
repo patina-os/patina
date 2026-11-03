@@ -6,7 +6,9 @@ name: iso
 # boot test passed; an alpha tag gets the amd64 image only, the one whose manual install
 # check passed. Pull requests that touch the image run the build and the boot test but
 # never publish. Each boot test leaves a screenshot of the installer screen in its
-# artifact; the one under docs/screenshots/ is copied from there.
+# artifact; the one under docs/screenshots/ is copied from there. Try patina's disk
+# image (iso/disk/) is built and booted beside them, with the installer's pages for its
+# setup window (patina-setup.json), and attached with the amd64 image.
 
 on:
   workflow_dispatch:
@@ -15,6 +17,7 @@ on:
       - 'iso/**'
       - 'branding/**'
       - 'manifest/bundles/base.yaml'
+      - 'devices/try-patina-windows/**'
       - '.github/workflows/iso-build.yml'
   push:
     tags: ['v*']
@@ -73,6 +76,54 @@ jobs:
           name: patina-${{ matrix.arch }}
           path: iso/build/live/*.iso
           if-no-files-found: error
+      - name: The installer's pages for Try patina's setup window
+        if: matrix.arch == 'amd64'
+        run: iso/disk/choices.sh iso/build/live iso/build/patina-setup.json
+      - if: matrix.arch == 'amd64'
+        uses: actions/upload-artifact@v7
+        with:
+          name: patina-setup
+          path: iso/build/patina-setup.json
+          if-no-files-found: error
+
+  disk:
+    name: Try patina's disk image (amd64, build and boot)
+    # On the runner itself, for KVM; the build needs root and loop devices.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Install debootstrap, QEMU, the UEFI firmware and the Go yq
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q debootstrap debian-archive-keyring qemu-utils \
+            qemu-system-x86 ovmf dosfstools mtools fdisk
+          sudo curl -fsSL --retry 4 -o /usr/local/bin/yq \
+            "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64"
+          sudo chmod +x /usr/local/bin/yq
+          if [[ -e /dev/kvm ]]; then sudo chmod a+rw /dev/kvm; fi
+      - uses: actions/checkout@v5
+      - name: Build the disk image
+        run: sudo iso/disk/build.sh amd64 "$RUNNER_TEMP/disk"
+      - name: Boot it with an answered setup
+        run: iso/test/disk-test.sh "$RUNNER_TEMP/disk/patina-amd64.qcow2" "$RUNNER_TEMP/disk-test"
+      - name: Keep the logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: disk-logs
+          path: |
+            ${{ runner.temp }}/disk/*.log
+            ${{ runner.temp }}/disk-test/disk-boot.log
+          if-no-files-found: ignore
+      # Only a tag's release needs the image, which is large.
+      - if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v7
+        with:
+          name: patina-disk-amd64
+          path: ${{ runner.temp }}/disk/patina-amd64.qcow2
+          compression-level: 0
+          retention-days: 7
+          if-no-files-found: error
 
   boot-test:
     name: boot test (${{ matrix.arch }}, QEMU)
@@ -118,7 +169,7 @@ jobs:
   release:
     name: publish to the release
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: boot-test
+    needs: [boot-test, disk]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -133,6 +184,12 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           pattern: ${{ env.IMAGES }}
+          path: image
+          merge-multiple: true
+      - name: Try patina's disk image and its setup pages
+        uses: actions/download-artifact@v8
+        with:
+          pattern: patina-{disk-amd64,setup}
           path: image
           merge-multiple: true
       - name: The tag's release, with its section of CHANGELOG.md as notes
@@ -161,5 +218,11 @@ jobs:
           gh release create "$tag" "${flags[@]}"
       - name: Upload the images and their checksums
         run: |
-          (cd image && sha256sum -- *.iso > SHA256SUMS)
-          gh release upload "$GITHUB_REF_NAME" image/*.iso image/SHA256SUMS --clobber
+          # GitHub takes no release file of 2 GiB or more: Try patina's disk goes up in
+          # parts, .001 and on, which SHA256SUMS lists beside the whole; TryPatina.exe
+          # joins them.
+          (cd image && split --bytes=1900M --numeric-suffixes=1 --suffix-length=3 \
+            patina-amd64.qcow2 patina-amd64.qcow2.)
+          (cd image && sha256sum -- *.iso *.qcow2 *.qcow2.[0-9]* *.json > SHA256SUMS)
+          gh release upload "$GITHUB_REF_NAME" image/*.iso image/*.qcow2.[0-9]* image/*.json \
+            image/SHA256SUMS --clobber

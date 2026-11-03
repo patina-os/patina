@@ -154,12 +154,20 @@ packs. Audience: developers and privacy-minded users in the EU.
   install check. Secure Boot through Debian's signed shim, GRUB and kernel. First boot
   runs the same `patina install` as Path A.
 - Try patina for Windows: TryPatina.exe (`patina-os/win-emulator`, Go, GPL-3.0-or-later)
-  sets up stock QEMU from winget on the Windows Hypervisor Platform, downloads the
-  released amd64 image, checks it against `SHA256SUMS` and lets the installer put patina
-  on a virtual disk, as on a PC; it carries no image of its own (October 2026). The VM is
-  a device (`devices/try-patina-windows/`), detected by the product name the launcher
-  gives it: spice-vdagent for copy and paste and the Plasma X11 session first, because
-  spice-vdagent shares the clipboard only there.
+  sets up stock QEMU from winget on the Windows Hypervisor Platform, asks in a setup
+  window what the installer asks (the account; the language, keyboard and time zone,
+  taken from Windows; the installer's own pages, published as `patina-setup.json`),
+  downloads the released disk image, checks it against `SHA256SUMS` and boots it under a
+  layer for the machine's changes (November 2026, after the installer in the VM lost its
+  network twice and stock QEMU hung: Try Omarchy's way, without its patched QEMU). The
+  disk image (`iso/disk/`, amd64 only) is the system the installer leaves, built in CI
+  from the same lists, without an account and without firmware; its first boot sets the
+  account up from the answers QEMU hands over, then runs Path A as always. Installing
+  from the ISO with the installer stays, from the launcher's menu and for a release
+  without the disk. The VM is a device (`devices/try-patina-windows/`), detected by the
+  product name the launcher gives it: the disk's first-boot step, spice-vdagent for copy
+  and paste and the Plasma X11 session first, because spice-vdagent shares the clipboard
+  only there.
 - ARM: aarch64 is first-class from day one. An "ARM version" is a tested-hardware list
   plus device glue under `devices/`, never a separate release or branch.
 - License: GPL-3.0-or-later. Theme artwork may carry its own license (`artwork_license`).
@@ -218,9 +226,9 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
 | `devices/` | the only place for device- or architecture-specific files |
-| `iso/` | live-build configuration, Calamares configuration and branding, the templates `iso/live/assets.sh` renders from the theme (installer artwork, icons and stylesheet, boot menu theme, the live system's fonts, the Wi-Fi step's terminal), first-boot unit, QEMU boot test (Phase 3) |
+| `iso/` | live-build configuration, Calamares configuration and branding, the templates `iso/live/assets.sh` renders from the theme (installer artwork, icons and stylesheet, boot menu theme, the live system's fonts, the Wi-Fi step's terminal), first-boot unit, QEMU boot tests (Phase 3); `disk/` Try patina's disk image and the installer's pages for its setup window |
 | `docs/` | roadmap, branding and trademark rules, tested hardware, `credits.yaml` (the people and projects patina is made of: `patina credits`, the installer's last slide and the README's Credits section), the manual VM run that closes Phases 1 and 2 (`vm-run.md`); `design/` keeps design explorations as self-contained HTML pages (`futures.html`: the eight directions of the 2026 redesign, candidates for more themes); `screenshots/` holds the installer, desktop, start menu and command palette screenshots the README shows, taken by the image's boot test and by the desktop workflow's headless Plasma session, refreshed per release |
-| `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), desktop (Path A plus a Plasma X11 session on a virtual framebuffer, screenshots), iso (build, boot test, release; an alpha tag's release has the amd64 image only) |
+| `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), desktop (Path A plus a Plasma X11 session on a virtual framebuffer, screenshots), iso (build, boot test, Try patina's disk image built and booted, release; an alpha tag's release has the amd64 image and disk only) |
 | `.github/ISSUE_TEMPLATE/` | the test report form testers fill in after a run of `docs/vm-run.md` |
 
 Each directory's README is the authority on its file format.
@@ -274,7 +282,8 @@ Each directory's README is the authority on its file format.
 - Packages: `manifest/bundles/*.yaml`, `manifest/backends/*.yaml`, `manifest/upstream.yaml`.
   Canonical package names are Debian's. See `manifest/README.md`.
 - Devices: `devices/<slug>/device.yaml`. See `devices/README.md`.
-- Image: `iso/live/` (live-build lists and Calamares configuration). See `iso/README.md`.
+- Image: `iso/live/` (live-build lists and Calamares configuration); Try patina's disk
+  image is built from the same lists (`iso/disk/`). See `iso/README.md`.
 - Validate with `yq eval '.' <file>` and `yamllint .`.
 
 ## How to add a theme
