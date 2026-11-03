@@ -1,0 +1,191 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# The welcome at the first login, in kitty beside btop: the AI agent, the agent tools, services, more apps and the keys.
+set -euo pipefail
+
+# shellcheck source=bin/lib.sh
+source "$PATINA_PATH/bin/lib.sh"
+
+usage() {
+  cat << EOU
+usage: patina welcome [--window | --login]
+
+  (none)    the welcome on this terminal: turn on the AI agent, add the agent tools,
+            connect a service for the agent, add more apps, show the keys. Each step
+            runs patina ai or patina install, which ask as always
+  --window  the welcome in a kitty window of its own, beside btop: the start menu's
+            "Welcome to patina". When it ends, a shell takes its place
+  --login   the same, at the first login only (the session's autostart entry)
+EOU
+}
+
+marker="$PATINA_STATE/welcomed"
+settings="$PATINA_PATH/defaults/settings.yaml"
+keybindings="$PATINA_PATH/defaults/keybindings.yaml"
+
+# One kitty window split in two, as the README's picture of the desktop: the welcome on
+# the left, with the keyboard, and btop on the right where it is installed. The session
+# comes on kitty's standard input, so no file is left behind.
+window() {
+  local session
+  command -v kitty > /dev/null ||
+    die "the welcome's window needs kitty (the desktop or minimal bundle); run patina welcome in a terminal"
+  session="$(printf 'layout splits\nlaunch --title welcome %q welcome --pane\nfocus' "$PATINA_PATH/bin/patina")"
+  if command -v btop > /dev/null; then
+    session+=$'\nlaunch --location=vsplit --bias=50 btop'
+  fi
+  exec kitty --class patina-welcome --title "Welcome to patina" --session - <<< "$session"
+}
+
+# The first login: the welcome once, then never again on its own (the start menu keeps
+# it). Without kitty there is no window to open, and the next login tries again.
+login() {
+  [[ ! -e "$marker" ]] || exit 0
+  command -v kitty > /dev/null || exit 0
+  mkdir -p "$PATINA_STATE"
+  date -u +%FT%TZ > "$marker"
+  window
+}
+
+# The bundles a user may still add here: neither required nor an AI agent's (the agent
+# step adds those) nor the agent tools (a step of their own), with something this machine
+# lacks, so minimal is not offered beside desktop, which holds all of it.
+left_bundles() {
+  local b list item
+  local -a recorded
+  local -A have=()
+  mapfile -t recorded < <(recorded_bundles)
+  for list in packages flatpaks upstream; do
+    while IFS= read -r item; do
+      [[ -z "$item" ]] || have[$list:$item]=1
+    done < <(bundle_items "$list" "${recorded[@]}")
+  done
+  for b in $(all_bundles); do
+    [[ "$b" != agents ]] || continue
+    yq eval -e '.required == true or .ai' "$PATINA_PATH/manifest/bundles/$b.yaml" > /dev/null 2>&1 && continue
+    for list in packages flatpaks upstream; do
+      while IFS= read -r item; do
+        if [[ -n "$item" && -z "${have[$list:$item]:-}" ]]; then
+          echo "$b"
+          continue 3
+        fi
+      done < <(bundle_items "$list" "$b")
+    done
+  done
+}
+
+# The agent, as `patina ai` says it, without the "patina: ai: " in front.
+agent_now() {
+  local line
+  line="$("$PATINA_PATH/bin/patina-ai" status)"
+  echo "${line#patina: ai: }"
+}
+
+# The steps the menu offers now, one line each: the step, then what it does, short
+# enough for half of the window.
+steps() {
+  local left
+  if [[ "$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)" == none ]]; then
+    printf '%-9s %s\n' agent "Turn on the AI agent · opencode or Hermes, on this computer or in a cloud"
+  else
+    printf '%-9s %s\n' agent "Change the AI agent · now $(agent_now)"
+    printf '%-9s %s\n' services "Connect a service for the agent · $(yq eval \
+      '[.[].description | split(" · ") | .[0]] | join(", ")' "$PATINA_PATH/defaults/services.yaml")"
+  fi
+  if ! recorded_bundles | grep -qx agents; then
+    printf '%-9s %s\n' tools "The agent tools · $(yq eval '.description' "$PATINA_PATH/manifest/bundles/agents.yaml")"
+  fi
+  left="$(left_bundles | paste -sd, - | sed 's/,/, /g')"
+  if [[ -n "$left" ]]; then
+    printf '%-9s %s\n' apps "More apps · $left"
+  fi
+  printf '%-9s %s\n' keys "All the keyboard shortcuts"
+  printf '%-9s %s\n' close "Close the welcome"
+}
+
+services_step() {
+  local choice
+  local -a lines
+  mapfile -t lines < <(yq eval 'to_entries | .[] | .key + "|" + .value.description' "$PATINA_PATH/defaults/services.yaml" |
+    awk -F'|' '{ printf "%-10s %s\n", $1, $2 }')
+  choice="$(gum choose --header "A service for the agent (patina ai connect)" "${lines[@]}")" || return 0
+  "$PATINA_PATH/bin/patina-ai" connect "${choice%% *}" || true
+}
+
+# The agent tools are opt-in because most of them are proprietary; the step says so
+# before it installs them.
+tools_step() {
+  gum confirm "Most of the agent tools are proprietary; they come from their makers' installers. Install them?" \
+    --affirmative Install --negative Back || return 0
+  "$PATINA_PATH/bin/patina-install" --bundles agents || true
+}
+
+apps_step() {
+  local b chosen
+  local -a lines=()
+  for b in $(left_bundles); do
+    lines+=("$(printf '%-9s %s' "$b" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$b.yaml")")")
+  done
+  chosen="$(gum choose --no-limit --header "More apps (x or space toggles, enter confirms)" "${lines[@]}")" || return 0
+  chosen="$(awk 'NF { print $1 }' <<< "$chosen" | paste -sd, -)"
+  [[ -z "$chosen" ]] || "$PATINA_PATH/bin/patina-install" --bundles "$chosen" || true
+}
+
+welcome() {
+  local d name action choice chord words
+  local -a lines
+  [[ -t 0 && -t 1 ]] || die "the welcome asks on a terminal; patina welcome --window opens one"
+  need_yq
+  command -v gum > /dev/null || die "the welcome asks with gum (the base bundle): run patina install first"
+  d="$(theme_dir "$(current_theme || yq eval '.theme' "$settings")")" || die "no theme to draw the welcome in"
+  theme_vars "$d/theme.yaml" "$settings" "$(current_mode)"
+  tui_colors   # exported, so the steps' own questions take the same colours
+  name="$(getent passwd "$(id -un)" | cut -d: -f5 | cut -d, -f1)"
+  name="${name%% *}"
+  print_wordmark auto "${tpl[VARIANT]}"
+  echo
+  gum style --foreground "${tpl[BASE05]}" "Welcome${name:+, $name}. patina is installed with the apps you picked." \
+    "Here is what you can add now, and the keys to start with:"
+  echo
+  # The first keys, as defaults/keybindings.yaml has them; the agent's once it is set up.
+  for action in launcher terminal agent keys; do
+    [[ "$action" != agent || -e "${XDG_DATA_HOME:-$HOME/.local/share}/applications/patina-agent.desktop" ]] || continue
+    chord="$(yq eval ".actions.$action" "$keybindings")"
+    words="$(yq eval ".names.$action" "$keybindings")"
+    [[ "$action" != keys ]] || words="All the keys at a glance"   # the sheet's own name is "Show these keys"
+    printf '  %s  %s\n' "$(gum style --bold --foreground "${tpl[ACCENT]}" "$(printf '%-12s' "$chord")")" "$words"
+  done
+  while true; do
+    echo
+    mapfile -t lines < <(steps)
+    choice="$(gum choose --header "What next?" "${lines[@]}")" || break
+    [[ -n "$choice" ]] || break
+    echo
+    case "${choice%% *}" in
+      agent) "$PATINA_PATH/bin/patina-ai" on || true ;;
+      services) services_step ;;
+      tools) tools_step ;;
+      apps) apps_step ;;
+      keys) "$PATINA_PATH/bin/patina-keys" ;;
+      *) break ;;
+    esac
+  done
+}
+
+case "${1:-}" in
+  "" | --pane)
+    welcome
+    # In its window the welcome hands its half to the shell kitty would have started.
+    if [[ "${1:-}" == --pane ]]; then
+      clear
+      exec "${SHELL:-/bin/bash}"
+    fi
+    ;;
+  --window) window ;;
+  --login) login ;;
+  -h | --help) usage ;;
+  *)
+    usage >&2
+    exit 1
+    ;;
+esac

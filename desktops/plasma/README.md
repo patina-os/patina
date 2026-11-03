@@ -159,6 +159,14 @@ Files, from `templates/`, each named after the theme:
   to the `keys` action (Meta+K). The sheet lists the actions of
   `defaults/keybindings.yaml` and Plasma's own chords worth knowing, kept as words under
   `cheatsheet` in `actions.yaml`
+- the welcome's start menu entry, `~/.local/share/applications/patina-welcome.desktop`,
+  and until the first login has shown it (`~/.local/state/patina/welcomed`) its
+  autostart entry, `~/.config/autostart/patina-welcome.desktop`, both from
+  `templates/welcome.desktop`: `patina welcome --window` and `--login`, kitty split in
+  two with the welcome beside btop (`bin/patina-welcome`). KDE's Welcome Center stays
+  off: `autoload=false` for its daemon module (`[Module-kded_plasma-welcome]` in
+  `kded5rc`, the file KDE 6 still reads), which is what starts it at a first login and
+  after a Plasma upgrade
 
 Settings, through `kwriteconfig6`, each written only when it differs from what a session
 reads: the renderer puts `~/.config/kdedefaults/` first in `XDG_CONFIG_DIRS`, as
@@ -238,7 +246,8 @@ a Plasma X11 session on a virtual framebuffer (`Xvfb`, Mesa's software OpenGL, n
 and no login), `plasmashell` in it, which runs the layout script as a first login
 does, then `patina theme set --layout` once more inside that session, as the first
 install runs it (the live reload, the window rule, which needs a screen, and patina's
-favourites in place of Plasma's) and the Welcome Center closed, and the pointer moved
+favourites in place of Plasma's), with patina's welcome counted as shown and KDE's
+Welcome Center closed should a Plasma open it after all, and the pointer moved
 from the middle of the screen, where Xvfb leaves it, to the empty desktop on the right
 (`xdotool`), so no tooltip or hover is in the pictures. Then three grabs of
 the whole screen (`scrot`): `desktop.png`, kitty split in two with the fastfetch

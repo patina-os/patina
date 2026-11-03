@@ -208,6 +208,13 @@ current_agent() {
   echo "$agent"
 }
 
+# The AI agents the questions offer (`patina install`, `patina ai on`), one line each:
+# the agent, then what it is.
+agent_lines() {
+  printf '%-9s %s\n' opencode "opencode · free · asks before every change" \
+    hermes "Hermes Agent · free · remembers · asks before risky commands only"
+}
+
 # The bundle that answers the AI question with this mode and agent (its `ai` and `agent`
 # keys; no `agent` is opencode): ai_bundle <mode> [<agent>]; fails for none.
 ai_bundle() {

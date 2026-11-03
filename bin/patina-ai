@@ -48,7 +48,8 @@ status() {
 }
 
 on() {
-  local mode="" agent="" word bundle
+  local mode="" agent="" word bundle choice
+  local -a lines
   for word in "$@"; do
     case "$word" in
       local | cloud) mode="$word" ;;
@@ -56,6 +57,15 @@ on() {
       *) die "patina ai on takes opencode or hermes, and local or cloud, not '$word'" ;;
     esac
   done
+  # Neither given, on a terminal: which agent first, the one this machine had offered
+  # first; otherwise that one (opencode before any).
+  if [[ $# -eq 0 && -t 0 && -t 1 ]] && command -v gum > /dev/null; then
+    mapfile -t lines < <(agent_lines)
+    choice="$(printf '%s\n' "${lines[@]}" | grep "^$(current_agent) ")" || choice="${lines[0]}"
+    agent="$(gum choose --header "AI agent (Meta+A, and ai in the command palette)" \
+      --selected "$choice" "${lines[@]}")" || exit 0
+    agent="${agent%% *}"
+  fi
   [[ -n "$agent" ]] || agent="$(current_agent)"
   if [[ -z "$mode" ]]; then
     if [[ ! -t 0 || ! -t 1 ]] || ! command -v gum > /dev/null; then

@@ -61,6 +61,10 @@ session() {
   # from Flathub (Element) are in the start menu, as on a desktop.
   dirs="$(flatpak --print-updated-env 2> /dev/null | sed -n 's/^XDG_DATA_DIRS=//p' || true)"
   [[ -z "$dirs" ]] || export XDG_DATA_DIRS="$dirs"
+  # patina's welcome, which a first login opens beside btop (bin/patina-welcome), would
+  # cover the desktop: this session counts as a later login.
+  mkdir -p "${XDG_STATE_HOME:-$HOME/.local/state}/patina"
+  date -u +%FT%TZ > "${XDG_STATE_HOME:-$HOME/.local/state}/patina/welcomed"
   startplasma-x11 &
   session_pid=$!
   until on_bus org.kde.plasmashell; do
@@ -90,8 +94,11 @@ session() {
   theme="$("$PATINA_PATH/bin/patina" theme current)"
   "$PATINA_PATH/bin/patina" theme set "$theme" --layout || true
   sleep 5
-  # The Welcome Center a first login opens would show through the windows.
-  pkill -u "$(id -u)" -x plasma-welcome || true
+  # KDE's Welcome Center stays off (kded5rc, apply.sh); one a Plasma opened all the
+  # same would show through the windows.
+  if pkill -u "$(id -u)" -x plasma-welcome; then
+    echo "screenshot: KDE's Welcome Center opened although patina turns it off" >&2
+  fi
 
   # One kitty window split in two: the greeting on the left, btop on the right, its
   # graphs refreshed four times a second so they fill before the grab. The greeting is

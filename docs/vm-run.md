@@ -269,6 +269,10 @@ sudo -iu patina-test bash -c '
 - [ ] logging in as `patina-test` for the first time gives the wallpaper, the colour
   scheme and the centred bar at once, without a second login
 - [ ] the splash before the desktop shows the mark alone, its rings without the word
+- [ ] that first login opens patina's welcome, kitty split in two with btop beside it,
+  and not KDE's Welcome Center: the first keys and a menu (the AI agent, the agent
+  tools, more apps, the keys); "Close the welcome" leaves a shell in its half. The
+  second login opens nothing, and "Welcome to patina" in the start menu opens it again
 
 ## 12. After the run
 

@@ -133,6 +133,12 @@ git clone https://github.com/patina-os/patina.git ~/.local/share/patina
 ~/.local/share/patina/bin/patina install --all      # every opt-in bundle, agent tools included
 ```
 
+At the first login patina's welcome opens, a kitty window split in two with btop
+beside it: the first keys, and what the install left for later, each a step that runs
+`patina ai` or `patina install`: the AI agent, the services it can work with, the agent
+tools, and the bundles you did not pick. "Welcome to patina" in the start menu (or
+`patina welcome` in a terminal) opens it again; KDE's own Welcome Center stays off.
+
 `patina install --list` shows the bundles, `patina doctor` checks the result,
 `patina theme list` and `patina theme set <name>` switch the theme (`PATINA_THEME=<name>`
 picks one for the install), and `patina update` runs `git pull`, then any pending
@@ -244,7 +250,8 @@ ArtCraft Launcher from its release. Ollama is the local backend the agent tools 
 
 `patina install` (and the installer's agent and AI pages) asks which AI agent, if any,
 and where its model runs: on this computer or at a cloud provider. The agent is opt-in:
-no agent is the answer preselected, and `patina ai on` turns one on at any time later.
+no agent is the answer preselected, and `patina ai on` turns one on at any time later,
+as does patina's welcome, which offers it again at the first login.
 Both are free software:
 
 - **[opencode](https://opencode.ai)** (MIT), the default agent: it asks before every
