@@ -184,11 +184,15 @@ cp "$esp/EFI/debian/mm$efi.efi" "$esp/EFI/debian/grub$efi.efi" "$esp/EFI/debian/
 MTOOLS_SKIP_CHECK=1 mcopy -s -i "$raw@@$(part start 0)" "$esp/EFI" ::/
 rm -rf "$esp"
 cat > "$root/boot/grub/grub.cfg" <<GRUB
-# Until the first boot runs update-grub (devices/try-patina-windows/firstboot/).
+# Until the first boot runs update-grub (devices/try-patina-windows/firstboot/). GRUB
+# boots a menu entry, not commands outside one.
+set default=0
 set timeout=0
-search --no-floppy --fs-uuid --set=root $root_uuid
-linux /boot/vmlinuz-$kernel root=UUID=$root_uuid ro quiet
-initrd /boot/initrd.img-$kernel
+menuentry "patina" {
+  search --no-floppy --fs-uuid --set=root $root_uuid
+  linux /boot/vmlinuz-$kernel root=UUID=$root_uuid ro quiet
+  initrd /boot/initrd.img-$kernel
+}
 GRUB
 in_root update-initramfs -u -k all > /dev/null
 
