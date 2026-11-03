@@ -19,6 +19,17 @@ All notable changes to patina are documented here. The format follows
   "Welcome to patina", brings it back. A machine updated from 0.1.0-alpha.6 shows it
   at its next login again. Its menu lines are shorter, so none is cut off at the edge
   of its half of the window.
+- The installer looks finished on every page: Next (Install on the summary) is the one
+  solid button; a ticked box shows a tick and a picked radio its dot, where both were a
+  plain filled square; a picked row in a list is tinted in the accent like the
+  sidebar's current step, not a solid neon bar; the dialogs' icons are patina's
+  instead of Qt's blue bubble; the wallpaper behind the pages is frosted, so its fine
+  pattern no longer runs through the forms; the summary lists each step in a card; and
+  the agent, AI, apps, more-apps and theme pages show what an answer brings in a card
+  under its picture, readable, instead of a line at the bottom edge.
+- The more-apps page says to hold Ctrl to pick more than one: a plain click swapped
+  the first pick for the second. Try patina's setup window, whose answers are boxes to
+  tick, keeps its note without that (`note` in `packagechooser-more.conf`).
 
 ### Fixed
 
