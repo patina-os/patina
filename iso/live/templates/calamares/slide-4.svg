@@ -38,5 +38,5 @@
   <text x="1260" y="772" font-family="'${DISPLAY_FONT}', sans-serif" font-size="50" font-weight="700"
     letter-spacing="-1" fill="${BASE05}">Element</text>
   <text x="1260" y="826" font-family="'${UI_FONT}', sans-serif" font-size="32" fill="${BASE04}">Encrypted chat on Matrix.</text>
-  <text x="140" y="960" font-family="'${UI_FONT}', sans-serif" font-size="32" fill="${BASE04}">Okular, Gwenview and Haruna for PDFs, photos and video. Zed, Tauon and ArtCraft are one checkbox away.</text>
+  <text x="140" y="960" font-family="'${UI_FONT}', sans-serif" font-size="32" fill="${BASE04}">Okular, Gwenview and Haruna for PDFs, photos and video. Zed, kew, Telegram and ArtCraft are one checkbox away.</text>
 </svg>

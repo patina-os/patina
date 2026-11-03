@@ -1,7 +1,7 @@
 # The polished-desktop bundle: the app stack from the README, all free software. The
 # package names are Debian 13's; the smoke test installs the bundle on amd64 and arm64.
-# Element is its one Flathub app (about 1 GB with its runtime); Zed and Tauon, which
-# bring two more runtimes, are the extras bundle.
+# Element is its one Flathub app (about 1 GB with its runtime); the editor, the music
+# and the other chat apps are the opt-in headstart bundle.
 name: desktop
 description: Firefox ESR · Thunderbird · Element · kitty · dev tools
 default: true

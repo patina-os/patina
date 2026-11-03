@@ -230,9 +230,11 @@ developer kit (fish, starship, bat, eza, fzf, ripgrep, lazygit, btop, zoxide, at
 git-delta, neovim, fastfetch): the `desktop` bundle. Gaming is not a focus.
 
 Smaller or larger: `minimal` is only kitty and Firefox ESR, for a machine that gets its
-apps elsewhere (the look and the system tuning come with every install), and `extras`
-adds the Zed editor and Tauon for music from Flathub, opt-in because their runtimes
-take over 2 GB.
+apps elsewhere (the look and the system tuning come with every install), and
+`headstart` is a power user's first day: the Zed editor, kew for music and ncspot for
+Spotify in the terminal, Telegram, Vesktop (Discord) and Signal, LocalSend for files
+to phones and OBS Studio. It is opt-in because those services are not European and
+not the defaults: Element stays the messenger.
 
 Opt-in, as an external package: the `artcraft` bundle (`patina install --bundles
 artcraft`) brings the launcher of the [ArtCraft](https://craftingapps.org) suite, free
@@ -390,7 +392,8 @@ are grateful for it. Thank you:
   for Plasma and its apps.
 - The apps: Nextcloud; Euro-Office (IONOS, Nextcloud and their European partners) and
   ONLYOFFICE, which it is built on; Mozilla's Firefox and Thunderbird; Element;
-  KeePassXC; kitty; Zed; Tauon; ArtCraft; and the terminal's tools: fish, starship,
+  KeePassXC; kitty; Zed; kew; ncspot; Telegram; Vesktop; Signal; LocalSend; OBS Studio;
+  ArtCraft; and the terminal's tools: fish, starship,
   bat, eza, fzf, ripgrep, lazygit, btop, zoxide, atuin, delta, Neovim and fastfetch.
 - The AI agents: [opencode](https://opencode.ai) (Anomaly, the team behind SST) and
   [Hermes Agent](https://github.com/NousResearch/hermes-agent) (Nous Research),

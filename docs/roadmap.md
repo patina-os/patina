@@ -73,7 +73,9 @@ run on a real VM passed in October 2026.
   Okular, Gwenview and Haruna from Debian's archive, each with its glyph in
   `desktops/plasma/icons.yaml`; Tauon (the music player, GPL-3.0) from Flathub
   (`com.github.taiko2k.tauonmb`) moved with Zed to the opt-in `extras` bundle after the
-  first VM run, since their runtimes take over 2 GB
+  first VM run, since their runtimes take over 2 GB; in November 2026 extras became
+  `headstart` (Zed, kew, ncspot, Telegram, Vesktop, Signal, LocalSend, OBS Studio), with
+  kew in Tauon's place
 - [x] the opt-in `artcraft` bundle: the ArtCraft Launcher (MIT or Apache-2.0) as an AppImage
   from its release, a `binary` recipe pinned at 0.8.1, which installs and updates the
   ArtCraft apps the user picks; the renderer adds its menu entry. Neither Debian nor

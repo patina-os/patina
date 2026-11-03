@@ -1,0 +1,21 @@
+# The head start for a power user's first day: an editor, music in the terminal, the chat
+# apps friends and teams use, file sharing and recording. Opt-in. Every client is free
+# software, but Spotify, Discord, Telegram and Signal are services outside the EU, so
+# none of them is a default: Element stays the messenger of the desktop bundle. kew and
+# ncspot draw with the terminal's colours, so the theme reaches them through kitty. It
+# replaced extras (Zed and Tauon) in November 2026: kew took the place of Tauon, whose
+# GNOME runtime was most of that bundle's 2 GB.
+name: headstart
+description: Zed · kew · ncspot · Telegram · Vesktop · Signal · more
+default: false
+packages:
+  - kew          # music in the terminal, its covers as ASCII art or kitty images
+  - obs-studio   # recording and streaming
+flatpaks:
+  - dev.zed.Zed                  # the editor; telemetry and AI off through defaults/apps.yaml
+  - io.github.hrkfdn.ncspot      # Spotify in the terminal (a Premium account)
+  - org.telegram.desktop         # Telegram; Debian 13 has it in backports only
+  - dev.vencord.Vesktop          # Discord, through a free client with an arm64 build
+  - org.signal.Signal            # Signal
+  - org.localsend.localsend_app  # files to phones and other machines on the network
+upstream: []

@@ -333,7 +333,7 @@ jobs:
               slide-2.png slide-3.png slide-4.png slide-5.png slide-6.png stylesheet.qss \
               agent-opencode.png agent-hermes.png agent-none.png ai-local.png ai-cloud.png \
               language.png help.png bugs.png release.png \
-              about.png bundle-desktop.png bundle-minimal.png bundle-extras.png \
+              about.png bundle-desktop.png bundle-minimal.png bundle-headstart.png \
               bundle-artcraft.png bundle-agents.png bundle-none.png; do
             test -s "$b/$f"
           done

@@ -17,8 +17,9 @@ should be short.
 - The user's apps, when they kept the default desktop bundle: Dolphin (files), kitty
   (terminal, with fish), Firefox ESR, Thunderbird, Nextcloud, Element, KeePassXC,
   Euro-Office, and the command-line tools bat, eza, fzf, ripgrep, lazygit, btop, neovim. Apps from
-  Flathub are installed per user (`flatpak --user`). The opt-in extras bundle adds Zed
-  and Tauon (`patina install --bundles extras`).
+  Flathub are installed per user (`flatpak --user`). The opt-in headstart bundle adds Zed,
+  kew and ncspot (music and Spotify in the terminal), Telegram, Vesktop (Discord), Signal,
+  LocalSend and OBS Studio (`patina install --bundles headstart`).
 
 ## How to change things
 
