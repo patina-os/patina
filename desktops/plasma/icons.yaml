@@ -31,7 +31,12 @@ Papirus-Dark: &papirus
       nextcloud-office-nextcloudoffice: x-office-document-symbolic   # Euro-Office
       keepassxc: dialog-password-symbolic
       dev.zed.Zed: text-editor-symbolic
-      com.github.taiko2k.tauonmb: audio-x-generic-symbolic # Tauon
+      io.github.hrkfdn.ncspot: audio-headphones-symbolic   # ncspot, Spotify
+      org.telegram.desktop: mail-send-symbolic             # a paper plane
+      dev.vencord.Vesktop: audio-input-microphone-symbolic # Discord, voice
+      org.signal.Signal: call-start-symbolic
+      org.localsend.localsend_app: send-to-symbolic
+      com.obsproject.Studio: media-record-symbolic         # OBS Studio
       okular: view-dual-symbolic                           # two pages
       gwenview: image-x-generic-symbolic
       haruna: video-x-generic-symbolic

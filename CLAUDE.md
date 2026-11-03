@@ -37,7 +37,12 @@ packs. Audience: developers and privacy-minded users in the EU.
   moves to Flathub as soon as Flathub carries it. An opt-in app that is free and that
   neither Debian's archive nor Flathub carries may come from its upstream's release
   (the ArtCraft Launcher, chosen by the maintainer in October 2026); it too moves as
-  soon as one of them carries it. Opt-in tools that wait for a package instead: cliamp.
+  soon as one of them carries it. Opt-in tools that wait for a package instead: cliamp; spotify-player (its
+  release ships tarballs only, and the `binary` method takes one file; ncspot is the
+  Spotify client meanwhile). Deferred in November 2026: Lex (`richardkfm/lex`, a
+  terminal after Rex in aurora's look), until it carries a licence and an arm64 build,
+  and until patina decides whether a release the maintainer builds counts as an
+  upstream.
   Deferred in October 2026, to decide later: FileAction (MIT, Metamorfolog/file_action,
   a converter on a radial wheel) as an opt-in app from its release. Its release ships
   only an x86_64 tarball (no aarch64, and the `binary` method takes one file, so it
@@ -48,8 +53,13 @@ packs. Audience: developers and privacy-minded users in the EU.
   Element, KeePassXC, kitty as the terminal (Ghostty once Debian carries it), Firefox ESR
   (its telemetry, Pocket and sponsored content off by policy), Okular, Gwenview and
   Haruna and the developer tools from Debian's archive, all in the default desktop
-  bundle; Zed and Tauon (the music player) from Flathub are the opt-in `extras` bundle,
-  because their runtimes add over 2 GB (October 2026, after the first VM run). The
+  bundle; the opt-in `headstart` bundle is a power user's first day (November 2026, in
+  place of `extras`, Zed and Tauon, whose runtimes added over 2 GB): Zed, kew (music in
+  the terminal, from Debian, in Tauon's place) and ncspot (Spotify in the terminal),
+  Telegram, Vesktop (a free Discord client with an arm64 build; Discord's own is
+  proprietary and amd64 only), Signal, LocalSend and OBS Studio. All are free clients,
+  but the services behind them are not European, so none is a default and Element
+  stays the messenger. The
   `minimal` bundle (kitty and Firefox ESR) is the small alternative to desktop; the look
   (fonts, icons) is part of base, so every install has it. The ArtCraft suite (free,
   alpha counterparts of Adobe's and Microsoft's apps) is the opt-in `artcraft` bundle:

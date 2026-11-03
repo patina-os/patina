@@ -56,9 +56,29 @@ groups:
         by: Zed Industries
         for: the editor
         url: https://zed.dev
-      - name: Tauon
-        for: music
-        url: https://tauonmusicbox.rocks
+      - name: kew
+        for: music in the terminal
+        url: https://github.com/ravachol/kew
+      - name: ncspot
+        for: Spotify in the terminal
+        url: https://github.com/hrkfdn/ncspot
+      - name: Telegram Desktop
+        for: Telegram
+        url: https://desktop.telegram.org
+      - name: Vesktop
+        by: the Vencord contributors
+        for: Discord
+        url: https://github.com/Vencord/Vesktop
+      - name: Signal
+        by: Signal Messenger
+        for: Signal
+        url: https://signal.org
+      - name: LocalSend
+        for: files to phones and other machines
+        url: https://localsend.org
+      - name: OBS Studio
+        for: recording and streaming
+        url: https://obsproject.com
       - name: ArtCraft
         for: the launcher of the opt-in artcraft bundle
         url: https://craftingapps.org
@@ -135,7 +155,7 @@ groups:
   - title: Platforms
     entries:
       - name: Flathub
-        for: Element, Zed and Tauon
+        for: Element and the headstart bundle's apps
         url: https://flathub.org
       - name: Pexels
         for: the wallpapers, under its licence

@@ -89,7 +89,7 @@ iso/
    preselected; encryption and manual partitioning are available), the user, the AI
    agent (on this computer, from a cloud provider, or none, preselected from `ai.mode`
    of `defaults/settings.yaml`: none), the apps (Standard, the bundle marked default,
-   or Minimal), more apps (any of the other optional bundles: extras, ArtCraft, the
+   or Minimal), more apps (any of the other optional bundles: headstart, ArtCraft, the
    agent tools) and the theme (every theme of `themes/`, the default preselected, each
    pictured in its own palette). These pages install nothing: their answers are handed
    to the first boot. The summary page is the last look before anything is written.

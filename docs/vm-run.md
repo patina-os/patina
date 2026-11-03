@@ -98,8 +98,8 @@ script -q -c 'patina install' ~/run1.log
 `script` keeps a log without hiding the terminal from the questions.
 
 - [ ] the questions appear: the wordmark, the version line, the theme (aurora offered
-  first and preselected), the app bundles (desktop preselected; minimal, extras, agents
-  and artcraft not), the AI agent (none preselected; answer local on a VM with 8 GB
+  first and preselected), the app bundles (desktop preselected; minimal, headstart,
+  agents and artcraft not), the AI agent (none preselected; answer local on a VM with 8 GB
   or more and enough disk, the model is a few GB, else cloud or none and note it),
   for local the model (the ones that fit the VM's memory,
   Nemotron 3.5 Bolt E4B first from 16 GB, Ministral 3 3B below), a summary, a yes
@@ -166,9 +166,11 @@ Open each once from the launcher:
 
 - [ ] kitty, Firefox ESR, Thunderbird, KeePassXC, the Nextcloud client, Element,
   Euro-Office
-- [ ] with the extras bundle (`patina install --bundles extras`, over 2 GB): Zed's
-  telemetry and AI features are off (Settings, or
-  `~/.var/app/dev.zed.Zed/config/zed/settings.json`), Tauon starts
+- [ ] with the headstart bundle (`patina install --bundles headstart`; note the disk it
+  took): Zed's telemetry and AI features are off (Settings, or
+  `~/.var/app/dev.zed.Zed/config/zed/settings.json`); kew plays a file in kitty in the
+  theme's colours; ncspot, Telegram, Vesktop, Signal, LocalSend and OBS Studio start,
+  each with its glyph in the bar and the start menu
 - [ ] Euro-Office: whether it still carries ONLYOFFICE's AI plugin (an open question of
   the roadmap); write down what its plugin manager shows
 - [ ] in kitty: `fish`, `starship`, `bat`, `eza`, `fzf`, `rg`, `lazygit`, `btop`,

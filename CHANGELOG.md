@@ -8,6 +8,12 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- The opt-in `extras` bundle (Zed and Tauon) is now `headstart`: the Zed editor, kew
+  for music and ncspot for Spotify in the terminal, Telegram, Vesktop for Discord,
+  Signal, LocalSend and OBS Studio. kew takes Tauon's place, whose GNOME runtime made
+  up most of the old bundle's 2 GB. A machine that had extras gets headstart with its
+  next `patina update`. Tauon stays installed; `flatpak uninstall --user
+  com.github.taiko2k.tauonmb` removes it.
 - patina's welcome opens at every login, not only at the first, until its new "Don't
   open at login" is picked; "Open at every login again" in it, from the start menu's
   "Welcome to patina", brings it back. A machine updated from 0.1.0-alpha.6 shows it
