@@ -179,7 +179,9 @@ configfile \$prefix/grub.cfg
 STUB
 cp "$esp/EFI/debian/shim$efi.efi" "$esp/EFI/BOOT/BOOT${efi^^}.EFI"
 cp "$esp/EFI/debian/mm$efi.efi" "$esp/EFI/debian/grub$efi.efi" "$esp/EFI/debian/grub.cfg" "$esp/EFI/BOOT/"
-MTOOLS_SKIP_CHECK=1 mcopy -s -i "$efi_dev" "$esp/EFI" ::/
+# On the file at the partition's offset: mtools asks a block device for a geometry a loop
+# device does not have.
+MTOOLS_SKIP_CHECK=1 mcopy -s -i "$raw@@$(part start 0)" "$esp/EFI" ::/
 rm -rf "$esp"
 cat > "$root/boot/grub/grub.cfg" <<GRUB
 # Until the first boot runs update-grub (devices/try-patina-windows/firstboot/).
