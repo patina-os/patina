@@ -18,7 +18,11 @@
     "kernel",
     "de",
     "shell",
-    "terminal",
+    // Not fastfetch's terminal module: on Debian it asks kitty for its version over the
+    // terminal (fastfetch 2.40 misses kitty's own file there), and on a slow machine the
+    // answer came after fastfetch had stopped waiting, onto the shell's prompt. The
+    // greeting runs in kitty only, so the line names it.
+    { "type": "custom", "key": "Terminal", "format": "kitty" },
     { "type": "custom", "key": "Theme", "format": "patina ${DISPLAY_NAME}" },
     "memory",
     "break",

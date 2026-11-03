@@ -6,6 +6,13 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- A new kitty window no longer shows a line like `^[P1+r6b697474792d7175` on its prompt
+  on a slow machine (Try patina's VM): the greeting's Terminal line now says `kitty`,
+  so fastfetch no longer asks kitty for its version, an answer that came too late for
+  fastfetch and landed on the shell.
+
 ## [0.1.0-alpha.6] - 2026-11-03
 
 ### Added
