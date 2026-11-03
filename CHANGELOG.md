@@ -6,6 +6,12 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The installer's German pages say "kostenlos" where they said "frei": opencode and
+  Hermes Agent, the local model, the Standard apps and the ArtCraft Launcher. Try
+  patina's setup window shows the same words, from the next release on.
+
 ## [0.1.0-alpha.5] - 2026-11-03
 
 ### Added
