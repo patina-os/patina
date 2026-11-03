@@ -131,4 +131,7 @@ for pair in "PATINA_AI_AGENT=$agent" "PATINA_AI=$ai" "PATINA_BUNDLES=$bundles" "
   [[ "${pair#*=}" =~ ^[a-z0-9,-]+$ ]] && printf '%s\n' "$pair" >> /etc/patina/firstboot.env
 done
 date -u +%FT%TZ > "$done_marker"
+# On the disk before the launcher hears of it: it deletes the answers then, and a machine
+# cut off with the setup still in memory would come back without either.
+sync
 say "done"
