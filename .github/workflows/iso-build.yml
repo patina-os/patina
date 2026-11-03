@@ -66,12 +66,12 @@ jobs:
           iso/live/build.sh "${{ matrix.arch }}" "$GITHUB_WORKSPACE/iso/build/live"
       - name: Keep the build log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: iso-build-log-${{ matrix.arch }}
           path: iso/build/live/build.log
           if-no-files-found: ignore
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: patina-${{ matrix.arch }}
           path: iso/build/live/*.iso
@@ -80,7 +80,7 @@ jobs:
         if: matrix.arch == 'amd64'
         run: iso/disk/choices.sh iso/build/live iso/build/patina-setup.json
       - if: matrix.arch == 'amd64'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: patina-setup
           path: iso/build/patina-setup.json
@@ -108,7 +108,7 @@ jobs:
         run: iso/test/disk-test.sh "$RUNNER_TEMP/disk/patina-amd64.qcow2" "$RUNNER_TEMP/disk-test"
       - name: Keep the logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: disk-logs
           path: |
@@ -117,7 +117,7 @@ jobs:
           if-no-files-found: ignore
       # Only a tag's release needs the image, which is large.
       - if: startsWith(github.ref, 'refs/tags/v')
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: patina-disk-amd64
           path: ${{ runner.temp }}/disk/patina-amd64.qcow2
@@ -142,7 +142,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: patina-${{ matrix.arch }}
           path: image
@@ -158,7 +158,7 @@ jobs:
         run: iso/test/boot-test.sh image/*.iso "$RUNNER_TEMP/boot-test"
       - name: Keep the serial log and the screenshot of the installer screen
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: boot-test-${{ matrix.arch }}
           path: |
@@ -181,13 +181,13 @@ jobs:
       IMAGES: ${{ contains(github.ref_name, '-alpha') && 'patina-amd64' || 'patina-*' }}
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: ${{ env.IMAGES }}
           path: image
           merge-multiple: true
       - name: Try patina's disk image and its setup pages
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: patina-{disk-amd64,setup}
           path: image

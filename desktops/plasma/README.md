@@ -28,7 +28,12 @@ Files, from `templates/`, each named after the theme:
   text colour (white in the dark mode, dark in the light one). With
   `start_menu.icons: accent` (the default) the icon theme's symbolic category icons,
   which the start menu's categories show, take the accent: their colour and their
-  `ColorScheme-Text` class become the accent; the labels keep the text colour. Each glyph, and the start menu's mark, gets a viewBox cut to what it
+  `ColorScheme-Text` class become the accent; the labels keep the text colour. A
+  category whose directory entry names an icon from elsewhere in the icon theme (Help:
+  `help-about-symbolic`, an action) gets the category glyph `icons.yaml` names for it
+  under `categories` (`system-help-symbolic`), through a copy of the entry under the
+  same name in `~/.local/share/desktop-directories/`, its first line a `# patina:`
+  comment; the renderer removes such a copy again when no mapping applies. Each glyph, and the start menu's mark, gets a viewBox cut to what it
   draws, 7/8 of the icon high and centred (the extent from the bounding box of an EPS
   `rsvg-convert` writes), so they stand equally tall in the bar. An app installed later gets its glyph at the next `patina theme set`.
   The session uses this icon theme. Without the icon theme installed the renderer
@@ -62,7 +67,13 @@ Files, from `templates/`, each named after the theme:
 - a look-and-feel package, `~/.local/share/plasma/look-and-feel/org.patina.<theme>/`,
   whose `defaults` name the colour scheme, icons, cursors, desktop theme, decoration,
   splash and wallpaper, so a fresh session (the image's first login) starts in the
-  theme; its `contents/splash/Splash.qml`, from `templates/splash.qml`, is the Plasma
+  theme; its `contents/previews/` hold the pictures System Settings shows for it among
+  the global themes, the card (`preview.png`, 600x337) and the full screen
+  (`fullscreenpreview.jpg`, 1920x1080, PNG data under the name the package format
+  fixes: `rsvg-convert` writes no JPEG and Qt reads an image by its content), both the
+  mode's first wallpaper with the bar along the bottom edge in the window colour and the
+  mark in its centre (`templates/look-and-feel-preview.svg`); without them Plasma showed
+  Breeze's, the package it falls back to; its `contents/splash/Splash.qml`, from `templates/splash.qml`, is the Plasma
   splash: the wordmark (`branding/wordmark.svg`) on the theme's background and one
   accent line that grows as Plasma starts, the one piece of code a theme renders; it
   takes the dark palette in either mode, since the wordmark is made for a dark ground
@@ -95,7 +106,8 @@ Files, from `templates/`, each named after the theme:
   directory entry each under `~/.local/share/desktop-directories/patina-<id>.directory`
   and `~/.config/menus/applications-merged/patina-start-menu.menu`, which fills them;
   a folder shows the apps of its list that are installed. The menu cache is rebuilt
-  (`kbuildsycoca6`) when they change. The favourites, the folders' apps and then
+  (`kbuildsycoca6`) when they change, from Plasma's menu (`XDG_MENU_PREFIX=plasma-`, as
+  `startplasma` sets it, also outside a session). The favourites, the folders' apps and then
   `start_menu.favorites` as far as they are installed, go into `kicker-extra-favoritesrc`
   (`Prepend`, a `;`-list): Kickoff puts them before Plasma's own favourites in a start
   menu whose favourites store is still empty (the image's first login). On a desktop
@@ -147,7 +159,10 @@ Files, from `templates/`, each named after the theme:
   `defaults/keybindings.yaml` and Plasma's own chords worth knowing, kept as words under
   `cheatsheet` in `actions.yaml`
 
-Settings, through `kwriteconfig6`, each written only when it differs:
+Settings, through `kwriteconfig6`, each written only when it differs from what a session
+reads: the renderer puts `~/.config/kdedefaults/` first in `XDG_CONFIG_DIRS`, as
+`startplasma` does, because applying the look-and-feel package moves the values it names
+there, so a run over SSH or in the screenshot session finds them unchanged as well:
 
 - `kdeglobals`: colour scheme and every colour of it (`plasma-apply-colorscheme` would
   copy them only with a display and never for a scheme whose name is already set, so
@@ -222,7 +237,9 @@ a Plasma X11 session on a virtual framebuffer (`Xvfb`, Mesa's software OpenGL, n
 and no login), `plasmashell` in it, which runs the layout script as a first login
 does, then `patina theme set --layout` once more inside that session, as the first
 install runs it (the live reload, the window rule, which needs a screen, and patina's
-favourites in place of Plasma's) and the Welcome Center closed. Then three grabs of
+favourites in place of Plasma's) and the Welcome Center closed, and the pointer moved
+from the middle of the screen, where Xvfb leaves it, to the empty desktop on the right
+(`xdotool`), so no tooltip or hover is in the pictures. Then three grabs of
 the whole screen (`scrot`): `desktop.png`, kitty split in two with the fastfetch
 greeting and btop; when `PATINA_SHOT_ASK` holds a request and an AI bundle installed
 kortex, `command-palette.png` on the empty desktop: what Enter on kortex's "Ask the

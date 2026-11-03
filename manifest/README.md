@@ -63,7 +63,11 @@ entry means checking the three maps too.
 `upstream.yaml` documents its methods at the top. Each recipe names what it leaves
 behind, so `patina install` can skip it and `patina doctor` can report it: the `command`
 on PATH (binary, script), the `package` (npm, uv, apt-source), or for a `git` recipe the
-`ref` it was installed at, recorded in the state directory (a new `ref` installs again).
+`ref` it was installed at, recorded in the state directory (a new `ref` installs again),
+and its `data_files`: paths relative to the user's data directory (`$XDG_DATA_HOME`,
+`~/.local/share` by default) that the repository's install script leaves at that ref.
+A record without them counts as not installed, so a release removed by its own
+uninstall script is reported and installed again.
 Everything lands in the user's `~/.local` except an `apt-source` recipe, which goes
 through the backend. The `git` method is for kortex, patina's own runner for KRunner: a
 tagged release, installed per user by the repository's own script. A `script` recipe

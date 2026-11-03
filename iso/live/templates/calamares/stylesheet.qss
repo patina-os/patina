@@ -203,18 +203,21 @@ PartitionLabelsView {
   border-radius: 6px;
 }
 
-/* the one glowing line: progress */
+/* the one glowing line: progress. Qt draws the percentage in the middle in one colour,
+   over the chunk from half way on: the chunk is translucent, so the lightest text reads
+   on it as on the empty bar (a solid neon chunk hid it), and its leading edge glows. */
 QProgressBar {
   background-color: ${BASE01};
   border: 1px solid ${ACCENT};
   border-radius: 4px;
   text-align: center;
   font-family: "${MONO_FONT}";
-  color: ${BASE05};
+  color: ${BASE07};
   min-height: 1.2em;
 }
 QProgressBar::chunk {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 ${ACCENT_ALT}, stop: 1 ${ACCENT});
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 rgba(${ACCENT_ALT_RGB}, 102), stop: 1 rgba(${ACCENT_RGB}, 102));
+  border-right: 2px solid ${ACCENT};
   border-radius: 3px;
 }
 

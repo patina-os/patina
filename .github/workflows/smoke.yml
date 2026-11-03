@@ -34,6 +34,10 @@ jobs:
       # flatpak runs its post-install triggers in a bubblewrap sandbox, which needs
       # namespaces the default container profile forbids.
       options: --privileged
+    env:
+      # The container sets no locale (C), and every Qt tool, kreadconfig6 and
+      # kwriteconfig6 among them, warns that Qt depends on a UTF-8 one.
+      LANG: C.UTF-8
     steps:
       - name: Install what Path A starts from
         # The README asks for git and curl; a stock Debian desktop has them, the bare
@@ -85,6 +89,16 @@ jobs:
         run: |
           bin/patina doctor
           bin/patina migrate --list
+      - name: A kortex removed since is reported and installed again
+        # kortex's own uninstall.sh removes its files and leaves patina's record of the
+        # ref: the recipe's data_files tell doctor and the next install.
+        run: |
+          rm "$HOME/.local/share/dbus-1/services/io.github.patina_os.kortex.service"
+          if bin/patina doctor > doctor.txt; then exit 1; fi
+          grep -E 'upstream tools missing:.* kortex( |$)' doctor.txt
+          bin/patina install --unattended
+          test -f "$HOME/.local/share/dbus-1/services/io.github.patina_os.kortex.service"
+          bin/patina doctor
       - name: The theme rendered and switches without leftovers
         # `patina install` applied the default theme; setting it again changes nothing.
         # A copy of it under another name stands in for a second theme pack: the
@@ -241,7 +255,9 @@ jobs:
           grep -qxF "color_theme = \"$btop_theme\"" "$config/btop/btop.conf"
           test -s "$config/bat/config"
           test -s "$config/environment.d/60-patina.conf"
-          if grep -rq '\${' "$config/kitty" "$config/btop/themes" "$config/nvim"; then
+          test -s "$config/kitty/kitty.app.png"   # kitty's window icon, the terminal glyph
+          # Text files only (-I): the window icon's bytes may hold a "${" by chance.
+          if grep -rqI '\${' "$config/kitty" "$config/btop/themes" "$config/nvim"; then
             exit 1   # a placeholder the renderer did not fill
           fi
           colors="$(nvim --headless +'lua io.write(vim.g.colors_name)' +qa 2>&1)"

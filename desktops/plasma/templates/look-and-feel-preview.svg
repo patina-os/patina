@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <!-- patina: the previews of the look-and-feel package, the pictures System Settings
+       shows for it: the desktop at 1920x1080, its wallpaper, the bar along the bottom
+       edge in the window colour and the mark alone in its centre. apply.sh renders it
+       to previews/preview.png and previews/fullscreenpreview.jpg with the wallpaper
+       and the mark beside this file. -->
+  <image width="1920" height="1080" preserveAspectRatio="xMidYMid slice" xlink:href="wallpaper.png"/>
+  <rect y="1034" width="1920" height="46" fill="${BASE01}"/>
+  <image x="943" y="1040" width="34" height="34" xlink:href="mark.svg"/>
+</svg>

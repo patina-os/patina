@@ -19,6 +19,20 @@ config="${XDG_CONFIG_HOME:-$HOME/.config}"
 data="${XDG_DATA_HOME:-$HOME/.local/share}"
 agent_desktop="$data/applications/patina-agent.desktop"
 changes=0
+# Applying the look-and-feel package moves the values it names into ~/.config/kdedefaults/
+# and drops them from the user's files; a session reads them there because startplasma
+# puts that directory first in XDG_CONFIG_DIRS. Outside a session (over SSH, the
+# screenshot session's own shell) kreadconfig6 would find those keys unset, and every
+# run would write them again; with the same directories it reads what the session reads.
+case ":${XDG_CONFIG_DIRS:-}:" in
+  *":$config/kdedefaults:"*) ;;
+  *) export XDG_CONFIG_DIRS="$config/kdedefaults:${XDG_CONFIG_DIRS:-/etc/xdg}" ;;
+esac
+# The menu cache (kbuildsycoca6, below) reads Plasma's menu, plasma-applications.menu,
+# by the prefix startplasma sets. Without it there is no applications.menu, and a cache
+# rebuilt there held no apps at all; a session with the same data directories reads the
+# same cache file, so its start menu went empty and the bar's launchers unknown.
+export XDG_MENU_PREFIX="${XDG_MENU_PREFIX:-plasma-}"
 
 # shellcheck source=bin/lib.sh
 source "$PATINA_PATH/bin/lib.sh"
@@ -568,6 +582,24 @@ render "$templates/look-and-feel-metadata.json" "$tmp/lnf.json"
 put "$tmp/lnf.json" "$lnf/metadata.json"
 render "$templates/look-and-feel-defaults" "$tmp/lnf.defaults"
 put "$tmp/lnf.defaults" "$lnf/contents/defaults"
+# Its previews, the pictures System Settings shows for it among the global themes, the
+# card and the full screen, at the sizes of Breeze's: the desktop's wallpaper with the
+# bar along the bottom edge and the mark in its centre (templates/look-and-feel-preview.svg).
+# Without them Plasma took Breeze's, the package it falls back to. rsvg reads no file
+# outside the SVG's own directory, so the wallpaper and the mark sit beside it. The full
+# screen one is PNG data under the .jpg name the package format gives it: rsvg-convert
+# writes no JPEG, and Qt reads an image by its content.
+if [[ -n "$wallpaper_dir" && -f "$wallpaper_dir/contents/images/3840x2160.png" ]] &&
+    command -v rsvg-convert > /dev/null; then
+  mkdir -p "$tmp/preview"
+  cp "$wallpaper_dir/contents/images/3840x2160.png" "$tmp/preview/wallpaper.png"
+  cp "$PATINA_PATH/branding/icon-small.svg" "$tmp/preview/mark.svg"
+  render "$templates/look-and-feel-preview.svg" "$tmp/preview/preview.svg"
+  rsvg-convert --width 600 --height 337 --output "$tmp/preview.png" "$tmp/preview/preview.svg"
+  put "$tmp/preview.png" "$lnf/contents/previews/preview.png"
+  rsvg-convert --width 1920 --height 1080 --output "$tmp/preview-full.png" "$tmp/preview/preview.svg"
+  put "$tmp/preview-full.png" "$lnf/contents/previews/fullscreenpreview.jpg"
+fi
 # The splash: the wordmark on the theme's background, one accent line (templates/splash.qml).
 # Always in the dark palette where the theme has one, like the boot menu and the login
 # screen before it: the wordmark is made for a dark ground. A subshell keeps tpl[].
@@ -614,6 +646,27 @@ done < <(yq eval '.start_menu.folders[]? | [.id, .name, .icon] | @tsv' "$setting
 for f in "$data"/desktop-directories/patina-*.directory; do
   [[ -e "$f" && "$directories" != *" $f "* ]] || continue
   say "removing $f (not in start_menu)"
+  rm -f "$f"
+  changed
+done
+# A category of the menu whose icon the icon theme keeps outside its category glyphs
+# (Help names help-about-symbolic, an action) gets the category glyph icons.yaml names,
+# so it takes the accent like the others: a copy of its directory entry under the same
+# name, which the user's data directory puts before the system's.
+overrides=" "
+while IFS=$'\t' read -r from to; do
+  [[ -f "/usr/share/icons/$icons_base/32x32/symbolic/categories/$to.svg" ]] || continue
+  while IFS= read -r f; do
+    { printf '# patina: %s in place of %s (desktops/plasma/icons.yaml)\n' "$to" "$from"
+      sed "s/^Icon=$from\$/Icon=$to/" "$f"; } > "$tmp/category.directory"
+    put "$tmp/category.directory" "$data/desktop-directories/${f##*/}"
+    overrides="$overrides$data/desktop-directories/${f##*/} "
+  done < <(grep -lxF "Icon=$from" /usr/share/desktop-directories/*.directory 2> /dev/null)
+done < <(yq eval ".[\"$icons_base\"].categories // {} | to_entries | .[] | [.key, .value] | @tsv" "$here/icons.yaml")
+for f in "$data"/desktop-directories/*.directory; do
+  [[ -e "$f" && "$f" != */patina-*.directory && "$overrides" != *" $f "* ]] || continue
+  [[ "$(head -n 1 "$f")" == "# patina: "* ]] || continue
+  say "removing $f (no category icon of icons.yaml for it)"
   rm -f "$f"
   changed
 done
