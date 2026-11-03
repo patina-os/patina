@@ -111,7 +111,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   the install questions, outlined in `branding/export/` for the README's header and
   the installer's welcome page; `branding/wordmark.svg` sets the mark beside patina
   for the other screens, `icon.svg` and `icon-small.svg` are the mark as large and
-  small icons. The desktop's icons are Papirus as Debian ships it, its
+  small icons; the Plasma splash shows the mark alone (`icon.svg`, November 2026).
+  The desktop's icons are Papirus as Debian ships it, its
   folders recoloured to the theme's accent and every app's icon a monochrome glyph in
   the text colour, all at one height, by the renderer; kitty is the one see-through
   window (other apps stay opaque); the start menu and the other panel popups carry a
@@ -146,6 +147,13 @@ packs. Audience: developers and privacy-minded users in the EU.
 - Updates: `git pull` plus versioned migrations (`migrations/`), then an unattended
   `patina install` of the bundles installed on the machine, so an update ends where a
   fresh install does (October 2026).
+- Onboarding: KDE's Welcome Center stays off (its daemon module, in `kded5rc`), with
+  its Konqi and Debian's name. patina's welcome (`patina welcome`) opens once at the
+  first login, in kitty beside btop as on the README's picture of the desktop, and
+  from then on from the start menu: the AI agent, the agent tools, the agent's
+  services, the bundles the machine lacks, and the first keys. Each step runs
+  `patina ai` or `patina install`, which ask as always, and a shell takes the
+  welcome's half when it ends; btop is in the minimal bundle for it (November 2026).
 - Image: a small live image built with Debian's live-build, with Calamares as the branded
   installer. The live system carries only the installer; Plasma and the base packages
   are fetched from Debian's mirrors during the install, so the image stays under one

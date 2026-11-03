@@ -74,9 +74,10 @@ Files, from `templates/`, each named after the theme:
   mode's first wallpaper with the bar along the bottom edge in the window colour and the
   mark in its centre (`templates/look-and-feel-preview.svg`); without them Plasma showed
   Breeze's, the package it falls back to; its `contents/splash/Splash.qml`, from `templates/splash.qml`, is the Plasma
-  splash: the wordmark (`branding/wordmark.svg`) on the theme's background and one
-  accent line that grows as Plasma starts, the one piece of code a theme renders; it
-  takes the dark palette in either mode, since the wordmark is made for a dark ground
+  splash: the mark alone (`branding/icon.svg`, its rings without the word beside them)
+  on the theme's background and one accent line that grows as Plasma starts, the one
+  piece of code a theme renders; it takes the dark palette in either mode, since the
+  mark is made for a dark ground
 - the login screen: SDDM runs as its own user, so the theme's first wallpaper is written
   to `/usr/local/share/patina/login.png` and the Breeze SDDM theme's
   `theme.conf.user` (from `templates/sddm-theme.conf.user`) next to Plasma's own theme,
@@ -158,6 +159,14 @@ Files, from `templates/`, each named after the theme:
   to the `keys` action (Meta+K). The sheet lists the actions of
   `defaults/keybindings.yaml` and Plasma's own chords worth knowing, kept as words under
   `cheatsheet` in `actions.yaml`
+- the welcome's start menu entry, `~/.local/share/applications/patina-welcome.desktop`,
+  and until the first login has shown it (`~/.local/state/patina/welcomed`) its
+  autostart entry, `~/.config/autostart/patina-welcome.desktop`, both from
+  `templates/welcome.desktop`: `patina welcome --window` and `--login`, kitty split in
+  two with the welcome beside btop (`bin/patina-welcome`). KDE's Welcome Center stays
+  off: `autoload=false` for its daemon module (`[Module-kded_plasma-welcome]` in
+  `kded5rc`, the file KDE 6 still reads), which is what starts it at a first login and
+  after a Plasma upgrade
 
 Settings, through `kwriteconfig6`, each written only when it differs from what a session
 reads: the renderer puts `~/.config/kdedefaults/` first in `XDG_CONFIG_DIRS`, as
@@ -237,7 +246,8 @@ a Plasma X11 session on a virtual framebuffer (`Xvfb`, Mesa's software OpenGL, n
 and no login), `plasmashell` in it, which runs the layout script as a first login
 does, then `patina theme set --layout` once more inside that session, as the first
 install runs it (the live reload, the window rule, which needs a screen, and patina's
-favourites in place of Plasma's) and the Welcome Center closed, and the pointer moved
+favourites in place of Plasma's), with patina's welcome counted as shown and KDE's
+Welcome Center closed should a Plasma open it after all, and the pointer moved
 from the middle of the screen, where Xvfb leaves it, to the empty desktop on the right
 (`xdotool`), so no tooltip or hover is in the pictures. Then three grabs of
 the whole screen (`scrot`): `desktop.png`, kitty split in two with the fastfetch

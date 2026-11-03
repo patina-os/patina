@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Welcome to patina
+Comment=The AI agent, the agent tools, services and more apps, beside btop
+Exec="${PATINA_PATH}/bin/patina" welcome ${WELCOME_FLAG}
+Icon=${LAUNCHER_ICON}
+Terminal=false
+Categories=System;
+Keywords=welcome;setup;ai;agent;apps;onboarding;
+StartupWMClass=patina-welcome

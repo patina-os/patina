@@ -91,9 +91,8 @@ ask() {
   mapfile -t bundles < <(printf 'base\n%s\n' "$(printf '%s\n' "$chosen_lines" | awk 'NF { print $1 }')" | awk 'NF && !seen[$0]++')
   echo
   if [[ -z "${PATINA_AI:-}" ]]; then
-    ai_lines=("$(printf '%-9s %s' none "No AI agent · patina ai on turns it on later")"
-      "$(printf '%-9s %s' opencode "opencode · free · asks before every change")"
-      "$(printf '%-9s %s' hermes "Hermes Agent · free · remembers · asks before risky commands only")")
+    ai_lines=("$(printf '%-9s %s' none "No AI agent · patina ai on turns it on later")")
+    mapfile -t -O 1 ai_lines < <(agent_lines)
     current="$agent"
     [[ "$ai" != none ]] || current=none
     choice="$(printf '%s\n' "${ai_lines[@]}" | grep "^$current ")" || choice="${ai_lines[0]}"

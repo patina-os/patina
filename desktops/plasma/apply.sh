@@ -600,16 +600,17 @@ if [[ -n "$wallpaper_dir" && -f "$wallpaper_dir/contents/images/3840x2160.png" ]
   rsvg-convert --width 1920 --height 1080 --output "$tmp/preview-full.png" "$tmp/preview/preview.svg"
   put "$tmp/preview-full.png" "$lnf/contents/previews/fullscreenpreview.jpg"
 fi
-# The splash: the wordmark on the theme's background, one accent line (templates/splash.qml).
-# Always in the dark palette where the theme has one, like the boot menu and the login
-# screen before it: the wordmark is made for a dark ground. A subshell keeps tpl[].
-# Qt draws SVG without Sora or the spacing of the mark's rings, so the splash gets an
-# rsvg rendering, as the installer does (iso/live/assets.sh).
+# The splash: the mark alone, its rings without the word beside them (branding/icon.svg),
+# on the theme's background, and one accent line (templates/splash.qml). Always in the
+# dark palette where the theme has one, like the boot menu and the login screen before
+# it: the mark is made for a dark ground. A subshell keeps tpl[]. Qt draws SVG without
+# the spacing of the mark's rings, so the splash gets an rsvg rendering, as the
+# installer does (iso/live/assets.sh).
 if command -v rsvg-convert > /dev/null; then
-  rsvg-convert --width 1600 --output "$tmp/splash-logo.png" "$PATINA_PATH/branding/wordmark.svg"
+  rsvg-convert --width 1024 --output "$tmp/splash-logo.png" "$PATINA_PATH/branding/icon.svg"
   put "$tmp/splash-logo.png" "$lnf/contents/splash/images/logo.png"
 else
-  warn "rsvg-convert is missing (librsvg2-bin in the base bundle); the splash has no wordmark"
+  warn "rsvg-convert is missing (librsvg2-bin in the base bundle); the splash has no mark"
 fi
 if [[ -e "$lnf/contents/splash/images/logo.svg" ]]; then   # the SVG the splash took before
   rm "$lnf/contents/splash/images/logo.svg"
@@ -628,6 +629,25 @@ even_glyph "$tmp/launcher.svg"
 put "$tmp/launcher.svg" "$PATINA_STATE/launcher.svg"
 tpl[LAUNCHER_ICON]="$PATINA_STATE/launcher.svg"
 menu_changes=$changes
+
+# patina's welcome (bin/patina-welcome) in the start menu, and at the first login: an
+# autostart entry, written until that login has shown it once. KDE's Welcome Center,
+# which a first login opened with Konqi and Debian's name, stays off: its daemon module,
+# the one that starts it, is not loaded (kded5rc, the name KDE 6 still reads).
+tpl[WELCOME_FLAG]=--window
+render "$templates/welcome.desktop" "$tmp/welcome.desktop"
+put "$tmp/welcome.desktop" "$data/applications/patina-welcome.desktop"
+welcome_autostart="$config/autostart/patina-welcome.desktop"
+if [[ ! -e "$PATINA_STATE/welcomed" ]]; then
+  tpl[WELCOME_FLAG]=--login
+  render "$templates/welcome.desktop" "$tmp/welcome-login.desktop"
+  put "$tmp/welcome-login.desktop" "$welcome_autostart"
+elif [[ -e "$welcome_autostart" ]]; then
+  say "removing $welcome_autostart (the first login showed the welcome)"
+  rm -f "$welcome_autostart"
+  changed
+fi
+kset kded5rc autoload false Module-kded_plasma-welcome
 folders=""
 directories=" "
 while IFS=$'\t' read -r id name icon; do

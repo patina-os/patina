@@ -277,7 +277,7 @@ jobs:
           [[ "$variant" == *"patina credits"* ]]
           test -s "$HOME/.local/state/patina/logo.txt"
           test -s "$HOME/.config/fastfetch/config.jsonc"
-      - name: The cheat sheet, the credits, and a theme installed from git
+      - name: The cheat sheet, the welcome, the credits, and a theme installed from git
         # A local repository stands in for a community theme: install keeps only its
         # data, set renders it, remove refuses the current theme and deletes it after.
         run: |
@@ -293,6 +293,14 @@ jobs:
           launch="$(kreadconfig6 --file kglobalshortcutsrc --group services \
             --group patina-keys.desktop --key _launch)"
           [[ "$launch" == Meta+K ]]
+          # The welcome: its menu entry, the first login's autostart entry, and KDE's
+          # Welcome Center off.
+          bin/patina welcome --help
+          grep -q ' welcome --window$' "$data/applications/patina-welcome.desktop"
+          grep -q ' welcome --login$' "$HOME/.config/autostart/patina-welcome.desktop"
+          autoload="$(kreadconfig6 --file kded5rc --group Module-kded_plasma-welcome \
+            --key autoload)"
+          [[ "$autoload" == false ]]
           repo="$(mktemp -d)/patina-dusk-theme"
           cp -r themes/datum "$repo"
           sed -i 's/^name: datum/name: dusk/' "$repo/theme.yaml"

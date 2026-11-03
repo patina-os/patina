@@ -6,12 +6,38 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- patina's welcome, `patina welcome`: at the first login a kitty window opens split in
+  two, the welcome beside btop, with the first keys and a menu of what the install left
+  for later: turn on the AI agent (or change it), connect a service for the agent
+  (Linear, Notion, GitHub, Nextcloud), add the agent tools (Claude Code, Codex,
+  opencode, Claude Desktop, Ollama; it says first that most are proprietary) and add
+  the app bundles the machine lacks. Each step runs `patina ai` or `patina install`,
+  which ask as always; when the welcome closes, a shell takes its half. It opens on its
+  own once (a machine updated to it shows it at its next login), and from then on from
+  "Welcome to patina" in the start menu. btop is in the minimal bundle for it.
+
+### Changed
+
+- KDE's Welcome Center no longer opens at the first login (or after a Plasma upgrade)
+  with Konqi and "Welcome to Debian GNU/Linux with KDE Plasma": patina turns its
+  daemon module off, and patina's welcome takes its place.
+- The Plasma splash shows the mark alone, its rings without the word beside them.
+- `patina ai on` without arguments asks which agent, opencode or Hermes, before where
+  its model runs, as its help said.
+
 ### Fixed
 
 - The first boot after the installer or Try patina's disk clones patina without the files
   of old commits, 19 MB instead of 76 MB, and a clone that stalls for a minute ends and is
   tried again: in a virtual machine on Windows the clone looked frozen. The checkout
   updates and names its version as before.
+- A machine turned off during the first boot's clone no longer ends up as plain Debian
+  for good: the clone goes to a directory of its own and takes its place only when
+  complete, where a half one made `patina install` fail and the first boot count as done.
+  A failed clone or install now leaves the first boot armed, and the next start tries
+  again, three starts in all, before it leaves Path A to be run by hand.
 
 ## [0.1.0-alpha.5] - 2026-11-03
 

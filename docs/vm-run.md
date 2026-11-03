@@ -61,6 +61,9 @@ they are.
   installer (again if the install outlasts sudo's 15 minutes between two steps); no
   other question (a cloud agent asks its provider and key), and it ends with
   `patina firstboot: done`; then the login screen with the theme's wallpaper
+- [ ] on a snapshot taken before first boot: turn the VM off while tty1 says
+  `cloning`; the next start clones again and runs `patina install`, rather than
+  leaving plain Debian
 - [ ] after the first login: take a snapshot, "patina-installed", and
   `sudo cat /var/log/patina-firstboot.log > ~/run1.log` keeps the first run's log for
   the report (`journalctl -b -u patina-firstboot` has its steps and warnings)
@@ -265,6 +268,11 @@ sudo -iu patina-test bash -c '
   user's run, so nothing asks for it
 - [ ] logging in as `patina-test` for the first time gives the wallpaper, the colour
   scheme and the centred bar at once, without a second login
+- [ ] the splash before the desktop shows the mark alone, its rings without the word
+- [ ] that first login opens patina's welcome, kitty split in two with btop beside it,
+  and not KDE's Welcome Center: the first keys and a menu (the AI agent, the agent
+  tools, more apps, the keys); "Close the welcome" leaves a shell in its half. The
+  second login opens nothing, and "Welcome to patina" in the start menu opens it again
 
 ## 12. After the run
 

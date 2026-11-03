@@ -120,10 +120,13 @@ iso/
    `/var/log/patina-firstboot.log` (root's, through `script`, as `docs/vm-run.md` keeps
    Path A's), its steps in the journal. Then it writes
    `/var/lib/patina/firstboot-done` and never runs again. The clone gets three tries a
-   little apart, for a network that comes up late; a failed clone or install says what
-   to run by hand and holds that on tty1 until Enter (or five minutes), before the
-   login screen covers it, and still marks the boot done, so a machine never loops on
-   first boot.
+   little apart, for a network that comes up late, into a directory of its own that
+   takes the checkout's place only when complete, so a machine turned off in the middle
+   leaves no half checkout behind. A failed clone or install says what to run by hand
+   and holds that on tty1 until Enter (or five minutes), before the login screen covers
+   it, and leaves the first boot armed: the next start tries again, three starts in all
+   (`/var/lib/patina/firstboot-tries`), after which it marks the boot done, so a machine
+   never loops on first boot.
 
 That is Path A, executed for the user. The image carries only the installer, its
 configuration, the network stack and firmware, so it stays under a gigabyte (873 MB
