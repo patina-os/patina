@@ -422,6 +422,102 @@ print_wordmark() {
   fi
 }
 
+# The boot splash, Plymouth's two-step theme, drawn into <dir> from branding/logo.txt with
+# the templates of defaults/boot/: progress-0001.png to progress-0048.png, which Plymouth
+# picks by how far the boot has got, show the mark's rings arriving character by
+# character, the outer rings first and each character at a time of its own, like a
+# cloud condensing into contour lines; animation-0001.png to animation-0036.png, played
+# once at the end, type the word in and light the ▲. Then the lock, field and bullet of
+# the disk's password prompt, which two-step needs to load at all, and the theme file.
+# The mark keeps the brand's colours (frame.svg); the ground and the prompt take the
+# default theme's dark palette, as the boot menu does. The frame counts stay fixed:
+# Plymouth loads every progress-*.png it finds, so fewer would need a migration that
+# removes the rest. It loads the default theme into tpl, so callers run it in a subshell
+# and keep their own: `( render_boot_splash <dir> )`. Needs yq, rsvg-convert and
+# JetBrains Mono.
+render_boot_splash() {
+  local out="$1" boot="$PATINA_PATH/defaults/boot" settings="$PATINA_PATH/defaults/settings.yaml"
+  local -a lines rows cols chars classes arrive
+  local line r c ch cls k f n glyphs alpha x y width=0 word ring
+  local -A rings=([i]=0 [t]=1 [n]=2 [a]=3)
+  # Characters, not bytes, whatever the caller's locale: the ▲ is one.
+  local LC_ALL=C.UTF-8
+  theme_vars "$PATINA_PATH/themes/$(yq eval '.theme' "$settings")/theme.yaml" "$settings" dark
+  mkdir -p "$out"
+  mapfile -t lines < "$PATINA_PATH/branding/logo.txt"
+  # Every character but the blanks: its place, its colour class and, for a ring, when
+  # it arrives in thousandths of the progress pictures: its ring's start (the outermost
+  # first) plus a share of its own from its place, the same on every run.
+  for r in "${!lines[@]}"; do
+    line="${lines[r]}"
+    if (( ${#line} > width )); then width=${#line}; fi
+    word=-1
+    if [[ "$line" == *patina* ]]; then
+      word="${line%%patina*}"
+      word=${#word}
+    fi
+    for ((c = 0; c < ${#line}; c++)); do
+      ch="${line:c:1}"
+      [[ "$ch" != " " ]] || continue
+      rows+=("$r") cols+=("$c") chars+=("$ch")
+      if (( word >= 0 && c >= word && c < word + 6 )); then
+        classes+=(w) arrive+=("$(( c - word ))")   # the word: its letters in order
+      elif [[ "$ch" == "▲" ]]; then
+        classes+=(p) arrive+=(0)
+      else
+        ring="${rings[$ch]}"
+        classes+=("$ch")
+        arrive+=("$(( ring * 170 + ((r * 7919 + c * 104729 + 3) * 2654435761 % 1000) * 280 / 1000 ))")
+      fi
+    done
+  done
+  # 30 px characters 18 px apart and 36 px lines apart, as the console sets them, with
+  # room round them for the ▲'s glow.
+  tpl[BOOT_WIDTH]=$(( width * 18 + 72 ))
+  tpl[BOOT_HEIGHT]=$(( ${#lines[@]} * 36 + 72 ))
+  tpl[BOOT_GROUND]="0x${tpl[BASE00]#\#}"
+  # frame <name> <progress> <letters> <point>: the rings as far as <progress> (in
+  # thousandths), the first <letters> of the word, the ▲ at <point> thousandths.
+  frame() {
+    glyphs=""
+    for k in "${!chars[@]}"; do
+      cls="${classes[k]}"
+      case "$cls" in
+        w) alpha=0; if (( arrive[k] < $3 )); then alpha=1000; fi ;;
+        p) alpha="$4" ;;
+        *) alpha=$(( ($2 - arrive[k]) * 1000 / 60 )); if (( alpha > 1000 )); then alpha=1000; fi ;;
+      esac
+      (( alpha > 0 )) || continue
+      x=$(( 36 + cols[k] * 18 )) y=$(( 36 + rows[k] * 36 + 27 ))
+      alpha="$(printf '%d.%03d' $(( alpha / 1000 )) $(( alpha % 1000 )))"
+      if [[ "$cls" == p ]]; then
+        glyphs+="  <text x=\"$x\" y=\"$y\" class=\"p\" filter=\"url(#glow)\" opacity=\"$alpha\">${chars[k]}</text>"$'\n'
+      fi
+      glyphs+="  <text x=\"$x\" y=\"$y\" class=\"$cls\" opacity=\"$alpha\">${chars[k]}</text>"$'\n'
+    done
+    tpl[BOOT_GLYPHS]="${glyphs%$'\n'}"
+    render "$boot/frame.svg" "$out/$1.svg"
+    rsvg-convert --output "$out/$1.png" "$out/$1.svg"
+    rm "$out/$1.svg"
+  }
+  for ((f = 1; f <= 48; f++)); do
+    frame "$(printf 'progress-%04d' "$f")" $(( f * 900 / 48 )) 0 0
+  done
+  # The end: a letter of the word every three pictures (a tenth of a second each at
+  # Plymouth's 30 a second), then the ▲ fading in over twelve, then held.
+  for ((f = 1; f <= 36; f++)); do
+    n=$(( (f + 2) / 3 > 6 ? 6 : (f + 2) / 3 ))
+    k=$(( f <= 18 ? 0 : (f >= 30 ? 1000 : (f - 18) * 1000 / 12) ))
+    frame "$(printf 'animation-%04d' "$f")" 2000 "$n" "$k"
+  done
+  for f in entry bullet lock; do
+    render "$boot/$f.svg" "$out/$f.svg"
+    rsvg-convert --output "$out/$f.png" "$out/$f.svg"
+    rm "$out/$f.svg"
+  done
+  render "$boot/patina.plymouth" "$out/patina.plymouth"
+}
+
 # Can a file be written through the backend's sudo path right now: root already, sudo
 # without a prompt, a terminal where sudo may ask once, or a password dialog?
 system_writable() {

@@ -85,6 +85,20 @@ jobs:
         run: |
           bin/patina install --unattended | tee second-run.txt
           grep -q 'patina: nothing to do' second-run.txt
+      - name: The boot splash is drawn and picked
+        # defaults/boot/ through the system step: Plymouth's theme drawn from
+        # branding/logo.txt, the setting that picks it and splash on GRUB's kernel line;
+        # the second run above found all of it in place.
+        run: |
+          splash=/usr/share/plymouth/themes/patina
+          test -s "$splash/patina.plymouth"
+          [[ "$(find "$splash" -name 'progress-*.png' | wc -l)" -eq 48 ]]
+          [[ "$(find "$splash" -name 'animation-*.png' | wc -l)" -eq 36 ]]
+          for f in entry bullet lock; do test -s "$splash/$f.png"; done
+          grep -qx 'Theme=patina' /etc/plymouth/plymouthd.conf
+          [[ "$(/usr/sbin/plymouth-set-default-theme)" == patina ]]   # Debian keeps it
+          [[ "$(GRUB_CMDLINE_LINUX_DEFAULT=quiet; . /etc/default/grub.d/patina.cfg
+            echo "$GRUB_CMDLINE_LINUX_DEFAULT")" == "quiet splash" ]]
       - name: patina doctor reports clean
         run: |
           bin/patina doctor
@@ -330,7 +344,8 @@ jobs:
           iso/live/assets.sh "$build"
           b="$build/config/includes.chroot/etc/calamares/branding/patina"
           for f in welcome.png logo-square.png icon-small.svg wallpaper.png slide-1.png \
-              slide-2.png slide-3.png slide-4.png slide-5.png slide-6.png stylesheet.qss \
+              slide-2.png slide-3.png slide-4.png slide-5.png slide-6.png slide-7.png \
+              stylesheet.qss \
               agent-opencode.png agent-hermes.png agent-none.png ai-local.png ai-cloud.png \
               language.png help.png bugs.png release.png \
               about.png bundle-desktop.png bundle-minimal.png bundle-headstart.png \
@@ -338,6 +353,11 @@ jobs:
             test -s "$b/$f"
           done
           test -s "$build/config/includes.chroot/etc/fonts/local.conf"
+          splash="$build/config/includes.chroot/usr/share/plymouth/themes/patina"
+          test -s "$splash/patina.plymouth"
+          test -s "$splash/progress-0048.png"
+          test -s "$splash/animation-0036.png"
+          grep -qx 'Theme=patina' "$build/config/includes.chroot/etc/plymouth/plymouthd.conf"
           test -s "$build/config/bootloaders/grub-pc/splash.png"
           test -s "$build/config/bootloaders/grub-pc/live-theme/theme.txt"
           test -s "$build/config/includes.chroot/usr/share/themes/patina/openbox-3/themerc"

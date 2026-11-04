@@ -69,16 +69,20 @@ iso/
 1. Boot the image. The GRUB menu shows the theme's wallpaper with the block-letter name
    centred above a centred menu column: Install patina, Install patina (fail-safe
    mode, live-build's options for awkward firmware) and Utilities (the firmware's
-   settings, a check of the boot medium). The live
-   system starts `patina-ui.service`: an X session on tty7 with Calamares full screen
+   settings, a check of the boot medium). While the live system boots, the boot splash
+   builds the mark from `branding/logo.txt` (Plymouth, `defaults/boot/`, drawn into the
+   image by `assets.sh`). Then `patina-ui.service` takes over the splash's last picture:
+   an X session on tty7 with Calamares full screen
    in the theme's palette and fonts and in British English (`locales=` in
    `auto/config`; the welcome page offers the others), the block-letter name on the
    welcome page, the square mark in the sidebar, the wallpaper veiled and frosted behind
    every page, the sidebar and the button bar as glass over it (the start menu's `glass` and
-   `grain` from `defaults/settings.yaml`), and while it installs a tour of patina in six
+   `grain` from `defaults/settings.yaml`), and while it installs a tour of patina in seven
    still slides, in the landing page's dark style (patina-os/landing): welcome, the
    desktop and the command palette with the desktop workflow's screenshots, the apps,
-   the promises, and the thanks to the people and projects of `docs/credits.yaml`.
+   the promises, the thanks to the people and projects of `docs/credits.yaml`, and what
+   happens after the restart (the stick out, the first start, the password), which
+   Calamares' own last page does not say.
    Calamares shows a still slide for two seconds, so `branding.desc` lists each one
    five times. The console shows `branding/logo.txt`.
    A computer with no network yet but a Wi-Fi card first gets the Wi-Fi step:
@@ -109,7 +113,9 @@ iso/
    Debian's signed shim into `EFI/debian`, where Debian's packages update it, and shim
    also at the removable path (`shellprocess-efi-removable.conf`), so the machine boots
    when the firmware loses its boot entries.
-4. First boot: the service takes tty1 before the login screen, clones this repository
+4. First boot: the boot splash shows (the installer copied it and Plymouth with the live
+   system, and Calamares put `splash` on the kernel's line because Plymouth is there),
+   and the service quits it and takes tty1 before the login screen, clones this repository
    into the user's `~/.local/share/patina`, links `~/.local/bin/patina` and runs
    `patina install` with the installer's answers from `/etc/patina/firstboot.env`
    (`PATINA_AI`, `PATINA_BUNDLES` as `--bundles`, `PATINA_THEME`), so it asks nothing
@@ -163,8 +169,8 @@ sudo iso/live/build.sh arm64            # on an arm64 machine
 PNG, for the welcome page, the slides and the boot menu) and `icon-small.svg` (inset in
 the sidebar's box) into the installer's branding, the icons
 of `live/templates/calamares/icons/` in the accent, the default theme's wallpapers under a veil as the installer's
-background, six slides on one ground (`slide-ground.svg`) with `docs/screenshots/` of the
-desktop and the command palette (the last slide the names of `docs/credits.yaml`), the
+background, seven slides on one ground (`slide-ground.svg`) with `docs/screenshots/` of the
+desktop and the command palette (the sixth slide the names of `docs/credits.yaml`), the
 splash of the boot menu, and the templates under
 `live/templates/` (the Calamares stylesheet, the GRUB theme, the openbox theme) with the
 palette of `themes/<default>/theme.yaml` and the fonts of `defaults/settings.yaml`,
@@ -236,7 +242,7 @@ build and boot test on the runner itself, for KVM.
   mark in the sidebar, the wordmark on the page, the wallpaper behind, Source Sans 3), the partition
   page with the manual partition editor's dialog (openbox's patina frame), the
   install page with the gradient progress bar (its percentage readable over the
-  chunk) and the six slides; at first boot the
+  chunk) and the seven slides; at first boot the
   mark on tty1 and the questions; then the login screen with the theme's wallpaper,
   the splash with the wordmark and the accent line, and the desktop in Source Sans 3
   and JetBrains Mono, as `docs/screenshots/desktop-amd64.png` shows it.

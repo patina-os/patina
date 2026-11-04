@@ -7,7 +7,7 @@
 Description=patina first boot: install the layer (Path A)
 Documentation=https://github.com/patina-os/patina/tree/main/iso
 ConditionPathExists=!/var/lib/patina/firstboot-done
-After=network-online.target systemd-user-sessions.service
+After=network-online.target systemd-user-sessions.service plymouth-start.service
 Wants=network-online.target
 Before=display-manager.service getty@tty1.service
 Conflicts=getty@tty1.service
@@ -15,6 +15,9 @@ Conflicts=getty@tty1.service
 [Service]
 Type=oneshot
 RemainAfterExit=yes
+# The boot splash (Plymouth) quits first: it would cover tty1 and the password prompt on
+# it. Without Plymouth this does nothing.
+ExecStartPre=-/usr/bin/plymouth quit
 ExecStart=/usr/local/lib/patina/firstboot.sh
 StandardInput=tty
 StandardOutput=tty

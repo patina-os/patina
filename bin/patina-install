@@ -409,7 +409,7 @@ install_upstream() {
 # commands run once when a file changed and the machine is booted with systemd; a
 # container gets the files only.
 install_system() {
-  local dir src dest changed_here=0 cmd first d
+  local dir src dest changed_here=0 cmd first d splash stamp out n
   local -a dirs=("$PATINA_PATH/defaults/system")
   for d in "${devices[@]}"; do
     [[ ! -d "$PATINA_PATH/devices/$d/system" ]] || dirs+=("$PATINA_PATH/devices/$d/system")
@@ -426,6 +426,36 @@ install_system() {
       changed
     done < <(find "$dir" -type f | sort)
   done
+  # The boot splash (defaults/boot/), where Plymouth looks for its themes, through the
+  # same path; the apply commands below put it into the initramfs. Drawing its 88
+  # pictures takes a while, so it is drawn only when what it is drawn from changed: a
+  # checksum of that sits beside it.
+  splash=/usr/share/plymouth/themes/patina
+  stamp="$( {
+    cat "$PATINA_PATH/branding/logo.txt" "$PATINA_PATH"/defaults/boot/* \
+      "$PATINA_PATH/defaults/settings.yaml" \
+      "$PATINA_PATH/themes/$(yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")/theme.yaml"
+    declare -f render_boot_splash
+  } | sha256sum | cut -d ' ' -f 1)"
+  if [[ "$(cat "$splash/source.sha256" 2> /dev/null)" != "$stamp" ]]; then
+    if command -v rsvg-convert > /dev/null; then
+      out="$(mktemp -d)"
+      ( render_boot_splash "$out" )
+      echo "$stamp" > "$out/source.sha256"
+      n=0
+      for src in "$out"/*; do
+        cmp -s "$src" "$splash/${src##*/}" && continue
+        backend_run system.write "$src" "$splash/${src##*/}"
+        n=$((n + 1))
+      done
+      rm -rf "$out"
+      say "system: boot splash drawn, $n files in $splash"
+      changed_here=1
+      changed
+    else
+      warn "rsvg-convert is missing (librsvg2-bin in the base bundle); no boot splash"
+    fi
+  fi
   if [[ $changed_here -eq 0 ]]; then
     say "system: tuning files in place"
     return

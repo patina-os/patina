@@ -4,7 +4,10 @@
 [Unit]
 Description=patina installer screen (Calamares)
 Documentation=https://github.com/patina-os/patina/tree/main/iso
-After=systemd-user-sessions.service network-online.target
+# The boot splash stays until X takes the screen: this service quits it, keeping its last
+# picture, before the generic plymouth-quit would drop back to the text console.
+After=systemd-user-sessions.service network-online.target plymouth-start.service
+Before=plymouth-quit.service
 Wants=network-online.target
 Conflicts=getty@tty7.service
 ConditionPathExists=/usr/bin/startx
@@ -13,6 +16,7 @@ ConditionPathExists=/usr/bin/startx
 Type=simple
 Environment=HOME=/root
 WorkingDirectory=/root
+ExecStartPre=-/usr/bin/plymouth quit --retain-splash
 # -s 0 -dpms: no screen saver and no blanking, the package step alone outlasts X's 10 minutes
 ExecStart=/usr/bin/startx /root/.xinitrc -- vt7 -keeptty -nolisten tcp -s 0 -dpms
 Restart=always

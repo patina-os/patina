@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The field the disk's password is typed into at boot (an encrypted install), outlined
+     in the accent like a focused field in the installer. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="48" viewBox="0 0 400 48">
+  <rect x="1" y="1" width="398" height="46" rx="10" fill="${BASE01}" stroke="${ACCENT}" stroke-width="2"/>
+</svg>

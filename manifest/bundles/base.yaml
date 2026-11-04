@@ -20,6 +20,8 @@ packages:
   - fonts-sora               # fonts.display, the brand's headlines (wordmark.svg)
   - papirus-icon-theme       # aurora's icons; the renderer recolours its folders to the accent
   - plasma-widgets-addons    # the start menu's Application Dashboard (start_menu.style: dashboard)
+  - plymouth                 # the boot splash: the mark builds itself while the machine boots
+  - plymouth-themes          # Plymouth's two-step module, which defaults/boot/ is drawn for
   # System tuning for every install (docs/roadmap.md, Phase 1); the files are data under
   # defaults/system/.
   - systemd-zram-generator   # zram swap with zstd

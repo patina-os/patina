@@ -31,5 +31,5 @@ lb config noauto \
   --iso-volume patina-installer \
   --iso-application "patina installer" \
   --iso-publisher patina \
-  --bootappend-live "boot=live components quiet hostname=patina-live username=live noautologin locales=en_GB.UTF-8" \
+  --bootappend-live "boot=live components quiet splash hostname=patina-live username=live noautologin locales=en_GB.UTF-8" \
   "$@"

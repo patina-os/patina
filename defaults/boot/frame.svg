@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- One picture of the boot splash (render_boot_splash in bin/lib.sh): the characters of
+     branding/logo.txt, each where the console prints it, in the brand's colours as
+     print_logo has them (rings deep violet, violet and lavender, the word white, the ▲
+     green), each as far faded in as the boot has got. The ground is Plymouth's own
+     colour (patina.plymouth), so the picture is transparent. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="${BOOT_WIDTH}" height="${BOOT_HEIGHT}" viewBox="0 0 ${BOOT_WIDTH} ${BOOT_HEIGHT}">
+  <style>
+    text { font-family: "${MONO_FONT}", monospace; font-size: 30px; }
+    .i { fill: #6d4fc2; } .t { fill: #9b6bff; } .n { fill: #c3a2ff; } .a { fill: #e4d6ff; }
+    .w { fill: #f5f7f9; font-weight: 700; } .p { fill: #3cff9d; }
+  </style>
+  <defs>
+    <filter id="glow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="7"/></filter>
+  </defs>
+${BOOT_GLYPHS}
+</svg>
