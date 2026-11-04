@@ -60,6 +60,8 @@ iso/
                             it also takes the screenshot of the installer screen
   test/disk-test.sh         the same for the disk image: its first boot sets an account up
                             from answers as Try patina hands them over
+  test/second-boot-test.sh  the disk image started twice, with patina's system files and
+                            boot splash in place: the login screen follows the splash
   test/list-packages.sh     every package the manifest and the image name, for the apt
                             dry run in the smoke workflow
 ```
@@ -217,6 +219,7 @@ launcher checks both as it joins them.
 ```sh
 sudo iso/disk/build.sh amd64 iso/build/disk                     # half an hour or so
 iso/test/disk-test.sh iso/build/disk/patina-amd64.qcow2         # its first boot
+sudo iso/test/second-boot-test.sh iso/build/disk/patina-amd64.qcow2   # the next
 iso/disk/choices.sh iso/build/live iso/build/patina-setup.json  # after live/build.sh
 ```
 
@@ -260,7 +263,15 @@ build and boot test on the runner itself, for KVM.
   does (UEFI, shim and GRUB from the disk, an NVMe disk over it, the product name
   `Try patina`) with an answered setup and waits for the account step to report on the
   serial port that it set up the account with the language, keyboard and time zone it
-  was given. The workflow runs it after the build; the release takes the disk only then.
+  was given. `test/second-boot-test.sh` then starts a copy of it twice with what
+  `patina install` leaves for the next start: its system files from
+  `defaults/system/` and the device's `system/` and the boot splash, written into the
+  copy, and the first boot's Path A marked as done. The first start sets the account
+  up, rebuilds the initramfs and GRUB's menu as the install's apply step does and
+  powers off; the second has to show the splash (`quiet splash`) and then SDDM's
+  greeter, which a test unit reports on the serial port. It is the start that hung in
+  0.1.0-alpha.7, which the first boot alone never reaches. The workflow runs both after
+  the build; the release takes the disk only then.
 - A failing build or test is simply not published; Path A users are never affected.
 
 ## Screenshots
