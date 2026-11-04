@@ -6,6 +6,15 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- The installer image is about 45 MB smaller again, after 0.1.0-alpha.7 grew it by 61 MB
+  to 951 MB: the boot splash made the live system's initrd carry the newest AMD and
+  Intel graphics drivers with 88 MB of firmware, and the image holds that initrd twice.
+  The live system now loads those two drivers itself, as before, so on such a machine
+  its boot splash starts a few seconds later. Installed systems keep their own graphics
+  driver in their initrd, and their splash starts at once.
+
 ## [0.1.0-alpha.7] - 2026-11-04
 
 ### Added

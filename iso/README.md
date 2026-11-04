@@ -71,7 +71,10 @@ iso/
    mode, live-build's options for awkward firmware) and Utilities (the firmware's
    settings, a check of the boot medium). While the live system boots, the boot splash
    builds the mark from `branding/logo.txt` (Plymouth, `defaults/boot/`, drawn into the
-   image by `assets.sh`). Then `patina-ui.service` takes over the splash's last picture:
+   image by `assets.sh`). The live initrd leaves out amdgpu and Intel's xe and their
+   firmware, which Plymouth's hook would add (88 MB, on the image twice); on those
+   machines the splash starts once the live system has loaded the driver, a few seconds
+   in (`etc/initramfs-tools/hooks/patina-live-graphics`). Then `patina-ui.service` takes over the splash's last picture:
    an X session on tty7 with Calamares full screen
    in the theme's palette and fonts and in British English (`locales=` in
    `auto/config`; the welcome page offers the others), the block-letter name on the
@@ -137,8 +140,8 @@ iso/
    never loops on first boot.
 
 That is Path A, executed for the user. The image carries only the installer, its
-configuration, the network stack and firmware, so it stays under a gigabyte (873 MB
-for amd64) and Debian's mirrors carry the download, not us. The installed system is current Debian
+configuration, the network stack and firmware, so it stays under a gigabyte (about
+905 MB for amd64 in November 2026) and Debian's mirrors carry the download, not us. The installed system is current Debian
 stable at install time, and an old image installs today's layer.
 
 ## Building

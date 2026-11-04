@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# The live image's initrd without the drivers of the newest AMD and Intel graphics and their firmware.
+set -euo pipefail
+
+# Plymouth's initramfs hook copies every driver under drivers/gpu/drm into an initrd built
+# with MODULES=most, as the live one is, and initramfs-tools adds each driver's firmware:
+# amdgpu and Intel's xe brought 88 MB of it, which made the image 61 MB larger, since the
+# initrd is on it twice (live/ and the squashfs's /boot). The live system loads both
+# drivers from the squashfs instead, as it did before the boot splash; until then Plymouth
+# waits for them (8 s at most, then the firmware's framebuffer), so the splash starts a
+# few seconds later on those machines. i915, nouveau, radeon and the virtual machines'
+# drivers stay. Hooks under /etc/initramfs-tools run after the packages' own, so the
+# files are there to remove. Live image only: the installer removes this file before it
+# builds the installed system's initrd (modules/shellprocess-firstboot.conf), whose
+# MODULES=dep takes the machine's own driver.
+[[ "${1:-}" != prereqs ]] || exit 0
+
+rm -rf "$DESTDIR"/usr/lib/modules/*/kernel/drivers/gpu/drm/amd \
+  "$DESTDIR"/usr/lib/modules/*/kernel/drivers/gpu/drm/xe \
+  "$DESTDIR"/usr/lib/firmware/amdgpu "$DESTDIR"/usr/lib/firmware/xe
