@@ -156,9 +156,12 @@ packs. Audience: developers and privacy-minded users in the EU.
   each at a time of its own, like a cloud condensing into contour lines, then the word
   types itself in and the ▲ lights up; pictures only, drawn by `render_boot_splash`
   (`lib.sh`) from the templates of `defaults/boot/` at install and image build time,
-  with the disk password prompt in the same look. SDDM takes over its last picture, so
-  no text console shows between it and the login screen; the first boot's tty1 step
-  quits it first.
+  with the disk password prompt in the same look. SDDM starts once Debian's
+  `plymouth-quit` has quit it, so a moment of black shows between; it does not keep
+  its last picture (`--retain-splash`), because that leaves tty1 in graphics mode,
+  where the kernel ignores the switch to the VT SDDM's X takes, and the screen stayed
+  black (0.1.0-alpha.7). The installer screen keeps it (`patina-ui.service`), and the
+  first boot's tty1 step quits it first.
   No automatic tiling on Plasma: that would need a KWin script Debian does not package; a tiling desktop
   is the Hyprland add-on.
 - Speed: the system tuning CachyOS ships as configuration (zram, I/O schedulers, memory

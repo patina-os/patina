@@ -6,6 +6,18 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- patina boots to the login screen again. Since 0.1.0-alpha.7 the screen stayed black
+  after the boot splash on every start once `patina install` or `patina update` had
+  put the splash in place: the splash kept its last picture for the login screen,
+  which left the first console in a mode where Linux ignores the switch to the login
+  screen's, so the login screen waited for it for ever. The login screen now starts
+  once the splash has quit, after a moment of black. A machine that hangs boots once
+  without the splash: press ↓ while the boot menu shows (it shows for a second), then
+  `e`, add `plymouth.enable=0` at the end of the line that starts with `linux`, and
+  Ctrl+X; then `patina update` brings the fix.
+
 ## [0.1.0-alpha.7] - 2026-11-04
 
 ### Added
