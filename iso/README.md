@@ -73,8 +73,8 @@ iso/
    system starts `patina-ui.service`: an X session on tty7 with Calamares full screen
    in the theme's palette and fonts and in British English (`locales=` in
    `auto/config`; the welcome page offers the others), the block-letter name on the
-   welcome page, the square mark in the sidebar, the wallpaper veiled behind every
-   page, the sidebar and the button bar as glass over it (the start menu's `glass` and
+   welcome page, the square mark in the sidebar, the wallpaper veiled and frosted behind
+   every page, the sidebar and the button bar as glass over it (the start menu's `glass` and
    `grain` from `defaults/settings.yaml`), and while it installs a tour of patina in six
    still slides, in the landing page's dark style (patina-os/landing): welcome, the
    desktop and the command palette with the desktop workflow's screenshots, the apps,
@@ -90,9 +90,11 @@ iso/
    agent (on this computer, from a cloud provider, or none, preselected from `ai.mode`
    of `defaults/settings.yaml`: none), the apps (Standard, the bundle marked default,
    or Minimal), more apps (any of the other optional bundles: headstart, ArtCraft, the
-   agent tools) and the theme (every theme of `themes/`, the default preselected, each
+   agent tools; more than one with Ctrl held, as the page says) and the theme (every theme of `themes/`, the default preselected, each
    pictured in its own palette). These pages install nothing: their answers are handed
-   to the first boot. The summary page is the last look before anything is written.
+   to the first boot. The summary page is the last look before anything is written; it
+   lists the location, the keyboard and the disk, but not the user or these five
+   pages, which Calamares' widget pages do not report to it.
 3. The live system is copied to disk (`unpackfs`), then Plasma and the base bundle are
    fetched from Debian's mirrors into it (`packages`, the list in
    `modules/packages.conf`, in five installs, smallest first, so the progress bar moves;

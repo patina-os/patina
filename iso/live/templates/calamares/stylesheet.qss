@@ -17,6 +17,14 @@ QWidget {
 #mainApp, QMainWindow, QDialog, QMessageBox, QMenu, QWizard {
   background-color: ${BASE00};
 }
+/* The dialogs' icons in the accent, as the welcome page's are (Qt's own are a blue
+   speech bubble and a yellow sign); an error in the palette's red. */
+QMessageBox {
+  messagebox-question-icon: url(/etc/calamares/branding/patina/help.png);
+  messagebox-information-icon: url(/etc/calamares/branding/patina/about.png);
+  messagebox-warning-icon: url(/etc/calamares/branding/patina/bugs.png);
+  messagebox-critical-icon: url(/etc/calamares/branding/patina/error.png);
+}
 
 /* The sidebar and the bar of Back, Next and Cancel are glass over the wallpaper, as
    the desktop's start menu is (start_menu.glass); the wallpaper is blurred under the
@@ -41,6 +49,24 @@ QWidget {
 }
 #view-button-cancel {
   margin-right: 22px;
+}
+/* Next (Install on the summary page) is the one way forward, so it is the solid button,
+   as the default button of a dialog is; Back and Cancel stay outlined. The ID outranks
+   the generic rules below, so its hover and disabled looks are spelled out here. */
+#view-button-next {
+  background-color: ${ACCENT};
+  color: ${BASE00};
+  font-weight: 600;
+}
+#view-button-next:hover {
+  background-color: ${ACCENT_ALT};
+  border-color: ${ACCENT_ALT};
+}
+#view-button-next:disabled {
+  background-color: transparent;
+  color: ${BASE03};
+  border-color: ${BASE02};
+  font-weight: normal;
 }
 
 /* The sidebar's steps: Calamares draws each one itself in Qt's application font
@@ -170,19 +196,54 @@ QTreeView, QListView, QTableView, QListWidget, QTreeWidget {
 QTreeView::item, QListView::item, QTableView::item {
   padding: 4px;
 }
+/* A picked row is tinted with the accent and named in it, as the sidebar's current step
+   is; a solid neon bar per list shouted on the keyboard page's two lists. Hovering is
+   fainter than picking. */
 QTreeView::item:selected, QListView::item:selected, QTableView::item:selected {
-  background-color: ${ACCENT};
-  color: ${BASE00};
+  background-color: rgba(${ACCENT_RGB}, 46);
+  color: ${ACCENT};
 }
 QTreeView::item:hover, QListView::item:hover {
-  background-color: rgba(${ACCENT_RGB}, 50);
+  background-color: rgba(${ACCENT_RGB}, 22);
 }
 /* after the hover rule, which would otherwise dim the item just clicked, still under
-   the pointer, and leave its dark text on a dark ground */
+   the pointer */
 QTreeView::item:selected:hover, QListView::item:selected:hover,
 QTableView::item:selected:hover {
-  background-color: ${ACCENT};
-  color: ${BASE00};
+  background-color: rgba(${ACCENT_RGB}, 46);
+  color: ${ACCENT};
+}
+/* The four question pages (packagechooser): roomier rows, and what the picked answer
+   brings in a glass card of its own under its picture, in the size of the page's other
+   text rather than a footnote. The small name above the picture repeats the picture's
+   own title, so it takes no room. */
+#products::item {
+  padding: 8px 10px;
+}
+#productName {
+  max-height: 0;
+  margin: 0;
+  padding: 0;
+}
+#productDescription {
+  font-size: 12pt;
+  background-color: rgba(${BASE01_RGB}, 200);
+  border: 1px solid rgba(${ACCENT_RGB}, 46);
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+/* The summary: each step's title in the display face and its lines in a glass card, so
+   the last look before the disk is written reads as a list, not text on the wallpaper. */
+#summaryItemTitle {
+  font-family: "${DISPLAY_FONT}";
+  font-size: 13pt;
+  color: ${BASE07};
+  margin-top: 10px;
+}
+#summaryItemBody {
+  background-color: rgba(${BASE01_RGB}, 200);
+  border: 1px solid rgba(${ACCENT_RGB}, 46);
+  border-radius: 8px;
 }
 QHeaderView::section {
   background-color: ${BASE02};
@@ -238,9 +299,18 @@ QRadioButton::indicator {
 QCheckBox::indicator:hover, QRadioButton::indicator:hover {
   border-color: ${ACCENT};
 }
+/* A ticked box shows its tick and a picked radio its dot, as on every other desktop: a
+   plain filled square read as a design, not as an answer. */
 QCheckBox::indicator:checked, QRadioButton::indicator:checked {
   background-color: ${ACCENT};
   border-color: ${ACCENT};
+}
+QCheckBox::indicator:checked {
+  image: url(/etc/calamares/branding/patina/check.png);
+}
+QRadioButton::indicator:checked {
+  background-color: qradialgradient(cx: 0.5, cy: 0.5, radius: 0.5, fx: 0.5, fy: 0.5,
+    stop: 0 ${BASE00}, stop: 0.3 ${BASE00}, stop: 0.36 ${ACCENT}, stop: 1 ${ACCENT});
 }
 QCheckBox::indicator:disabled, QRadioButton::indicator:disabled {
   border-color: ${BASE02};
