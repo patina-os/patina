@@ -15,6 +15,12 @@ DialogHorizontalAlignment=.5
 DialogVerticalAlignment=.5
 Transition=none
 TransitionDuration=0.0
+# Debian's initramfs hook copies its logo into every two-step theme as watermark.png,
+# over whatever the theme has, and two-step draws it at the right edge. Its place is
+# the alignment times the screen's size less its own, so at 2 it lies past the right
+# and bottom edges, and Plymouth, which crops every picture to the screen, draws none.
+WatermarkHorizontalAlignment=2
+WatermarkVerticalAlignment=2
 # progress-*.png follow the boot up to nine tenths of it, then animation-*.png play once
 ProgressFunction=linear
 ShowAnimationPercent=0.9

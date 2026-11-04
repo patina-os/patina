@@ -65,7 +65,8 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   picture of the mark, into which `render_boot_splash` (`bin/lib.sh`) sets the
   characters of `branding/logo.txt` in the brand's colours, each as far faded in as
   the boot has got; `patina.plymouth`, the theme file, with the default theme's dark
-  background; `entry.svg`, `bullet.svg` and `lock.svg`, the disk password prompt
+  background and the watermark placed past the screen's edge, since Debian's initramfs
+  hook puts its own logo into every two-step theme as one; `entry.svg`, `bullet.svg` and `lock.svg`, the disk password prompt
   two-step needs to load at all. The function draws 48 `progress-*.png`, which
   Plymouth picks by the boot's progress (the rings arrive, the outer ones first), and
   36 `animation-*.png`, played once at the end (the word, then the ▲); the counts stay
