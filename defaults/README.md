@@ -60,7 +60,7 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   path (`system.write` in `manifest/backends/`) is the only thing that writes them.
   The boot splash's setting is among them (`plymouth/plymouthd.conf` picks the patina
   theme, `default/grub.d/patina.cfg` puts `quiet splash` on the kernel's line once, and
-  `systemd/system/sddm.service.d/` lets SDDM take over the splash's last picture).
+  `systemd/system/sddm.service.d/` starts SDDM once the splash has quit).
 - `boot/`: the boot splash, Plymouth's two-step theme as templates: `frame.svg`, one
   picture of the mark, into which `render_boot_splash` (`bin/lib.sh`) sets the
   characters of `branding/logo.txt` in the brand's colours, each as far faded in as

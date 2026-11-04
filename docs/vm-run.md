@@ -70,6 +70,9 @@ they are.
 - [ ] after the first login: take a snapshot, "patina-installed", and
   `sudo cat /var/log/patina-firstboot.log > ~/run1.log` keeps the first run's log for
   the report (`journalctl -b -u patina-firstboot` has its steps and warnings)
+- [ ] restart: the first start that boots with patina's own splash (the first boot
+  wrote it); the mark builds itself, then after a moment of black the login screen,
+  not a black screen that stays
 
 ## 3. Before patina
 
