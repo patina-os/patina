@@ -18,6 +18,7 @@ templates="$here/templates"
 config="${XDG_CONFIG_HOME:-$HOME/.config}"
 data="${XDG_DATA_HOME:-$HOME/.local/share}"
 agent_desktop="$data/applications/patina-agent.desktop"
+ask_desktop="$data/applications/patina-ask.desktop"
 changes=0
 # Applying the look-and-feel package moves the values it names into ~/.config/kdedefaults/
 # and drops them from the user's files; a session reads them there because startplasma
@@ -292,6 +293,23 @@ elif [[ -e "$agent_desktop" ]]; then
   changed
 fi
 
+# The start menu's "Ask opencode" (or Hermes), only while kortex comes with an AI bundle:
+# the command palette with `ai ` typed, so the agent is there without a search first. Its
+# icon is kortex's ▲ by path, which the glyphs below leave alone; by name it would
+# become a glyph, and KRunner's rows would lose the ▲ too.
+kortex_icon="$data/icons/hicolor/scalable/apps/kortex.svg"
+if [[ " ${PATINA_BUNDLES:-} " =~ \ (ai-local|ai-cloud|hermes-local|hermes-cloud)\  && -f "$kortex_icon" ]]; then
+  tpl[AGENT_TITLE]=opencode
+  [[ "$(current_agent)" == hermes ]] && tpl[AGENT_TITLE]=Hermes
+  tpl[ASK_ICON]="$kortex_icon"
+  render "$templates/ask.desktop" "$tmp/ask.desktop"
+  put "$tmp/ask.desktop" "$ask_desktop"
+elif [[ -e "$ask_desktop" ]]; then
+  say "removing $ask_desktop (no AI bundle, or kortex is not installed)"
+  rm -f "$ask_desktop"
+  changed
+fi
+
 # sudo's password dialog for the agents, which run commands without a terminal: the
 # session's SUDO_ASKPASS names askpass.sh (kdialog), read at the next login, and the
 # agent and patina's own commands run `sudo -A`.
@@ -464,7 +482,9 @@ drop_other_themes "$data/icons/patina-*" "$icons_dir"
 # from one background, so it goes on all of them; the theme holds Breeze's popup
 # backgrounds with a fine noise tile laid into their centre tile, which Plasma repeats.
 # Selection (start_menu.selection): the highlight of Plasma's lists, a faint fill of
-# the accent inside a thin edge in place of Breeze's 30 % fill. Only over the default
+# the accent inside a thin edge in place of Breeze's 30 % fill. Search fields and bands
+# (start_menu.search and .bands): the one solid box on the glass and the bands over it
+# at the top and bottom of the start menu, made glass too. Only over the default
 # desktop theme.
 grain="$(yq eval '.start_menu.grain // 0' "$settings")"
 breeze=/usr/share/plasma/desktoptheme/default
@@ -557,10 +577,36 @@ if [[ "${tpl[DESKTOP_THEME]}" == default && -d "$breeze" ]]; then
   render "$templates/viewitem.svg" "$tmp/viewitem.svg"
   mkdir -p "$out/widgets"
   gzip -n < "$tmp/viewitem.svg" > "$out/widgets/viewitem.svgz"
+  # The search fields: Breeze draws Plasma's text fields solid, the view colour inside
+  # a 20 % edge; above 0 they are a veil of the text colour at the search value with no
+  # edge but the accent's, five times as much under the pointer and ten times while
+  # typing (templates/lineedit.svg).
+  search="$(yq eval '.start_menu.search // 0' "$settings")"
+  if [[ "$search" -gt 0 ]]; then
+    for key in SEARCH_FILL:1 SEARCH_HOVER:5 SEARCH_FOCUS:10; do
+      pct=$((search * ${key#*:} > 100 ? 100 : search * ${key#*:}))
+      printf -v "tpl[${key%:*}]" '%d.%02d' $((pct / 100)) $((pct % 100))
+    done
+    render "$templates/lineedit.svg" "$tmp/lineedit.svg"
+    gzip -n < "$tmp/lineedit.svg" > "$out/widgets/lineedit.svgz"
+  fi
+  # The bands: a popup with a heading (the start menu's search row and its tabs, the
+  # tray's titles) gets Breeze's band of the window colour at 75 % over the glass, with
+  # a line of the text colour at 20 % against the content. Both take the bands value,
+  # the line in proportion, so 0 leaves one pane of glass without lines.
+  bands_pct="$(yq eval '.start_menu.bands // 75' "$settings")"
+  if [[ -f "$breeze/widgets/plasmoidheading.svgz" ]]; then
+    line_pct=$((bands_pct * 20 / 75))
+    printf -v bands '%d.%02d' $((bands_pct / 100)) $((bands_pct % 100))
+    printf -v line '%d.%02d' $((line_pct / 100)) $((line_pct % 100))
+    zcat "$breeze/widgets/plasmoidheading.svgz" |
+      sed -E "s/([[:space:]])opacity=\"0?\.75\"/\1opacity=\"$bands\"/g; s/([[:space:]])opacity=\"\.2\"/\1opacity=\"$line\"/g" |
+      gzip -n > "$out/widgets/plasmoidheading.svgz"
+  fi
   cp "$breeze/plasmarc" "$out/plasmarc"
   render "$templates/desktoptheme-metadata.json" "$out/metadata.json"
   if ! diff -rq "$out" "$desktoptheme" > /dev/null 2>&1; then
-    say "writing $desktoptheme (Breeze with patina's glass, rim, grain and selection)"
+    say "writing $desktoptheme (Breeze with patina's glass, rim, grain, selection, search fields and bands)"
     rm -rf "$desktoptheme"
     mkdir -p "$(dirname "$desktoptheme")"
     mv "$out" "$desktoptheme"

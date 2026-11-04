@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="80" viewBox="0 0 20 80">
+ <!-- patina: Plasma's text fields (the search fields of the start menu, the command
+      palette and the other popups), in place of Breeze's widgets/lineedit: a veil of
+      the text colour with no edge, which a thin edge of the accent outlines under the
+      pointer (hover) and while typing (focus), drawn over the veil. The frames Plasma
+      stretches; the margins keep Breeze's 6 px round the words. Rendered at apply time
+      from start_menu.search. -->
+ <style id="current-color-scheme" type="text/css">.ColorScheme-Text { color: ${BASE05}; } .ColorScheme-ViewFocus { color: ${ACCENT}; }</style>
+  <g id="base-topleft"><path class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" d="M5 0 A5 5 0 0 0 0 5 H1 A4 4 0 0 1 5 1 Z"/><path class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" d="M5 1 A4 4 0 0 0 1 5 H5 Z"/></g>
+  <g id="base-top"><rect class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" x="5" y="0" width="10" height="1"/><rect class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" x="5" y="1" width="10" height="4"/></g>
+  <g id="base-topright"><path class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" d="M15 0 A5 5 0 0 1 20 5 H19 A4 4 0 0 0 15 1 Z"/><path class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" d="M15 1 A4 4 0 0 1 19 5 H15 Z"/></g>
+  <g id="base-left"><rect class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" x="0" y="5" width="1" height="10"/><rect class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" x="1" y="5" width="4" height="10"/></g>
+  <g id="base-center"><rect class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" x="5" y="5" width="10" height="10"/></g>
+  <g id="base-right"><rect class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" x="15" y="5" width="4" height="10"/><rect class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" x="19" y="5" width="1" height="10"/></g>
+  <g id="base-bottomleft"><path class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" d="M0 15 A5 5 0 0 0 5 20 V19 A4 4 0 0 1 1 15 Z"/><path class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" d="M1 15 A4 4 0 0 0 5 19 V15 Z"/></g>
+  <g id="base-bottom"><rect class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" x="5" y="15" width="10" height="4"/><rect class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" x="5" y="19" width="10" height="1"/></g>
+  <g id="base-bottomright"><path class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" d="M20 15 A5 5 0 0 1 15 20 V19 A4 4 0 0 0 19 15 Z"/><path class="ColorScheme-Text" fill="currentColor" opacity="${SEARCH_FILL}" d="M19 15 A4 4 0 0 1 15 19 V15 Z"/></g>
+  <g id="hover-topleft"><path class="ColorScheme-ViewFocus" fill="currentColor" opacity="${SEARCH_HOVER}" d="M5 20 A5 5 0 0 0 0 25 H1 A4 4 0 0 1 5 21 Z"/><path class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" d="M5 21 A4 4 0 0 0 1 25 H5 Z"/></g>
+  <g id="hover-top"><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="${SEARCH_HOVER}" x="5" y="20" width="10" height="1"/><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" x="5" y="21" width="10" height="4"/></g>
+  <g id="hover-topright"><path class="ColorScheme-ViewFocus" fill="currentColor" opacity="${SEARCH_HOVER}" d="M15 20 A5 5 0 0 1 20 25 H19 A4 4 0 0 0 15 21 Z"/><path class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" d="M15 21 A4 4 0 0 1 19 25 H15 Z"/></g>
+  <g id="hover-left"><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="${SEARCH_HOVER}" x="0" y="25" width="1" height="10"/><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" x="1" y="25" width="4" height="10"/></g>
+  <g id="hover-center"><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" x="5" y="25" width="10" height="10"/></g>
+  <g id="hover-right"><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" x="15" y="25" width="4" height="10"/><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="${SEARCH_HOVER}" x="19" y="25" width="1" height="10"/></g>
+  <g id="hover-bottomleft"><path class="ColorScheme-ViewFocus" fill="currentColor" opacity="${SEARCH_HOVER}" d="M0 35 A5 5 0 0 0 5 40 V39 A4 4 0 0 1 1 35 Z"/><path class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" d="M1 35 A4 4 0 0 0 5 39 V35 Z"/></g>
+  <g id="hover-bottom"><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" x="5" y="35" width="10" height="4"/><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="${SEARCH_HOVER}" x="5" y="39" width="10" height="1"/></g>
+  <g id="hover-bottomright"><path class="ColorScheme-ViewFocus" fill="currentColor" opacity="${SEARCH_HOVER}" d="M20 35 A5 5 0 0 1 15 40 V39 A4 4 0 0 0 19 35 Z"/><path class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" d="M19 35 A4 4 0 0 1 15 39 V35 Z"/></g>
+  <g id="focus-topleft"><path class="ColorScheme-ViewFocus" fill="currentColor" opacity="${SEARCH_FOCUS}" d="M5 40 A5 5 0 0 0 0 45 H1 A4 4 0 0 1 5 41 Z"/><path class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" d="M5 41 A4 4 0 0 0 1 45 H5 Z"/></g>
+  <g id="focus-top"><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="${SEARCH_FOCUS}" x="5" y="40" width="10" height="1"/><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" x="5" y="41" width="10" height="4"/></g>
+  <g id="focus-topright"><path class="ColorScheme-ViewFocus" fill="currentColor" opacity="${SEARCH_FOCUS}" d="M15 40 A5 5 0 0 1 20 45 H19 A4 4 0 0 0 15 41 Z"/><path class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" d="M15 41 A4 4 0 0 1 19 45 H15 Z"/></g>
+  <g id="focus-left"><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="${SEARCH_FOCUS}" x="0" y="45" width="1" height="10"/><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" x="1" y="45" width="4" height="10"/></g>
+  <g id="focus-center"><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" x="5" y="45" width="10" height="10"/></g>
+  <g id="focus-right"><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" x="15" y="45" width="4" height="10"/><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="${SEARCH_FOCUS}" x="19" y="45" width="1" height="10"/></g>
+  <g id="focus-bottomleft"><path class="ColorScheme-ViewFocus" fill="currentColor" opacity="${SEARCH_FOCUS}" d="M0 55 A5 5 0 0 0 5 60 V59 A4 4 0 0 1 1 55 Z"/><path class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" d="M1 55 A4 4 0 0 0 5 59 V55 Z"/></g>
+  <g id="focus-bottom"><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" x="5" y="55" width="10" height="4"/><rect class="ColorScheme-ViewFocus" fill="currentColor" opacity="${SEARCH_FOCUS}" x="5" y="59" width="10" height="1"/></g>
+  <g id="focus-bottomright"><path class="ColorScheme-ViewFocus" fill="currentColor" opacity="${SEARCH_FOCUS}" d="M20 55 A5 5 0 0 1 15 60 V59 A4 4 0 0 0 19 55 Z"/><path class="ColorScheme-ViewFocus" fill="currentColor" opacity="0.005" d="M19 55 A4 4 0 0 1 15 59 V55 Z"/></g>
+  <rect id="hint-focus-over-base" x="0" y="62" width="2" height="2" fill="#3cff9d"/>
+  <rect id="base-hint-top-margin" x="4" y="62" width="2" height="6" fill="#3cff9d"/>
+  <rect id="base-hint-bottom-margin" x="8" y="62" width="2" height="6" fill="#3cff9d"/>
+  <rect id="base-hint-left-margin" x="12" y="62" width="6" height="2" fill="#3cff9d"/>
+  <rect id="base-hint-right-margin" x="12" y="66" width="6" height="2" fill="#3cff9d"/>
+  <rect id="hover-hint-top-margin" x="0" y="72" width="2" height="0.001" fill="#3cff9d"/>
+  <rect id="hover-hint-bottom-margin" x="4" y="72" width="2" height="0.001" fill="#3cff9d"/>
+  <rect id="hover-hint-left-margin" x="8" y="72" width="0.001" height="2" fill="#3cff9d"/>
+  <rect id="hover-hint-right-margin" x="12" y="72" width="0.001" height="2" fill="#3cff9d"/>
+  <rect id="focus-hint-top-margin" x="0" y="76" width="2" height="0.001" fill="#3cff9d"/>
+  <rect id="focus-hint-bottom-margin" x="4" y="76" width="2" height="0.001" fill="#3cff9d"/>
+  <rect id="focus-hint-left-margin" x="8" y="76" width="0.001" height="2" fill="#3cff9d"/>
+  <rect id="focus-hint-right-margin" x="12" y="76" width="0.001" height="2" fill="#3cff9d"/>
+</svg>

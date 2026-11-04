@@ -6,7 +6,21 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- "Ask opencode" (or "Ask Hermes") comes first in the start menu's AI folder and among
+  its favourites, with kortex's green ▲: it opens the command palette with `ai `
+  already typed, so the agent is there without searching first. Only while an AI agent
+  is on.
+
 ### Changed
+
+- The start menu is more glass. Its search field is a faint veil instead of Breeze's
+  solid box, outlined in the accent only under the pointer and while typing, and its
+  header and footer are the same glass as the rest, without the bands and lines Breeze
+  laid over them. The popups' glass is 45 % opaque, down from 60. The command
+  palette's search field and the tray's popups look the same. `start_menu.search`
+  and `start_menu.bands` in `defaults/settings.yaml` set them.
 
 - The opt-in `extras` bundle (Zed and Tauon) is now `headstart`: the Zed editor, kew
   for music and ncspot for Spotify in the terminal, Telegram, Vesktop for Discord,

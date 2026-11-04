@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Ask ${AGENT_TITLE}
+Comment=The command palette with ai typed: ask ${AGENT_TITLE} and read the answer there
+Exec=krunner "ai "
+Icon=${ASK_ICON}
+Terminal=false
+Categories=Utility;
+Keywords=ai;agent;ask;kortex;krunner;

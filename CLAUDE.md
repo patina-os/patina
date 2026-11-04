@@ -92,6 +92,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   every AI bundle installs its tagged release, pinned in `manifest/upstream.yaml`. Any
   search in the start menu ends with asking the agent (search, ask, fix), which hands
   it to the command palette; the menu's "Search…" is libplasma's and stays (October 2026).
+  That row names the agent ("Ask opencode: …"), and so does the first entry of the
+  menu's AI folder, which opens the command palette with `ai ` typed (November 2026).
 - Look: the default theme is aurora, made for OLED screens (October 2026, after the
   redesign whose eight directions `docs/design/futures.html` keeps): true black with
   panels one step above it, neon green as the accent and violet as the second colour.
@@ -143,7 +145,9 @@ packs. Audience: developers and privacy-minded users in the EU.
   the one KWin script patina keeps, moves it (October 2026). Plasma's Application
   Dashboard, full screen and centred, dark over either mode, stays an option too. The menu's
   background is glass the wallpaper glows through, its category icons in the accent,
-  the apps' glyphs in the bar and the menu and the labels in the text colour; all are
+  the apps' glyphs in the bar and the menu and the labels in the text colour; its
+  search field a faint veil the accent outlines only while it is used, and its header
+  and footer the same glass, without Breeze's bands (November 2026); all are
   knobs in `defaults/settings.yaml`. The user's
   picture is the small mark (`icon-small.svg`) while it is Debian's.
   No automatic tiling on Plasma: that would need a KWin script Debian does not package; a tiling desktop
