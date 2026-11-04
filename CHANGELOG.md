@@ -6,6 +6,8 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.7] - 2026-11-04
+
 ### Added
 
 - A boot splash: while the machine boots, patina's mark builds itself on black, the
@@ -894,7 +896,8 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.6...main
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.7...main
+[0.1.0-alpha.7]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.7
 [0.1.0-alpha.6]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.6
 [0.1.0-alpha.5]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.5
 [0.1.0-alpha.4]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.4
