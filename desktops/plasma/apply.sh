@@ -18,6 +18,7 @@ templates="$here/templates"
 config="${XDG_CONFIG_HOME:-$HOME/.config}"
 data="${XDG_DATA_HOME:-$HOME/.local/share}"
 agent_desktop="$data/applications/patina-agent.desktop"
+ask_desktop="$data/applications/patina-ask.desktop"
 changes=0
 # Applying the look-and-feel package moves the values it names into ~/.config/kdedefaults/
 # and drops them from the user's files; a session reads them there because startplasma
@@ -289,6 +290,23 @@ if [[ " ${PATINA_BUNDLES:-} " =~ \ (agents|ai-local|ai-cloud|hermes-local|hermes
 elif [[ -e "$agent_desktop" ]]; then
   say "removing $agent_desktop (no AI or agents bundle is installed)"
   rm -f "$agent_desktop"
+  changed
+fi
+
+# The start menu's "Ask opencode" (or Hermes), only while kortex comes with an AI bundle:
+# the command palette with `ai ` typed, so the agent is there without a search first. Its
+# icon is kortex's ▲ by path, which the glyphs below leave alone; by name it would
+# become a glyph, and KRunner's rows would lose the ▲ too.
+kortex_icon="$data/icons/hicolor/scalable/apps/kortex.svg"
+if [[ " ${PATINA_BUNDLES:-} " =~ \ (ai-local|ai-cloud|hermes-local|hermes-cloud)\  && -f "$kortex_icon" ]]; then
+  tpl[AGENT_TITLE]=opencode
+  [[ "$(current_agent)" == hermes ]] && tpl[AGENT_TITLE]=Hermes
+  tpl[ASK_ICON]="$kortex_icon"
+  render "$templates/ask.desktop" "$tmp/ask.desktop"
+  put "$tmp/ask.desktop" "$ask_desktop"
+elif [[ -e "$ask_desktop" ]]; then
+  say "removing $ask_desktop (no AI bundle, or kortex is not installed)"
+  rm -f "$ask_desktop"
   changed
 fi
 

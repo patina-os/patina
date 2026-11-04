@@ -92,6 +92,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   every AI bundle installs its tagged release, pinned in `manifest/upstream.yaml`. Any
   search in the start menu ends with asking the agent (search, ask, fix), which hands
   it to the command palette; the menu's "Search…" is libplasma's and stays (October 2026).
+  That row names the agent ("Ask opencode: …"), and so does the first entry of the
+  menu's AI folder, which opens the command palette with `ai ` typed (November 2026).
 - Look: the default theme is aurora, made for OLED screens (October 2026, after the
   redesign whose eight directions `docs/design/futures.html` keeps): true black with
   panels one step above it, neon green as the accent and violet as the second colour.

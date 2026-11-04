@@ -6,6 +6,13 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- "Ask opencode" (or "Ask Hermes") comes first in the start menu's AI folder and among
+  its favourites, with kortex's green ▲: it opens the command palette with `ai `
+  already typed, so the agent is there without searching first. Only while an AI agent
+  is on.
+
 ### Changed
 
 - The start menu is more glass. Its search field is a faint veil instead of Breeze's

@@ -153,6 +153,11 @@ Files, from `templates/`, each named after the theme:
   `~/.local/share/applications/patina-agent.desktop`, which opens the command `agent`
   of `defaults/settings.yaml` in the agent's kitty profile; removed again when none of
   them is installed
+- with an AI bundle and kortex installed: `~/.local/share/applications/patina-ask.desktop`
+  (from `templates/ask.desktop`), "Ask opencode" or "Ask Hermes" by the agent kortex
+  talks to, first in the start menu's AI folder: it opens the command palette with
+  `ai ` typed (`krunner "ai "`). Its icon is kortex's ▲ by path, which the glyphs
+  leave alone; removed again without them
 - with the same bundles: `~/.config/environment.d/61-patina-askpass.conf` (from
   `templates/askpass.conf`), which sets the session's `SUDO_ASKPASS` to `askpass.sh` at
   the next login; in a running session the renderer also hands it to D-Bus and systemd

@@ -102,6 +102,8 @@ start_menu:
       name: AI
       icon: folder-code
       apps:
+        - patina-ask.desktop                           # Ask opencode (or Hermes): the command
+                                                       # palette with `ai ` typed (an AI bundle)
         - patina-agent.desktop                         # the agent (an AI or the agents bundle)
         - claude-desktop.desktop
     - id: self-hosting
