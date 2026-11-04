@@ -8,6 +8,14 @@ All notable changes to patina are documented here. The format follows
 
 ### Added
 
+- A boot splash: while the machine boots, patina's mark builds itself on black, the
+  characters of its violet rings arriving one by one from the outside in, like a cloud
+  condensing into contour lines, then the word types itself in and the ▲ lights up
+  green. The login screen takes over its last picture, so no text console shows in
+  between, and the password of an encrypted disk is asked for in the same look. It is
+  Plymouth's two-step module from Debian (`plymouth` and `plymouth-themes`, now in the
+  base bundle), with pictures drawn from the mark at install time; the live image
+  shows it too. `patina update` brings it, from the next boot on.
 - The installer's tour ends with a seventh slide, "After the restart": take out the
   stick once the screen goes dark, so the PC starts patina and not the installer
   again; the first start fetches the apps, needs the internet and takes a while; and

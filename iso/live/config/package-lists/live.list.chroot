@@ -28,6 +28,10 @@ xserver-xorg
 xinit
 openbox
 dbus-bin
+# the boot splash (defaults/boot/), which assets.sh draws into the image and the base
+# bundle installs on every system
+plymouth
+plymouth-themes
 # the Wi-Fi step before the installer (root/.xinitrc): nmtui, which network-manager
 # carries, in a terminal
 xterm

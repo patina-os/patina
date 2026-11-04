@@ -233,6 +233,14 @@ render "$templates/openbox/themerc" "$openbox/themerc"
 # The terminal of the Wi-Fi step (root/.xinitrc).
 render "$templates/xterm/Xdefaults" "$chroot/root/.Xdefaults"
 
+# The boot splash, as an installed system has it: drawn from branding/logo.txt by the
+# function `patina install` uses (defaults/boot/), with Plymouth's setting that picks it.
+# live-build rebuilds the initramfs after these files are in, so the live system shows
+# it, and the installer copies both to the disk, so its first boot shows it too.
+say "rendering the boot splash"
+( render_boot_splash "$chroot/usr/share/plymouth/themes/patina" )
+install -D -m 0644 "$repo/defaults/system/plymouth/plymouthd.conf" "$chroot/etc/plymouth/plymouthd.conf"
+
 # Every placeholder must be gone.
 left="$(grep -lF "\${" "$branding/stylesheet.qss" "$grub/live-theme/theme.txt" "$openbox/themerc" \
   "$chroot/etc/fonts/local.conf" "$chroot/root/.Xdefaults" || true)"

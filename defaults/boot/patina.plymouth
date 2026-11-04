@@ -1,0 +1,25 @@
+# patina's boot splash: Plymouth's two-step module, which shows pictures and needs no
+# script. render_boot_splash (bin/lib.sh) fills this file and draws the pictures next to
+# it from branding/logo.txt; `patina install` writes them to the ImageDir below, the
+# image build into the live system. The ground is the default theme's background.
+[Plymouth Theme]
+Name=patina
+Description=patina's mark, building itself while the machine boots
+ModuleName=two-step
+
+[two-step]
+ImageDir=/usr/share/plymouth/themes/patina
+HorizontalAlignment=.5
+VerticalAlignment=.5
+DialogHorizontalAlignment=.5
+DialogVerticalAlignment=.5
+Transition=none
+TransitionDuration=0.0
+# progress-*.png follow the boot up to nine tenths of it, then animation-*.png play once
+ProgressFunction=linear
+ShowAnimationPercent=0.9
+BackgroundStartColor=${BOOT_GROUND}
+BackgroundEndColor=${BOOT_GROUND}
+Font=${UI_FONT} 13
+TitleFont=${DISPLAY_FONT} 20
+MonospaceFont=${MONO_FONT} 11

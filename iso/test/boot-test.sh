@@ -107,7 +107,7 @@ echo "boot-test: booting $iso ($arch, $accel, ${cpus} cpus, timeout ${timeout_s}
   -cdrom "$iso" \
   -drive "file=$disk,format=raw,if=virtio" \
   -kernel "$kernel" -initrd "$initrd" \
-  -append "boot=live components quiet hostname=patina-live username=live noautologin locales=en_GB.UTF-8 console=$serial,115200n8" \
+  -append "boot=live components quiet splash hostname=patina-live username=live noautologin locales=en_GB.UTF-8 console=$serial,115200n8" \
   -netdev user,id=net0 -device virtio-net-pci,netdev=net0 \
   -serial "file:$log" \
   -monitor "tcp:127.0.0.1:$monitor_port,server,nowait" &

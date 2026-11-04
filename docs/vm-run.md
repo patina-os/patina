@@ -57,7 +57,10 @@ they are.
   (Standard), more apps (none) and the theme (aurora);
   the install page shows the progress bar, its percentage readable past half way, and
   the seven slides, ten seconds each, and it ends without an error
-- [ ] first boot: tty1 shows the mark, and sudo asks for the password you gave the
+- [ ] the live system boots behind the boot splash: the mark builds itself on black,
+  violet rings from the outside in, then patina and the green ▲; the installer comes
+  without a text console in between
+- [ ] first boot: the boot splash again, then tty1 shows the mark, and sudo asks for the password you gave the
   installer (again if the install outlasts sudo's 15 minutes between two steps); no
   other question (a cloud agent asks its provider and key), and it ends with
   `patina firstboot: done`; then the login screen with the theme's wallpaper

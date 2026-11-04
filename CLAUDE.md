@@ -110,7 +110,7 @@ packs. Audience: developers and privacy-minded users in the EU.
   script is committed as the SVG it produced, never with the script. The `agent`
   shortcut opens opencode by default (`defaults/settings.yaml`), the free one of the
   agent CLIs. One look from the boot menu to the desktop: the installer, the boot
-  menu, the login screen and the Plasma splash take their colours from the default
+  menu, the boot splash, the login screen and the Plasma splash take their colours from the default
   theme's palette at build or apply time, never by hand; the words are set in Source
   Sans 3, details (versions, hostnames, progress, terminals) in JetBrains Mono, the
   wordmark and the installer slides' headlines in Sora (`fonts.display`), all from
@@ -150,6 +150,15 @@ packs. Audience: developers and privacy-minded users in the EU.
   and footer the same glass, without Breeze's bands (November 2026); all are
   knobs in `defaults/settings.yaml`. The user's
   picture is the small mark (`icon-small.svg`) while it is Debian's.
+  The boot splash is Plymouth's two-step module, from Debian's `plymouth` and
+  `plymouth-themes` in the base bundle and the live image (November 2026): the
+  characters of `branding/logo.txt` arrive as the machine boots, the outer rings first,
+  each at a time of its own, like a cloud condensing into contour lines, then the word
+  types itself in and the ▲ lights up; pictures only, drawn by `render_boot_splash`
+  (`lib.sh`) from the templates of `defaults/boot/` at install and image build time,
+  with the disk password prompt in the same look. SDDM takes over its last picture, so
+  no text console shows between it and the login screen; the first boot's tty1 step
+  quits it first.
   No automatic tiling on Plasma: that would need a KWin script Debian does not package; a tiling desktop
   is the Hyprland add-on.
 - Speed: the system tuning CachyOS ships as configuration (zram, I/O schedulers, memory
@@ -233,7 +242,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   mark, `branding/wordmark.txt` of the text wordmark and `branding/wordmark.svg` of the
   typeset one (it and `icon.svg` repeat the mark's characters, changed together with
   `logo.txt`); scripts print or copy them (`print_logo` and `print_wordmark` in
-  `lib.sh`, the image build and the renderer copy the SVG). `branding/export/` holds
+  `lib.sh`, the image build and the renderer copy the SVG, `render_boot_splash` draws
+  `logo.txt` as the boot splash's pictures). `branding/export/` holds
   `wordmark.txt` drawn as outlines (SVG, for places without its fonts) and every mark
   as PNG and JPG for places outside patina (`branding/export/README.md`), derived from
   them and drawn again when one changes
@@ -245,7 +255,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `bin/` | the `patina` entry point; `bin/patina-<cmd>` per subcommand, thin bash; `lib.sh` holds the few functions they share, among them the theme loader and template filler the renderers and the image build use |
 | `branding/` | the marks as data: `logo.txt` (the mark) and `wordmark.txt` (the name in block letters) are what scripts print, `wordmark.svg` (the mark typeset beside patina), `icon.svg` and `icon-small.svg` what screens show; `export/` the block-letter name as outlined SVG, and every mark as PNG and JPG up to 2048 px, shown in its README |
 | `themes/` | theme packs as data; `_template/` is the skeleton |
-| `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `services.yaml` the services the AI agent can connect to (MCP presets); `agent.md` the AI agent's standing instruction; `system/` the system tuning files and Firefox's policies |
+| `defaults/` | desktop-agnostic keybindings and curated settings; `apps.yaml` the settings merged into apps' own files; `services.yaml` the services the AI agent can connect to (MCP presets); `agent.md` the AI agent's standing instruction; `system/` the system tuning files and Firefox's policies; `boot/` the boot splash, Plymouth's two-step theme as templates the mark is drawn into |
 | `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, Plasma's `icons.yaml` for the folder colours of an icon theme, one `apply.sh`) and the headless session the desktop workflow screenshots (`screenshot.sh`); Plasma's `askpass.sh`, the AI agent's sudo password dialog; `plasma/` first; `terminal/` renders the terminal and its tools for every desktop |
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
@@ -284,7 +294,9 @@ Each directory's README is the authority on its file format.
   System files are written only through that path (`system.write`), only from
   `defaults/system/` and the `system/` directory of a detected device (`devices/`), for the keyring and sources file of an `apt-source` recipe, and
   for the login screen's wallpaper and the Breeze SDDM theme's `theme.conf.user`
-  (`/usr/local/share/patina/login.png`, written by the desktop renderer).
+  (`/usr/local/share/patina/login.png`, written by the desktop renderer), and for the
+  boot splash (`/usr/share/plymouth/themes/patina`, drawn from `branding/logo.txt` by
+  `patina install`, only when what it is drawn from changed).
   The scripts drop the `sudo` when they already run as root (a container, first boot).
 - Desktop configuration is written only by `desktops/<desktop>/apply.sh` (the
   terminal's by `desktops/terminal/apply.sh`), through the desktop's own tool

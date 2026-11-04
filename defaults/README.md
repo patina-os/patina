@@ -58,6 +58,21 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   file is named by its destination under `/etc`
   (`system/sysctl.d/x.conf` lands at `/etc/sysctl.d/x.conf`), and the backend's sudo
   path (`system.write` in `manifest/backends/`) is the only thing that writes them.
+  The boot splash's setting is among them (`plymouth/plymouthd.conf` picks the patina
+  theme, `default/grub.d/patina.cfg` puts `quiet splash` on the kernel's line once, and
+  `systemd/system/sddm.service.d/` lets SDDM take over the splash's last picture).
+- `boot/`: the boot splash, Plymouth's two-step theme as templates: `frame.svg`, one
+  picture of the mark, into which `render_boot_splash` (`bin/lib.sh`) sets the
+  characters of `branding/logo.txt` in the brand's colours, each as far faded in as
+  the boot has got; `patina.plymouth`, the theme file, with the default theme's dark
+  background; `entry.svg`, `bullet.svg` and `lock.svg`, the disk password prompt
+  two-step needs to load at all. The function draws 48 `progress-*.png`, which
+  Plymouth picks by the boot's progress (the rings arrive, the outer ones first), and
+  36 `animation-*.png`, played once at the end (the word, then the ▲); the counts stay
+  fixed, since Plymouth takes every `progress-*.png` it finds. `patina install` writes
+  them to `/usr/share/plymouth/themes/patina` through the same sudo path, only when a
+  checksum of what they are drawn from changed, and the image build into the live
+  system.
   These files keep the names and formats their tools require, so they are, with
   `agent.md`, the only data here that is not YAML; `patina doctor` reports any that is
   missing or differs.
