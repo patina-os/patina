@@ -69,5 +69,10 @@ slideshow:
   - slide-6.png
   - slide-6.png
   - slide-6.png
+  - slide-7.png   # after the restart: the stick out, the first start, the password
+  - slide-7.png
+  - slide-7.png
+  - slide-7.png
+  - slide-7.png
 
 style: {}   # filled by assets.sh from the palette: SidebarBackground, SidebarText, ...

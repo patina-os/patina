@@ -56,7 +56,7 @@ they are.
   agent, as in step 4; the AI page after it does not matter then), the apps
   (Standard), more apps (none) and the theme (aurora);
   the install page shows the progress bar, its percentage readable past half way, and
-  the six slides, ten seconds each, and it ends without an error
+  the seven slides, ten seconds each, and it ends without an error
 - [ ] first boot: tty1 shows the mark, and sudo asks for the password you gave the
   installer (again if the install outlasts sudo's 15 minutes between two steps); no
   other question (a cloud agent asks its provider and key), and it ends with

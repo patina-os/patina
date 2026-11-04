@@ -8,6 +8,11 @@ All notable changes to patina are documented here. The format follows
 
 ### Added
 
+- The installer's tour ends with a seventh slide, "After the restart": take out the
+  stick once the screen goes dark, so the PC starts patina and not the installer
+  again; the first start fetches the apps, needs the internet and takes a while; and
+  it asks for the password chosen in the installer. Calamares' own last page says none
+  of it.
 - "Ask opencode" (or "Ask Hermes") comes first in the start menu's AI folder and among
   its favourites, with kortex's green ▲: it opens the command palette with `ai `
   already typed, so the agent is there without searching first. Only while an AI agent
