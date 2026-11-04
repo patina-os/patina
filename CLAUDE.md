@@ -143,7 +143,9 @@ packs. Audience: developers and privacy-minded users in the EU.
   the one KWin script patina keeps, moves it (October 2026). Plasma's Application
   Dashboard, full screen and centred, dark over either mode, stays an option too. The menu's
   background is glass the wallpaper glows through, its category icons in the accent,
-  the apps' glyphs in the bar and the menu and the labels in the text colour; all are
+  the apps' glyphs in the bar and the menu and the labels in the text colour; its
+  search field a faint veil the accent outlines only while it is used, and its header
+  and footer the same glass, without Breeze's bands (November 2026); all are
   knobs in `defaults/settings.yaml`. The user's
   picture is the small mark (`icon-small.svg`) while it is Debian's.
   No automatic tiling on Plasma: that would need a KWin script Debian does not package; a tiling desktop

@@ -47,7 +47,7 @@ Files, from `templates/`, each named after the theme:
   centre tile, which Plasma repeats. Plasma draws all panel popups and the command
   palette from that background, so the start menu, KRunner, the calendar and the tray
   share the grain. Where KWin's Background Contrast effect blurs behind a popup, Plasma
-  draws the translucent background, whose 85 % opacity becomes `start_menu.glass` (60
+  draws the translucent background, whose 85 % opacity becomes `start_menu.glass` (45
   by default), so the wallpaper glows through the window colour, near black in the
   dark mode. Breeze's darker 1 px rim along their edges becomes the text colour at
   `start_menu.rim` percent (12 by default; 0 keeps Breeze's), a light hairline that
@@ -55,7 +55,16 @@ Files, from `templates/`, each named after the theme:
   from `templates/viewitem.svg`): the selected row of the start menu, the command
   palette and the tray popups is `start_menu.selection` percent of the accent (10 by
   default; Breeze fills 30) inside a 1 px edge of four times that, a pressed row twice
-  both. Apps keep the colour scheme's selection. KWin's Blur and Background
+  both. Apps keep the colour scheme's selection. Plasma's text fields
+  (`widgets/lineedit.svgz`, from `templates/lineedit.svg`), the search fields of the
+  start menu, the command palette and the tray among them, are a veil of the text
+  colour at `start_menu.search` percent (3 by default; 0 keeps Breeze's solid field)
+  with no edge but a thin one of the accent, five times that under the pointer and
+  ten times while typing. The headings of popups (`widgets/plasmoidheading.svgz`,
+  Breeze's with its opacities changed), the start menu's search row and its tabs
+  among them, lay a band of the window colour at `start_menu.bands` percent over the
+  glass (0 by default; Breeze: 75) and a line against the content in proportion (20 %
+  at 75), so 0 leaves one pane of glass. KWin's Blur and Background
   Contrast effects (`kwinrc`, `[Plugins]`) are turned on, Plasma's defaults, for a
   desktop where they were off
 - a Konsole colour scheme and profile under `~/.local/share/konsole/`, made the default
