@@ -155,7 +155,17 @@ arm64 image has not yet and stays in CI until it does. The release stays a draft
 the manual install check below has passed on the uploaded image. The workflow also runs on
 every pull request that touches `iso/`, `branding/`, the base bundle or the workflow
 itself, so an image change is built and booted before it is merged; it publishes only
-from a tag. To build by hand on a Debian machine of the target architecture:
+from a tag.
+
+A release needs no tag pushed by hand: once `CHANGELOG.md` has the version's section,
+the `release` workflow (Actions, release, Run workflow on `main`, with the version as
+the changelog names it, `0.1.0-alpha.8`) checks that the version is new, that the section
+is there and that lint and smoke passed on the commit, tags it `v<version>` and starts
+this workflow on the tag; its own token may dispatch a workflow but not start one by a
+tag push. A `v*` tag pushed by hand starts it as before. Either way the release is a
+draft until the manual install check has passed.
+
+To build by hand on a Debian machine of the target architecture:
 
 ```sh
 sudo apt-get install live-build debootstrap librsvg2-bin fonts-adobe-sourcesans3 \

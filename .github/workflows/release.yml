@@ -1,0 +1,82 @@
+name: release
+
+# Starts a release from main without a tag pushed by hand: Actions, release, Run workflow,
+# with the version as CHANGELOG.md names it (0.1.0-alpha.8). It checks that the version
+# is new, that CHANGELOG.md has its section (the release's notes) and that lint and smoke
+# passed on the commit, then tags the commit v<version> and starts the iso workflow on
+# that tag, which builds and boots the images and attaches them to a draft release. A tag
+# pushed with the workflow's own token starts no workflow, a dispatch does, so the iso
+# workflow is started here. A v* tag pushed by hand still starts it as before.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: The version as CHANGELOG.md names it, without the v (0.1.0-alpha.8)
+        required: true
+        type: string
+
+# One release at a time, and never one cut short.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # the tag
+  actions: write    # lint's and smoke's runs, and starting the iso workflow
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  tag:
+    name: tag v${{ inputs.version }} and build it
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      VERSION: ${{ inputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: The version is new and CHANGELOG.md has its section
+        run: |
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]] || {
+            echo "'$VERSION' is no version such as 0.1.0-alpha.8 (no v in front)"
+            exit 1
+          }
+          if git ls-remote --exit-code --tags origin "refs/tags/v$VERSION" > /dev/null; then
+            echo "v$VERSION exists already"
+            exit 1
+          fi
+          # The iso workflow's release job reads the same section, in the same way.
+          awk -v head="## [$VERSION]" '
+            /^## \[/ { if (on) exit; on = index($0, head) == 1; next }
+            on && !/^\[[^]]*\]: /' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
+          [[ -s "$RUNNER_TEMP/notes.md" ]] || {
+            echo "CHANGELOG.md has no section for $VERSION: cut it from Unreleased first"
+            exit 1
+          }
+      - name: lint and smoke passed on this commit
+        run: |
+          for workflow in lint.yml smoke.yml; do
+            conclusion="$(gh run list --workflow "$workflow" --commit "$GITHUB_SHA" \
+              --event push --limit 1 --json conclusion --jq '.[0].conclusion // "no run"')"
+            [[ "$conclusion" == success ]] || {
+              echo "$workflow on $GITHUB_SHA: ${conclusion:-still running}; release once it passed"
+              exit 1
+            }
+          done
+      - name: Tag the commit and start the iso workflow on the tag
+        run: |
+          tag="v$VERSION"
+          git tag "$tag" "$GITHUB_SHA"
+          git push origin "refs/tags/$tag"
+          gh workflow run iso-build.yml --ref "$tag"
+          {
+            echo "Tagged $GITHUB_SHA as $tag and started the iso workflow on it:"
+            echo "https://github.com/$GH_REPO/actions/workflows/iso-build.yml"
+            echo "It attaches the images to a draft release; publish it after the manual"
+            echo "install check of docs/vm-run.md."
+          } >> "$GITHUB_STEP_SUMMARY"
