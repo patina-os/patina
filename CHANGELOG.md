@@ -17,6 +17,9 @@ All notable changes to patina are documented here. The format follows
   without the splash: press ↓ while the boot menu shows (it shows for a second), then
   `e`, add `plymouth.enable=0` at the end of the line that starts with `linux`, and
   Ctrl+X; then `patina update` brings the fix.
+- The boot splash shows patina's mark alone, without Debian's logo at the right edge
+  of the screen, which Debian's Plymouth adds to every theme of its kind. On a machine
+  that has the splash, `patina update` draws it again, from the next boot on.
 
 ## [0.1.0-alpha.7] - 2026-11-04
 
