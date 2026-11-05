@@ -12,6 +12,8 @@ All notable changes to patina are documented here. The format follows
   or "Ask Hermes: …" in place of "Ask the agent: …", as does `ai` and a request in
   the command palette. The next `patina update` installs it where an AI agent is on.
 
+## [0.1.0-alpha.8] - 2026-11-04
+
 ### Fixed
 
 - patina boots to the login screen again. Since 0.1.0-alpha.7 the screen stayed black
@@ -917,7 +919,8 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.7...main
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.8...main
+[0.1.0-alpha.8]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.8
 [0.1.0-alpha.7]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.7
 [0.1.0-alpha.6]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.6
 [0.1.0-alpha.5]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.5
