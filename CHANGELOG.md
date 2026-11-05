@@ -8,6 +8,13 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- Installing beside other systems: when the EFI system partition has no room for the
+  boot loader, the image's installer says so right after the partitions, before
+  anything is copied, instead of failing with "Bootloader installation error" at
+  the end, an hour later (it happened beside Windows 11 and CachyOS). The boot menu
+  lists the other systems and stays five seconds when there are any (os-prober), and
+  the fallback path of the EFI partition stays the other system's loader where it
+  holds one, so patina no longer takes Windows' place there.
 - The boot splash builds the mark at an even pace and holds it until the installer or
   the login screen comes: its rings crawled, then the rest jumped in at once, since
   Plymouth without the timing of an earlier boot (the image, every first start)

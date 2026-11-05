@@ -26,6 +26,7 @@ iso/
                             and name the boot menu's entries Install patina
   live/config/includes.chroot/
     etc/calamares/settings.conf        the pages shown and the steps run
+    etc/calamares/efi-space.sh         the check of the EFI partition's room, before the copy
     etc/calamares/modules/*.conf       one file per step; packages.conf is the list the
                             installer fetches from Debian's mirrors (Plasma and the base
                             bundle) and the live tooling it removes afterwards;
@@ -114,7 +115,11 @@ iso/
    to the first boot. The summary page is the last look before anything is written; it
    lists the location, the keyboard and the disk, but not the user or these five
    pages, which Calamares' widget pages do not report to it.
-3. The live system is copied to disk (`unpackfs`), then Plasma and the base bundle are
+3. Right after the partitions are made and mounted, `efi-space.sh`
+   (`shellprocess-efi-space.conf`) stops the install with a plain message when the EFI
+   system partition has under 20 MB free for the boot loader, or none is set for
+   `/boot/efi`, before anything is copied, not at the bootloader step an hour later.
+   The live system is copied to disk (`unpackfs`), then Plasma and the base bundle are
    fetched from Debian's mirrors into it (`packages`, the list in
    `modules/packages.conf`, in five installs, smallest first, so the progress bar moves;
    apt shows nothing while each runs; `shellprocess-packages-start.conf` before them
@@ -132,7 +137,8 @@ iso/
    download cache are removed (`shellprocess-firstboot.conf`), GRUB is installed with
    Debian's signed shim into `EFI/debian`, where Debian's packages update it, and shim
    also at the removable path (`shellprocess-efi-removable.conf`), so the machine boots
-   when the firmware loses its boot entries.
+   when the firmware loses its boot entries; on a partition another system shares,
+   whose loader is there already (Windows keeps one), that path stays the other's.
 4. First boot: the boot splash shows (the installer copied it and Plymouth with the live
    system, and Calamares put `splash` on the kernel's line because Plymouth is there),
    and the service quits it and takes tty1 before the login screen, clones this repository

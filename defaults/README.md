@@ -71,7 +71,10 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   the EFI partition, so for them it leaves the name as `/etc/default/grub` has it
   (Debian GNU/Linux): Debian's signed GRUB reads its configuration from `EFI/debian`,
   and the updates of GRUB and shim go where that word says. The file tells its readers
-  apart by `$0`, the name of the program reading it.
+  apart by `$0`, the name of the program reading it. It also turns os-prober on, which
+  Debian leaves off, so on a disk shared with other systems the menu lists them, and
+  keeps the menu five seconds in place of one when os-prober finds any; it runs
+  os-prober only when grub-mkconfig writes the menu.
 - `boot/`: the boot splash, Plymouth's two-step theme as templates: `frame.svg`, one
   picture of the mark, into which `render_boot_splash` (`bin/lib.sh`) sets the
   characters of `branding/logo.txt` in the brand's colours, each as far faded in as

@@ -388,7 +388,8 @@ jobs:
           grep -q 'loadfont /boot/grub/live-theme/font.pf2' "$grub/theme.cfg"
           # The live menu at Full HD, which its theme is drawn for, not live-build's 800x600.
           grep -qx 'set gfxmode=1920x1080,auto' "$grub/theme.cfg"
-          grep -q "$(yq eval '.fonts.monospace' defaults/settings.yaml) Regular 24" "$grub/live-theme/theme.txt"
+          mono="$(yq eval '.fonts.monospace' defaults/settings.yaml)"
+          grep -q "$mono Regular 24" "$grub/live-theme/theme.txt"
           for f in theme.txt background.png ground.png font.pf2; do
             test -s "$build/config/includes.chroot/boot/grub/themes/patina/$f"
           done
