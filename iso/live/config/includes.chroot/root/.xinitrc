@@ -20,10 +20,10 @@ openbox &
 # network, so a computer without a default route but with a Wi-Fi card first gets
 # NetworkManager's own nmtui, full screen in the palette (~/.Xdefaults, rendered by
 # assets.sh, maps the slots NEWT_COLORS names: green is the accent; newt paints a focused
-# compact button, nmtui's kind, with the button slot; whiptail is newt too). Quitting it
-# online starts the installer; offline, wifi-step.sh asks whether to try again, which
-# forgets the networks that failed. Leaving the installer brings the step back while
-# the computer is still offline, as patina-ui.service starts this session again.
+# compact button, nmtui's kind, with the button slot; whiptail is newt too). Once the
+# computer is online the installer starts by itself (wifi-step.sh); leaving the
+# installer brings the step back while the computer is still offline, as
+# patina-ui.service starts this session again.
 if [[ -z "$(ip route show default 2> /dev/null)" ]] &&
     nmcli -t -f TYPE device 2> /dev/null | grep -qx wifi; then
   NEWT_COLORS='root=lightgray,black window=lightgray,black border=green,black
@@ -33,7 +33,7 @@ if [[ -z "$(ip route show default 2> /dev/null)" ]] &&
     listbox=lightgray,black actlistbox=black,green sellistbox=green,black
     actsellistbox=black,green emptyscale=,gray fullscale=,green helpline=gray,black
     roottext=gray,black' \
-    xterm -maximized -title "Connect to Wi-Fi, then Quit to start the installer" \
+    xterm -maximized -title "Connect to Wi-Fi to start the installer" \
       -e /root/wifi-step.sh || true
 fi
 # Calamares' mount step turns the new system's swap on for the live system, which has

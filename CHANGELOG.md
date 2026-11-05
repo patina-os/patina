@@ -8,12 +8,13 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
-- The image's Wi-Fi step lets you try again after a mistyped password. nmtui kept
-  the network with the wrong password and never asked for it again (a router that
-  also speaks WPA3 says "The Wi-Fi network could not be found"), and Quit started
-  the installer, which needs the internet, so only a restart helped. Quit while
-  still offline now asks: Try again forgets the networks that did not connect, so
-  picking one asks for its password again; Start installer goes on without one.
+- The image's Wi-Fi step ends by itself: once the computer is online the installer
+  starts, where nmtui's Quit had to be found first. A mistyped password can be typed
+  again: nmtui kept the network with the wrong password and never asked for it
+  again (a router that also speaks WPA3 says "The Wi-Fi network could not be
+  found"), so only a restart helped. A network that did not connect is forgotten
+  now, and picking it again asks for its password. Quit while still offline asks
+  Try again or Start installer.
 
 ## [0.1.0-alpha.9] - 2026-11-05
 

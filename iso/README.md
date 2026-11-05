@@ -36,7 +36,7 @@ iso/
                             colours next to them are rendered by assets.sh
     etc/systemd/system/patina-ui.service  the installer screen (X, openbox, Calamares)
     root/.xinitrc                      that session, with the Wi-Fi step before it
-    root/wifi-step.sh                  the Wi-Fi step: nmtui, and Try again while offline
+    root/wifi-step.sh                  the Wi-Fi step: nmtui until the computer is online
     root/.config/openbox/rc.xml        openbox with the patina theme for the dialogs
   live/templates/           what assets.sh fills from the theme's palette and the fonts:
                             calamares/ (stylesheet.qss, the wallpaper and the slides as
@@ -93,10 +93,11 @@ iso/
    five times. The console shows `branding/logo.txt`.
    A computer with no network yet but a Wi-Fi card first gets the Wi-Fi step:
    NetworkManager's `nmtui` full screen in the palette, to pick a network and type its
-   password; Quit starts the installer. Quit while still offline asks first: Try
-   again forgets the networks that did not connect, so a mistyped password is asked
-   for again, and Start installer goes on without a network. Leaving the installer
-   brings the step back while the computer is still offline.
+   password; once the computer is online the installer starts by itself. A network
+   that did not connect is forgotten, so picking it again asks for its password
+   again. Quit while still offline asks Try again or Start installer (to go on
+   without a network). Leaving the installer brings the step back while the
+   computer is still offline.
 2. Calamares asks what it must: time zone and keyboard (pre-filled), disk (erase is
    preselected; encryption and manual partitioning are available), the user, the AI
    agent (on this computer, from a cloud provider, or none, preselected from `ai.mode`
