@@ -15,6 +15,28 @@ if [[ -r /etc/default/locale ]]; then
   source /etc/default/locale
   set +a
 fi
+# The installer at the screen's size. Qt 6 scales Calamares by X's Xft.dpi, and xterm
+# sizes the Wi-Fi step's font by it, but nothing sets it on this bare session, so it is
+# set here from the physical size the screen reports (xrandr, from its EDID): its dots
+# per inch over 96, rounded down to a quarter, as Windows picks 150 % for a 13.3" Full
+# HD panel, and never so large that the pages get less than 1280x720, the size they
+# were checked at. A screen that reports no size (a virtual machine's) stays at 100 %.
+# Once the display has resources, xterm no longer reads ~/.Xdefaults itself, so they go
+# along. xinit keeps its connection open, so X keeps them until the session ends.
+quarters=4
+while read -r line; do
+  if [[ "$line" =~ \ connected\ (primary\ )?([0-9]+)x([0-9]+)\+.*\ ([1-9][0-9]*)mm\ x\ [0-9]+mm$ ]]; then
+    width="${BASH_REMATCH[2]}" height="${BASH_REMATCH[3]}" mm="${BASH_REMATCH[4]}"
+    quarters=$(( width * 1016 / (mm * 960) ))
+    (( quarters <= width * 4 / 1280 )) || quarters=$(( width * 4 / 1280 ))
+    (( quarters <= height * 4 / 720 )) || quarters=$(( height * 4 / 720 ))
+    (( quarters >= 4 )) || quarters=4
+    break
+  fi
+done < <(xrandr --query 2> /dev/null)
+if (( quarters > 4 )); then
+  { cat /root/.Xdefaults; echo "Xft.dpi: $(( quarters * 24 ))"; } | xrdb -nocpp -merge
+fi
 openbox &
 # The Wi-Fi step: the installer needs the internet and has no page to join a wireless
 # network, so a computer without a default route but with a Wi-Fi card first gets

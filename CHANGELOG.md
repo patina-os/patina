@@ -8,6 +8,10 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- The installer is readable on a small laptop: it scales to the screen's size, as
+  Windows does (150 % on a 13.3" Full HD screen, where its text was barely readable
+  at 100 %), and so does the Wi-Fi step before it. A large monitor and a virtual
+  machine stay at 100 %.
 - The image's Wi-Fi step ends by itself: once the computer is online the installer
   starts, where nmtui's Quit had to be found first. A mistyped password can be typed
   again: nmtui kept the network with the wrong password and never asked for it

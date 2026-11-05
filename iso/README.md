@@ -89,6 +89,10 @@ iso/
    the promises, the thanks to the people and projects of `docs/credits.yaml`, and what
    happens after the restart (the stick out, the first start, the password), which
    Calamares' own last page does not say.
+   The session scales to the screen's physical size, as Windows does (150 % on a
+   13.3" Full HD laptop, 100 % on a 24" monitor or in a virtual machine), never below
+   1280x720 of room for the pages: `.xinitrc` sets X's `Xft.dpi`, which Qt 6 and
+   xterm follow.
    Calamares shows a still slide for two seconds, so `branding.desc` lists each one
    five times. The console shows `branding/logo.txt`.
    A computer with no network yet but a Wi-Fi card first gets the Wi-Fi step:
