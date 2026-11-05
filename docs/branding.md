@@ -37,12 +37,16 @@ Debian". Never the swirl, never "Debian" in a larger type than our own name.
 - "Debian" and the swirl belong to Software in the Public Interest, Inc. Debian's policy
   allows true factual statements such as "based on Debian"; we may not imply endorsement
   or use the swirl as ours.
-- The image is branded as patina through the live image's boot menu (a GRUB theme and
-  splash rendered from the theme), the installer (Calamares branding in
+- The image is branded as patina through the boot menu (a GRUB theme rendered from the
+  theme, `defaults/boot/grub/`, on the live image and on the installed system), the
+  installer (Calamares branding in
   `iso/live/config/includes.chroot/etc/calamares/branding/patina/`, rendered by
   `iso/live/assets.sh`), the text mark on the console (`/etc/issue.d`), and on the
-  installed system the login screen, the Plasma splash, the look-and-feel and the
-  wallpaper. Stock Debian branding packages stay installed and unmodified; package
-  names, repository names, the archive and release notes remain Debian's. The GRUB menu
-  of an installed system keeps Debian's entry name and Debian's look.
+  installed system the boot splash, the login screen, the Plasma splash, the
+  look-and-feel and the wallpaper. Stock Debian branding packages stay installed and
+  unmodified; package names, repository names, the archive and release notes remain
+  Debian's. The installed system's boot entry names both, as a fact: "patina / Debian 13
+  GNU/Linux" (`defaults/system/default/grub.d/patina.cfg`); the firmware's boot entry
+  and the folder on the EFI partition stay Debian's (`debian`), because Debian's signed
+  GRUB and its updates use them.
 - KDE and Plasma are trademarks of KDE e.V. The same rule applies: describe, do not imply.

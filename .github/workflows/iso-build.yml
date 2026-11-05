@@ -51,9 +51,11 @@ jobs:
       - name: Install live-build, librsvg, the fonts, git and the Go yq
         run: |
           apt-get update -q
-          # librsvg and the fonts render the installer's artwork (iso/live/assets.sh)
+          # librsvg and the fonts render the installer's artwork, fontconfig's fc-match
+          # and grub-common's grub-mkfont the boot menus' font (iso/live/assets.sh)
           apt-get install -y -q live-build debootstrap git ca-certificates curl \
-            librsvg2-bin fonts-adobe-sourcesans3 fonts-jetbrains-mono fonts-sora
+            librsvg2-bin fonts-adobe-sourcesans3 fonts-jetbrains-mono fonts-sora \
+            fontconfig grub-common
           curl -fsSL --retry 4 -o /usr/local/bin/yq \
             "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${{ matrix.arch }}"
           chmod +x /usr/local/bin/yq

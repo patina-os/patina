@@ -409,7 +409,7 @@ install_upstream() {
 # commands run once when a file changed and the machine is booted with systemd; a
 # container gets the files only.
 install_system() {
-  local dir src dest changed_here=0 cmd first d splash stamp out n
+  local dir src dest changed_here=0 cmd first d splash menu wallpaper stamp out n
   local -a dirs=("$PATINA_PATH/defaults/system")
   for d in "${devices[@]}"; do
     [[ ! -d "$PATINA_PATH/devices/$d/system" ]] || dirs+=("$PATINA_PATH/devices/$d/system")
@@ -432,8 +432,8 @@ install_system() {
   # checksum of that sits beside it.
   splash=/usr/share/plymouth/themes/patina
   stamp="$( {
-    cat "$PATINA_PATH/branding/logo.txt" "$PATINA_PATH"/defaults/boot/* \
-      "$PATINA_PATH/defaults/settings.yaml" \
+    cat "$PATINA_PATH/branding/logo.txt" "$PATINA_PATH"/defaults/boot/*.svg \
+      "$PATINA_PATH/defaults/boot/patina.plymouth" "$PATINA_PATH/defaults/settings.yaml" \
       "$PATINA_PATH/themes/$(yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")/theme.yaml"
     declare -f render_boot_splash
   } | sha256sum | cut -d ' ' -f 1)"
@@ -454,6 +454,40 @@ install_system() {
       changed
     else
       warn "rsvg-convert is missing (librsvg2-bin in the base bundle); no boot splash"
+    fi
+  fi
+  # The boot menu (defaults/boot/grub/), where GRUB_THEME of default/grub.d/patina.cfg
+  # points: under /boot/grub, which GRUB reads wherever the system lies (a /boot of its
+  # own, an encrypted root). Only where GRUB is (grub-mkfont comes with it), drawn
+  # again only when what it is drawn from changed, as the splash; update-grub below
+  # takes it into GRUB's configuration.
+  menu=/boot/grub/themes/patina
+  if command -v grub-mkfont > /dev/null; then
+    wallpaper="$(theme_vars "$PATINA_PATH/themes/$(yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")/theme.yaml" \
+      "$PATINA_PATH/defaults/settings.yaml" dark && echo "${tpl[WALLPAPER_FIRST]}")"
+    stamp="$( {
+      cat "$PATINA_PATH"/defaults/boot/grub/* "$PATINA_PATH/branding/export/wordmark-blocks.svg" \
+        "$PATINA_PATH/defaults/settings.yaml" "$wallpaper"
+      declare -f render_boot_menu raster_wallpaper
+    } | sha256sum | cut -d ' ' -f 1)"
+    if [[ "$(cat "$menu/source.sha256" 2> /dev/null)" != "$stamp" ]]; then
+      if command -v rsvg-convert > /dev/null && command -v fc-match > /dev/null; then
+        out="$(mktemp -d)"
+        ( render_boot_menu "$out" )
+        echo "$stamp" > "$out/source.sha256"
+        n=0
+        for src in "$out"/*; do
+          cmp -s "$src" "$menu/${src##*/}" && continue
+          backend_run system.write "$src" "$menu/${src##*/}"
+          n=$((n + 1))
+        done
+        rm -rf "$out"
+        say "system: boot menu drawn, $n files in $menu"
+        changed_here=1
+        changed
+      else
+        warn "rsvg-convert or fc-match is missing (the base bundle); no boot menu theme"
+      fi
     fi
   fi
   if [[ $changed_here -eq 0 ]]; then

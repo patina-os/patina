@@ -518,6 +518,73 @@ render_boot_splash() {
   render "$boot/patina.plymouth" "$out/patina.plymouth"
 }
 
+# A theme's wallpaper as a 1920x1080 PNG, cut to fill: raster_wallpaper <svg-jpg-or-png>
+# <out.png>. A photograph goes through an SVG that holds it, written beside <out.png>.
+raster_wallpaper() {
+  case "$1" in
+    *.svg) rsvg-convert --width 1920 --height 1080 --output "$2" "$1" ;;
+    *.jpg)
+      printf '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1920" height="1080"><image width="1920" height="1080" preserveAspectRatio="xMidYMid slice" xlink:href="data:image/jpeg;base64,%s"/></svg>\n' \
+        "$(base64 -w0 "$1")" > "$2.svg"
+      rsvg-convert --width 1920 --height 1080 --output "$2" "$2.svg"
+      rm "$2.svg"
+      ;;
+    *) cp "$1" "$2" ;;
+  esac
+}
+
+# The boot menu, a GRUB theme, drawn into <dir> from the templates of defaults/boot/grub/:
+# theme.txt; background.png, the default theme's first wallpaper under a veil with
+# patina in block letters above the menu; font.pf2, fonts.monospace at <size> pixels,
+# converted by grub-mkfont, since GRUB reads no other font format; and ground.png, the
+# default theme's background, which GRUB's terminal shows once an entry boots, behind
+# Debian's "Loading Linux" lines, instead of Debian's picture. <columns> is how many
+# characters the menu's column holds on a 1920-pixel-wide screen: GRUB cannot centre
+# the entries, and cuts off what is wider than the column. An installed system's menu,
+# at the screen's own size, takes 20 pixels and 80 characters, so the recovery entries
+# of its submenu ("patina / Debian 13 GNU/Linux, with Linux 6.12.115+deb13.1-amd64
+# (recovery mode)") read whole; the live image's, at live-build's 800x600, 16 and 40
+# ("Live system (amd64 fail-safe mode)" has 34). It loads the default theme into tpl,
+# so callers run it in a subshell: `( render_boot_menu <dir> [<size> <columns>] )`.
+# Needs yq, rsvg-convert, fc-match and grub-mkfont.
+render_boot_menu() {
+  local out="$1" size="${2:-20}" columns="${3:-80}" settings="$PATINA_PATH/defaults/settings.yaml"
+  local tmp wide narrow share
+  theme_vars "$PATINA_PATH/themes/$(yq eval '.theme' "$settings")/theme.yaml" "$settings" dark
+  # JetBrains Mono's characters are three fifths of their size wide, rounded to whole
+  # pixels as grub-mkfont draws them; the column has two pixels of padding each side.
+  # GRUB sizes a column as a share of the screen plus pixels: <columns> characters
+  # wide on a 1920-pixel screen, at most an 800-pixel one less 30 pixels each side (a
+  # virtual machine's firmware gives GRUB 800x600), and in a line between and beyond.
+  wide=$(( columns * ((size * 6 + 5) / 10) + 4 ))
+  narrow=$(( wide < 740 ? wide : 740 ))
+  share=$(( (wide - narrow) * 100 / 1120 ))
+  share=$(( share - share % 2 ))   # percent, even, so half of it is whole
+  tpl[MENU_SIZE]="$size"
+  tpl[MENU_FONT]="${tpl[MONO_FONT]} Regular $size"
+  tpl[MENU_WIDTH]="${share}%+$(( narrow - share * 8 ))"
+  tpl[MENU_LEFT]="$(( 50 - share / 2 ))%-$(( (narrow - share * 8) / 2 ))"
+  tpl[MENU_ITEM]=$(( size + 4 ))
+  tpl[MENU_SPACING]=$(( size * 3 / 8 ))
+  tpl[MENU_LABEL]=$(( size * 25 / 8 ))
+  tpl[MENU_BOTTOM]=$(( size * 5 ))
+  mkdir -p "$out"
+  tmp="$(mktemp -d)"
+  raster_wallpaper "${tpl[WALLPAPER_FIRST]}" "$tmp/wallpaper.png"
+  rsvg-convert --width 1160 --output "$tmp/blocks.png" "$PATINA_PATH/branding/export/wordmark-blocks.svg"
+  render "$PATINA_PATH/defaults/boot/grub/background.svg" "$tmp/background.svg"
+  rsvg-convert --width 1920 --height 1080 --output "$out/background.png" "$tmp/background.svg"
+  printf '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><rect width="16" height="16" fill="%s"/></svg>\n' \
+    "${tpl[BASE00]}" > "$tmp/ground.svg"
+  rsvg-convert --output "$out/ground.png" "$tmp/ground.svg"
+  # Named as the theme names it, whichever file fontconfig finds; grub-mkfont warns about
+  # every OpenType feature it leaves out.
+  grub-mkfont --name "${tpl[MONO_FONT]}" --size "$size" --output "$out/font.pf2" \
+    "$(fc-match --format '%{file}' "${tpl[MONO_FONT]}:style=Regular")" 2> /dev/null
+  render "$PATINA_PATH/defaults/boot/grub/theme.txt" "$out/theme.txt"
+  rm -rf "$tmp"
+}
+
 # Can a file be written through the backend's sudo path right now: root already, sudo
 # without a prompt, a terminal where sudo may ask once, or a password dialog?
 system_writable() {

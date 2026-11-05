@@ -5,8 +5,8 @@
 # theme and the standard fonts, every colour from the default theme's palette
 # (desktops/ renders the same palette for the desktop). `assets.sh <build-dir>` where
 # <build-dir>/config is a copy of iso/live/config; build.sh calls it before lb, the smoke
-# test runs it on its own. Needs yq, rsvg-convert, git and the fonts of
-# defaults/settings.yaml; no root.
+# test runs it on its own. Needs yq, rsvg-convert, git, fc-match, grub-mkfont and the
+# fonts of defaults/settings.yaml; no root.
 set -euo pipefail
 
 here="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
@@ -14,7 +14,7 @@ repo="$(cd "$here/../.." && pwd)"
 out="${1:?usage: assets.sh <build-dir>}"
 config="$out/config"
 [[ -d "$config/includes.chroot" ]] || { echo "assets.sh: $config is not a copy of iso/live/config" >&2; exit 64; }
-for tool in yq rsvg-convert git; do
+for tool in yq rsvg-convert git fc-match grub-mkfont; do
   command -v "$tool" > /dev/null || { echo "assets.sh: $tool missing" >&2; exit 69; }
 done
 
@@ -52,19 +52,8 @@ render "$templates/fontconfig/local.conf" "$chroot/etc/fonts/local.conf"
 # rasterised.
 mapfile -t wallpapers < <(yq eval '.wallpapers[]?' "$theme_dir/theme.yaml")
 [[ ${#wallpapers[@]} -gt 0 ]] || { echo "assets.sh: the theme has no wallpaper" >&2; exit 65; }
-raster() {   # raster <svg-png-or-jpg> <out.png>: a theme wallpaper at 1920x1080
-  case "$1" in
-    *.svg) rsvg-convert --width 1920 --height 1080 --output "$2" "$1" ;;
-    *.jpg)   # a photograph, through an SVG that holds it
-      printf '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1920" height="1080"><image width="1920" height="1080" preserveAspectRatio="xMidYMid slice" xlink:href="data:image/jpeg;base64,%s"/></svg>\n' \
-        "$(base64 -w0 "$1")" > "$tmp/photo.svg"
-      rsvg-convert --width 1920 --height 1080 --output "$2" "$tmp/photo.svg"
-      ;;
-    *) cp "$1" "$2" ;;
-  esac
-}
 say "rendering the wallpapers of ${tpl[THEME]}"
-raster "$theme_dir/${wallpapers[0]}" "$tmp/wallpaper.png"
+raster_wallpaper "$theme_dir/${wallpapers[0]}" "$tmp/wallpaper.png"
 rsvg-convert --width 1160 --output "$tmp/blocks.png" "$repo/branding/export/wordmark-blocks.svg"
 
 compose() {   # compose <template> <out.png> [width height]: fill the template, render it
@@ -204,7 +193,7 @@ for dir in "$repo"/themes/[a-z]*/; do
       "screenshot": "theme-" + strenv(NAME) + ".png"}]' "$chooser"
   (
     theme_vars "$dir/theme.yaml" "$settings"
-    raster "$dir/$(yq eval '.wallpapers[0]' "$dir/theme.yaml")" "$tmp/theme-wallpaper.png"
+    raster_wallpaper "$dir/$(yq eval '.wallpapers[0]' "$dir/theme.yaml")" "$tmp/theme-wallpaper.png"
     render "$templates/calamares/theme.svg" "$tmp/theme-$name.svg"
     rsvg-convert --width 960 --height 540 --output "$branding/theme-$name.png" "$tmp/theme-$name.svg"
   )
@@ -219,11 +208,11 @@ yq -i "
   .style.SidebarBackgroundCurrent = \"#24${tpl[ACCENT]#\#}\"
 " "$branding/branding.desc"
 
-# The boot menu: live-build takes these two files over its stock ones, and its theme.cfg
-# turns the theme on as soon as splash.png exists.
+# The boot menu, drawn by the function `patina install` draws an installed system's with
+# (defaults/boot/grub/), at live-build's 800x600: live-build takes live-theme/ over its
+# stock one, and theme.cfg (config/bootloaders/grub-pc/) loads its font and turns it on.
 say "rendering the boot menu's theme"
-render "$templates/grub/theme.txt" "$grub/live-theme/theme.txt"
-compose grub/splash.svg "$grub/splash.png"
+( render_boot_menu "$grub/live-theme" 16 40 )
 
 # Openbox, for the dialogs the installer opens.
 openbox="$chroot/usr/share/themes/patina/openbox-3"
@@ -241,8 +230,17 @@ say "rendering the boot splash"
 ( render_boot_splash "$chroot/usr/share/plymouth/themes/patina" )
 install -D -m 0644 "$repo/defaults/system/plymouth/plymouthd.conf" "$chroot/etc/plymouth/plymouthd.conf"
 
+# The installed system's boot menu, likewise: drawn as `patina install` draws it, with
+# the GRUB setting that names Debian's release and turns the theme on. The installer
+# copies both to the disk and writes GRUB's menu with them, so the first start after
+# the install shows patina's menu, not Debian's.
+say "rendering the installed system's boot menu"
+( render_boot_menu "$chroot/boot/grub/themes/patina" )
+install -D -m 0644 "$repo/defaults/system/default/grub.d/patina.cfg" "$chroot/etc/default/grub.d/patina.cfg"
+
 # Every placeholder must be gone.
-left="$(grep -lF "\${" "$branding/stylesheet.qss" "$grub/live-theme/theme.txt" "$openbox/themerc" \
+left="$(grep -lF "\${" "$branding/stylesheet.qss" "$grub/live-theme/theme.txt" \
+  "$chroot/boot/grub/themes/patina/theme.txt" "$openbox/themerc" \
   "$chroot/etc/fonts/local.conf" "$chroot/root/.Xdefaults" || true)"
 [[ -z "$left" ]] || { echo "assets.sh: unfilled placeholders in: $left" >&2; exit 70; }
 say "done: ${tpl[THEME]} ${tpl[VERSION]}"

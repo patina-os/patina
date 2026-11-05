@@ -42,12 +42,15 @@ iso/
                             SVG compositions on slide-ground.svg, ai.svg, bundle.svg
                             and theme.svg for the pictures of the four question pages,
                             logo-square.svg for the sidebar's mark, icons/ in the
-                            accent), grub/ (theme.txt, splash.svg), openbox/,
+                            accent), openbox/,
                             fontconfig/ (the live system's standard fonts), xterm/
                             (the Wi-Fi step's terminal)
   live/assets.sh            renders the above plus branding/ into a build directory: the
                             console mark, the installer's files, the boot menu's theme
-                            and splash; no root, so the smoke test runs it too
+                            (defaults/boot/grub/, with live-build's theme.cfg in
+                            config/bootloaders/grub-pc/, which loads its font), the
+                            boot splash, and an installed system's boot menu with its
+                            GRUB setting; no root, so the smoke test runs it too
   live/build.sh             assembles iso/build/live/ (gitignored) from the above plus
                             assets.sh's output and firstboot/, then runs lb
   firstboot/                the systemd unit and script that run Path A on first boot;
@@ -183,8 +186,10 @@ the sidebar's box) into the installer's branding, the icons
 of `live/templates/calamares/icons/` in the accent, the default theme's wallpapers under a veil as the installer's
 background, seven slides on one ground (`slide-ground.svg`) with `docs/screenshots/` of the
 desktop and the command palette (the sixth slide the names of `docs/credits.yaml`), the
-splash of the boot menu, and the templates under
-`live/templates/` (the Calamares stylesheet, the GRUB theme, the openbox theme) with the
+boot menus of `defaults/boot/grub/` (the live image's at 800x600, and an installed
+system's with `defaults/system/default/grub.d/patina.cfg`, which the installer copies to
+the disk, so the first start after the install shows patina's menu), and the templates
+under `live/templates/` (the Calamares stylesheet, the openbox theme) with the
 palette of `themes/<default>/theme.yaml` and the fonts of `defaults/settings.yaml`,
 plus the version and the sidebar colours into `branding.desc` with `yq`, and
 `/etc/fonts/local.conf`, which makes the layer's fonts the live system's standard ones:
