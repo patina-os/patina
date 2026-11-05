@@ -37,6 +37,14 @@ done < <(xrandr --query 2> /dev/null)
 if (( quarters > 4 )); then
   { cat /root/.Xdefaults; echo "Xft.dpi: $(( quarters * 24 ))"; } | xrdb -nocpp -merge
 fi
+# The screen's brightness: the level the graphics driver starts at can be low (an HP
+# EliteBook's dimmed from the boot splash on, plugged in), so a screen below 70 % starts
+# at 70 %. openbox binds the brightness keys (root/.config/openbox/rc.xml).
+while IFS=, read -r device class _ percent _; do
+  if [[ "$class" == backlight ]] && (( ${percent%\%} < 70 )); then
+    brightnessctl --quiet --device="$device" set 70% || true
+  fi
+done < <(brightnessctl --list --machine-readable 2> /dev/null)
 openbox &
 # The Wi-Fi step: the installer needs the internet and has no page to join a wireless
 # network, so a computer without a default route but with a Wi-Fi card first gets

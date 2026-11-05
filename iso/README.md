@@ -37,7 +37,7 @@ iso/
     etc/systemd/system/patina-ui.service  the installer screen (X, openbox, Calamares)
     root/.xinitrc                      that session, with the Wi-Fi step before it
     root/wifi-step.sh                  the Wi-Fi step: nmtui until the computer is online
-    root/.config/openbox/rc.xml        openbox with the patina theme for the dialogs
+    root/.config/openbox/rc.xml        openbox with the patina theme for the dialogs, and the brightness keys
   live/templates/           what assets.sh fills from the theme's palette and the fonts:
                             calamares/ (stylesheet.qss, the wallpaper and the slides as
                             SVG compositions on slide-ground.svg, ai.svg, bundle.svg
@@ -92,7 +92,9 @@ iso/
    The session scales to the screen's physical size, as Windows does (150 % on a
    13.3" Full HD laptop, 100 % on a 24" monitor or in a virtual machine), never below
    1280x720 of room for the pages: `.xinitrc` sets X's `Xft.dpi`, which Qt 6 and
-   xterm follow.
+   xterm follow. The brightness keys work there (openbox runs brightnessctl, which
+   the installer removes from the installed system), and a screen below 70 % starts
+   at 70 %.
    Calamares shows a still slide for two seconds, so `branding.desc` lists each one
    five times. The console shows `branding/logo.txt`.
    A computer with no network yet but a Wi-Fi card first gets the Wi-Fi step:

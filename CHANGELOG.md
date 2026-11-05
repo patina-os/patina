@@ -8,6 +8,9 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- The brightness keys work in the image's Wi-Fi step and installer, and a dim screen
+  starts at 70 %: nothing worked the keys there, and a laptop's screen could stay
+  as dim as the graphics driver started it.
 - The installer is readable on a small laptop: it scales to the screen's size, as
   Windows does (150 % on a 13.3" Full HD screen, where its text was barely readable
   at 100 %), and so does the Wi-Fi step before it. A large monitor and a virtual
