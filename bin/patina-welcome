@@ -79,8 +79,8 @@ left_bundles() {
 }
 
 # The steps the menu offers now, one line each: the step, then what it does in at most
-# 64 characters, so a line fits the welcome's half of the window (82 columns, beside
-# btop's). A cloud agent not logged in yet has its login first, where the menu starts:
+# 68 characters, so a line with gum's cursor fits the welcome's half of the window (82
+# columns, beside btop's). A cloud agent not logged in yet has its login first, where the menu starts:
 # the image's first boot installs it and asks nothing.
 steps() {
   local ai agent provider
@@ -93,7 +93,9 @@ steps() {
   if [[ "$ai" == none ]]; then
     printf '%-9s %s\n' agent "Turn on the AI agent · opencode or Hermes, local or cloud"
   else
-    printf '%-9s %s\n' agent "Change the AI agent · now $agent, $ai"
+    # A small local model says so here too: it gets commands and facts wrong more often.
+    printf '%-9s %s\n' agent "Change the AI agent · now $agent, $ai$([[ "$ai" != local ]] ||
+      small_hint "$(cat "$PATINA_STATE/ai-model" 2> /dev/null || true)")"
     if [[ "$ai" == cloud ]] && ai_logged_in "$agent" "$provider"; then
       printf '%-9s %s\n' provider "Change the AI provider · now $provider"
     fi

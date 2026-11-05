@@ -281,7 +281,10 @@ And where the model runs:
   models of `ai.local.models` in `defaults/settings.yaml` that fit your memory and
   recommends one: NVIDIA's Nemotron 3.5 Bolt E4B, made for agents, from 16 GB, and
   Mistral's Ministral 3 3B below that. Ministral 3 8B and 14B and Qwen 3.5 4B and 9B
-  are the others. Your requests and the answers stay on the computer; around them,
+  are the others. All but Ministral 3 14B (from 20 GB) are small models: they get
+  commands and facts wrong more often than a large one, so read what the agent
+  proposes before you allow it; setup, the install and `patina ai` say so. Your
+  requests and the answers stay on the computer; around them,
   opencode fetches its list of models from `models.opencode.ai` when it starts and the
   provider's package from npm on its first request, and KRunner keeps its last queries
   (kortex's README has the details). Ollama with its GPU libraries and the model take
@@ -296,8 +299,10 @@ And where the model runs:
   offers Mistral (through its OpenAI-compatible API), your own API, Anthropic and
   OpenAI, and keeps the key in its own `~/.hermes/.env`, readable by you only.
   Big Pickle, OpenCode Zen's free model (opencode only), needs no account or key, to
-  try the agent at once; it is a US service, and while it is free, what you ask it may
-  be used to improve the model.
+  try the agent at once. With a US provider (Big Pickle, Anthropic, OpenAI) what you
+  ask leaves the EU and falls under US law; the list, the install and `patina ai` say
+  so. While Big Pickle is free, what you ask it may be used to improve the model, so
+  ask it nothing private.
 
 `patina ai off` leaves what was installed in place. Ollama takes the most space; its
 own installer has no uninstall, and these are its documented steps:

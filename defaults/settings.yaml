@@ -17,15 +17,27 @@ ai:
   mode: none                 # local | cloud | none; preselected, and taken when unattended;
                              # `patina ai on` turns the agent on later
   local:                     # Ollama on this machine: the models that fit the memory are
-    models:                  # offered in this order, the first that fits is recommended
+    # offered in this order, the first that fits is recommended. A model under 14B
+    # parameters is `small`: it gets commands and facts wrong more often, so the model
+    # question shows `small_hint` beside it, and the install and `patina ai` say
+    # `small_note` after its name
+    small_hint: "small, more mistakes"
+    small_note: >-
+      is a small model: it gets commands and facts wrong more often than a large one,
+      so read what it proposes before you allow it (ministral-3:14b, from 20 GB of
+      memory, or a cloud provider errs less)
+    models:
       - model: "nemotron-3.5-bolt:e4b"
         min_memory_gb: 16
         name: "Nemotron 3.5 Bolt E4B · NVIDIA · made for agents · 8 GB"
-      - {model: "ministral-3:3b", min_memory_gb: 0, name: "Ministral 3 3B · Mistral · 3 GB"}
-      - {model: "ministral-3:8b", min_memory_gb: 12, name: "Ministral 3 8B · Mistral · 6 GB"}
+        small: true
+      - {model: "ministral-3:3b", min_memory_gb: 0, small: true,
+         name: "Ministral 3 3B · Mistral · 3 GB"}
+      - {model: "ministral-3:8b", min_memory_gb: 12, small: true,
+         name: "Ministral 3 8B · Mistral · 6 GB"}
       - {model: "ministral-3:14b", min_memory_gb: 20, name: "Ministral 3 14B · Mistral · 9 GB"}
-      - {model: "qwen3.5", min_memory_gb: 16, name: "Qwen 3.5 9B · Alibaba · 7 GB"}
-      - {model: "qwen3.5:4b", min_memory_gb: 8, name: "Qwen 3.5 4B · Alibaba · 4 GB"}
+      - {model: "qwen3.5", min_memory_gb: 16, name: "Qwen 3.5 9B · Alibaba · 7 GB", small: true}
+      - {model: "qwen3.5:4b", min_memory_gb: 8, name: "Qwen 3.5 4B · Alibaba · 4 GB", small: true}
   # The cloud providers, offered in this order by `patina ai login` (and the welcome's
   # step that runs it; the install asks none of this). `model` is opencode's
   # provider/model, which every entry but `custom` needs: without one opencode took the
@@ -33,7 +45,9 @@ ai:
   # agent gets in: key (the default) through opencode's own login or a key in Hermes' own
   # .env; none, nothing to log in to; endpoint, the address of an OpenAI-compatible API
   # and its key, and a model from the list that API gives. Hermes offers the ones with a
-  # `hermes` entry: its model entry and the key it reads from its .env.
+  # `hermes` entry: its model entry and the key it reads from its .env. A US service
+  # says so in its name, and `note` is what `patina ai login` and `patina ai` say once
+  # it is picked.
   cloud:
     providers:
       - id: mistral
@@ -62,16 +76,22 @@ ai:
       # OpenCode Zen's free model, to try the agent without an account: opencode only,
       # and while it is free, what it is asked may be used to improve it
       - id: big-pickle
-        name: "Big Pickle · OpenCode Zen · free, no key (US)"
+        name: "Big Pickle · OpenCode Zen · free, no key (US, leaves the EU)"
         model: "opencode/big-pickle"
         login: none
+        note: >-
+          Big Pickle runs at OpenCode Zen, a US service: what you ask leaves the EU and
+          falls under US law, and while Big Pickle is free, it may be used to improve
+          the model, so ask it nothing private.
       - id: anthropic
-        name: "Anthropic (US)"
+        name: "Anthropic (US, leaves the EU)"
         model: "anthropic/claude-sonnet-5-5"
+        note: "Anthropic is a US service: what you ask leaves the EU and falls under US law."
         hermes: {key: ANTHROPIC_API_KEY, model: {provider: anthropic, default: claude-sonnet-5-5}}
       - id: openai
-        name: "OpenAI (US)"
+        name: "OpenAI (US, leaves the EU)"
         model: "openai/gpt-5.5"
+        note: "OpenAI is a US service: what you ask leaves the EU and falls under US law."
         hermes: {key: OPENAI_API_KEY, model: {provider: openai-api, default: gpt-5.5}}
 # The speed settings (docs/roadmap.md, Phase 2), after what CachyOS sets on Plasma.
 speed:

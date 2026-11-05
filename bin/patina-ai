@@ -42,12 +42,18 @@ usage: patina ai [status] | on [opencode|hermes] [local|cloud] | login | off | c
 EOU
 }
 
+# The agent this machine has, and the warning about its model (ai_note): a small local
+# model errs more often, a US provider takes what is asked out of the EU.
 status() {
-  local ai agent provider
+  local ai agent provider model
   ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)"
   agent="$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || echo opencode)"
   case "$ai" in
-    local) say "ai: $agent, local, $(cat "$PATINA_STATE/ai-model" 2> /dev/null || echo '?') through Ollama" ;;
+    local)
+      model="$(cat "$PATINA_STATE/ai-model" 2> /dev/null || echo '?')"
+      say "ai: $agent, local, $model through Ollama"
+      ai_note local "$model"
+      ;;
     cloud)
       provider="$(cat "$PATINA_STATE/ai-provider" 2> /dev/null || echo '?')"
       if ai_logged_in "$agent" "$provider"; then
@@ -55,6 +61,7 @@ status() {
       else
         say "ai: $agent, cloud, $provider, not logged in yet; patina ai login does it"
       fi
+      ai_note cloud "$provider"
       ;;
     *) say "ai: none; patina ai on turns it on" ;;
   esac

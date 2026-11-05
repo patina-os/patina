@@ -118,8 +118,11 @@ ask() {
     echo
   fi
   if [[ "$ai" == local && -z "${PATINA_AI_MODEL:-}" ]]; then
-    mapfile -t model_lines < <(yq eval "[.ai.local.models[] | select(.min_memory_gb <= $(memory_gb))][] |
-      (.model + \"|\" + .name)" "$PATINA_PATH/defaults/settings.yaml" | awk -F'|' '{ printf "%-24s %s\n", $1, $2 }')
+    # A small model carries its hint: it gets commands and facts wrong more often.
+    mapfile -t model_lines < <(yq eval ".ai.local.small_hint as \$h | [.ai.local.models[] |
+      select(.min_memory_gb <= $(memory_gb))][] | (.model + \"|\" + .name +
+      (if .small then \" · \" + \$h else \"\" end))" "$PATINA_PATH/defaults/settings.yaml" |
+      awk -F'|' '{ printf "%-24s %s\n", $1, $2 }')
     choice="$(printf '%s\n' "${model_lines[@]}" | grep "^$(local_model) ")" || choice="${model_lines[0]}"
     choice="$(gum choose --header "Local model ($(memory_gb) GB of memory; the first fits best)" \
       --selected "$choice" "${model_lines[@]}")" || exit 0
@@ -157,11 +160,12 @@ local_model() {
 ai_summary() {
   local p
   case "$ai" in
-    local) echo "$agent, local, $(local_model) through Ollama" ;;
+    local) echo "$agent, local, $(local_model) through Ollama$(small_hint "$(local_model)")" ;;
     cloud)
       p="$(cloud_provider "$agent")"
       if ai_logged_in "$agent" "$p"; then
-        echo "$agent, cloud, $p"
+        echo "$agent, cloud, $(P="$p" yq eval '.ai.cloud.providers[] | select(.id == strenv(P)) | .name' \
+          "$PATINA_PATH/defaults/settings.yaml")"
       else
         echo "$agent, cloud (provider and key at the next login, in the welcome)"
       fi
@@ -651,8 +655,9 @@ install_hermes() {
   fi
 }
 
-# The AI agent the question chose: kortex's choice of agent, the agent's own setup, and
-# the local model pulled into Ollama.
+# The AI agent the question chose: kortex's choice of agent, the agent's own setup, the
+# local model pulled into Ollama, and the warning about the model: a small local model
+# errs more often, a US provider takes what is asked out of the EU.
 install_ai() {
   local kortex_agent="${XDG_CONFIG_HOME:-$HOME/.config}/kortex/agent" model
   [[ -n "$ai" && "$ai" != none ]] || return 0
@@ -668,7 +673,10 @@ install_ai() {
   else
     install_opencode
   fi
-  [[ "$ai" == local ]] || return 0
+  if [[ "$ai" == cloud ]]; then
+    ai_note cloud "$(cloud_provider "$agent")"
+    return 0
+  fi
   model="$(local_model)"
   # `ollama list` names an untagged model with :latest.
   if ! ollama list > /dev/null 2>&1; then
@@ -685,6 +693,7 @@ install_ai() {
       failed=1
     fi
   fi
+  ai_note local "$model"
 }
 
 # The theme, through `patina theme set`: PATINA_THEME, else the one already recorded,

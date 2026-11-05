@@ -79,8 +79,12 @@ packs. Audience: developers and privacy-minded users in the EU.
   it gives, and Big Pickle, OpenCode Zen's free model, opt-in and never preselected,
   to try the agent without a key; November 2026) or none (the default:
   the agent is opt-in, `patina ai on` turns it on later), as the `ai-local` and
-  `ai-cloud` bundles. Hermes Agent (MIT, Nous Research) is the second agent, chosen at
-  the same question, as the `hermes-local` and `hermes-cloud` bundles: from its own
+  `ai-cloud` bundles. A US provider (Big Pickle, Anthropic, OpenAI) says in its name
+  that what is asked leaves the EU, with a `note` the install and `patina ai` say; a
+  local model under 14B parameters is marked `small`, with a hint and a note that it
+  errs more often: warnings only, no extra question (November 2026). Hermes Agent
+  (MIT, Nous Research) is the second agent, chosen at the same question, as the
+  `hermes-local` and `hermes-cloud` bundles: from its own
   installer pinned to a release (it refuses to be built as a package), Mistral through
   its OpenAI-compatible API, the user's own API, then Anthropic and OpenAI as its cloud
   providers, its approvals manual, `defaults/agent.md` as its `agent.environment_hint`, its own

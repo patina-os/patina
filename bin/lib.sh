@@ -261,6 +261,28 @@ provider_login() {
     "$PATINA_PATH/defaults/settings.yaml"
 }
 
+# A local model's hint for a line, " (small, more mistakes)", when ai.local.models marks
+# it small; nothing otherwise. small_hint <model>
+small_hint() {
+  # if, not select: yq prints a string after a select that matched nothing all the same.
+  # shellcheck disable=SC2016 # $l is yq's variable
+  M="$1" yq eval '.ai.local as $l | if ([$l.models[] | select(.model == strenv(M) and .small == true)] | length) > 0
+    then " (" + $l.small_hint + ")" else "" end' "$PATINA_PATH/defaults/settings.yaml"
+}
+
+# The warning about the agent's model, said after the install and by `patina ai`: a small
+# local model's small_note, a cloud provider's note (a US service's). ai_note local
+# <model> | cloud <provider>
+ai_note() {
+  local settings="$PATINA_PATH/defaults/settings.yaml" note
+  if [[ "$1" == local ]]; then
+    [[ -z "$(small_hint "$2")" ]] || say "ai: $2 $(yq eval '.ai.local.small_note' "$settings")"
+  else
+    note="$(P="$2" yq eval '.ai.cloud.providers[] | select(.id == strenv(P)) | .note // ""' "$settings")"
+    [[ -z "$note" ]] || say "ai: $note"
+  fi
+}
+
 # Can the agent use the provider now: its key in opencode's own login or Hermes' .env,
 # nothing to log in to, or your own API's address (`patina ai login`)? ai_logged_in
 # <agent> <provider>

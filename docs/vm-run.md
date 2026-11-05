@@ -121,7 +121,10 @@ script -q -c 'patina install' ~/run1.log
   the light theme, opencode asks before it runs `patina theme mode light`. With the
   cloud agent: the welcome's first step is "Log in to the AI provider"; it lists the
   providers (your own API and Big Pickle among them), and after the one picked
-  `patina ai` names it without "not logged in"; Big Pickle answers with no key
+  `patina ai` names it without "not logged in"; Big Pickle answers with no key, and
+  the list, the end of the login and `patina ai` say that Big Pickle, Anthropic and
+  OpenAI take what you ask out of the EU. With the local agent and a model under 14B,
+  the model question, the summary and `patina ai` call it small
 - [ ] with either agent, after logging out and in: `ai hello` in KRunner (Meta+Space)
   offers to ask the agent; Enter reopens KRunner on `ai ›` with the answer growing
   there (note whether it reads well or jumps); `ai switch to the light theme` shows an

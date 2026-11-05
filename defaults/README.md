@@ -24,8 +24,11 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   desktop-agnostic words the renderer translates. Under `ai`, the AI agent: the agent and the answer preselected and taken unattended
   (`agent`: opencode or hermes; `mode`: local, cloud or none), the Ollama models offered, in order, each with the
   memory it needs and its name in the question (the first that fits is recommended,
-  and taken when unattended) and the cloud providers in the order they are offered, each with
-  opencode's `provider/model` where patina picks one, and, for the ones Hermes offers,
+  and taken when unattended) and `small: true` under 14B parameters, which shows
+  `small_hint` beside it and has the install and `patina ai` say `small_note`; and the
+  cloud providers in the order `patina ai login` offers them, each with opencode's
+  `provider/model`, how it logs in (`login`: key, none, or endpoint for your own API),
+  the `note` said once it is picked (a US service's), and, for the ones Hermes offers,
   its `hermes` entry: the key's name in Hermes' `.env` and Hermes' `model` entry.
 - `apps.yaml`: settings `patina install` merges into applications' own configuration
   files (Zed with telemetry and AI off, opencode pointed at Ollama and asking before

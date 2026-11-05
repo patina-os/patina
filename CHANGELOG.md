@@ -24,6 +24,13 @@ All notable changes to patina are documented here. The format follows
   then offers the models it lists, and Big Pickle, OpenCode Zen's free model, to try
   opencode without an account or a key (a US service; while it is free, what you ask
   may be used to improve it). `patina ai login` picks the provider and logs in.
+- Warnings about the AI agent's model. A US provider (Big Pickle, Anthropic, OpenAI)
+  says in the list that what you ask leaves the EU, and the install and `patina ai`
+  say it falls under US law; Big Pickle adds that it may use what you ask to improve
+  the model. A local model under 14B parameters (all but Ministral 3 14B) is marked
+  small in the model question, the summary and the welcome, and the install and
+  `patina ai` say that it gets commands and facts wrong more often, so read what it
+  proposes before you allow it.
 
 ### Changed
 
