@@ -26,9 +26,16 @@ ai:
       - {model: "ministral-3:14b", min_memory_gb: 20, name: "Ministral 3 14B · Mistral · 9 GB"}
       - {model: "qwen3.5", min_memory_gb: 16, name: "Qwen 3.5 9B · Alibaba · 7 GB"}
       - {model: "qwen3.5:4b", min_memory_gb: 8, name: "Qwen 3.5 4B · Alibaba · 4 GB"}
-  cloud:                     # offered in this order; `model` is opencode's provider/model,
-    providers:               # without one opencode picks the provider's default; Hermes
-                             # offers the ones with a `hermes` entry
+  # The cloud providers, offered in this order by `patina ai login` (and the welcome's
+  # step that runs it; the install asks none of this). `model` is opencode's
+  # provider/model, which every entry but `custom` needs: without one opencode took the
+  # first model it knew, Ollama's, which a cloud agent does not have. `login` is how the
+  # agent gets in: key (the default) through opencode's own login or a key in Hermes' own
+  # .env; none, nothing to log in to; endpoint, the address of an OpenAI-compatible API
+  # and its key, and a model from the list that API gives. Hermes offers the ones with a
+  # `hermes` entry: its model entry and the key it reads from its .env.
+  cloud:
+    providers:
       - id: mistral
         name: "Mistral (EU · France)"
         model: "mistral/mistral-large-latest"
@@ -38,15 +45,33 @@ ai:
           key: MISTRAL_API_KEY
           model: {provider: custom, default: mistral-large-latest,
                   base_url: "https://api.mistral.ai/v1", api_key: "${MISTRAL_API_KEY}"}
-      - {id: scaleway, name: "Scaleway (EU · France)"}
-      - {id: ovhcloud, name: "OVHcloud (EU · France)"}
-      - {id: stackit, name: "STACKIT (EU · Germany)"}
+      - {id: scaleway, name: "Scaleway (EU · France)", model: "scaleway/mistral-medium-3.5-128b"}
+      - {id: ovhcloud, name: "OVHcloud (EU · France)", model: "ovhcloud/qwen3.5-397b-a17b"}
+      - {id: stackit, name: "STACKIT (EU · Germany)", model: "stackit/openai/gpt-oss-120b"}
+      # Your own: any OpenAI-compatible API (a company's, LiteLLM, vLLM, LM Studio). Its
+      # address, key and model are what `patina ai login` asked, in the state directory
+      # (ai-endpoint.yaml): opencode gets the provider `custom` of its file, Hermes its
+      # `custom` provider, ${URL} and ${MODEL} filled in
+      - id: custom
+        name: "Your own · an OpenAI-compatible API"
+        login: endpoint
+        hermes:
+          key: PATINA_CUSTOM_API_KEY
+          model: {provider: custom, default: "${MODEL}", base_url: "${URL}",
+                  api_key: "${PATINA_CUSTOM_API_KEY}"}
+      # OpenCode Zen's free model, to try the agent without an account: opencode only,
+      # and while it is free, what it is asked may be used to improve it
+      - id: big-pickle
+        name: "Big Pickle · OpenCode Zen · free, no key (US)"
+        model: "opencode/big-pickle"
+        login: none
       - id: anthropic
         name: "Anthropic (US)"
         model: "anthropic/claude-sonnet-5-5"
         hermes: {key: ANTHROPIC_API_KEY, model: {provider: anthropic, default: claude-sonnet-5-5}}
       - id: openai
         name: "OpenAI (US)"
+        model: "openai/gpt-5.5"
         hermes: {key: OPENAI_API_KEY, model: {provider: openai-api, default: gpt-5.5}}
 # The speed settings (docs/roadmap.md, Phase 2), after what CachyOS sets on Plasma.
 speed:

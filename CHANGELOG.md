@@ -6,8 +6,31 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- The command palette's agent answers with a cloud provider other than Mistral or
+  Anthropic: with Scaleway, OVHcloud, STACKIT or OpenAI, opencode had no model and took
+  the local one, so `ai` failed with "Cannot connect to API: ECONNREFUSED". Each of
+  them has its model now; the next `patina update` sets it.
+- The welcome's window is as large as its two halves need, so btop draws beside it
+  instead of "Terminal size too small": at the first login after the image's install
+  the desktop's size for new windows was not set yet, and on a small screen its share
+  was too narrow.
+
+### Added
+
+- Two more cloud providers for the AI agent: your own OpenAI-compatible API (a
+  company's, LiteLLM, vLLM, LM Studio), for which patina asks its address and key and
+  then offers the models it lists, and Big Pickle, OpenCode Zen's free model, to try
+  opencode without an account or a key (a US service; while it is free, what you ask
+  may be used to improve it). `patina ai login` picks the provider and logs in.
+
 ### Changed
 
+- The install, and the image's first boot, no longer ask for a cloud agent's provider
+  or key on the terminal. The welcome asks instead, at the next login: its first step
+  is "Log in to the AI provider" until the agent is logged in, then "Change the AI
+  provider". `patina ai on cloud` asks the same on a terminal.
 - The boot menu of an installed system is patina's, as the live image's is: the
   wallpaper under a veil, patina in block letters above the menu, the entries in
   JetBrains Mono, and the system named "patina / Debian 13 GNU/Linux" in place of

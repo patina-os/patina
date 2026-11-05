@@ -11,13 +11,19 @@ source "$PATINA_PATH/bin/lib.sh"
 
 usage() {
   cat << EOU
-usage: patina ai [status] | on [opencode|hermes] [local|cloud] | off | connect [<service>] | disconnect <service>
+usage: patina ai [status] | on [opencode|hermes] [local|cloud] | login | off | connect [<service>] | disconnect <service>
 
   status      the agent this machine has (the default)
   on local    the agent with a model Ollama runs on this computer: a few GB of disk,
               best with 16 GB of memory; PATINA_AI_MODEL=<tag> picks the model
-  on cloud    the agent with a provider you log in to; PATINA_AI_PROVIDER=<id> picks it
-              (ai.cloud.providers in defaults/settings.yaml)
+  on cloud    the agent with a provider you log in to: on a terminal it asks which, as
+              login does; otherwise PATINA_AI_PROVIDER=<id>, or the first of
+              ai.cloud.providers in defaults/settings.yaml, and login later
+  login       the cloud agent's provider and its key: Mistral and the other European
+              ones, your own OpenAI-compatible API (its address and key, then a model
+              from its list), Big Pickle (free, no key), Anthropic or OpenAI. The key
+              stays in opencode's own login or Hermes' own .env, your own API's in a
+              file only you can read. The welcome runs this as its first step
   on opencode ...
               opencode, free, which asks before every change (the default)
   on hermes ...
@@ -37,12 +43,19 @@ EOU
 }
 
 status() {
-  local ai agent
+  local ai agent provider
   ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)"
   agent="$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || echo opencode)"
   case "$ai" in
     local) say "ai: $agent, local, $(cat "$PATINA_STATE/ai-model" 2> /dev/null || echo '?') through Ollama" ;;
-    cloud) say "ai: $agent, cloud, $(cat "$PATINA_STATE/ai-provider" 2> /dev/null || echo '?')" ;;
+    cloud)
+      provider="$(cat "$PATINA_STATE/ai-provider" 2> /dev/null || echo '?')"
+      if ai_logged_in "$agent" "$provider"; then
+        say "ai: $agent, cloud, $provider"
+      else
+        say "ai: $agent, cloud, $provider, not logged in yet; patina ai login does it"
+      fi
+      ;;
     *) say "ai: none; patina ai on turns it on" ;;
   esac
 }
@@ -76,7 +89,130 @@ on() {
     mode="${mode%% *}"
   fi
   bundle="$(ai_bundle "$mode" "$agent")" || die "no bundle in manifest/bundles/ answers ai: $mode with $agent"
-  PATINA_AI="$mode" PATINA_AI_AGENT="$agent" exec "$PATINA_PATH/bin/patina-install" --bundles "$bundle"
+  # A cloud agent on a terminal: the provider and what patina keeps of its login first,
+  # the install, then the agent's own login. Elsewhere the install alone; login later.
+  if [[ "$mode" == cloud && -t 0 && -t 1 ]] && command -v gum > /dev/null; then
+    provider_step "$agent" || exit 0
+  fi
+  PATINA_AI="$mode" PATINA_AI_AGENT="$agent" PATINA_AI_PROVIDER="${provider:-${PATINA_AI_PROVIDER:-}}" \
+    "$PATINA_PATH/bin/patina-install" --bundles "$bundle"
+  [[ -z "$provider" ]] || after_install "$agent"
+}
+
+settings="$PATINA_PATH/defaults/settings.yaml"
+ai_keys="${XDG_CONFIG_HOME:-$HOME/.config}/patina/ai"
+provider=""
+
+# The cloud provider, on a terminal with gum, and what patina keeps of its login, asked
+# before the install writes the agent's configuration: your own API's address, key and
+# model, or Hermes' key. opencode's own login comes after the install (after_install).
+# Sets provider; fails when it is left with Esc. provider_step <agent>
+provider_step() {
+  local choice keeps="opencode's own login" key value
+  local -a lines
+  [[ "$1" != hermes ]] || keeps="Hermes' own .env"
+  mapfile -t lines < <(yq eval "$(offered_providers "$1") | (.id + \"|\" + .name)" "$settings" |
+    awk -F'|' '{ printf "%-10s %s\n", $1, $2 }')
+  choice="$(printf '%s\n' "${lines[@]}" | grep "^$(cloud_provider "$1") ")" || choice="${lines[0]}"
+  choice="$(gum choose --header "Cloud provider for $1 (the key stays in $keeps)" \
+    --selected "$choice" "${lines[@]}")" || return 1
+  provider="${choice%% *}"
+  case "$(provider_login "$provider")" in
+    endpoint) endpoint_step "$1" || return 1 ;;
+    key)
+      [[ "$1" == hermes ]] || return 0
+      key="$(P="$provider" yq eval '.ai.cloud.providers[] | select(.id == strenv(P)) | .hermes.key' "$settings")"
+      if ai_logged_in hermes "$provider" &&
+          ! gum confirm "Hermes has a key for $provider. Replace it?" --affirmative Replace --negative Keep --default=false; then
+        return 0
+      fi
+      value="$(gum input --password --header "Your $provider API key (kept in Hermes' own .env, readable by you only)" \
+        --placeholder "paste it here")" || return 1
+      [[ -n "$value" ]] || die "no key entered, nothing changed"
+      mkdir -p "$hermes_home"
+      hermes_env "$key" "$value"
+      ;;
+  esac
+}
+
+# Your own OpenAI-compatible API: its address, its key and a model from the list it
+# gives (GET /models, at the address or under its /v1), typed in when it gives none.
+# The key goes to a file only the user can read, which opencode's entry names, or to
+# Hermes' own .env; a server without keys gets "none", which it ignores. The address and
+# the model go to the state directory, where patina install finds them. Fails when it
+# is left with Esc. endpoint_step <agent>
+endpoint_step() {
+  local url key models="" model try
+  url="$(gum input --header "The address of your OpenAI-compatible API" --placeholder "https://ai.example.com/v1" \
+    --value "$(yq eval '.url // ""' "$PATINA_STATE/ai-endpoint.yaml" 2> /dev/null || true)")" || return 1
+  url="${url%/}"
+  [[ "$url" =~ ^https?://[^/]+ ]] || die "an address starts with https:// or http://, not '$url'"
+  key="$(gum input --password --header "Its API key (empty for a server without one)" --placeholder "paste it here")" ||
+    return 1
+  [[ -n "$key" ]] || key=none
+  for try in "$url" "$url/v1"; do
+    [[ "$try" != "$url/v1" || "$url" != */v1 ]] || continue
+    # The key on curl's standard input, not its command line, which other users can see.
+    models="$(curl -fsS -m 15 -H @- "$try/models" <<< "Authorization: Bearer $key" 2> /dev/null |
+      yq eval -p json '.data[].id' 2> /dev/null)" || models=""
+    if [[ -n "$models" ]]; then
+      url="$try"
+      break
+    fi
+  done
+  if [[ -n "$models" ]]; then
+    model="$(gum filter --header "Model ($(wc -l <<< "$models") at $url; type to search)" <<< "$models")" || return 1
+  else
+    say "ai: $url gave no list of models; type the model's name"
+    model="$(gum input --header "The model's name" --placeholder "as the API names it")" || return 1
+  fi
+  [[ -n "$model" ]] || die "no model picked, nothing changed"
+  if [[ "$1" == hermes ]]; then
+    mkdir -p "$hermes_home"
+    hermes_env PATINA_CUSTOM_API_KEY "$key"
+  else
+    (umask 077 && mkdir -p "$ai_keys" && printf '%s\n' "$key" > "$ai_keys/custom.key")
+    chmod 600 "$ai_keys/custom.key"
+  fi
+  mkdir -p "$PATINA_STATE"
+  URL="$url" MODEL="$model" yq eval -n '.url = strenv(URL) | .model = strenv(MODEL)' > "$PATINA_STATE/ai-endpoint.yaml"
+  say "ai: your own API at $url, $model"
+}
+
+# After the install: opencode's own login to the provider (it keeps the key, patina
+# never sees it), and kortex stopped, so the next `ai` starts the agent with the new
+# provider: its server read the configuration when it started. after_install <agent>
+after_install() {
+  if [[ "$1" == opencode && "$(provider_login "$provider")" == key ]]; then
+    if ! ai_logged_in opencode "$provider" ||
+        gum confirm "opencode is logged in to $provider. Log in again?" --affirmative "Log in" --negative Keep --default=false; then
+      say "ai: log in to $provider; opencode keeps the key, patina never sees it"
+      opencode auth login --provider "$provider" || say "ai: not logged in; patina ai login tries again"
+    fi
+  fi
+  if pkill -TERM -u "$(id -u)" -f kortex/kortex.py; then
+    say "kortex: the next ai starts $1 with $provider"
+  fi
+  status
+}
+
+# The cloud agent's provider and its key, on a terminal: the questions, the install
+# that writes the agent's configuration, the agent's own login.
+login() {
+  local ai agent
+  [[ -t 0 && -t 1 ]] || die "patina ai login asks on a terminal; the welcome (patina welcome --window) has it as a step"
+  command -v gum > /dev/null || die "patina ai login asks with gum (the base bundle): run patina install first"
+  ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)"
+  case "$ai" in
+    cloud) ;;
+    local) die "the agent's model runs on this computer; patina ai on cloud moves it to a provider and logs in" ;;
+    *) die "no AI agent yet; patina ai on cloud turns one on and logs in" ;;
+  esac
+  agent="$(current_agent)"
+  provider_step "$agent" || exit 0
+  PATINA_AI=cloud PATINA_AI_AGENT="$agent" PATINA_AI_PROVIDER="$provider" \
+    "$PATINA_PATH/bin/patina-install" --bundles "$(ai_bundle cloud "$agent")"
+  after_install "$agent"
 }
 
 off() {
@@ -242,6 +378,7 @@ main() {
       shift
       on "$@"
       ;;
+    login) login ;;
     off) off ;;
     connect) connect "${2:-}" ;;
     disconnect) disconnect "${2:-}" ;;

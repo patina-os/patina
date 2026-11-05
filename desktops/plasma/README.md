@@ -210,7 +210,10 @@ there, so a run over SSH or in the screenshot session finds them unchanged as we
   that share of the screen, not maximised, when it first appears (an app that
   remembers a maximised window opens at the size too; the user may maximise it later). The rule needs the screen, so it is written inside a session, from
   `kscreen-doctor` (the output with priority 1); outside one it waits for the next
-  `patina theme set` in a session; for `windows.opacity` below 100 a second rule that
+  `patina theme set` in a session. A rule first in the list, `patina-welcome`, leaves
+  the welcome's window (class `patina-welcome`) at the size it asks kitty for, in
+  characters, so btop has its 80 columns beside the welcome; it needs no screen. For
+  `windows.opacity` below 100 a second rule that
   forces every normal window to that opacity, one share while active and one while not
   (100 by default: only kitty is see-through, by its own background)
 - `ksplashrc` the theme's splash, written again after `plasma-apply-lookandfeel`, which

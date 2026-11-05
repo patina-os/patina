@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# The welcome at each login, in kitty beside btop: the AI agent, the agent tools, services, more apps and the keys.
+# The welcome at each login, in kitty beside btop: the AI agent and its login, the agent tools, services, more apps and the keys.
 set -euo pipefail
 
 # shellcheck source=bin/lib.sh
@@ -10,10 +10,10 @@ usage() {
   cat << EOU
 usage: patina welcome [--window | --login]
 
-  (none)    the welcome on this terminal: turn on the AI agent, add the agent tools,
-            connect a service for the agent, add more apps, show the keys, and open
-            at login or not. Each step runs patina ai or patina install, which ask as
-            always
+  (none)    the welcome on this terminal: turn on the AI agent and log in to its
+            cloud provider, add the agent tools, connect a service for the agent, add
+            more apps, show the keys, and open at login or not. Each step runs patina
+            ai or patina install, which ask as always
   --window  the welcome in a kitty window of its own, beside btop: the start menu's
             "Welcome to patina". When it ends, a shell takes its place
   --login   the same at a login, unless its "Don't open at login" was picked (the
@@ -28,7 +28,10 @@ keybindings="$PATINA_PATH/defaults/keybindings.yaml"
 
 # One kitty window split in two, as the README's picture of the desktop: the welcome on
 # the left, with the keyboard, and btop on the right where it is installed. The session
-# comes on kitty's standard input, so no file is left behind.
+# comes on kitty's standard input, so no file is left behind. The window is as large as
+# its halves need, in characters: 82 columns each, so btop (80 at least) draws beside
+# the welcome's lines; the desktop's rule for new windows leaves its size alone
+# (desktops/plasma/apply.sh), and a smaller screen gets all of its width.
 window() {
   local session
   command -v kitty > /dev/null ||
@@ -37,7 +40,8 @@ window() {
   if command -v btop > /dev/null; then
     session+=$'\nlaunch --location=vsplit --bias=50 btop'
   fi
-  exec kitty --class patina-welcome --title "Welcome to patina" --session - <<< "$session"
+  exec kitty --class patina-welcome --title "Welcome to patina" \
+    -o initial_window_width=168c -o initial_window_height=42c --session - <<< "$session"
 }
 
 # A login: the welcome, until its menu turns that off. Without kitty there is no window.
@@ -75,15 +79,24 @@ left_bundles() {
 }
 
 # The steps the menu offers now, one line each: the step, then what it does in at most
-# 64 characters, so a line fits the welcome's half of the window (79 columns in Try
-# patina's 1920x1080, beside btop's 80).
+# 64 characters, so a line fits the welcome's half of the window (82 columns, beside
+# btop's). A cloud agent not logged in yet has its login first, where the menu starts:
+# the image's first boot installs it and asks nothing.
 steps() {
-  local ai left
+  local ai agent provider
   ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)"
+  agent="$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || echo opencode)"
+  provider="$(cat "$PATINA_STATE/ai-provider" 2> /dev/null || true)"
+  if [[ "$ai" == cloud ]] && ! ai_logged_in "$agent" "$provider"; then
+    printf '%-9s %s\n' provider "Log in to the AI provider · Mistral, your own API and more"
+  fi
   if [[ "$ai" == none ]]; then
     printf '%-9s %s\n' agent "Turn on the AI agent · opencode or Hermes, local or cloud"
   else
-    printf '%-9s %s\n' agent "Change the AI agent · now $(cat "$PATINA_STATE/ai-agent" 2> /dev/null || echo opencode), $ai"
+    printf '%-9s %s\n' agent "Change the AI agent · now $agent, $ai"
+    if [[ "$ai" == cloud ]] && ai_logged_in "$agent" "$provider"; then
+      printf '%-9s %s\n' provider "Change the AI provider · now $provider"
+    fi
     printf '%-9s %s\n' services "A service for the agent · $(yq eval \
       '[.[].description | split(" · ") | .[0]] | join(", ")' "$PATINA_PATH/defaults/services.yaml")"
   fi
@@ -163,6 +176,7 @@ welcome() {
     echo
     case "${choice%% *}" in
       agent) "$PATINA_PATH/bin/patina-ai" on || true ;;
+      provider) "$PATINA_PATH/bin/patina-ai" login || true ;;
       services) services_step ;;
       tools) tools_step ;;
       apps) apps_step ;;

@@ -275,7 +275,8 @@ And where the model runs:
 
 - **none** (the default): no agent. `patina ai on local`, `patina ai on cloud` or
   `patina ai on hermes cloud` installs one later, `patina ai off` turns it off again,
-  `patina ai` says which one this machine has.
+  `patina ai login` picks a cloud agent's provider and logs in, `patina ai` says which
+  one this machine has.
 - **local**: Ollama runs the model on your machine. Setup offers the
   models of `ai.local.models` in `defaults/settings.yaml` that fit your memory and
   recommends one: NVIDIA's Nemotron 3.5 Bolt E4B, made for agents, from 16 GB, and
@@ -285,11 +286,18 @@ And where the model runs:
   provider's package from npm on its first request, and KRunner keeps its last queries
   (kortex's README has the details). Ollama with its GPU libraries and the model take
   several GB of disk and a while to download.
-- **cloud**: a provider you pick, Mistral and other European providers first, then
-  Anthropic and OpenAI. With opencode you log in with `opencode auth login`; the key
-  stays in opencode's own login, patina never sees it. Hermes offers Mistral (through
-  its OpenAI-compatible API), Anthropic and OpenAI; the install asks for the key on the
-  terminal and puts it into Hermes' own `~/.hermes/.env`, readable by you only.
+- **cloud**: a provider you pick after the install: the welcome's first step at the
+  next login, or `patina ai login`; the install and the image's first boot ask for
+  neither the provider nor a key. Mistral and the other European providers come
+  first, then your own OpenAI-compatible API (a company's, LiteLLM, vLLM, LM Studio:
+  its address and key, then a model from the list it gives), Big Pickle, and Anthropic
+  and OpenAI. With opencode the key stays in opencode's own login, patina never sees
+  it; your own API's key is in `~/.config/patina/ai/`, readable by you only. Hermes
+  offers Mistral (through its OpenAI-compatible API), your own API, Anthropic and
+  OpenAI, and keeps the key in its own `~/.hermes/.env`, readable by you only.
+  Big Pickle, OpenCode Zen's free model (opencode only), needs no account or key, to
+  try the agent at once; it is a US service, and while it is free, what you ask it may
+  be used to improve the model.
 
 `patina ai off` leaves what was installed in place. Ollama takes the most space; its
 own installer has no uninstall, and these are its documented steps:

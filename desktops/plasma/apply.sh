@@ -1008,6 +1008,22 @@ if [[ "$percent" -gt 0 ]]; then
 elif [[ -n "$(kreadconfig6 --file kwinrulesrc --group "$rule" --key sizerule)" ]]; then
   drop_rule Description types size sizerule maximizehoriz maximizehorizrule maximizevert maximizevertrule
 fi
+# The welcome (bin/patina-welcome) asks kitty for the size its two halves need, the
+# welcome and btop beside it, in characters: a share of a small screen, or of a screen
+# whose rule above was not written yet (the image's first boot runs outside a session),
+# left btop too narrow to draw. A rule first in the list leaves the welcome's size alone
+# ("Do not affect", which stops KWin looking further), and needs no screen.
+rule=patina-welcome
+rules="$(kreadconfig6 --file kwinrulesrc --group General --key rules)"
+if [[ "$percent" -gt 0 ]]; then
+  kset kwinrulesrc Description "patina: the welcome keeps the size it asks for" "$rule"
+  kset kwinrulesrc wmclass patina-welcome "$rule"
+  kset kwinrulesrc wmclassmatch 1 "$rule"
+  kset kwinrulesrc sizerule 1 "$rule"
+  kset kwinrulesrc rules "$( { echo "$rule"; tr ',' '\n' <<< "$rules"; } | awk 'NF && !seen[$0]++' | paste -sd, -)" General
+elif [[ -n "$(kreadconfig6 --file kwinrulesrc --group "$rule" --key sizerule)" ]]; then
+  drop_rule Description wmclass wmclassmatch sizerule
+fi
 
 # Windows a little see-through: a KWin rule forcing the opacity of every normal window,
 # one share while it is active and one while it is not; 100 for both drops the rule.

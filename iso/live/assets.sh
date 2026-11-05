@@ -147,7 +147,7 @@ for id in $(yq eval '.items[].id' "$chooser"); do
   tpl[AI_NAME]="$(yq eval ".items[] | select(.id == \"$id\") | .name" "$chooser")"
   case "$id" in
     local) tpl[AI_DETAIL]="Ollama · $(yq eval '.ai.local.models[0].model' "$settings")" ;;
-    cloud) tpl[AI_DETAIL]="$(yq eval '.ai.cloud.providers[0].name' "$settings") first · picked at first boot" ;;
+    cloud) tpl[AI_DETAIL]="$(yq eval '.ai.cloud.providers[0].name' "$settings") first · picked at first login" ;;
   esac
   render "$templates/calamares/ai.svg" "$tmp/ai-$id.svg"
   rsvg-convert --width 960 --height 540 --output "$branding/ai-$id.png" "$tmp/ai-$id.svg"

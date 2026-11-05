@@ -32,6 +32,10 @@ the local model and PATINA_AI_PROVIDER=<id> the cloud provider (ai.local and ai.
 defaults/settings.yaml); otherwise the answers of the last install, or ai.agent and
 ai.mode, are offered first and taken when unattended. --bundles adds an agent only when
 it names an AI bundle (ai-local, ai-cloud, hermes-local, hermes-cloud).
+
+The install asks for no cloud provider and no key: a cloud agent keeps the provider it
+had, or the first of ai.cloud.providers, until patina ai login (the welcome's first step
+at the next login) picks one and logs in.
 EOU
 }
 
@@ -53,10 +57,10 @@ section() {
 }
 
 # The questions, on a terminal: the theme, the app bundles, the AI agent and where its
-# model runs, a summary and a yes. Sets PATINA_THEME, bundles, agent, ai, PATINA_AI_MODEL
-# and PATINA_AI_PROVIDER. Esc or Cancel leaves
-# without a change. Bundle descriptions carry no comma: gum takes the preselected lines
-# as a comma-separated list.
+# model runs, a summary and a yes. Sets PATINA_THEME, bundles, agent, ai and
+# PATINA_AI_MODEL; a cloud agent's provider and key are patina ai login's. Esc or Cancel
+# leaves without a change. Bundle descriptions carry no comma: gum takes the preselected
+# lines as a comma-separated list.
 ask() {
   local current d mode name kind lines choice chosen_lines b
   local -a theme_lines=() bundle_lines=() preselected=() ai_lines=() mode_lines=() model_lines=()
@@ -123,9 +127,6 @@ ask() {
     export PATINA_AI_MODEL
     echo
   fi
-  if [[ "$ai" == cloud && -z "${PATINA_AI_PROVIDER:-}" ]]; then
-    ask_provider || exit 0
-  fi
   gum style --border rounded --border-foreground "${tpl[ACCENT]}" --padding "1 3" \
     "$(printf 'theme    %s\nbundles  %s\nai       %s\nbackend  %s (%s)' "$PATINA_THEME" "${bundles[*]}" \
       "$(ai_summary)" "$(basename "$BACKEND" .yaml)" "$(uname -m)")"
@@ -135,47 +136,6 @@ ask() {
     exit 0
   fi
   tui=1
-}
-
-# The cloud provider question, on a terminal with gum: sets PATINA_AI_PROVIDER; fails
-# when it is left with Esc. The key stays with the agent (install_opencode, install_hermes).
-ask_provider() {
-  local choice keeps="opencode's own login"
-  local -a provider_lines=()
-  [[ "$agent" != hermes ]] || keeps="Hermes' own .env"
-  mapfile -t provider_lines < <(yq eval "$(offered_providers) | (.id + \"|\" + .name)" "$PATINA_PATH/defaults/settings.yaml" |
-    awk -F'|' '{ printf "%-10s %s\n", $1, $2 }')
-  choice="$(printf '%s\n' "${provider_lines[@]}" | grep "^$(cloud_provider) ")" || choice="${provider_lines[0]}"
-  choice="$(gum choose --header "Cloud provider (the key stays in $keeps)" \
-    --selected "$choice" "${provider_lines[@]}")" || return 1
-  PATINA_AI_PROVIDER="${choice%% *}"
-  export PATINA_AI_PROVIDER
-  echo
-}
-
-# The cloud providers the agent offers, as a yq expression: Hermes has the ones with a
-# `hermes` entry.
-offered_providers() {
-  if [[ "$agent" == hermes ]]; then
-    echo '.ai.cloud.providers[] | select(.hermes)'
-  else
-    echo '.ai.cloud.providers[]'
-  fi
-}
-
-# The cloud provider: PATINA_AI_PROVIDER, else the one the last install recorded if the
-# agent offers it, else the first the agent offers.
-cloud_provider() {
-  local p="${PATINA_AI_PROVIDER:-}" settings="$PATINA_PATH/defaults/settings.yaml"
-  if [[ -n "$p" ]]; then
-    P="$p" yq eval -e "[$(offered_providers) | select(.id == strenv(P))] | length > 0" "$settings" > /dev/null 2>&1 ||
-      die "$agent offers no cloud provider '$p' (ai.cloud.providers in defaults/settings.yaml)"
-  else
-    p="$(cat "$PATINA_STATE/ai-provider" 2> /dev/null || true)"
-    P="$p" yq eval -e "[$(offered_providers) | select(.id == strenv(P))] | length > 0" "$settings" > /dev/null 2>&1 ||
-      p="$(yq eval "[$(offered_providers)][0].id" "$settings")"
-  fi
-  echo "$p"
 }
 
 # This machine's memory in whole gigabytes, rounded.
@@ -195,9 +155,17 @@ local_model() {
 
 # The AI answer in words, for the summary.
 ai_summary() {
+  local p
   case "$ai" in
     local) echo "$agent, local, $(local_model) through Ollama" ;;
-    cloud) echo "$agent, cloud, $(cloud_provider)" ;;
+    cloud)
+      p="$(cloud_provider "$agent")"
+      if ai_logged_in "$agent" "$p"; then
+        echo "$agent, cloud, $p"
+      else
+        echo "$agent, cloud (provider and key at the next login, in the welcome)"
+      fi
+      ;;
     *) echo none ;;
   esac
 }
@@ -557,32 +525,54 @@ install_apps() {
   done
 }
 
-# opencode: which model it uses, its standing instructions (defaults/agent.md) and the
-# cloud provider's login, which stays opencode's own. install_apps has written the rest of
-# opencode's file.
+# Your own API's address and model (the `custom` provider), as patina ai login recorded
+# them: endpoint_value url|model
+endpoint_value() {
+  yq eval ".$1 // \"\"" "$PATINA_STATE/ai-endpoint.yaml" 2> /dev/null || true
+}
+
+# opencode: which model it uses and its standing instructions (defaults/agent.md); for
+# your own API the provider `custom`, with the address and model patina ai login
+# recorded and the key from the file it wrote, readable by the user only. A cloud
+# provider's key is opencode's own login, which patina ai login runs: nothing is asked
+# here. install_apps has written the rest of opencode's file.
 install_opencode() {
   local file="$HOME/.config/opencode/opencode.json" rules="$PATINA_PATH/defaults/agent.md"
-  local model="" provider="" cloud_model="" tmp
+  local keyfile="${XDG_CONFIG_HOME:-$HOME/.config}/patina/ai/custom.key"
+  local model local_tag="" provider="" url="" custom="" host="" tmp
   if [[ "$ai" == local ]]; then
-    model="$(local_model)"
-    [[ -n "$model" ]] || die "no model of ai.local.models fits this machine"
+    local_tag="$(local_model)"
+    [[ -n "$local_tag" ]] || die "no model of ai.local.models fits this machine"
+    model="ollama/$local_tag"
   else
-    provider="$(cloud_provider)"
-    cloud_model="$(yq eval -e ".ai.cloud.providers[] | select(.id == \"$provider\") | .model // \"\"" \
-      "$PATINA_PATH/defaults/settings.yaml" 2> /dev/null)" ||
-      die "no cloud provider '$provider' in ai.cloud.providers of defaults/settings.yaml"
+    provider="$(cloud_provider opencode)"
+    if [[ "$(provider_login "$provider")" == endpoint ]]; then
+      url="$(endpoint_value url)"
+      custom="$(endpoint_value model)"
+      [[ -n "$url" && -n "$custom" ]] || die "your own API has no address yet: patina ai login asks for it"
+      host="${url#*://}"
+      host="${host%%/*}"
+      model="custom/$custom"
+    else
+      model="$(P="$provider" yq eval '.ai.cloud.providers[] | select(.id == strenv(P)) | .model // ""' \
+        "$PATINA_PATH/defaults/settings.yaml")"
+      [[ -n "$model" ]] || die "the cloud provider '$provider' has no model in ai.cloud.providers of defaults/settings.yaml"
+    fi
   fi
   mkdir -p "$(dirname "$file")"
   [[ -s "$file" ]] || echo '{}' > "$file"
   tmp="$(mktemp)"
-  # A provider without a model of its own: opencode picks that provider's default.
-  if ! MODEL="$model" PROVIDER="$provider" CLOUD_MODEL="$cloud_model" RULES="$rules" yq eval -o=json '
+  # The model always: without one opencode took the first model it knew, Ollama's.
+  if ! MODEL="$model" LOCAL="$local_tag" URL="$url" CUSTOM="$custom" NAME="Your own · $host" \
+      KEY="{file:$keyfile}" RULES="$rules" yq eval -o=json '
       .instructions = ((.instructions // []) + [strenv(RULES)] | unique) |
-      with(select(strenv(MODEL) != "");
-        .provider.ollama.models[strenv(MODEL)].name = strenv(MODEL) |
-        .model = "ollama/" + strenv(MODEL)) |
-      with(select(strenv(PROVIDER) != "");
-        .model = strenv(CLOUD_MODEL) | del(.model | select(. == "")))
+      with(select(strenv(LOCAL) != "");
+        .provider.ollama.models[strenv(LOCAL)].name = strenv(LOCAL)) |
+      with(select(strenv(URL) != "");
+        .provider.custom = {"npm": "@ai-sdk/openai-compatible", "name": strenv(NAME),
+          "options": {"baseURL": strenv(URL), "apiKey": strenv(KEY)}} |
+        .provider.custom.models[strenv(CUSTOM)].name = strenv(CUSTOM)) |
+      .model = strenv(MODEL)
     ' "$file" > "$tmp" 2> /dev/null; then
     warn "opencode: cannot parse $file (comments?); set model and instructions by hand"
     rm -f "$tmp"
@@ -595,16 +585,13 @@ install_opencode() {
     changed
   fi
   rm -f "$tmp"
-  if [[ "$ai" == local ]]; then
-    return
-  elif yq eval -e ".\"$provider\"" "$HOME/.local/share/opencode/auth.json" > /dev/null 2>&1; then
-    say "ai: opencode is logged in to $provider"
-  elif [[ -t 0 && -t 1 && -z "$PATINA_UNATTENDED" ]]; then
-    say "ai: log in to $provider; opencode keeps the key, patina never sees it"
-    opencode auth login --provider "$provider" ||
-      say "ai: not logged in; later: opencode auth login --provider $provider"
+  [[ "$ai" == cloud ]] || return 0
+  if [[ -n "$url" ]]; then
+    say "ai: opencode uses your own API at $url ($custom)"
+  elif ai_logged_in opencode "$provider"; then
+    say "ai: opencode uses $provider"
   else
-    say "ai: log in once with: opencode auth login --provider $provider"
+    say "ai: opencode is not logged in to $provider yet; the welcome does that at the next login, or patina ai login"
   fi
 }
 
@@ -612,20 +599,28 @@ install_opencode() {
 # the provider's `hermes` entry of ai.cloud.providers), manual approvals (Hermes asks
 # first only before what it counts as dangerous; its default lets a second model let
 # some of that through), its standing instructions (defaults/agent.md as
-# agent.environment_hint, so the user's own SOUL.md stays theirs) and the provider's key
-# in Hermes' own .env, asked for on a terminal and never shown or kept by patina.
+# agent.environment_hint, so the user's own SOUL.md stays theirs). The provider's key is
+# in Hermes' own .env, where patina ai login puts it: nothing is asked here. Your own
+# API's entry gets the address and model patina ai login recorded.
 install_hermes() {
-  local home="${HERMES_HOME:-$HOME/.hermes}" provider="" entry key="" value tmp
+  local home="${HERMES_HOME:-$HOME/.hermes}" provider="" entry key="" url="" tmp
   local file="$home/config.yaml" settings="$PATINA_PATH/defaults/settings.yaml"
   if [[ "$ai" == local ]]; then
     [[ -n "$(local_model)" ]] || die "no model of ai.local.models fits this machine"
     entry="$(MODEL="$(local_model)" yq eval -n -o=json -I=0 \
       '{"provider": "custom", "default": strenv(MODEL), "base_url": "http://127.0.0.1:11434/v1", "api_key": "ollama"}')"
   else
-    provider="$(cloud_provider)"
+    provider="$(cloud_provider hermes)"
     entry="$(P="$provider" yq eval -e -o=json -I=0 '.ai.cloud.providers[] | select(.id == strenv(P)) | .hermes.model' \
       "$settings" 2> /dev/null)" || die "Hermes has no entry for the cloud provider '$provider' in defaults/settings.yaml"
     key="$(P="$provider" yq eval '.ai.cloud.providers[] | select(.id == strenv(P)) | .hermes.key' "$settings")"
+    if [[ "$(provider_login "$provider")" == endpoint ]]; then
+      url="$(endpoint_value url)"
+      [[ -n "$url" && -n "$(endpoint_value model)" ]] || die "your own API has no address yet: patina ai login asks for it"
+      # shellcheck disable=SC2016 # ${URL} and ${MODEL} are the entry's placeholders, not the shell's
+      entry="$(URL="$url" MODEL="$(endpoint_value model)" yq eval -o=json -I=0 '(.. | select(tag == "!!str")) |=
+        (split("${URL}") | join(strenv(URL)) | split("${MODEL}") | join(strenv(MODEL)))' <<< "$entry")"
+    fi
   fi
   mkdir -p "$home"
   [[ -s "$file" ]] || echo '{}' > "$file"
@@ -646,22 +641,13 @@ install_hermes() {
     changed
   fi
   rm -f "$tmp"
-  [[ -n "$key" ]] || return 0
-  if grep -q "^$key=" "$home/.env" 2> /dev/null; then
+  [[ "$ai" == cloud ]] || return 0
+  if [[ -n "$url" ]]; then
+    say "ai: Hermes uses your own API at $url ($(endpoint_value model))"
+  elif ai_logged_in hermes "$provider"; then
     say "ai: Hermes has a key for $provider"
-  elif [[ -t 0 && -t 1 && -z "$PATINA_UNATTENDED" ]]; then
-    read -rsp "Paste your $provider API key (kept in $home/.env, readable by you only): " value
-    echo
-    if [[ -n "$value" ]]; then
-      (umask 077 && printf '%s=%s\n' "$key" "$value" >> "$home/.env")
-      chmod 600 "$home/.env"
-      say "ai: the key is in Hermes' own $home/.env"
-      changed
-    else
-      say "ai: no key; later: add $key=<your key> to $home/.env"
-    fi
   else
-    say "ai: add your $provider key to Hermes once: $key=<your key> in $home/.env"
+    say "ai: Hermes has no key for $provider yet; the welcome asks for it at the next login, or patina ai login"
   fi
 }
 
@@ -734,7 +720,7 @@ record_state() {
   if [[ -n "$ai" ]]; then
     echo "$ai" > "$PATINA_STATE/ai"
     [[ "$ai" == none ]] || echo "$agent" > "$PATINA_STATE/ai-agent"
-    [[ "$ai" != cloud ]] || cloud_provider > "$PATINA_STATE/ai-provider"
+    [[ "$ai" != cloud ]] || cloud_provider "$agent" > "$PATINA_STATE/ai-provider"
     [[ "$ai" != local ]] || local_model > "$PATINA_STATE/ai-model"
   fi
   if [[ $first_install -eq 1 ]]; then
@@ -748,7 +734,7 @@ record_state() {
 }
 
 main() {
-  local chosen="" all=0 list=0 b d
+  local chosen="" all=0 list=0 b
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --bundles)
@@ -830,17 +816,6 @@ main() {
         ask
       fi
     fi
-  fi
-  # Bundles given (--bundles, as the image's first boot does with the installer's
-  # answers): no question was asked, so a cloud agent's provider is still open. It is
-  # asked on a terminal; Esc keeps the first of ai.cloud.providers.
-  if [[ $tui -eq 0 && "$ai" == cloud && -z "${PATINA_AI_PROVIDER:-}" && -t 0 && -t 1 &&
-      -z "$PATINA_UNATTENDED" ]] && command -v gum > /dev/null; then
-    if d="$(theme_dir "${PATINA_THEME:-$(current_theme || yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")}")"; then
-      theme_vars "$d/theme.yaml" "$PATINA_PATH/defaults/settings.yaml" "$(current_mode)"
-      tui_colors
-    fi
-    ask_provider || true
   fi
   if [[ -n "$ai" && "$ai" != none ]]; then
     b="$(ai_bundle "$ai" "$agent")" || die "no bundle in manifest/bundles/ answers ai: $ai with $agent"
