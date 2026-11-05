@@ -10,7 +10,10 @@ All notable changes to patina are documented here. The format follows
 
 - The image installs faster: its package step, about a thousand packages in six apt
   runs, no longer syncs every file to disk and no longer rebuilds the initramfs and
-  the manual pages' index after each run; the installer builds both once.
+  the manual pages' index after each run; the installer builds both once. It also
+  leaves out KDE's handbooks, the Help Center and an English speech-recognition
+  model nothing in patina uses (16 packages, thousands of small files); `apt install`
+  brings them back.
 - The brightness keys work in the image's Wi-Fi step and installer, and a dim screen
   starts at 70 %: nothing worked the keys there, and a laptop's screen could stay
   as dim as the graphics driver started it.
