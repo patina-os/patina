@@ -6,6 +6,12 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- kortex 0.3.4: the start menu's last search row names the agent, "Ask opencode: …"
+  or "Ask Hermes: …" in place of "Ask the agent: …", as does `ai` and a request in
+  the command palette. The next `patina update` installs it where an AI agent is on.
+
 ## [0.1.0-alpha.8] - 2026-11-04
 
 ### Fixed
