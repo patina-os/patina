@@ -71,7 +71,10 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   the EFI partition, so for them it leaves the name as `/etc/default/grub` has it
   (Debian GNU/Linux): Debian's signed GRUB reads its configuration from `EFI/debian`,
   and the updates of GRUB and shim go where that word says. The file tells its readers
-  apart by `$0`, the name of the program reading it.
+  apart by `$0`, the name of the program reading it. It also turns os-prober on, which
+  Debian leaves off, so on a disk shared with other systems the menu lists them, and
+  keeps the menu five seconds in place of one when os-prober finds any; it runs
+  os-prober only when grub-mkconfig writes the menu.
 - `boot/`: the boot splash, Plymouth's two-step theme as templates: `frame.svg`, one
   picture of the mark, into which `render_boot_splash` (`bin/lib.sh`) sets the
   characters of `branding/logo.txt` in the brand's colours, each as far faded in as
@@ -79,7 +82,9 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   background and the watermark placed past the screen's edge, since Debian's initramfs
   hook puts its own logo into every two-step theme as one; `entry.svg`, `bullet.svg` and `lock.svg`, the disk password prompt
   two-step needs to load at all. The function draws 48 `progress-*.png`, which
-  Plymouth picks by the boot's progress (the rings arrive, the outer ones first), and
+  Plymouth picks by the boot's progress over its first 22 % (`ShowAnimationPercent`,
+  the first 13 seconds on a machine Plymouth has no timing of yet: the rings arrive,
+  the outer ones first), and
   36 `animation-*.png`, played once at the end (the word, then the ▲); the counts stay
   fixed, since Plymouth takes every `progress-*.png` it finds. `patina install` writes
   them to `/usr/share/plymouth/themes/patina` through the same sudo path, only when a
@@ -93,8 +98,12 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   the lines GRUB prints while an entry boots, instead of Debian's picture) and
   `font.pf2`, `fonts.monospace` converted by grub-mkfont (grub-common): GRUB reads no
   other font format and does not scale fonts, so each menu takes the size of its
-  screen, 20 pixels on an installed system at the screen's own resolution and 16 on
-  the live image at live-build's 800x600. `patina install` writes them to
+  screen, 20 pixels on an installed system at the screen's own resolution and 24 on
+  the live image at 1920x1080, which its `theme.cfg` sets in place of live-build's
+  800x600. `select.svg` is the selected entry's bar, a faint accent with a fine outline
+  and round corners, which the renderer cuts into GRUB's nine pieces
+  (`select_*.png`, with clear `item_*.png` of the same sizes for the other entries, so
+  all stand alike). `patina install` writes them to
   `/boot/grub/themes/patina` through the same sudo path, only when a checksum of what
   they are drawn from changed and only where GRUB is; `iso/live/assets.sh` draws the
   live image's menu and an installed system's into the image.

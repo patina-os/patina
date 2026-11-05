@@ -26,6 +26,7 @@ iso/
                             and name the boot menu's entries Install patina
   live/config/includes.chroot/
     etc/calamares/settings.conf        the pages shown and the steps run
+    etc/calamares/efi-space.sh         the check of the EFI partition's room, before the copy
     etc/calamares/modules/*.conf       one file per step; packages.conf is the list the
                             installer fetches from Debian's mirrors (Plasma and the base
                             bundle) and the live tooling it removes afterwards;
@@ -36,7 +37,8 @@ iso/
                             colours next to them are rendered by assets.sh
     etc/systemd/system/patina-ui.service  the installer screen (X, openbox, Calamares)
     root/.xinitrc                      that session, with the Wi-Fi step before it
-    root/.config/openbox/rc.xml        openbox with the patina theme for the dialogs
+    root/wifi-step.sh                  the Wi-Fi step: nmtui until the computer is online
+    root/.config/openbox/rc.xml        openbox with the patina theme for the dialogs, and the brightness keys
   live/templates/           what assets.sh fills from the theme's palette and the fonts:
                             calamares/ (stylesheet.qss, the wallpaper and the slides as
                             SVG compositions on slide-ground.svg, ai.svg, bundle.svg
@@ -88,12 +90,21 @@ iso/
    the promises, the thanks to the people and projects of `docs/credits.yaml`, and what
    happens after the restart (the stick out, the first start, the password), which
    Calamares' own last page does not say.
+   The session scales to the screen's physical size, as Windows does (150 % on a
+   13.3" Full HD laptop, 100 % on a 24" monitor or in a virtual machine), never below
+   1280x720 of room for the pages: `.xinitrc` sets X's `Xft.dpi`, which Qt 6 and
+   xterm follow. The brightness keys work there (openbox runs brightnessctl, which
+   the installer removes from the installed system), and a screen below 70 % starts
+   at 70 %.
    Calamares shows a still slide for two seconds, so `branding.desc` lists each one
    five times. The console shows `branding/logo.txt`.
    A computer with no network yet but a Wi-Fi card first gets the Wi-Fi step:
    NetworkManager's `nmtui` full screen in the palette, to pick a network and type its
-   password; Quit starts the installer. Leaving the installer brings the step back
-   while the computer is still offline.
+   password; once the computer is online the installer starts by itself. A network
+   that did not connect is forgotten, so picking it again asks for its password
+   again. Quit while still offline asks Try again or Start installer (to go on
+   without a network). Leaving the installer brings the step back while the
+   computer is still offline.
 2. Calamares asks what it must: time zone and keyboard (pre-filled), disk (erase is
    preselected; encryption and manual partitioning are available), the user, the AI
    agent (on this computer, from a cloud provider, or none, preselected from `ai.mode`
@@ -104,10 +115,19 @@ iso/
    to the first boot. The summary page is the last look before anything is written; it
    lists the location, the keyboard and the disk, but not the user or these five
    pages, which Calamares' widget pages do not report to it.
-3. The live system is copied to disk (`unpackfs`), then Plasma and the base bundle are
+3. Right after the partitions are made and mounted, `efi-space.sh`
+   (`shellprocess-efi-space.conf`) stops the install with a plain message when the EFI
+   system partition has under 20 MB free for the boot loader, or none is set for
+   `/boot/efi`, before anything is copied, not at the bootloader step an hour later.
+   The live system is copied to disk (`unpackfs`), then Plasma and the base bundle are
    fetched from Debian's mirrors into it (`packages`, the list in
    `modules/packages.conf`, in five installs, smallest first, so the progress bar moves;
-   apt shows nothing while each runs), the live tooling and Calamares are removed from
+   apt shows nothing while each runs; `shellprocess-packages-start.conf` before them
+   turns off what each run would redo, dpkg's sync of every file, the initramfs and
+   man-db's index, which the initramfs step and man-db's timer build once, and pins
+   out the Recommends patina does not use, the speech-recognition model and KDE's
+   handbooks; `shellprocess-packages-end.conf` after them undoes all of it), the live
+   tooling and Calamares are removed from
    it, SDDM is set up and the hardware clock set (after the packages that bring them; the
    automatic login, when the user page asks for it, goes to
    `/etc/sddm.conf.d/kde_settings.conf`, where Plasma's Login Screen settings keep it, so
@@ -117,7 +137,8 @@ iso/
    download cache are removed (`shellprocess-firstboot.conf`), GRUB is installed with
    Debian's signed shim into `EFI/debian`, where Debian's packages update it, and shim
    also at the removable path (`shellprocess-efi-removable.conf`), so the machine boots
-   when the firmware loses its boot entries.
+   when the firmware loses its boot entries; on a partition another system shares,
+   whose loader is there already (Windows keeps one), that path stays the other's.
 4. First boot: the boot splash shows (the installer copied it and Plymouth with the live
    system, and Calamares put `splash` on the kernel's line because Plymouth is there),
    and the service quits it and takes tty1 before the login screen, clones this repository
@@ -186,7 +207,7 @@ the sidebar's box) into the installer's branding, the icons
 of `live/templates/calamares/icons/` in the accent, the default theme's wallpapers under a veil as the installer's
 background, seven slides on one ground (`slide-ground.svg`) with `docs/screenshots/` of the
 desktop and the command palette (the sixth slide the names of `docs/credits.yaml`), the
-boot menus of `defaults/boot/grub/` (the live image's at 800x600, and an installed
+boot menus of `defaults/boot/grub/` (the live image's at 1920x1080, and an installed
 system's with `defaults/system/default/grub.d/patina.cfg`, which the installer copies to
 the disk, so the first start after the install shows patina's menu), and the templates
 under `live/templates/` (the Calamares stylesheet, the openbox theme) with the
@@ -327,7 +348,8 @@ release, never edited.
 ## Still to verify
 
 - The look on a real screen. Seen in QEMU at 1280x800 in November 2026, through a
-  whole install: the boot menu over its splash at 800x600, the welcome page with the
+  whole install: the boot menu over its splash at 800x600 (at 1920x1080 since November
+  2026, seen in QEMU only), the welcome page with the
   square mark and the block-letter name, the wallpaper veiled behind every page, the
   sidebar's steps and the glass of the sidebar and the button bar, the accent icons,
   the five question pages and their pictures, the six slides, and the finished page.

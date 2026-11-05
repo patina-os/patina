@@ -209,10 +209,12 @@ yq -i "
 " "$branding/branding.desc"
 
 # The boot menu, drawn by the function `patina install` draws an installed system's with
-# (defaults/boot/grub/), at live-build's 800x600: live-build takes live-theme/ over its
-# stock one, and theme.cfg (config/bootloaders/grub-pc/) loads its font and turns it on.
+# (defaults/boot/grub/), at 1920x1080, which theme.cfg (config/bootloaders/grub-pc/)
+# sets in place of live-build's 800x600; live-build takes live-theme/ over its stock
+# one, and theme.cfg loads its font and turns it on. 24 pixels, the installer's text at
+# the 150 % a 13.3" Full HD laptop gets.
 say "rendering the boot menu's theme"
-( render_boot_menu "$grub/live-theme" 16 40 )
+( render_boot_menu "$grub/live-theme" 24 40 )
 
 # Openbox, for the dialogs the installer opens.
 openbox="$chroot/usr/share/themes/patina/openbox-3"

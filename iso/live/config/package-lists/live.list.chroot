@@ -23,18 +23,23 @@ efibootmgr
 squashfs-tools
 rsync
 os-prober
-# the installer screen (patina-ui.service): X, a bare window manager, a session bus
+# the installer screen (patina-ui.service): X, a bare window manager, a session bus,
+# xrandr and xrdb, with which root/.xinitrc scales it to the screen's size, and
+# brightnessctl for the screen's brightness there and on the brightness keys
 xserver-xorg
 xinit
 openbox
 dbus-bin
+x11-xserver-utils
+brightnessctl
 # the boot splash (defaults/boot/), which assets.sh draws into the image and the base
 # bundle installs on every system
 plymouth
 plymouth-themes
-# the Wi-Fi step before the installer (root/.xinitrc): nmtui, which network-manager
-# carries, in a terminal
+# the Wi-Fi step before the installer (root/wifi-step.sh): nmtui, which network-manager
+# carries, in a terminal, and whiptail for its "Try again" question
 xterm
+whiptail
 # the layer's fonts, which the installer's stylesheet names, and Noto as glyph fallback
 # (live-build strips whole comment lines only, so no comment goes after a package name)
 fonts-adobe-sourcesans3

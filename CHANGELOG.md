@@ -6,6 +6,49 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Installing beside other systems: when the EFI system partition has no room for the
+  boot loader, the image's installer says so right after the partitions, before
+  anything is copied, instead of failing with "Bootloader installation error" at
+  the end, an hour later (it happened beside Windows 11 and CachyOS). The boot menu
+  lists the other systems and stays five seconds when there are any (os-prober), and
+  the fallback path of the EFI partition stays the other system's loader where it
+  holds one, so patina no longer takes Windows' place there.
+- The boot splash builds the mark at an even pace and holds it until the installer or
+  the login screen comes: its rings crawled, then the rest jumped in at once, since
+  Plymouth without the timing of an earlier boot (the image, every first start)
+  slows to a tenth at a quarter of its progress. The rings now arrive in the first
+  13 seconds, the word and the ▲ right after.
+- The image installs faster: its package step, about a thousand packages in six apt
+  runs, no longer syncs every file to disk and no longer rebuilds the initramfs and
+  the manual pages' index after each run; the installer builds both once. It also
+  leaves out KDE's handbooks, the Help Center and an English speech-recognition
+  model nothing in patina uses (16 packages, thousands of small files); `apt install`
+  brings them back.
+- The brightness keys work in the image's Wi-Fi step and installer, and a dim screen
+  starts at 70 %: nothing worked the keys there, and a laptop's screen could stay
+  as dim as the graphics driver started it.
+- The installer is readable on a small laptop: it scales to the screen's size, as
+  Windows does (150 % on a 13.3" Full HD screen, where its text was barely readable
+  at 100 %), and so does the Wi-Fi step before it. A large monitor and a virtual
+  machine stay at 100 %.
+- The image's Wi-Fi step ends by itself: once the computer is online the installer
+  starts, where nmtui's Quit had to be found first. A mistyped password can be typed
+  again: nmtui kept the network with the wrong password and never asked for it
+  again (a router that also speaks WPA3 says "The Wi-Fi network could not be
+  found"), so only a restart helped. A network that did not connect is forgotten
+  now, and picking it again asks for its password. Quit while still offline asks
+  Try again or Start installer.
+
+### Changed
+
+- The boot menu looks sharper and more modern. The image's menu is Full HD in place
+  of 800x600, which a laptop's screen showed blown up and soft, with its text at 24
+  pixels; a screen without that mode gets its own. The selected entry stands on a
+  faint bar of the accent with round corners, on the image and on an installed
+  system, where the next `patina update` draws it.
+
 ## [0.1.0-alpha.9] - 2026-11-05
 
 ### Fixed

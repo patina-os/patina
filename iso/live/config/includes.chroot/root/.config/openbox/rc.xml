@@ -19,4 +19,14 @@
     <policy>Smart</policy>
     <center>yes</center>
   </placement>
+  <!-- The brightness keys: on the desktop Plasma's power management works them, here
+       nothing else does, and on many laptops the firmware leaves them to the system. -->
+  <keyboard>
+    <keybind key="XF86MonBrightnessUp">
+      <action name="Execute"><command>brightnessctl --quiet --class=backlight set +10%</command></action>
+    </keybind>
+    <keybind key="XF86MonBrightnessDown">
+      <action name="Execute"><command>brightnessctl --quiet --class=backlight set 10%-</command></action>
+    </keybind>
+  </keyboard>
 </openbox_config>

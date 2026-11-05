@@ -104,7 +104,8 @@ jobs:
           [[ "$(GRUB_CMDLINE_LINUX_DEFAULT=quiet; . /etc/default/grub.d/patina.cfg
             echo "$GRUB_CMDLINE_LINUX_DEFAULT")" == "quiet splash" ]]
           menu=/boot/grub/themes/patina
-          for f in theme.txt background.png ground.png font.pf2 source.sha256; do
+          for f in theme.txt background.png ground.png font.pf2 source.sha256 \
+            select_nw.png select_c.png select_se.png item_nw.png item_c.png item_se.png; do
             test -s "$menu/$f"
           done
           if grep -F '${' "$menu/theme.txt"; then exit 1; fi
@@ -381,10 +382,14 @@ jobs:
           test -s "$splash/animation-0036.png"
           grep -qx 'Theme=patina' "$build/config/includes.chroot/etc/plymouth/plymouthd.conf"
           grub="$build/config/bootloaders/grub-pc"
-          for f in theme.txt background.png font.pf2; do
+          for f in theme.txt background.png font.pf2 select_c.png item_c.png; do
             test -s "$grub/live-theme/$f"
           done
           grep -q 'loadfont /boot/grub/live-theme/font.pf2' "$grub/theme.cfg"
+          # The live menu at Full HD, which its theme is drawn for, not live-build's 800x600.
+          grep -qx 'set gfxmode=1920x1080,auto' "$grub/theme.cfg"
+          mono="$(yq eval '.fonts.monospace' defaults/settings.yaml)"
+          grep -q "$mono Regular 24" "$grub/live-theme/theme.txt"
           for f in theme.txt background.png ground.png font.pf2; do
             test -s "$build/config/includes.chroot/boot/grub/themes/patina/$f"
           done
