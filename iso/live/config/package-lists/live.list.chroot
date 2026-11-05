@@ -32,9 +32,10 @@ dbus-bin
 # bundle installs on every system
 plymouth
 plymouth-themes
-# the Wi-Fi step before the installer (root/.xinitrc): nmtui, which network-manager
-# carries, in a terminal
+# the Wi-Fi step before the installer (root/wifi-step.sh): nmtui, which network-manager
+# carries, in a terminal, and whiptail for its "Try again" question
 xterm
+whiptail
 # the layer's fonts, which the installer's stylesheet names, and Noto as glyph fallback
 # (live-build strips whole comment lines only, so no comment goes after a package name)
 fonts-adobe-sourcesans3
