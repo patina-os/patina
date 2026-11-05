@@ -79,7 +79,9 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   background and the watermark placed past the screen's edge, since Debian's initramfs
   hook puts its own logo into every two-step theme as one; `entry.svg`, `bullet.svg` and `lock.svg`, the disk password prompt
   two-step needs to load at all. The function draws 48 `progress-*.png`, which
-  Plymouth picks by the boot's progress (the rings arrive, the outer ones first), and
+  Plymouth picks by the boot's progress over its first 22 % (`ShowAnimationPercent`,
+  the first 13 seconds on a machine Plymouth has no timing of yet: the rings arrive,
+  the outer ones first), and
   36 `animation-*.png`, played once at the end (the word, then the ▲); the counts stay
   fixed, since Plymouth takes every `progress-*.png` it finds. `patina install` writes
   them to `/usr/share/plymouth/themes/patina` through the same sudo path, only when a

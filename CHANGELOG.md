@@ -8,6 +8,11 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- The boot splash builds the mark at an even pace and holds it until the installer or
+  the login screen comes: its rings crawled, then the rest jumped in at once, since
+  Plymouth without the timing of an earlier boot (the image, every first start)
+  slows to a tenth at a quarter of its progress. The rings now arrive in the first
+  13 seconds, the word and the ▲ right after.
 - The image installs faster: its package step, about a thousand packages in six apt
   runs, no longer syncs every file to disk and no longer rebuilds the initramfs and
   the manual pages' index after each run; the installer builds both once. It also

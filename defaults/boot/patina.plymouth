@@ -21,9 +21,14 @@ TransitionDuration=0.0
 # and bottom edges, and Plymouth, which crops every picture to the screen, draws none.
 WatermarkHorizontalAlignment=2
 WatermarkVerticalAlignment=2
-# progress-*.png follow the boot up to nine tenths of it, then animation-*.png play once
+# progress-*.png, the rings, follow the boot's progress up to 22 % of it, then
+# animation-*.png, the word and the ▲, play once, and their last picture stays until
+# the splash quits. Plymouth paces the progress by the last boot's systemd units and,
+# without them (the live image, every first start), at 1/60 a second up to 25 %, then
+# at a tenth of that: at nine tenths the rings crawled and the rest jumped in when the
+# installer came. At 22 % they arrive in the first 13 seconds on every machine.
 ProgressFunction=linear
-ShowAnimationPercent=0.9
+ShowAnimationPercent=0.22
 BackgroundStartColor=${BOOT_GROUND}
 BackgroundEndColor=${BOOT_GROUND}
 Font=${UI_FONT} 13
