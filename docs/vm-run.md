@@ -62,7 +62,7 @@ they are.
   without a text console in between
 - [ ] first boot: the boot splash again, then tty1 shows the mark, and sudo asks for the password you gave the
   installer (again if the install outlasts sudo's 15 minutes between two steps); no
-  other question (a cloud agent asks its provider and key), and it ends with
+  other question, not even a cloud agent's provider or key, and it ends with
   `patina firstboot: done`; then the login screen with the theme's wallpaper
 - [ ] on a snapshot taken before first boot: turn the VM off while tty1 says
   `cloning`; the next start clones again and runs `patina install`, rather than
@@ -119,7 +119,12 @@ script -q -c 'patina install' ~/run1.log
 - [ ] with the local agent: `ollama list` shows the model the summary named, and
   `opencode run "which Debian release is this?"` answers from it; asked to switch to
   the light theme, opencode asks before it runs `patina theme mode light`. With the
-  cloud agent: `opencode auth login` came up for the provider picked
+  cloud agent: the welcome's first step is "Log in to the AI provider"; it lists the
+  providers (your own API and Big Pickle among them), and after the one picked
+  `patina ai` names it without "not logged in"; Big Pickle answers with no key, and
+  the list, the end of the login and `patina ai` say that Big Pickle, Anthropic and
+  OpenAI take what you ask out of the EU. With the local agent and a model under 14B,
+  the model question, the summary and `patina ai` call it small
 - [ ] with either agent, after logging out and in: `ai hello` in KRunner (Meta+Space)
   offers to ask the agent; Enter reopens KRunner on `ai ›` with the answer growing
   there (note whether it reads well or jumps); `ai switch to the light theme` shows an
@@ -278,7 +283,8 @@ sudo -iu patina-test bash -c '
   scheme and the centred bar at once, without a second login
 - [ ] the splash before the desktop shows the mark alone, its rings without the word
 - [ ] that first login opens patina's welcome, kitty split in two with btop beside it,
-  and not KDE's Welcome Center: the first keys and a menu (the AI agent, the agent
+  btop drawn in full (not "Terminal size too small"), and not KDE's Welcome Center:
+  the first keys and a menu (the AI agent, the agent
   tools, more apps, the keys, open at login); "Close the welcome" leaves a shell in its
   half. The second login opens it again; after "Don't open at login" the next login
   opens nothing, and "Welcome to patina" in the start menu opens it, where "Open at

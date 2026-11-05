@@ -17,18 +17,39 @@ ai:
   mode: none                 # local | cloud | none; preselected, and taken when unattended;
                              # `patina ai on` turns the agent on later
   local:                     # Ollama on this machine: the models that fit the memory are
-    models:                  # offered in this order, the first that fits is recommended
+    # offered in this order, the first that fits is recommended. A model under 14B
+    # parameters is `small`: it gets commands and facts wrong more often, so the model
+    # question shows `small_hint` beside it, and the install and `patina ai` say
+    # `small_note` after its name
+    small_hint: "small, more mistakes"
+    small_note: >-
+      is a small model: it gets commands and facts wrong more often than a large one,
+      so read what it proposes before you allow it (ministral-3:14b, from 20 GB of
+      memory, or a cloud provider errs less)
+    models:
       - model: "nemotron-3.5-bolt:e4b"
         min_memory_gb: 16
         name: "Nemotron 3.5 Bolt E4B · NVIDIA · made for agents · 8 GB"
-      - {model: "ministral-3:3b", min_memory_gb: 0, name: "Ministral 3 3B · Mistral · 3 GB"}
-      - {model: "ministral-3:8b", min_memory_gb: 12, name: "Ministral 3 8B · Mistral · 6 GB"}
+        small: true
+      - {model: "ministral-3:3b", min_memory_gb: 0, small: true,
+         name: "Ministral 3 3B · Mistral · 3 GB"}
+      - {model: "ministral-3:8b", min_memory_gb: 12, small: true,
+         name: "Ministral 3 8B · Mistral · 6 GB"}
       - {model: "ministral-3:14b", min_memory_gb: 20, name: "Ministral 3 14B · Mistral · 9 GB"}
-      - {model: "qwen3.5", min_memory_gb: 16, name: "Qwen 3.5 9B · Alibaba · 7 GB"}
-      - {model: "qwen3.5:4b", min_memory_gb: 8, name: "Qwen 3.5 4B · Alibaba · 4 GB"}
-  cloud:                     # offered in this order; `model` is opencode's provider/model,
-    providers:               # without one opencode picks the provider's default; Hermes
-                             # offers the ones with a `hermes` entry
+      - {model: "qwen3.5", min_memory_gb: 16, name: "Qwen 3.5 9B · Alibaba · 7 GB", small: true}
+      - {model: "qwen3.5:4b", min_memory_gb: 8, name: "Qwen 3.5 4B · Alibaba · 4 GB", small: true}
+  # The cloud providers, offered in this order by `patina ai login` (and the welcome's
+  # step that runs it; the install asks none of this). `model` is opencode's
+  # provider/model, which every entry but `custom` needs: without one opencode took the
+  # first model it knew, Ollama's, which a cloud agent does not have. `login` is how the
+  # agent gets in: key (the default) through opencode's own login or a key in Hermes' own
+  # .env; none, nothing to log in to; endpoint, the address of an OpenAI-compatible API
+  # and its key, and a model from the list that API gives. Hermes offers the ones with a
+  # `hermes` entry: its model entry and the key it reads from its .env. A US service
+  # says so in its name, and `note` is what `patina ai login` and `patina ai` say once
+  # it is picked.
+  cloud:
+    providers:
       - id: mistral
         name: "Mistral (EU · France)"
         model: "mistral/mistral-large-latest"
@@ -38,15 +59,39 @@ ai:
           key: MISTRAL_API_KEY
           model: {provider: custom, default: mistral-large-latest,
                   base_url: "https://api.mistral.ai/v1", api_key: "${MISTRAL_API_KEY}"}
-      - {id: scaleway, name: "Scaleway (EU · France)"}
-      - {id: ovhcloud, name: "OVHcloud (EU · France)"}
-      - {id: stackit, name: "STACKIT (EU · Germany)"}
+      - {id: scaleway, name: "Scaleway (EU · France)", model: "scaleway/mistral-medium-3.5-128b"}
+      - {id: ovhcloud, name: "OVHcloud (EU · France)", model: "ovhcloud/qwen3.5-397b-a17b"}
+      - {id: stackit, name: "STACKIT (EU · Germany)", model: "stackit/openai/gpt-oss-120b"}
+      # Your own: any OpenAI-compatible API (a company's, LiteLLM, vLLM, LM Studio). Its
+      # address, key and model are what `patina ai login` asked, in the state directory
+      # (ai-endpoint.yaml): opencode gets the provider `custom` of its file, Hermes its
+      # `custom` provider, ${URL} and ${MODEL} filled in
+      - id: custom
+        name: "Your own · an OpenAI-compatible API"
+        login: endpoint
+        hermes:
+          key: PATINA_CUSTOM_API_KEY
+          model: {provider: custom, default: "${MODEL}", base_url: "${URL}",
+                  api_key: "${PATINA_CUSTOM_API_KEY}"}
+      # OpenCode Zen's free model, to try the agent without an account: opencode only,
+      # and while it is free, what it is asked may be used to improve it
+      - id: big-pickle
+        name: "Big Pickle · OpenCode Zen · free, no key (US, leaves the EU)"
+        model: "opencode/big-pickle"
+        login: none
+        note: >-
+          Big Pickle runs at OpenCode Zen, a US service: what you ask leaves the EU and
+          falls under US law, and while Big Pickle is free, it may be used to improve
+          the model, so ask it nothing private.
       - id: anthropic
-        name: "Anthropic (US)"
+        name: "Anthropic (US, leaves the EU)"
         model: "anthropic/claude-sonnet-5-5"
+        note: "Anthropic is a US service: what you ask leaves the EU and falls under US law."
         hermes: {key: ANTHROPIC_API_KEY, model: {provider: anthropic, default: claude-sonnet-5-5}}
       - id: openai
-        name: "OpenAI (US)"
+        name: "OpenAI (US, leaves the EU)"
+        model: "openai/gpt-5.5"
+        note: "OpenAI is a US service: what you ask leaves the EU and falls under US law."
         hermes: {key: OPENAI_API_KEY, model: {provider: openai-api, default: gpt-5.5}}
 # The speed settings (docs/roadmap.md, Phase 2), after what CachyOS sets on Plasma.
 speed:

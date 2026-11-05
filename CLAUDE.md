@@ -69,16 +69,25 @@ packs. Audience: developers and privacy-minded users in the EU.
   point at, and their desktop integration is a shortcut and a terminal profile, as data.
   The app bundles, the theme and the AI agent are questions of the install and pages of
   the installer, so the image's first boot asks nothing more but the user's password,
-  which sudo asks for there as on Path A (accepted in November 2026), and a cloud
-  agent's provider and key. The AI agent: opencode, a
+  which sudo asks for there as on Path A (accepted in November 2026). A cloud agent's
+  provider and key are asked by neither the install nor the first boot: the welcome's
+  first step at the next login asks them, as `patina ai login` does (November 2026,
+  after the key prompt on tty1 proved unfit for most users). The AI agent: opencode, a
   free agent, with a model Ollama runs on the machine, with a cloud provider the user
-  picks (European ones first, the key in opencode's own login) or none (the default:
+  picks (European ones first, the key in opencode's own login; then the user's own
+  OpenAI-compatible API, its address and key asked and its model picked from the list
+  it gives, and Big Pickle, OpenCode Zen's free model, opt-in and never preselected,
+  to try the agent without a key; November 2026) or none (the default:
   the agent is opt-in, `patina ai on` turns it on later), as the `ai-local` and
-  `ai-cloud` bundles. Hermes Agent (MIT, Nous Research) is the second agent, chosen at
-  the same question, as the `hermes-local` and `hermes-cloud` bundles: from its own
+  `ai-cloud` bundles. A US provider (Big Pickle, Anthropic, OpenAI) says in its name
+  that what is asked leaves the EU, with a `note` the install and `patina ai` say; a
+  local model under 14B parameters is marked `small`, with a hint and a note that it
+  errs more often: warnings only, no extra question (November 2026). Hermes Agent
+  (MIT, Nous Research) is the second agent, chosen at the same question, as the
+  `hermes-local` and `hermes-cloud` bundles: from its own
   installer pinned to a release (it refuses to be built as a package), Mistral through
-  its OpenAI-compatible API then Anthropic and OpenAI as its cloud providers, its
-  approvals manual, `defaults/agent.md` as its `agent.environment_hint`, its own
+  its OpenAI-compatible API, the user's own API, then Anthropic and OpenAI as its cloud
+  providers, its approvals manual, `defaults/agent.md` as its `agent.environment_hint`, its own
   extras (messaging, memory, scheduler) left to `hermes setup`; it asks first only
   before what it counts as dangerous, and the README says so (October 2026). opencode
   asks before every change
@@ -184,8 +193,10 @@ packs. Audience: developers and privacy-minded users in the EU.
   welcome (`patina welcome`) opens at every login until its "Don't open at login" is
   picked (November 2026, after it opened at the first login only), in kitty beside
   btop as on the README's picture of the desktop, and from the start menu: the AI
-  agent, the agent tools, the agent's services, the bundles the machine lacks, and
-  the first keys. Each step runs
+  agent (a cloud agent's login first while it is not logged in), the agent tools, the
+  agent's services, the bundles the machine lacks, and the first keys. Its window is
+  as large as its halves need, in characters, which the desktop's size for new
+  windows leaves alone, so btop always draws (November 2026). Each step runs
   `patina ai` or `patina install`, which ask as always, and a shell takes the
   welcome's half when it ends; btop is in the minimal bundle for it (November 2026).
 - Image: a small live image built with Debian's live-build, with Calamares as the branded

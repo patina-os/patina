@@ -229,6 +229,80 @@ ai_bundle() {
   return 1
 }
 
+# The cloud providers an agent offers, as a yq expression on defaults/settings.yaml:
+# offered_providers <agent>. Hermes has the ones with a `hermes` entry.
+offered_providers() {
+  if [[ "$1" == hermes ]]; then
+    echo '.ai.cloud.providers[] | select(.hermes)'
+  else
+    echo '.ai.cloud.providers[]'
+  fi
+}
+
+# The cloud provider: cloud_provider <agent>. PATINA_AI_PROVIDER, else the one the last
+# install recorded if the agent offers it, else the first the agent offers.
+cloud_provider() {
+  local p="${PATINA_AI_PROVIDER:-}" settings="$PATINA_PATH/defaults/settings.yaml"
+  if [[ -n "$p" ]]; then
+    P="$p" yq eval -e "[$(offered_providers "$1") | select(.id == strenv(P))] | length > 0" "$settings" > /dev/null 2>&1 ||
+      die "$1 offers no cloud provider '$p' (ai.cloud.providers in defaults/settings.yaml)"
+  else
+    p="$(cat "$PATINA_STATE/ai-provider" 2> /dev/null || true)"
+    P="$p" yq eval -e "[$(offered_providers "$1") | select(.id == strenv(P))] | length > 0" "$settings" > /dev/null 2>&1 ||
+      p="$(yq eval "[$(offered_providers "$1")][0].id" "$settings")"
+  fi
+  echo "$p"
+}
+
+# How the agent gets into a cloud provider (`login` of ai.cloud.providers): key, none or
+# endpoint. provider_login <provider>
+provider_login() {
+  P="$1" yq eval '.ai.cloud.providers[] | select(.id == strenv(P)) | .login // "key"' \
+    "$PATINA_PATH/defaults/settings.yaml"
+}
+
+# A local model's hint for a line, " (small, more mistakes)", when ai.local.models marks
+# it small; nothing otherwise. small_hint <model>
+small_hint() {
+  # if, not select: yq prints a string after a select that matched nothing all the same.
+  # shellcheck disable=SC2016 # $l is yq's variable
+  M="$1" yq eval '.ai.local as $l | if ([$l.models[] | select(.model == strenv(M) and .small == true)] | length) > 0
+    then " (" + $l.small_hint + ")" else "" end' "$PATINA_PATH/defaults/settings.yaml"
+}
+
+# The warning about the agent's model, said after the install and by `patina ai`: a small
+# local model's small_note, a cloud provider's note (a US service's). ai_note local
+# <model> | cloud <provider>
+ai_note() {
+  local settings="$PATINA_PATH/defaults/settings.yaml" note
+  if [[ "$1" == local ]]; then
+    [[ -z "$(small_hint "$2")" ]] || say "ai: $2 $(yq eval '.ai.local.small_note' "$settings")"
+  else
+    note="$(P="$2" yq eval '.ai.cloud.providers[] | select(.id == strenv(P)) | .note // ""' "$settings")"
+    [[ -z "$note" ]] || say "ai: $note"
+  fi
+}
+
+# Can the agent use the provider now: its key in opencode's own login or Hermes' .env,
+# nothing to log in to, or your own API's address (`patina ai login`)? ai_logged_in
+# <agent> <provider>
+ai_logged_in() {
+  local key
+  case "$(provider_login "$2")" in
+    none) return 0 ;;
+    endpoint) [[ -s "$PATINA_STATE/ai-endpoint.yaml" ]] ;;
+    *)
+      if [[ "$1" == hermes ]]; then
+        key="$(P="$2" yq eval '.ai.cloud.providers[] | select(.id == strenv(P)) | .hermes.key // ""' \
+          "$PATINA_PATH/defaults/settings.yaml")"
+        [[ -n "$key" ]] && grep -q "^$key=." "${HERMES_HOME:-$HOME/.hermes}/.env" 2> /dev/null
+      else
+        P="$2" yq eval -e '.[strenv(P)]' "${XDG_DATA_HOME:-$HOME/.local/share}/opencode/auth.json" > /dev/null 2>&1
+      fi
+      ;;
+  esac
+}
+
 # Does a theme have this mode: its own variant, or a block named after the other one
 # (`light:` in a dark theme) with a palette? theme_has_mode <theme.yaml> <mode>
 theme_has_mode() {
