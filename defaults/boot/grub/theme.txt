@@ -1,0 +1,73 @@
+# GRUB theme of the boot menu, the live image's and an installed system's, in the
+# default theme's palette; render_boot_menu (bin/lib.sh) fills it and draws the
+# background and the font next to it. The font is fonts.monospace, which grub-mkfont
+# converts at ${MENU_SIZE} pixels, the size for the screen this menu is made for:
+# GRUB scales pictures but not fonts. @KEYMAP_SHORT@ and @TIMEOUT_NOTIFICATION_LONG@
+# are GRUB's, filled at boot.
+desktop-image: "background.png"
+desktop-image-scale-method: "crop"   # cover any screen, keeping the aspect
+desktop-image-h-align: "center"
+desktop-image-v-align: "center"
+desktop-color: "${BASE00}"
+title-color: "${BASE05}"
+title-font: "${MENU_FONT}"
+title-text: ""
+message-font: "${MENU_FONT}"
+message-color: "${BASE05}"
+message-bg-color: "${BASE01}"
+terminal-font: "${MENU_FONT}"
+# The terminal, which shows what an entry prints while it boots ("Loading Linux …"), and
+# GRUB's editor and command line, fills the screen over the background GRUB's terminal
+# has (GRUB_BACKGROUND: the theme's ground), as the boot splash that follows does,
+# instead of a black box over the picture.
+terminal-left: "0"
+terminal-top: "0"
+terminal-width: "100%"
+terminal-height: "100%"
+terminal-border: "0"
+
+# help bar at the bottom
++ label {
+  top = 100%-${MENU_LABEL}
+  left = 0
+  width = 100%
+  height = ${MENU_ITEM}
+  text = "@KEYMAP_SHORT@"
+  align = "center"
+  color = "${BASE04}"
+  font = "${MENU_FONT}"
+}
+
+# boot menu: a column centred under the name of the background (GRUB cannot centre the
+# items themselves, so the column is as wide as the longest entry)
++ boot_menu {
+  left = ${MENU_LEFT}
+  width = ${MENU_WIDTH}
+  top = 52%
+  height = 48%-${MENU_BOTTOM}
+  item_color = "${BASE05}"
+  item_font = "${MENU_FONT}"
+  selected_item_color = "${ACCENT}"
+  selected_item_font = "${MENU_FONT}"
+  item_height = ${MENU_ITEM}
+  item_padding = 2
+  item_spacing = ${MENU_SPACING}
+  icon_width = 0
+  icon_height = 0
+  item_icon_space = 0
+}
+
+# the timeout: one thin accent line
++ progress_bar {
+  id = "__timeout__"
+  left = 15%
+  top = 100%-${MENU_BOTTOM}
+  height = ${MENU_SIZE}
+  width = 70%
+  font = "${MENU_FONT}"
+  text_color = "${BASE00}"
+  fg_color = "${ACCENT}"
+  bg_color = "${BASE01}"
+  border_color = "${ACCENT}"
+  text = "@TIMEOUT_NOTIFICATION_LONG@"
+}

@@ -51,7 +51,10 @@ type=1,product=Try patina`), which `patina install` reads from
   shares the clipboard only in an X11 session (its Wayland support is not released).
   Plasma (Wayland) stays on the session menu of the login screen. The file comes after
   `kde_settings.conf`, where the installer and Plasma's settings put the automatic
-  login, so its sessions win.
+  login, so its sessions win;
+- writes `system/default/grub.d/try-patina.cfg`, which starts GRUB at 1920x1080, the
+  display's one resolution: the firmware reports no preferred mode, so GRUB kept
+  800x600, and the boot menu stood in a 4:3 box in the window.
 
 ## Known caveats
 

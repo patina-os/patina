@@ -8,6 +8,17 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- The boot menu of an installed system is patina's, as the live image's is: the
+  wallpaper under a veil, patina in block letters above the menu, the entries in
+  JetBrains Mono, and the system named "patina / Debian 13 GNU/Linux" in place of
+  Debian's look and "Debian GNU/Linux". The lines it prints while the system starts
+  stand on black, as the boot splash after them does, instead of on Debian's picture.
+  The live image's menu is set in JetBrains Mono too. The first start after an install
+  shows it; on a machine with patina, the next `patina update` draws it. The folder on
+  the EFI partition and the firmware's boot entry stay Debian's, which Secure Boot and
+  GRUB's updates need.
+- Try patina for Windows: the boot menu fills the window at 1920x1080, instead of a 4:3
+  box at 800x600.
 - kortex 0.3.4: the start menu's last search row names the agent, "Ask opencode: …"
   or "Ask Hermes: …" in place of "Ask the agent: …", as does `ai` and a request in
   the command palette. The next `patina update` installs it where an AI agent is on.

@@ -60,7 +60,15 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   path (`system.write` in `manifest/backends/`) is the only thing that writes them.
   The boot splash's setting is among them (`plymouth/plymouthd.conf` picks the patina
   theme, `default/grub.d/patina.cfg` puts `quiet splash` on the kernel's line once, and
-  `systemd/system/sddm.service.d/` starts SDDM once the splash has quit).
+  `systemd/system/sddm.service.d/` starts SDDM once the splash has quit), and the boot
+  menu's: `default/grub.d/patina.cfg` also picks its theme once it is drawn, with its
+  ground behind the kernel's first lines, and names the entry "patina / Debian 13"
+  (GRUB adds GNU/Linux) for grub-mkconfig only. grub-install and Debian's grub-efi
+  packages read the same file and take the name's first word as the system's folder on
+  the EFI partition, so for them it leaves the name as `/etc/default/grub` has it
+  (Debian GNU/Linux): Debian's signed GRUB reads its configuration from `EFI/debian`,
+  and the updates of GRUB and shim go where that word says. The file tells its readers
+  apart by `$0`, the name of the program reading it.
 - `boot/`: the boot splash, Plymouth's two-step theme as templates: `frame.svg`, one
   picture of the mark, into which `render_boot_splash` (`bin/lib.sh`) sets the
   characters of `branding/logo.txt` in the brand's colours, each as far faded in as
@@ -74,6 +82,19 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   them to `/usr/share/plymouth/themes/patina` through the same sudo path, only when a
   checksum of what they are drawn from changed, and the image build into the live
   system.
+- `boot/grub/`: the boot menu, a GRUB theme, as templates: `theme.txt` (the centred
+  menu column, the help line, the timeout's accent line, and GRUB's terminal over the
+  whole screen) and `background.svg` (the default theme's first wallpaper under a veil,
+  patina in block letters above the menu). `render_boot_menu` (`bin/lib.sh`) fills
+  them and draws `background.png`, `ground.png` (the default theme's background, behind
+  the lines GRUB prints while an entry boots, instead of Debian's picture) and
+  `font.pf2`, `fonts.monospace` converted by grub-mkfont (grub-common): GRUB reads no
+  other font format and does not scale fonts, so each menu takes the size of its
+  screen, 20 pixels on an installed system at the screen's own resolution and 16 on
+  the live image at live-build's 800x600. `patina install` writes them to
+  `/boot/grub/themes/patina` through the same sudo path, only when a checksum of what
+  they are drawn from changed and only where GRUB is; `iso/live/assets.sh` draws the
+  live image's menu and an installed system's into the image.
   These files keep the names and formats their tools require, so they are, with
   `agent.md`, the only data here that is not YAML; `patina doctor` reports any that is
   missing or differs.

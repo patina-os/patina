@@ -43,10 +43,13 @@ jobs:
         # The README asks for git and curl; a stock Debian desktop has them, the bare
         # container does not. A Plasma desktop also has kwriteconfig6 (every KDE app
         # depends on it), which the theme renderer writes settings with, and Breeze's
-        # desktop theme (plasma-desktoptheme), whose popups the renderer grains.
+        # desktop theme (plasma-desktoptheme), whose popups the renderer grains; a PC
+        # that boots with GRUB has grub-common, whose grub-mkfont draws the boot menu's
+        # font.
         run: |
           apt-get update -q
-          apt-get install -y -q git ca-certificates curl libkf6config-bin plasma-desktoptheme
+          apt-get install -y -q git ca-certificates curl libkf6config-bin plasma-desktoptheme \
+            grub-common
       - uses: actions/checkout@v5
       - name: Show the base
         run: |
@@ -85,10 +88,11 @@ jobs:
         run: |
           bin/patina install --unattended | tee second-run.txt
           grep -q 'patina: nothing to do' second-run.txt
-      - name: The boot splash is drawn and picked
+      - name: The boot splash and the boot menu are drawn and picked
         # defaults/boot/ through the system step: Plymouth's theme drawn from
         # branding/logo.txt, the setting that picks it and splash on GRUB's kernel line;
-        # the second run above found all of it in place.
+        # GRUB's theme and the setting that names Debian's release and picks the theme.
+        # The second run above found all of it in place.
         run: |
           splash=/usr/share/plymouth/themes/patina
           test -s "$splash/patina.plymouth"
@@ -99,6 +103,23 @@ jobs:
           [[ "$(/usr/sbin/plymouth-set-default-theme)" == patina ]]   # Debian keeps it
           [[ "$(GRUB_CMDLINE_LINUX_DEFAULT=quiet; . /etc/default/grub.d/patina.cfg
             echo "$GRUB_CMDLINE_LINUX_DEFAULT")" == "quiet splash" ]]
+          menu=/boot/grub/themes/patina
+          for f in theme.txt background.png ground.png font.pf2 source.sha256; do
+            test -s "$menu/$f"
+          done
+          if grep -F '${' "$menu/theme.txt"; then exit 1; fi
+          grep -q "$(yq eval '.fonts.monospace' defaults/settings.yaml) Regular" "$menu/font.pf2"
+          # grub-mkconfig, which writes the menu, reads the entry's name, patina and
+          # Debian's release; grub-install and Debian's grub-efi packages read what
+          # /etc/default/grub has, Debian, the folder on the EFI partition where Debian's
+          # signed GRUB reads its configuration. With sh, as they read the file; $0 is
+          # the reader.
+          grub() { GRUB_DISTRIBUTOR=Debian sh -c '. /etc/default/grub.d/patina.cfg
+            printf "%s|%s|%s" "$GRUB_DISTRIBUTOR" "$GRUB_THEME" "$GRUB_BACKGROUND"' "$@"; }
+          release="$(. /etc/os-release && echo "$VERSION_ID")"
+          theme="$menu/theme.txt|$menu/ground.png"
+          [[ "$(grub /usr/sbin/grub-mkconfig)" == "patina / Debian $release|$theme" ]]
+          [[ "$(grub)" == "Debian|$theme" ]]
       - name: patina doctor reports clean
         run: |
           bin/patina doctor
@@ -336,7 +357,8 @@ jobs:
           test ! -e "$HOME/.config/patina/themes/dusk"
       - name: The image's assets render from the theme
         # What iso/live/build.sh renders before lb, without root or live-build: the
-        # installer's marks, artwork and stylesheet, the boot menu's theme and splash.
+        # installer's marks, artwork and stylesheet, the boot menu's theme, and the
+        # installed system's boot menu and its GRUB setting.
         run: |
           theme="$(yq eval '.theme' defaults/settings.yaml)"
           build="$(mktemp -d)"
@@ -358,8 +380,16 @@ jobs:
           test -s "$splash/progress-0048.png"
           test -s "$splash/animation-0036.png"
           grep -qx 'Theme=patina' "$build/config/includes.chroot/etc/plymouth/plymouthd.conf"
-          test -s "$build/config/bootloaders/grub-pc/splash.png"
-          test -s "$build/config/bootloaders/grub-pc/live-theme/theme.txt"
+          grub="$build/config/bootloaders/grub-pc"
+          for f in theme.txt background.png font.pf2; do
+            test -s "$grub/live-theme/$f"
+          done
+          grep -q 'loadfont /boot/grub/live-theme/font.pf2' "$grub/theme.cfg"
+          for f in theme.txt background.png ground.png font.pf2; do
+            test -s "$build/config/includes.chroot/boot/grub/themes/patina/$f"
+          done
+          cmp defaults/system/default/grub.d/patina.cfg \
+            "$build/config/includes.chroot/etc/default/grub.d/patina.cfg"
           test -s "$build/config/includes.chroot/usr/share/themes/patina/openbox-3/themerc"
           test -s "$build/config/includes.chroot/etc/issue.d/10-patina.issue"
           # The agent and AI pages preselect ai.agent and ai.mode; no agent while ai.mode is
