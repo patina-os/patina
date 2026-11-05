@@ -617,29 +617,41 @@ raster_wallpaper() {
 # the entries, and cuts off what is wider than the column. An installed system's menu,
 # at the screen's own size, takes 20 pixels and 80 characters, so the recovery entries
 # of its submenu ("patina / Debian 13 GNU/Linux, with Linux 6.12.115+deb13.1-amd64
-# (recovery mode)") read whole; the live image's, at live-build's 800x600, 16 and 40
-# ("Live system (amd64 fail-safe mode)" has 34). It loads the default theme into tpl,
-# so callers run it in a subshell: `( render_boot_menu <dir> [<size> <columns>] )`.
+# (recovery mode)") read whole; the live image's, at 1920x1080 (its theme.cfg), 24 and
+# 40 ("Install patina (fail-safe mode)" has 31). The selected entry stands on a faint
+# accent bar, select.svg cut into GRUB's nine pieces (select_*.png), the others in
+# clear boxes of the same size (item_*.png). It loads the default theme into tpl, so
+# callers run it in a subshell: `( render_boot_menu <dir> [<size> <columns>] )`.
 # Needs yq, rsvg-convert, fc-match and grub-mkfont.
 render_boot_menu() {
   local out="$1" size="${2:-20}" columns="${3:-80}" settings="$PATINA_PATH/defaults/settings.yaml"
-  local tmp wide narrow share
+  local tmp wide narrow share r piece name x y w h
   theme_vars "$PATINA_PATH/themes/$(yq eval '.theme' "$settings")/theme.yaml" "$settings" dark
   # JetBrains Mono's characters are three fifths of their size wide, rounded to whole
   # pixels as grub-mkfont draws them; the column has two pixels of padding each side.
   # GRUB sizes a column as a share of the screen plus pixels: <columns> characters
   # wide on a 1920-pixel screen, at most an 800-pixel one less 30 pixels each side (a
   # virtual machine's firmware gives GRUB 800x600), and in a line between and beyond.
-  wide=$(( columns * ((size * 6 + 5) / 10) + 4 ))
+  # The selected entry's bar spans the column: its corners, r a third of the letters'
+  # size, stand inside it on both sides, and the letters half their size in from its
+  # left edge (GRUB's icon space, with no icons), so the column is that much wider.
+  r=$(( size / 3 ))
+  tpl[MENU_INSET]=$(( size / 2 ))
+  wide=$(( columns * ((size * 6 + 5) / 10) + 4 + 2 * r + size / 2 ))
   narrow=$(( wide < 740 ? wide : 740 ))
-  share=$(( (wide - narrow) * 100 / 1120 ))
-  share=$(( share - share % 2 ))   # percent, even, so half of it is whole
+  # Percent, rounded up and then up to even, so half of it is whole and the column is
+  # never narrower than <columns> characters (rounded down, it lost up to 40 pixels).
+  share=$(( ((wide - narrow) * 100 + 1119) / 1120 ))
+  share=$(( share + share % 2 ))
   tpl[MENU_SIZE]="$size"
   tpl[MENU_FONT]="${tpl[MONO_FONT]} Regular $size"
   tpl[MENU_WIDTH]="${share}%+$(( narrow - share * 8 ))"
   tpl[MENU_LEFT]="$(( 50 - share / 2 ))%-$(( (narrow - share * 8) / 2 ))"
-  tpl[MENU_ITEM]=$(( size + 4 ))
-  tpl[MENU_SPACING]=$(( size * 3 / 8 ))
+  # An entry is a third taller than its letters, so the selected one's bar has room
+  # round them, and the bar's corners (a third of the letters' size) reach no further
+  # into the gap than the gap holds.
+  tpl[MENU_ITEM]=$(( size * 4 / 3 ))
+  tpl[MENU_SPACING]=$(( size * 5 / 8 ))
   tpl[MENU_LABEL]=$(( size * 25 / 8 ))
   tpl[MENU_BOTTOM]=$(( size * 5 ))
   mkdir -p "$out"
@@ -651,6 +663,23 @@ render_boot_menu() {
   printf '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><rect width="16" height="16" fill="%s"/></svg>\n' \
     "${tpl[BASE00]}" > "$tmp/ground.svg"
   rsvg-convert --output "$out/ground.png" "$tmp/ground.svg"
+  # The selected entry's bar (select.svg), drawn as a square of 2r+1 pixels and cut by
+  # viewBox into the nine pieces GRUB stretches round the entry: the corners r by r, the
+  # edges and the middle one pixel across. The other entries get nine clear pieces of
+  # the same sizes (item_*.png): GRUB sets each entry's letters below the top piece of
+  # its own box, so without them the selected entry stood r pixels lower than its slot.
+  tpl[SELECT_INNER]=$(( 2 * r - 1 ))
+  tpl[SELECT_ROUND]=$(( r - 1 ))
+  for piece in nw:0:0:$r:$r n:$r:0:1:$r ne:$(( r + 1 )):0:$r:$r \
+    w:0:$r:$r:1 c:$r:$r:1:1 e:$(( r + 1 )):$r:$r:1 \
+    sw:0:$(( r + 1 )):$r:$r s:$r:$(( r + 1 )):1:$r se:$(( r + 1 )):$(( r + 1 )):$r:$r; do
+    IFS=: read -r name x y w h <<< "$piece"
+    tpl[SELECT_WIDTH]="$w" tpl[SELECT_HEIGHT]="$h" tpl[SELECT_VIEWBOX]="$x $y $w $h"
+    render "$PATINA_PATH/defaults/boot/grub/select.svg" "$tmp/select.svg"
+    rsvg-convert --output "$out/select_$name.png" "$tmp/select.svg"
+    printf '<svg xmlns="http://www.w3.org/2000/svg" width="%s" height="%s"/>\n' "$w" "$h" > "$tmp/item.svg"
+    rsvg-convert --output "$out/item_$name.png" "$tmp/item.svg"
+  done
   # Named as the theme names it, whichever file fontconfig finds; grub-mkfont warns about
   # every OpenType feature it leaves out.
   grub-mkfont --name "${tpl[MONO_FONT]}" --size "$size" --output "$out/font.pf2" \

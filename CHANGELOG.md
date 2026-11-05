@@ -29,6 +29,14 @@ All notable changes to patina are documented here. The format follows
   now, and picking it again asks for its password. Quit while still offline asks
   Try again or Start installer.
 
+### Changed
+
+- The boot menu looks sharper and more modern. The image's menu is Full HD in place
+  of 800x600, which a laptop's screen showed blown up and soft, with its text at 24
+  pixels; a screen without that mode gets its own. The selected entry stands on a
+  faint bar of the accent with round corners, on the image and on an installed
+  system, where the next `patina update` draws it.
+
 ## [0.1.0-alpha.9] - 2026-11-05
 
 ### Fixed

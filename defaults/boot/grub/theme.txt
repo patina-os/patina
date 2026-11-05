@@ -49,12 +49,16 @@ terminal-border: "0"
   item_font = "${MENU_FONT}"
   selected_item_color = "${ACCENT}"
   selected_item_font = "${MENU_FONT}"
+  # the selected entry on a faint accent bar (select.svg, cut into nine pieces), the
+  # others in clear boxes of the same size, so all stand alike in their slots
+  selected_item_pixmap_style = "select_*.png"
+  item_pixmap_style = "item_*.png"
   item_height = ${MENU_ITEM}
   item_padding = 2
   item_spacing = ${MENU_SPACING}
   icon_width = 0
   icon_height = 0
-  item_icon_space = 0
+  item_icon_space = ${MENU_INSET}
 }
 
 # the timeout: one thin accent line

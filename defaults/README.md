@@ -93,8 +93,12 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   the lines GRUB prints while an entry boots, instead of Debian's picture) and
   `font.pf2`, `fonts.monospace` converted by grub-mkfont (grub-common): GRUB reads no
   other font format and does not scale fonts, so each menu takes the size of its
-  screen, 20 pixels on an installed system at the screen's own resolution and 16 on
-  the live image at live-build's 800x600. `patina install` writes them to
+  screen, 20 pixels on an installed system at the screen's own resolution and 24 on
+  the live image at 1920x1080, which its `theme.cfg` sets in place of live-build's
+  800x600. `select.svg` is the selected entry's bar, a faint accent with a fine outline
+  and round corners, which the renderer cuts into GRUB's nine pieces
+  (`select_*.png`, with clear `item_*.png` of the same sizes for the other entries, so
+  all stand alike). `patina install` writes them to
   `/boot/grub/themes/patina` through the same sudo path, only when a checksum of what
   they are drawn from changed and only where GRUB is; `iso/live/assets.sh` draws the
   live image's menu and an installed system's into the image.

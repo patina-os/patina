@@ -201,7 +201,7 @@ the sidebar's box) into the installer's branding, the icons
 of `live/templates/calamares/icons/` in the accent, the default theme's wallpapers under a veil as the installer's
 background, seven slides on one ground (`slide-ground.svg`) with `docs/screenshots/` of the
 desktop and the command palette (the sixth slide the names of `docs/credits.yaml`), the
-boot menus of `defaults/boot/grub/` (the live image's at 800x600, and an installed
+boot menus of `defaults/boot/grub/` (the live image's at 1920x1080, and an installed
 system's with `defaults/system/default/grub.d/patina.cfg`, which the installer copies to
 the disk, so the first start after the install shows patina's menu), and the templates
 under `live/templates/` (the Calamares stylesheet, the openbox theme) with the
@@ -342,7 +342,8 @@ release, never edited.
 ## Still to verify
 
 - The look on a real screen. Seen in QEMU at 1280x800 in November 2026, through a
-  whole install: the boot menu over its splash at 800x600, the welcome page with the
+  whole install: the boot menu over its splash at 800x600 (at 1920x1080 since November
+  2026, seen in QEMU only), the welcome page with the
   square mark and the block-letter name, the wallpaper veiled behind every page, the
   sidebar's steps and the glass of the sidebar and the button bar, the accent icons,
   the five question pages and their pictures, the six slides, and the finished page.
