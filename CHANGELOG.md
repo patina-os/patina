@@ -6,6 +6,8 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.9] - 2026-11-05
+
 ### Fixed
 
 - The command palette's agent answers with a cloud provider other than Mistral or
@@ -960,7 +962,8 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.8...main
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.9...main
+[0.1.0-alpha.9]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.9
 [0.1.0-alpha.8]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.8
 [0.1.0-alpha.7]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.7
 [0.1.0-alpha.6]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.6
