@@ -117,7 +117,11 @@ iso/
 3. The live system is copied to disk (`unpackfs`), then Plasma and the base bundle are
    fetched from Debian's mirrors into it (`packages`, the list in
    `modules/packages.conf`, in five installs, smallest first, so the progress bar moves;
-   apt shows nothing while each runs), the live tooling and Calamares are removed from
+   apt shows nothing while each runs; `shellprocess-packages-start.conf` before them
+   turns off what each run would redo, dpkg's sync of every file, the initramfs and
+   man-db's index, which the initramfs step and man-db's timer build once;
+   `shellprocess-packages-end.conf` after them undoes all of it), the live tooling and
+   Calamares are removed from
    it, SDDM is set up and the hardware clock set (after the packages that bring them; the
    automatic login, when the user page asks for it, goes to
    `/etc/sddm.conf.d/kde_settings.conf`, where Plasma's Login Screen settings keep it, so
