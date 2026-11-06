@@ -31,7 +31,7 @@ release; the arm64 image stays in CI until its own install check.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/patina-os/landing/main/assets/kortex-ask-dark.svg">
-    <img src="https://raw.githubusercontent.com/patina-os/landing/main/assets/kortex-ask-light.svg" alt="You ask kortex in plain words, it hands the request to opencode or Hermes, and the finished job comes back: printer fixed, PhotoCraft installed, Linear connected, a ticket filed, today's to-dos, a quiet fan" width="760">
+    <img src="https://raw.githubusercontent.com/patina-os/landing/main/assets/kortex-ask-light.svg" alt="You ask kortex in plain words and the finished job comes back: printer fixed, PhotoCraft installed, Linear connected, a ticket filed, today's to-dos, a quiet fan" width="760">
   </picture>
 </p>
 
