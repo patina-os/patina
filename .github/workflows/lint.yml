@@ -125,6 +125,20 @@ jobs:
           done
           yq eval -e '.items[] | select(.id == "none")' "$modules/packagechooser-agent.conf" \
             > /dev/null
+      - name: The installer's step commands use only Calamares' own variables
+        run: |
+          # Calamares fills $name and ${name} in a shellprocess command itself and refuses
+          # to run one whose name is not its own (ROOT, USER, gs[...]), even inside single
+          # quotes, and $$ reaches the shell quoted: shell variables go into a script
+          # beside settings.conf (iso/README.md, Rules). 0.1.0-alpha.10 failed at its last
+          # step with one.
+          modules=iso/live/config/includes.chroot/etc/calamares/modules
+          bad="$(for f in "$modules"/shellprocess-*.conf; do
+            yq eval '.script[] | (.command // .)' "$f" \
+              | sed -E 's/\$\{(ROOT|USER|gs\[[A-Za-z_]+\])\}//g' \
+              | grep -E '\$[{A-Za-z_$]' | sed "s|^|$f: |"
+          done)" || true
+          [[ -z "$bad" ]] || { echo "shell variables in a step's command:"; echo "$bad"; exit 1; }
       - name: A device is detected by its own DMI fields and no others
         run: |
           # Each device's detect map, written out as a fake /sys/class/dmi/id, detects

@@ -26,7 +26,10 @@ iso/
                             and name the boot menu's entries Install patina
   live/config/includes.chroot/
     etc/calamares/settings.conf        the pages shown and the steps run
-    etc/calamares/efi-space.sh         the check of the EFI partition's room, before the copy
+    etc/calamares/efi-space.sh         the check of the EFI partition's room, before the copy,
+                            and the swap for one with room
+    etc/calamares/efi-fstab.sh         that partition in the new system's fstab
+    etc/calamares/efi-removable.sh     shim at the EFI partition's removable path
     etc/calamares/modules/*.conf       one file per step; packages.conf is the list the
                             installer fetches from Debian's mirrors (Plasma and the base
                             bundle) and the live tooling it removes afterwards;
@@ -116,9 +119,14 @@ iso/
    lists the location, the keyboard and the disk, but not the user or these five
    pages, which Calamares' widget pages do not report to it.
 3. Right after the partitions are made and mounted, `efi-space.sh`
-   (`shellprocess-efi-space.conf`) stops the install with a plain message when the EFI
-   system partition has under 20 MB free for the boot loader, or none is set for
-   `/boot/efi`, before anything is copied, not at the bootloader step an hour later.
+   (`shellprocess-efi-space.conf`) looks at the EFI system partition's room: the boot
+   loader needs 20 MB. The partitions page takes a disk's first EFI partition when
+   there are several, so when that one has less, the script mounts the next one on the
+   disk patina goes to that has the room in its place, and `efi-fstab.sh`
+   (`shellprocess-efi-fstab.conf`, right after the fstab step) writes it into fstab,
+   where Calamares wrote the first. When none has the room, or none is set for
+   `/boot/efi`, it stops the install with a plain message, before anything is copied,
+   not at the bootloader step an hour later.
    The live system is copied to disk (`unpackfs`), then Plasma and the base bundle are
    fetched from Debian's mirrors into it (`packages`, the list in
    `modules/packages.conf`, in five installs, smallest first, so the progress bar moves;
@@ -136,7 +144,7 @@ iso/
    configuration and branding, the installer screen, the console's mark) and apt's
    download cache are removed (`shellprocess-firstboot.conf`), GRUB is installed with
    Debian's signed shim into `EFI/debian`, where Debian's packages update it, and shim
-   also at the removable path (`shellprocess-efi-removable.conf`), so the machine boots
+   also at the removable path (`efi-removable.sh`), so the machine boots
    when the firmware loses its boot entries; on a partition another system shares,
    whose loader is there already (Windows keeps one), that path stays the other's.
 4. First boot: the boot splash shows (the installer copied it and Plymouth with the live
@@ -313,6 +321,13 @@ scripted model). They are the one generated thing committed, refreshed for every
 release, never edited.
 
 ## Rules
+
+- A step's command in `modules/shellprocess-*.conf` uses no shell variables: Calamares
+  takes every `$name` and `${name}` in it for one of its own (`${ROOT}`, `${USER}`,
+  `${gs[...]}`) and refuses to run the command when the name is not one, even inside
+  single quotes, and `$$` reaches the shell quoted, as a plain `$`. Logic with
+  variables goes into a script beside `settings.conf`, run on the live system with
+  `${ROOT}` (`dontChroot: true`), which reaches the target with `chroot "$1"`.
 
 - Every package comes from Debian's archive. The image adds only the installer
   configuration, the installer screen and branding within Debian's trademark policy
