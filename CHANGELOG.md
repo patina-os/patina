@@ -6,6 +6,19 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Installing beside other systems: when the disk has several EFI system partitions
+  and the one the partitions page picks has no room for the boot loader, the
+  installer puts it on another one on the same disk that has the room, where it
+  stopped with "has 0 MB free" before (it happened beside Windows 11 and CachyOS:
+  the page picks the first, Windows' full one, and CachyOS's beside it was empty).
+  It stops only when none has the room.
+- The image's installer no longer fails at its last step on every UEFI machine:
+  the step that puts shim at the EFI partition's removable path, new in
+  0.1.0-alpha.10, used shell variables, which Calamares takes for its own and
+  refuses to run with "The commands use variables that are not defined".
+
 ## [0.1.0-alpha.10] - 2026-11-06
 
 ### Fixed

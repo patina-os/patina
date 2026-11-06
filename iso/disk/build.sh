@@ -110,7 +110,7 @@ printf '#!/bin/sh\nexit 101\n' > "$root/usr/sbin/policy-rc.d"
 chmod 0755 "$root/usr/sbin/policy-rc.d"
 # The image's own language, keyboard and time zone, which the account step replaces
 # with Windows' (devices/try-patina-windows/firstboot/); GRUB's maintainer scripts keep
-# the removable copy (modules/shellprocess-efi-removable.conf).
+# the removable copy (the installer's efi-removable.sh).
 in_root debconf-set-selections <<SELECTIONS
 locales locales/locales_to_be_generated multiselect en_GB.UTF-8 UTF-8
 locales locales/default_environment_locale select en_GB.UTF-8
