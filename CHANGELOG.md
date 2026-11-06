@@ -6,6 +6,8 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.10] - 2026-11-06
+
 ### Fixed
 
 - Installing beside other systems: when the EFI system partition has no room for the
@@ -1005,7 +1007,8 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.9...main
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.10...main
+[0.1.0-alpha.10]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.10
 [0.1.0-alpha.9]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.9
 [0.1.0-alpha.8]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.8
 [0.1.0-alpha.7]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.7
