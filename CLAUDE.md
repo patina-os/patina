@@ -102,7 +102,14 @@ packs. Audience: developers and privacy-minded users in the EU.
   search in the start menu ends with asking the agent (search, ask, fix), which hands
   it to the command palette; the menu's "Search…" is libplasma's and stays (October 2026).
   That row names the agent ("Ask opencode: …"), and so does the first entry of the
-  menu's AI folder, which opens the command palette with `ai ` typed (November 2026).
+  menu's AI folder (November 2026). No `ai` to type (November 2026, after the first
+  run on real hardware): any search in the command palette ends with that row too,
+  first when it reads as a question; Meta+A (the `ask` action, the AI folder's entry)
+  opens the command palette on the agent alone and Meta+Shift+A the agent in its
+  terminal; the conversation is called by the agent's name (`opencode ›`), which a
+  name of the user's may take later; while it works the palette counts the seconds and
+  shows what a reasoning model thinks, and with the palette closed a notification
+  follows the request to its answer.
 - Look: the default theme is aurora, made for OLED screens (October 2026, after the
   redesign whose eight directions `docs/design/futures.html` keeps): true black with
   panels one step above it, neon green as the accent and violet as the second colour.
@@ -199,6 +206,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   windows leaves alone, so btop always draws (November 2026). Each step runs
   `patina ai` or `patina install`, which ask as always, and a shell takes the
   welcome's half when it ends; btop is in the minimal bundle for it (November 2026).
+  Its icon is a checklist glyph of its own, not the start button's mark, which it
+  carried until the first run on real hardware took one for the other (November 2026).
 - Image: a small live image built with Debian's live-build, with Calamares as the branded
   installer. The live system carries only the installer; Plasma and the base packages
   are fetched from Debian's mirrors during the install, so the image stays under one

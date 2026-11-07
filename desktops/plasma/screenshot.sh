@@ -21,7 +21,8 @@ btop, dbus-run-session and dbus-send. No display or login is needed. Writes into
   start-menu.png       the start menu, open as Meta opens it, in the light mode (the
                        mode the desktop had is set again afterwards)
 Environment:
-  PATINA_SHOT_ASK      a request for the agent, typed after ai in KRunner (default none)
+  PATINA_SHOT_ASK      a request for the agent, as typed into the palette Meta+A opens
+                       (default none)
   PATINA_SHOT_SIZE     the virtual screen, WIDTHxHEIGHT (default 1920x1080)
   PATINA_SHOT_SETTLE   seconds for the shell, then the terminal, to be drawn (default 25)
   PATINA_SHOT_WAIT     seconds to wait for plasmashell, then for the agent (default 240)
@@ -54,7 +55,7 @@ grab() {
 # environment is the one a Plasma login sets, so the renderer sees a session
 # (XDG_CURRENT_DESKTOP, the bus) and Qt draws on X.
 session() {
-  local dir="$1" waited=0 theme session_pid split kitty_pid query mode dirs width height
+  local dir="$1" waited=0 theme session_pid split kitty_pid mode dirs width height
   export XDG_SESSION_TYPE=x11 XDG_CURRENT_DESKTOP=KDE KDE_FULL_SESSION=true \
     KDE_SESSION_VERSION=6 DESKTOP_SESSION=plasmax11 QT_QPA_PLATFORM=xcb
   # The data directories a login gets from flatpak's environment generator, so the apps
@@ -117,17 +118,18 @@ session() {
   sleep 2
 
   if [[ -n "${PATINA_SHOT_ASK:-}" ]]; then
-    # The command palette on the empty desktop. What Enter on kortex's "Ask the agent"
+    # The command palette on the empty desktop. What Enter on kortex's "Ask opencode"
     # match does: kortex sends the request to the agent and opens KRunner on the
-    # conversation (ai ›), which it keeps current. The match's id is "ask", the unit
-    # separator and the request.
+    # conversation (opencode ›), which it keeps current itself. The match's id is "ask",
+    # the unit separator and the request.
     dbus-send --session --print-reply --reply-timeout=60000 --dest="$kortex" /runner \
       org.kde.krunner1.Run "string:ask"$'\x1f'"$PATINA_SHOT_ASK" string: > /dev/null
-    # Done once the conversation shows an action that waits for Allow once, Always or
-    # Deny, or an answer and no agent still at work; asked as KRunner asks.
+    # Done once kortex, which D-Bus started with this session's output, logs that the
+    # agent asks first (the demo model asks to run a command), or the wait is over.
+    # Nothing here asks kortex or KRunner for the conversation: KRunner shows what
+    # kortex's own refresh brought it, as on a desktop.
     waited=0
-    until dbus-send --session --print-reply --reply-timeout=30000 --dest="$kortex" /runner \
-      org.kde.krunner1.Match 'string:ai ›' 2> /dev/null | grep -q 'string "Allow '; do
+    until grep -q '^kortex: .* asks first' "$dir/session.log"; do
       if (( waited >= wait_s )); then
         echo "screenshot: the agent asked for nothing within ${wait_s}s; the conversation as it stands" >&2
         break
@@ -135,16 +137,14 @@ session() {
       sleep 2
       waited=$((waited + 2))
     done
-    # Those Match calls told kortex the conversation is on screen as it stands, so it
-    # sees no news to show. KRunner asks again only for a query that differs from the
-    # one it shows: the list of conversations first, then the conversation.
-    for query in ai 'ai ›'; do
-      dbus-send --session --type=method_call --dest=org.kde.krunner /App \
-        org.kde.krunner.App.querySingleRunner string:kortex "string:$query"
-      sleep 2
-    done
     sleep 5
     grab "$dir" command-palette
+    # kortex logs it once KRunner asked again for the news kortex showed it: without it
+    # the palette stood still on a real desktop, as "Thinking…" did on the first one.
+    if ! grep -q '^kortex: KRunner asked again' "$dir/session.log"; then
+      echo "screenshot: KRunner never asked kortex again; the command palette does not follow the conversation" >&2
+      return 1
+    fi
     pkill -u "$(id -u)" -x krunner || true
     sleep 2
   fi

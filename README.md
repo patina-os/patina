@@ -313,22 +313,24 @@ sudo rm -rf /etc/systemd/system/ollama.service /usr/local/bin/ollama /usr/local/
 sudo userdel ollama
 ```
 
-Meta+A opens it. opencode reads freely, and asks before anything that changes a file,
+Meta+A asks it in the command palette, Meta+Shift+A opens it in a terminal. opencode
+reads freely, and asks before anything that changes a file,
 runs a command or reaches a server (`defaults/apps.yaml`); Hermes asks before what it
 counts as dangerous, as above. `defaults/agent.md` tells either how
 this machine is put together and how to change it the patina way. What needs root (a
 package, a driver, a system service) it runs with `sudo -A`, since it has no terminal
 for sudo to ask in: a password dialog in the theme's colours asks you, in the command
 palette right away and in the terminal from the next login after the agent was
-installed. Nothing stores the password. In the command
-palette (Meta+Space), type `ai` and your request: [kortex](https://github.com/patina-os/kortex),
-a KRunner runner in a repository of its own (so it also serves other Plasma desktops),
-shows the answer there and every action the agent asks about with Allow once,
-Always and Deny. In the start menu any search ends with "Ask the agent" (search, ask,
-fix), below the apps and files it finds; Enter hands it to the command palette. `ai`
-alone lists the recent conversations, `ai ›` shows the current one, and Open in
-terminal continues a
-conversation in the agent's own interface for longer work. Every AI answer installs it,
+installed. Nothing stores the password. Press Meta+A and type your request, or type it
+into any search of the command palette (Meta+Space) or the start menu, which ends with
+"Ask opencode: …" (first when it reads as a question; `ai` and a request asks at once):
+[kortex](https://github.com/patina-os/kortex), a KRunner runner in a repository of its
+own (so it also serves other Plasma desktops), shows the answer in the command palette,
+what the model thinks meanwhile and for how long, and every action the agent asks
+about with Allow once, Always and Deny. Close the palette and a notification says when
+the agent has answered; its Show opens the conversation again. `ai` alone lists the
+recent conversations, `opencode ›` (`Hermes ›`) shows the current one, and Open in
+terminal continues a conversation in the agent's own interface for longer work. Every AI answer installs it,
 from its tagged release.
 
 ### Services

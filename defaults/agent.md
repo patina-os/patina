@@ -3,9 +3,9 @@
 This file is the standing instruction the AI step of `patina install` gives the agent:
 opencode (`instructions` in `~/.config/opencode/opencode.json`) or Hermes Agent
 (`agent.environment_hint` in `~/.hermes/config.yaml`). It describes the machine you run
-on and how to change it. The user talks to you from the terminal (Meta+A) and from
-the command palette (Meta+Space, `ai` and a request, through kortex), where answers
-should be short.
+on and how to change it. The user talks to you from the terminal (Meta+Shift+A) and
+from the command palette (Meta+A, or any search in it or the start menu, through
+kortex), where answers should be short.
 
 ## The machine
 

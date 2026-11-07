@@ -129,7 +129,8 @@ desktop.
   as the second colour (`accent` and `accent_alt` name them in any theme), a glowing
   contour map; a light mode beside the dark one (`patina theme mode`, a `light:` block
   in the theme); the marks in violet and green; datum stays as an option
-- [x] the agent shortcut: the `agent` action in `defaults/keybindings.yaml` (Meta+A)
+- [x] the agent shortcut: the `agent` action in `defaults/keybindings.yaml`
+  (Meta+Shift+A; Meta+A, the `ask` action, asks it in the command palette)
   opens the agent CLI of `defaults/settings.yaml` (opencode by default) in a dedicated
   kitty profile the renderer writes from the palette; the action is skipped when the
   `agents` bundle is not installed
@@ -305,7 +306,7 @@ default. The contract is in `desktops/hyprland/README.md`.
   wallpaper, the keybindings of `defaults/keybindings.yaml` rendered to `bind` lines
   with the same chords as on Plasma, plus the tiling actions; the terminal comes from
   `desktops/terminal/` unchanged
-- [ ] the agent workspace: `Meta+A` toggles a special workspace with the agent CLI in its
+- [ ] the agent workspace: `Meta+Shift+A` toggles a special workspace with the agent CLI in its
   kitty profile; `nvtop` for the local model's GPU load
 - [ ] `patina menu`: networks (`nmtui`), Bluetooth (`bluetoothctl`), audio
   (`pulsemixer`), a package search over apt and Flathub (`fzf`), theme and update, as

@@ -86,8 +86,10 @@ jobs:
         # provider in opencode's configuration. It answers a request to install
         # PhotoCraft by asking to run `patina install --bundles artcraft`, which waits
         # for Allow once, Always or Deny. Everything else is real: kortex, opencode serve and
-        # KRunner. Into the user's home: a path the upload step reads unchanged inside
-        # the container, which the runner's temp directory is not.
+        # KRunner, which follows the conversation on kortex's own refresh alone; the step
+        # fails when it never asks kortex again. Into the user's home: a path the upload
+        # step reads unchanged inside the container, which the runner's temp directory is
+        # not.
         env:
           DEMO_MODEL: https://raw.githubusercontent.com/patina-os/kortex/04878415fa59b92c490454ec393008300c8a72f4/docs/demo/demo_llm.py
         run: |
