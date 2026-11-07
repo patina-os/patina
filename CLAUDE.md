@@ -199,6 +199,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   windows leaves alone, so btop always draws (November 2026). Each step runs
   `patina ai` or `patina install`, which ask as always, and a shell takes the
   welcome's half when it ends; btop is in the minimal bundle for it (November 2026).
+  Its icon is a checklist glyph of its own, not the start button's mark, which it
+  carried until the first run on real hardware took one for the other (November 2026).
 - Image: a small live image built with Debian's live-build, with Calamares as the branded
   installer. The live system carries only the installer; Plasma and the base packages
   are fetched from Debian's mirrors during the install, so the image stays under one

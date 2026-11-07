@@ -176,7 +176,9 @@ Files, from `templates/`, each named after the theme:
 - the welcome's start menu entry, `~/.local/share/applications/patina-welcome.desktop`,
   and its autostart entry, `~/.config/autostart/patina-welcome.desktop`, both from
   `templates/welcome.desktop`: `patina welcome --window` and `--login`, kitty split in
-  two with the welcome beside btop (`bin/patina-welcome`). `--login` opens nothing
+  two with the welcome beside btop (`bin/patina-welcome`). Its icon is
+  `patina-welcome`, a checklist glyph (`icons.yaml`), so it is not taken for the start
+  button's mark in the bar; the entries are written before the glyphs. `--login` opens nothing
   once the welcome's "Don't open at login" wrote `~/.local/state/patina/welcome-off`,
   so the entry stays as it is. KDE's Welcome Center stays
   off: `autoload=false` for its daemon module (`[Module-kded_plasma-welcome]` in

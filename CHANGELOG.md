@@ -6,6 +6,11 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- The welcome's icon in the bar and the start menu is a checklist glyph of its own: it
+  was the start button's mark, so the two looked alike. `patina update` draws it.
+
 ## [0.1.0-alpha.11] - 2026-11-06
 
 ### Fixed
