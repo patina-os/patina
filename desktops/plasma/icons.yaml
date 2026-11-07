@@ -46,6 +46,7 @@ Papirus-Dark: &papirus
       plasmadiscover: system-software-install-symbolic
       help-browser: help-browser-symbolic
       preferences-desktop-keyboard-shortcuts: input-keyboard-symbolic   # patina keys
+      patina-welcome: checkbox-checked-symbolic          # patina's welcome, its steps
       spectacle: camera-photo-symbolic
       utilities-system-monitor: utilities-system-monitor-symbolic
       kdeconnect: phone-symbolic

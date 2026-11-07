@@ -113,7 +113,7 @@ panel:
                              # centre, but for start_menu.position center) | plasma: the stock bar
   floating: false            # false: along the screen's edge, always; true: Plasma's floating bar
   pinned: [files, browser, terminal]   # actions of keybindings.yaml pinned to the bar, in order
-# The command palette (KRunner on Plasma, kortex's `ai` in it).
+# The command palette (KRunner on Plasma, the AI agent in it through kortex).
 command_palette:
   position: center           # where it opens: center of the screen | top (Plasma's own)
 # The start menu (Kickoff or the Application Dashboard on Plasma): the patina mark as
@@ -148,7 +148,8 @@ start_menu:
       icon: folder-code
       apps:
         - patina-ask.desktop                           # Ask opencode (or Hermes): the command
-                                                       # palette with `ai ` typed (an AI bundle)
+                                                       # palette on the agent alone, as Meta+A
+                                                       # (an AI bundle)
         - patina-agent.desktop                         # the agent (an AI or the agents bundle)
         - claude-desktop.desktop
     - id: self-hosting

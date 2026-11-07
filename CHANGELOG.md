@@ -6,6 +6,29 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Meta+A asks the AI agent: the command palette opens on the agent alone, so what you
+  type goes to it, with no `ai` to type first; the start menu's "Ask opencode" entry
+  opens the same. The agent in its own terminal moves to Meta+Shift+A. `patina update`
+  writes the keys, which take effect at the next login.
+- kortex 0.4.0: any search in the command palette ends with "Ask opencode: …" (or
+  "Ask Hermes: …"), as the start menu's does, and comes first when it reads as a
+  question (it ends with `?`, or starts with how, why, wie, warum and the like); `ai`
+  and a request still asks at once. The conversation is called by the agent's name,
+  `opencode ›` in place of `ai ›`. The next `patina update` installs it where an AI
+  agent is on.
+
+### Fixed
+
+- The command palette no longer looks stuck at "Thinking…": while the agent works it
+  counts the seconds and shows, in italics, what a reasoning model (Big Pickle, gpt-oss,
+  Qwen) thinks before it answers. With the palette closed, a click elsewhere included,
+  a notification says that the agent works on the request and then what it answered or
+  why it stopped; its Show opens the conversation again. kortex 0.4.0, as above.
+- The welcome's icon in the bar and the start menu is a checklist glyph of its own: it
+  was the start button's mark, so the two looked alike. `patina update` draws it.
+
 ## [0.1.0-alpha.11] - 2026-11-06
 
 ### Fixed
