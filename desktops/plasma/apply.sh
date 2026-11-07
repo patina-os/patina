@@ -293,10 +293,11 @@ elif [[ -e "$agent_desktop" ]]; then
   changed
 fi
 
-# The start menu's "Ask opencode" (or Hermes), only while kortex comes with an AI bundle:
-# the command palette with `ai ` typed, so the agent is there without a search first. Its
-# icon is kortex's ▲ by path, which the glyphs below leave alone; by name it would
-# become a glyph, and KRunner's rows would lose the ▲ too.
+# The start menu's "Ask opencode" (or Hermes), only while kortex comes with an AI bundle,
+# and Meta+A (the `ask` action): the command palette on kortex alone, empty, so whatever
+# is typed goes to the agent, with no `ai` first. Its icon is kortex's ▲ by path, which
+# the glyphs below leave alone; by name it would become a glyph, and KRunner's rows
+# would lose the ▲ too.
 kortex_icon="$data/icons/hicolor/scalable/apps/kortex.svg"
 if [[ " ${PATINA_BUNDLES:-} " =~ \ (ai-local|ai-cloud|hermes-local|hermes-cloud)\  && -f "$kortex_icon" ]]; then
   tpl[AGENT_TITLE]=opencode
@@ -953,8 +954,8 @@ case "$(yq eval '.command_palette.position' "$settings")" in
   center) kset krunnerrc FreeFloating true General ;;
   top) kset krunnerrc FreeFloating false General ;;
 esac
-# kortex, `ai` in the command palette, only while an AI bundle is installed: `patina ai
-# off` leaves it installed and switched off.
+# kortex, the agent in the command palette, only while an AI bundle is installed:
+# `patina ai off` leaves it installed and switched off.
 if [[ -f "$data/krunner/dbusplugins/kortex.desktop" ]]; then
   if [[ " ${PATINA_BUNDLES:-} " =~ \ (ai-local|ai-cloud|hermes-local|hermes-cloud)\  ]]; then
     kset krunnerrc kortexEnabled true Plugins
@@ -1053,8 +1054,10 @@ while IFS= read -r action; do
   component="$(yq eval ".actions[\"$action\"].component // \"\"" "$actions")"
   label="$(yq eval ".actions[\"$action\"].label // \"$action\"" "$actions")"
   if yq eval -e ".actions[\"$action\"].service" "$actions" > /dev/null 2>&1; then
-    if [[ "$(yq eval ".actions[\"$action\"].service" "$actions")" == patina-agent.desktop && ! -f "$agent_desktop" ]]; then
-      kdel kglobalshortcutsrc _launch services patina-agent.desktop   # no AI or agents bundle is installed
+    # patina's own launchers come with bundles (the agent, Ask): without them, no chord
+    own_desktop="$(yq eval ".actions[\"$action\"].service" "$actions")"
+    if [[ "$own_desktop" == patina-*.desktop && ! -f "$data/applications/$own_desktop" ]]; then
+      kdel kglobalshortcutsrc _launch services "$own_desktop"
       continue
     fi
     service="$(service_for_action "$action")"

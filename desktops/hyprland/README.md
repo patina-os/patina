@@ -25,15 +25,16 @@ What patina takes from that:
   Flathub through `fzf`, `patina theme set` and `patina update`. Omarchy's own TUIs
   (impala, bluetui, wiremix) and its launcher (walker) are not in Debian, and the
   menu is a list of commands as data, not a program
-- The agent as a place, not only a shortcut: `Meta+A` toggles a special workspace with
-  the agent CLI in its kitty profile (opencode by default, pointed at the local
-  Ollama), and `nvtop` (in Debian's archive) shows what the local model costs the GPU
+- The agent as a place, not only a shortcut: `Meta+Shift+A` (the `agent` action)
+  toggles a special workspace with the agent CLI in its kitty profile (opencode by
+  default, pointed at the local Ollama), and `nvtop` (in Debian's archive) shows what
+  the local model costs the GPU
 
 Where patina stays different:
 
 - Plasma and Hyprland side by side, from one theme and one set of chords: start on
   Plasma, pick the Hyprland session at the login screen when ready, keep the colours,
-  the wallpaper and `Meta+Return`, `Meta+Space`, `Meta+Q`, `Meta+A`. Omarchy is
+  the wallpaper and `Meta+Return`, `Meta+Space`, `Meta+Q`, `Meta+Shift+A`. Omarchy is
   Hyprland only
 - Free and EU-sovereign defaults: no proprietary chat, no web apps of US services, the
   free agent CLI first; Debian stable, no package repository of our own, ARM as well
