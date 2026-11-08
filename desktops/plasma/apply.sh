@@ -296,15 +296,13 @@ elif [[ -e "$agent_desktop" ]]; then
   changed
 fi
 
-# The start menu's "Ask opencode" (or Hermes), only while kortex comes with an AI bundle,
-# and Meta+A (the `ask` action): the command palette on kortex alone, empty, so whatever
-# is typed goes to the agent, with no `ai` first. Its icon is kortex's ▲ by path, which
-# the glyphs below leave alone; by name it would become a glyph, and KRunner's rows
-# would lose the ▲ too.
+# The start menu's "Ask kortex", only while kortex comes with an AI bundle, and Meta+A
+# (the `ask` action): the command palette on kortex alone, empty, so whatever is typed
+# goes to the agent, with no `ai` first. kortex is its name whichever agent answers, as
+# in the palette. Its icon is kortex's ▲ by path, which the glyphs below leave alone; by
+# name it would become a glyph, and KRunner's rows would lose the ▲ too.
 kortex_icon="$data/icons/hicolor/scalable/apps/kortex.svg"
 if [[ " ${PATINA_BUNDLES:-} " =~ \ (ai-local|ai-cloud|hermes-local|hermes-cloud)\  && -f "$kortex_icon" ]]; then
-  tpl[AGENT_TITLE]=opencode
-  [[ "$(current_agent)" == hermes ]] && tpl[AGENT_TITLE]=Hermes
   tpl[ASK_ICON]="$kortex_icon"
   render "$templates/ask.desktop" "$tmp/ask.desktop"
   put "$tmp/ask.desktop" "$ask_desktop"

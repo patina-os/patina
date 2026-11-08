@@ -101,15 +101,20 @@ packs. Audience: developers and privacy-minded users in the EU.
   every AI bundle installs its tagged release, pinned in `manifest/upstream.yaml`. Any
   search in the start menu ends with asking the agent (search, ask, fix), which hands
   it to the command palette; the menu's "Search…" is libplasma's and stays (October 2026).
-  That row names the agent ("Ask opencode: …"), and so does the first entry of the
-  menu's AI folder (November 2026). No `ai` to type (November 2026, after the first
-  run on real hardware): any search in the command palette ends with that row too,
-  first when it reads as a question; Meta+A (the `ask` action, the AI folder's entry)
-  opens the command palette on the agent alone and Meta+Shift+A the agent in its
-  terminal; the conversation is called by the agent's name (`opencode ›`), which a
-  name of the user's may take later; while it works the palette counts the seconds and
-  shows what a reasoning model thinks, and with the palette closed a notification
-  follows the request to its answer.
+  That row says kortex ("Ask kortex: …"), and so do the first entry of the menu's AI
+  folder, the conversation (`kortex ›`) and the notifications, whichever agent answers;
+  the agent is named once, as a detail, in the palette's hint and the row that says how
+  long (November 2026, after the palette's field said opencode and KRunner's label
+  beside the row kortex; it named the agent before), and a name of the user's may take
+  kortex's place later. No `ai` to type (November 2026, after the first run on real
+  hardware): any search in the command palette ends with that row too, first when it
+  reads as a question; Meta+A (the `ask` action, the AI folder's entry) opens the
+  command palette on the agent alone and Meta+Shift+A the agent in its terminal.
+  While the agent works, the palette's rows are one line each, so its window holds
+  still: how long it has been at it and what it wrote or thought last, and a row per
+  step (the last four); the answer comes once it is done (November 2026, after the
+  window grew and shrank with each refresh as the answer streamed into one row). With
+  the palette closed a notification follows the request to its answer.
 - Look: the default theme is aurora, made for OLED screens (October 2026, after the
   redesign whose eight directions `docs/design/futures.html` keeps): true black with
   panels one step above it, neon green as the accent and violet as the second colour.
