@@ -291,8 +291,9 @@ sudo -iu patina-test bash -c '
 - [ ] the splash before the desktop shows the mark alone, its rings without the word
 - [ ] that first login opens patina's welcome, kitty split in two with btop beside it,
   btop drawn in full (not "Terminal size too small"), and not KDE's Welcome Center:
-  the first keys and a menu (the AI agent, the agent
-  tools, more apps, the keys, open at login); "Close the welcome" leaves a shell in its
+  the first keys and a menu (Nextcloud, KeePassXC, the AI agent, the agent tools, more
+  apps, theme, update and check, the keys, open at login); "Close the welcome" leaves a
+  shell in its
   half. The second login opens it again; after "Don't open at login" the next login
   opens nothing, and "Welcome to patina" in the start menu opens it, where "Open at
   every login again" brings it back; the menu has no Welcome Center

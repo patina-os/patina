@@ -9,6 +9,7 @@ packages:
   - nextcloud-desktop
   - thunderbird
   - keepassxc
+  - kdialog      # the welcome's file dialog for a KeePassXC database (bin/patina-welcome)
   - firefox-esr  # the browser; its policies: defaults/system/firefox/
   - okular       # PDF and documents
   - gwenview     # images

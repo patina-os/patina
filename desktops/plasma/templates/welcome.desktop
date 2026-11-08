@@ -1,10 +1,10 @@
 [Desktop Entry]
 Type=Application
 Name=Welcome to patina
-Comment=The AI agent, the agent tools, services and more apps, beside btop
+Comment=Nextcloud, your passwords, the AI agent, more apps, the theme and updates, beside btop
 Exec="${PATINA_PATH}/bin/patina" welcome ${WELCOME_FLAG}
 Icon=patina-welcome
 Terminal=false
 Categories=System;
-Keywords=welcome;setup;ai;agent;apps;onboarding;
+Keywords=welcome;setup;nextcloud;keepassxc;passwords;ai;agent;apps;theme;update;onboarding;
 StartupWMClass=patina-welcome

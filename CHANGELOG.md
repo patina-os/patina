@@ -6,6 +6,19 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- The welcome connects your Nextcloud: it asks the address, checks that a Nextcloud
+  answers there, and opens the Nextcloud client's own wizard with it filled in, which
+  logs in through the browser and asks what to sync to `~/Nextcloud`. Once connected,
+  the step opens the client's settings.
+- The welcome opens your passwords in KeePassXC: the `.kdbx` files in your Nextcloud
+  folders, newest first, or one you pick in a file dialog; KeePassXC opens it again at
+  every start. The desktop bundle gains kdialog for that dialog.
+- "Theme, update and check" in the welcome: switch the theme or its dark and light
+  mode, run `patina update`, and check the system with `patina doctor`, in a menu of
+  its own.
+
 ### Changed
 
 - Meta+A asks the AI agent: the command palette opens on the agent alone, so what you

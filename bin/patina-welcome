@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# The welcome at each login, in kitty beside btop: the AI agent and its login, the agent tools, services, more apps and the keys.
+# The welcome at each login, in kitty beside btop: Nextcloud, KeePassXC, the AI agent, apps, the theme, updates and the keys.
 set -euo pipefail
 
 # shellcheck source=bin/lib.sh
@@ -10,10 +10,11 @@ usage() {
   cat << EOU
 usage: patina welcome [--window | --login]
 
-  (none)    the welcome on this terminal: turn on the AI agent and log in to its
-            cloud provider, add the agent tools, connect a service for the agent, add
-            more apps, show the keys, and open at login or not. Each step runs patina
-            ai or patina install, which ask as always
+  (none)    the welcome on this terminal: connect your Nextcloud, open your passwords
+            in KeePassXC, turn on the AI agent and log in to its cloud provider, add
+            the agent tools, connect a service for the agent, add more apps, change the
+            theme, update and check patina, show the keys, and open at login or not.
+            The AI and app steps run patina ai or patina install, which ask as always
   --window  the welcome in a kitty window of its own, beside btop: the start menu's
             "Welcome to patina". When it ends, a shell takes its place
   --login   the same at a login, unless its "Don't open at login" was picked (the
@@ -25,6 +26,8 @@ EOU
 off="$PATINA_STATE/welcome-off"
 settings="$PATINA_PATH/defaults/settings.yaml"
 keybindings="$PATINA_PATH/defaults/keybindings.yaml"
+# The Nextcloud client's own configuration, which holds its accounts and sync folders.
+nextcloud_cfg="${XDG_CONFIG_HOME:-$HOME/.config}/Nextcloud/nextcloud.cfg"
 
 # One kitty window split in two, as the README's picture of the desktop: the welcome on
 # the left, with the keyboard, and btop on the right where it is installed. The session
@@ -78,17 +81,51 @@ left_bundles() {
   done
 }
 
+# Values the Nextcloud client keeps per account, from its configuration (an INI file Qt
+# writes, accounts in [Accounts] as 0\url=...): `url`, the account's address, or
+# `localPath`, each sync folder (0\Folders\1\localPath=..., FoldersWithPlaceholders
+# for virtual files). Nothing without an account. nextcloud_values url|localPath
+nextcloud_values() {
+  [[ -f "$nextcloud_cfg" ]] || return 0
+  awk -v want="$1" '
+    /^\[/ { accounts = ($0 == "[Accounts]"); next }
+    accounts && index($0, "=") {
+      key = substr($0, 1, index($0, "=") - 1)
+      value = substr($0, index($0, "=") + 1)
+      n = split(key, part, /[\\]/)
+      if (part[n] == want && (n == 2 || n == 4)) {
+        gsub(/^"|"$/, "", value)
+        print value
+      }
+    }' "$nextcloud_cfg"
+}
+
 # The steps the menu offers now, one line each: the step, then what it does in at most
 # 68 characters, so a line with gum's cursor fits the welcome's half of the window (82
 # columns, beside btop's). A cloud agent not logged in yet has its login first, where the menu starts:
 # the image's first boot installs it and asks nothing.
 steps() {
-  local ai agent provider
+  local ai agent provider host
   ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)"
   agent="$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || echo opencode)"
   provider="$(cat "$PATINA_STATE/ai-provider" 2> /dev/null || true)"
   if [[ "$ai" == cloud ]] && ! ai_logged_in "$agent" "$provider"; then
     printf '%-9s %s\n' provider "Log in to the AI provider · Mistral, your own API and more"
+  fi
+  host="$(nextcloud_values url)"
+  host="${host%%$'\n'*}"   # the first account
+  host="${host#*://}"
+  host="${host%%/*}"
+  if command -v nextcloud > /dev/null; then
+    if [[ -n "$host" ]]; then
+      printf '%-9s %s\n' nextcloud "Nextcloud's settings · connected to $host"
+    else
+      printf '%-9s %s\n' nextcloud "Connect your Nextcloud · your files, synced to ~/Nextcloud"
+    fi
+  fi
+  if command -v keepassxc > /dev/null; then
+    printf '%-9s %s\n' passwords "Open your passwords in KeePassXC · $([[ -n "$host" ]] &&
+      echo "the database in your Nextcloud" || echo "a database file you pick")"
   fi
   if [[ "$ai" == none ]]; then
     printf '%-9s %s\n' agent "Turn on the AI agent · opencode or Hermes, local or cloud"
@@ -109,6 +146,7 @@ steps() {
   if [[ -n "$left" ]]; then
     printf '%-9s %s\n' apps "More apps · $left"
   fi
+  printf '%-9s %s\n' patina "Theme, update and check · now $(current_theme || echo "no theme"), $(current_mode)"
   printf '%-9s %s\n' keys "All the keyboard shortcuts"
   if [[ -e "$off" ]]; then
     printf '%-9s %s\n' login "Open at every login again"
@@ -146,15 +184,132 @@ apps_step() {
   [[ -z "$chosen" ]] || "$PATINA_PATH/bin/patina-install" --bundles "$chosen" || true
 }
 
+# Nextcloud: the client's own wizard, which logs in through the browser and asks what to
+# sync, with the address given here, so it starts at the login. The address only: a
+# folder given as well (--overridelocaldir) makes the wizard skip the page that asks what
+# to sync; its own default is ~/Nextcloud. Once it has an account, the client's settings.
+# The client runs on after the welcome, and starts at each login from then on, as it
+# sets itself up to.
+nextcloud_step() {
+  local url
+  if [[ -z "$(nextcloud_values url)" ]]; then
+    url="$(gum input --header "Your Nextcloud's address" --placeholder "cloud.example.eu")" || return 0
+    url="${url%/}"
+    [[ -n "$url" ]] || return 0
+    [[ "$url" == *://* ]] || url="https://$url"
+    # status.php answers on every Nextcloud without a login.
+    if [[ "$(curl -fsS -m 15 "$url/status.php" 2> /dev/null | yq eval -p json '.installed' 2> /dev/null)" != true ]]; then
+      warn "no Nextcloud answers at $url; check the address and try again"
+      return 0
+    fi
+    # A client already running ignores the address, so it quits first.
+    if pgrep -u "$(id -u)" -x nextcloud > /dev/null; then
+      nextcloud --quit > /dev/null 2>&1 || true
+      for _ in 1 2 3 4 5 6 7 8 9 10; do
+        pgrep -u "$(id -u)" -x nextcloud > /dev/null || break
+        sleep 1
+      done
+    fi
+    # Writes the address into the client's configuration for its wizard, then exits.
+    nextcloud --overrideserverurl "$url" > /dev/null 2>&1 || true
+    say "the Nextcloud client opens your browser to log in, then asks what to sync"
+  fi
+  setsid -f nextcloud > /dev/null 2>&1
+}
+
+# KeePassXC with the user's database: the .kdbx files in the Nextcloud client's sync
+# folders, the newest first, to pick from; with none there, or with "Another file",
+# Plasma's file dialog (kdialog) picks one anywhere. KeePassXC opens it and, as it does
+# by default, opens it again at every start; nothing else of KeePassXC's changes.
+passwords_step() {
+  local dir file choice
+  local -a dirs=() lines=()
+  while IFS= read -r dir; do
+    if [[ -d "$dir" ]]; then
+      dirs+=("$dir")
+    fi
+  done < <(nextcloud_values localPath)
+  # One search over every folder, so the newest file comes first whichever folder it is in.
+  if [[ ${#dirs[@]} -gt 0 ]]; then
+    while IFS= read -r file; do
+      lines+=("${file/#"$HOME"/\~}")
+    done < <(find "${dirs[@]}" -name '*.kdbx' -type f -printf '%T@ %p\n' 2> /dev/null | LC_ALL=C sort -rn | cut -d' ' -f2-)
+  fi
+  choice=""
+  if [[ ${#lines[@]} -gt 0 ]]; then
+    choice="$(gum choose --header "Your KeePassXC database" "${lines[@]}" "Another file…")" || return 0
+  else
+    say "no KeePassXC database (.kdbx) in your Nextcloud folders; pick the file"
+  fi
+  if [[ -z "$choice" || "$choice" == "Another file…" ]]; then
+    if ! command -v kdialog > /dev/null; then
+      warn "picking the file needs kdialog, which patina update brings with the desktop bundle"
+      return 0
+    fi
+    file="$(kdialog --title "Your KeePassXC database" --getopenfilename "$HOME" \
+      "*.kdbx|KeePassXC databases (*.kdbx)" 2> /dev/null)" || return 0
+    [[ -n "$file" ]] || return 0
+    choice="${file/#"$HOME"/\~}"
+  fi
+  file="${choice/#\~/$HOME}"
+  say "KeePassXC opens $choice, and again at every start"
+  setsid -f keepassxc "$file" > /dev/null 2>&1
+}
+
+# patina itself, in a menu of its own that comes back after each step until Back: the
+# theme and, where it has one, its other mode (patina theme), an update (patina update)
+# and a check (patina doctor). The welcome takes a new theme's colours at once.
+patina_step() {
+  local theme mode other d choice
+  local -a lines
+  while true; do
+    theme="$(current_theme || true)"
+    mode="$(current_mode)"
+    other=dark
+    [[ "$mode" == dark ]] && other=light
+    lines=("$(printf '%-7s %s' theme "Change the theme · now ${theme:-none}")")
+    if d="$(theme_dir "$theme")" && theme_has_mode "$d/theme.yaml" "$other"; then
+      lines+=("$(printf '%-7s %s' mode "Switch to the $other mode · now $mode")")
+    fi
+    lines+=("$(printf '%-7s %s' update "Update patina · now $(git -C "$PATINA_PATH" describe --tags --always 2> /dev/null)")"
+      "$(printf '%-7s %s' check "Check patina · what is missing or differs (patina doctor)")"
+      "$(printf '%-7s %s' back "Back to the welcome")")
+    echo
+    choice="$(gum choose --header "Theme, update and check" "${lines[@]}")" || return 0
+    echo
+    case "${choice%% *}" in
+      theme)
+        mapfile -t lines < <("$PATINA_PATH/bin/patina-theme" list)
+        choice="$(gum choose --header "The theme (* is the current one)" "${lines[@]}")" || continue
+        "$PATINA_PATH/bin/patina-theme" set "$(awk '{ print $1 }' <<< "${choice#\*}")" || true
+        colours
+        ;;
+      mode)
+        "$PATINA_PATH/bin/patina-theme" mode "$other" || true
+        colours
+        ;;
+      update) "$PATINA_PATH/bin/patina-update" || true ;;
+      check) "$PATINA_PATH/bin/patina-doctor" || true ;;
+      *) return 0 ;;
+    esac
+  done
+}
+
+# The welcome's colours: the current theme's, in its mode; again after the theme changed.
+colours() {
+  local d
+  d="$(theme_dir "$(current_theme || yq eval '.theme' "$settings")")" || die "no theme to draw the welcome in"
+  theme_vars "$d/theme.yaml" "$settings" "$(current_mode)"
+  tui_colors   # exported, so the steps' own questions take the same colours
+}
+
 welcome() {
-  local d name action choice chord words
+  local name action choice chord words
   local -a lines
   [[ -t 0 && -t 1 ]] || die "the welcome asks on a terminal; patina welcome --window opens one"
   need_yq
   command -v gum > /dev/null || die "the welcome asks with gum (the base bundle): run patina install first"
-  d="$(theme_dir "$(current_theme || yq eval '.theme' "$settings")")" || die "no theme to draw the welcome in"
-  theme_vars "$d/theme.yaml" "$settings" "$(current_mode)"
-  tui_colors   # exported, so the steps' own questions take the same colours
+  colours
   name="$(getent passwd "$(id -un)" | cut -d: -f5 | cut -d, -f1)"
   name="${name%% *}"
   print_wordmark auto "${tpl[VARIANT]}"
@@ -179,9 +334,12 @@ welcome() {
     case "${choice%% *}" in
       agent) "$PATINA_PATH/bin/patina-ai" on || true ;;
       provider) "$PATINA_PATH/bin/patina-ai" login || true ;;
+      nextcloud) nextcloud_step ;;
+      passwords) passwords_step ;;
       services) services_step ;;
       tools) tools_step ;;
       apps) apps_step ;;
+      patina) patina_step ;;
       keys) "$PATINA_PATH/bin/patina-keys" ;;
       login)
         if [[ -e "$off" ]]; then

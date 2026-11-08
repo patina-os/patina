@@ -149,11 +149,16 @@ git clone https://github.com/patina-os/patina.git ~/.local/share/patina
 ```
 
 At every login patina's welcome opens, a kitty window split in two with btop beside
-it: the first keys, and what the install left for later, each a step that runs
-`patina ai` or `patina install`: the AI agent, the services it can work with, the agent
-tools, and the bundles you did not pick. Its "Don't open at login" keeps it in the start
-menu only ("Welcome to patina", or `patina welcome` in a terminal), and "Open at every
-login again" brings it back; KDE's own Welcome Center stays off.
+it: the first keys, and what the install left for later. It connects your Nextcloud
+(the client's own wizard, with the address you give filled in: you log in in the
+browser and choose what to sync to `~/Nextcloud`), and opens your passwords in KeePassXC:
+the database (`.kdbx`) it finds in your Nextcloud, or a file you pick, which KeePassXC
+then opens at every start. The AI agent, the services it can work with, the agent tools
+and the bundles you did not pick run `patina ai` or `patina install`; "Theme, update and
+check" switches the theme or its dark and light mode, runs `patina update` and
+`patina doctor`. Its "Don't open at login" keeps it in the start menu only ("Welcome to
+patina", or `patina welcome` in a terminal), and "Open at every login again" brings it
+back; KDE's own Welcome Center stays off.
 
 `patina install --list` shows the bundles, `patina doctor` checks the result,
 `patina theme list` and `patina theme set <name>` switch the theme (`PATINA_THEME=<name>`
