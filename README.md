@@ -35,10 +35,25 @@ release; the arm64 image stays in CI until its own install check.
   </picture>
 </p>
 
-Meta+Space, `ai` and what you want: [kortex](https://github.com/patina-os/kortex), patina's
-KRunner runner, hands the request to the AI agent you picked and shows the answer right
-in the command palette, and every action the agent asks about as its own line with
-Allow once, Always and Deny. [opencode](https://opencode.ai) asks before every change;
+Meta+A and what you want, in your own words, or any search in the command palette or
+the start menu: [kortex](https://github.com/patina-os/kortex), patina's KRunner runner,
+hands the request to the AI agent you picked and shows the answer right in the command
+palette, and every action the agent asks about as its own line with Allow once, Always
+and Deny. It is made for three things:
+
+- **Troubleshooting.** "Why is my wifi so slow?", "the printer stopped printing":
+  the agent looks where a forum thread would send you (the journal, the network, the
+  print queue), says what it found and proposes the fix, which waits for your yes.
+- **Getting Linux to work for you.** "Install PhotoCraft", "switch to the light theme":
+  say what you want, not the commands for it. The agent knows how this machine is put
+  together and changes it the patina way (`defaults/agent.md`).
+- **Working with an agent.** Scripts, projects, your servers, and the services you
+  connect (Linear, Notion, GitHub, Nextcloud). Close the palette while it works and a
+  notification brings the answer back; Meta+Shift+A opens the agent in its own
+  terminal for longer work.
+
+An agent can be wrong, a small local model more often: read what it proposes before
+you allow it. [opencode](https://opencode.ai) asks before every change;
 [Hermes Agent](https://github.com/NousResearch/hermes-agent) remembers you and asks only
 before a command it counts as dangerous. Both are free software, with a model on your
 machine or from a cloud provider you pick, once you turn one on;
@@ -210,7 +225,8 @@ same one. datum (graphite, ice and coral around a contour map) stays as an optio
 (`patina theme set datum`).
 Meta plus
 one key opens the terminal (Return), the search (Space), the browser (B), the files (E)
-and the AI agent in its own terminal profile (A);
+and the AI agent: Meta+A asks it in the command palette, Meta+Shift+A opens it in its
+own terminal profile;
 Meta+K shows all of them, and Plasma's own, at a glance (`patina keys`). Themes shared
 in a repository of their own install with `patina theme install <git-url>`, as data
 only. The
