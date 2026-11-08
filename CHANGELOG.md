@@ -18,6 +18,10 @@ All notable changes to patina are documented here. The format follows
   and a request still asks at once. The conversation is called by the agent's name,
   `opencode ›` in place of `ai ›`. The next `patina update` installs it where an AI
   agent is on.
+- kortex 0.4.1: its icon, in the command palette's rows, its notifications and the
+  start menu's "Ask opencode", is patina's ▲ inside two contour lines in aurora's
+  violets, in place of a plain ▲; the notification of an answer shows the agent's last
+  words, which after a task say how it went.
 
 ### Fixed
 
@@ -26,6 +30,10 @@ All notable changes to patina are documented here. The format follows
   Qwen) thinks before it answers. With the palette closed, a click elsewhere included,
   a notification says that the agent works on the request and then what it answered or
   why it stopped; its Show opens the conversation again. kortex 0.4.0, as above.
+- The answer and a reasoning model's thoughts grow in the command palette as the agent
+  writes them: opencode keeps each part empty in what kortex reads until the part is
+  done, so the palette showed "Thinking…" until then, and the thoughts never. kortex
+  0.4.1 fills them in from opencode's event stream.
 - The welcome's icon in the bar and the start menu is a checklist glyph of its own: it
   was the start button's mark, so the two looked alike. `patina update` draws it.
 
