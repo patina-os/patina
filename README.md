@@ -156,9 +156,10 @@ the database (`.kdbx`) it finds in your Nextcloud, or a file you pick, which Kee
 then opens at every start. The AI agent, the services it can work with, the agent tools
 and the bundles you did not pick run `patina ai` or `patina install`; "Theme, update and
 check" switches the theme or its dark and light mode, runs `patina update` and
-`patina doctor`. Its "Don't open at login" keeps it in the start menu only ("Welcome to
-patina", or `patina welcome` in a terminal), and "Open at every login again" brings it
-back; KDE's own Welcome Center stays off.
+`patina doctor`. Esc, or the "← Back" at the end of each of its lists, goes one question
+back, and typing narrows a list. Its "Don't open at login" keeps it in the start menu
+only ("Welcome to patina", or `patina welcome` in a terminal), and "Open at every login
+again" brings it back; KDE's own Welcome Center stays off.
 
 `patina install --list` shows the bundles, `patina doctor` checks the result,
 `patina theme list` and `patina theme set <name>` switch the theme (`PATINA_THEME=<name>`
