@@ -339,13 +339,15 @@ for sudo to ask in: a password dialog in the theme's colours asks you, in the co
 palette right away and in the terminal from the next login after the agent was
 installed. Nothing stores the password. Press Meta+A and type your request, or type it
 into any search of the command palette (Meta+Space) or the start menu, which ends with
-"Ask opencode: …" (first when it reads as a question; `ai` and a request asks at once):
+"Ask kortex: …" (first when it reads as a question; `ai` and a request asks at once):
 [kortex](https://github.com/patina-os/kortex), a KRunner runner in a repository of its
-own (so it also serves other Plasma desktops), shows the answer in the command palette,
-what the model thinks meanwhile and for how long, and every action the agent asks
-about with Allow once, Always and Deny. Close the palette and a notification says when
-the agent has answered; its Show opens the conversation again. `ai` alone lists the
-recent conversations, `opencode ›` (`Hermes ›`) shows the current one, and Open in
+own (so it also serves other Plasma desktops), is where you talk to the agent, opencode
+or Hermes. While the agent works, the command palette says for how long and what it
+wrote or thought last, with a row for each step it takes, each on one line so the
+palette holds still; then it shows the answer, and every action the agent asks about
+with Allow once, Always and Deny. Close the palette and a notification says when the
+agent has answered; its Show opens the conversation again. `ai` alone lists the recent
+conversations, `kortex ›` shows the current one, and Open in
 terminal continues a conversation in the agent's own interface for longer work. Every AI answer installs it,
 from its tagged release.
 

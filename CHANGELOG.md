@@ -22,8 +22,21 @@ All notable changes to patina are documented here. The format follows
   start menu's "Ask opencode", is patina's ▲ inside two contour lines in aurora's
   violets, in place of a plain ▲; the notification of an answer shows the agent's last
   words, which after a task say how it went.
+- kortex 0.5.0: the command palette, its rows, its notifications and the start menu's
+  entry say kortex, whichever agent answers: "Ask kortex: …", `kortex ›` for the
+  conversation, "kortex answered". The palette's field said opencode while KRunner's
+  label beside the row said kortex, two names for one thing. The agent is named once,
+  in the palette's hint and the row that says how long; the cheat sheet calls Meta+A
+  "Ask kortex, the AI agent". `patina update` writes the entry and installs kortex.
 
 ### Fixed
+
+- The command palette holds still while the agent works. KRunner sizes its window to
+  its rows, and the answer streamed into one row that grew a line with each word that
+  wrapped, while the thoughts below it came and went, so the window grew and shrank
+  with each refresh. kortex 0.5.0 shows one-line rows meanwhile: how long the agent has
+  been at it and what it wrote or thought last, and a row per step (the last four);
+  the answer comes once it is done. The seconds now show; KRunner hid them.
 
 - The command palette no longer looks stuck at "Thinking…": while the agent works it
   counts the seconds and shows, in italics, what a reasoning model (Big Pickle, gpt-oss,

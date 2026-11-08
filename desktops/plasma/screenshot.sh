@@ -118,9 +118,9 @@ session() {
   sleep 2
 
   if [[ -n "${PATINA_SHOT_ASK:-}" ]]; then
-    # The command palette on the empty desktop. What Enter on kortex's "Ask opencode"
+    # The command palette on the empty desktop. What Enter on kortex's "Ask kortex"
     # match does: kortex sends the request to the agent and opens KRunner on the
-    # conversation (opencode ›), which it keeps current itself. The match's id is "ask",
+    # conversation (kortex ›), which it keeps current itself. The match's id is "ask",
     # the unit separator and the request.
     dbus-send --session --print-reply --reply-timeout=60000 --dest="$kortex" /runner \
       org.kde.krunner1.Run "string:ask"$'\x1f'"$PATINA_SHOT_ASK" string: > /dev/null

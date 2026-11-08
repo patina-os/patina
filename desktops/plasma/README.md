@@ -154,8 +154,8 @@ Files, from `templates/`, each named after the theme:
   of `defaults/settings.yaml` in the agent's kitty profile; removed again when none of
   them is installed
 - with an AI bundle and kortex installed: `~/.local/share/applications/patina-ask.desktop`
-  (from `templates/ask.desktop`), "Ask opencode" or "Ask Hermes" by the agent kortex
-  talks to, first in the start menu's AI folder and behind Meta+A (the `ask` action):
+  (from `templates/ask.desktop`), "Ask kortex" whichever agent kortex talks to,
+  first in the start menu's AI folder and behind Meta+A (the `ask` action):
   it opens the command palette on kortex alone and empty (KRunner's
   `querySingleRunner` through `dbus-send`), so what is typed goes to the agent with no
   `ai` first. Its icon is kortex's ▲ by path, which the glyphs

@@ -126,18 +126,19 @@ script -q -c 'patina install' ~/run1.log
   OpenAI take what you ask out of the EU. With the local agent and a model under 14B,
   the model question, the summary and `patina ai` call it small
 - [ ] with either agent, after logging out and in: Meta+A opens the command palette
-  on the agent alone; `why is my wifi slow` there shows "Ask opencode: …" (or Hermes);
-  Enter reopens KRunner on `opencode ›` (`Hermes ›`) with "Working… 3 s" counting and,
-  with a reasoning model, its thoughts in italics until the answer grows there (note
-  whether it reads well or jumps; `journalctl --user -b | grep kortex` says "KRunner
-  asked again" once it followed); `switch to the light theme?` shows an Allow /
+  on the agent alone; `why is my wifi slow` there shows "Ask kortex: …"; Enter
+  reopens KRunner on `kortex ›` with "Working · 3 s" counting, followed by what the
+  agent wrote or (a reasoning model) thought last, and a row for each step it takes;
+  the answer comes when it is done. The window holds still while the agent works, at
+  most a row longer for a step (note whether it jumps; `journalctl --user -b | grep
+  kortex` says "KRunner asked again" once it followed); `switch to the light theme?` shows an Allow /
   Always / Deny match before anything changes
-- [ ] with either agent, in KRunner (Meta+Space): `firefox` ends with "Ask opencode:
+- [ ] with either agent, in KRunner (Meta+Space): `firefox` ends with "Ask kortex:
   firefox" below what Plasma finds, `how do I share my screen` puts it first; ask
   something, click elsewhere at once: a notification says the agent works on it, then
   what it answered, and its Show opens the conversation again
 - [ ] with either agent, in the start menu (Meta): `wifi settings` ends with "Ask
-  opencode: wifi settings", below what Plasma finds; Enter closes the menu and opens
+  kortex: wifi settings", below what Plasma finds; Enter closes the menu and opens
   the conversation in the command palette
 - [ ] answered none: `patina ai` says none; `patina ai on cloud` installs opencode and
   kortex and asks for the login, and `patina ai off` takes Meta+A, Meta+Shift+A and

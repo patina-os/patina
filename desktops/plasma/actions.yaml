@@ -30,7 +30,7 @@ actions:
     # apply.sh writes this desktop file when an AI bundle and kortex are installed: the
     # command palette on kortex alone; otherwise the action is skipped.
     service: patina-ask.desktop
-    label: Ask the agent
+    label: Ask kortex
   agent:
     # apply.sh writes this desktop file when an AI bundle or the agents bundle is
     # installed; otherwise the action is skipped.
