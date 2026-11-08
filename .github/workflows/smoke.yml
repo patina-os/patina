@@ -330,10 +330,18 @@ jobs:
             --group patina-keys.desktop --key _launch)"
           [[ "$launch" == Meta+K ]]
           # The welcome: its menu entry, the first login's autostart entry, and KDE's
-          # Welcome Center off.
+          # Welcome Center off. Each entry starts this checkout's patina: an entry
+          # rendered before the checkout was a template variable kept the placeholder,
+          # and the welcome started nothing.
           bin/patina welcome --help
-          grep -q ' welcome --window$' "$data/applications/patina-welcome.desktop"
-          grep -q ' welcome --login$' "$HOME/.config/autostart/patina-welcome.desktop"
+          grep -qxF "Exec=\"$PWD/bin/patina\" welcome --window" \
+            "$data/applications/patina-welcome.desktop"
+          grep -qxF "Exec=\"$PWD/bin/patina\" welcome --login" \
+            "$HOME/.config/autostart/patina-welcome.desktop"
+          if grep -l '\${' "$data"/applications/patina-*.desktop \
+            "$HOME"/.config/autostart/patina-*.desktop; then
+            exit 1   # a placeholder the renderer did not fill
+          fi
           autoload="$(kreadconfig6 --file kded5rc --group Module-kded_plasma-welcome \
             --key autoload)"
           [[ "$autoload" == false ]]
