@@ -36,6 +36,9 @@ All notable changes to patina are documented here. The format follows
   0.4.1 fills them in from opencode's event stream.
 - The welcome's icon in the bar and the start menu is a checklist glyph of its own: it
   was the start button's mark, so the two looked alike. `patina update` draws it.
+- The welcome starts again, from the start menu and at login: since its checklist
+  glyph, its entries were written before they knew where patina is, so they started
+  nothing. `patina update` writes them again.
 
 ## [0.1.0-alpha.11] - 2026-11-06
 

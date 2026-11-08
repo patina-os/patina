@@ -48,6 +48,9 @@ changed() { changes=$((changes + 1)); }
 mode="$(current_mode)"
 theme_vars "$theme_yaml" "$settings" "$mode"
 tpl[CONFIG_HOME]="$config"
+# The checkout, for the entries that start patina (the welcome, the cheat sheet): set
+# here, before any of them is rendered, or their Exec keeps the placeholder.
+tpl[PATINA_PATH]="$PATINA_PATH"
 tpl[WALLPAPER]=""
 tpl[WALLPAPER_PACKAGE]=""
 tpl[AGENT_COMMAND]=""
@@ -363,7 +366,6 @@ fi
 
 # The cheat sheet's launcher, which the keys action (Meta+K) starts: kitty showing
 # `patina keys` until a key is pressed.
-tpl[PATINA_PATH]="$PATINA_PATH"
 render "$templates/keys.desktop" "$tmp/keys.desktop"
 put "$tmp/keys.desktop" "$data/applications/patina-keys.desktop"
 
