@@ -199,12 +199,19 @@ packs. Audience: developers and privacy-minded users in the EU.
   of the start menu (`start_menu.hidden`), with its Konqi and Debian's name. patina's
   welcome (`patina welcome`) opens at every login until its "Don't open at login" is
   picked (November 2026, after it opened at the first login only), in kitty beside
-  btop as on the README's picture of the desktop, and from the start menu: the AI
-  agent (a cloud agent's login first while it is not logged in), the agent tools, the
-  agent's services, the bundles the machine lacks, and the first keys. Its window is
-  as large as its halves need, in characters, which the desktop's size for new
-  windows leaves alone, so btop always draws (November 2026). Each step runs
-  `patina ai` or `patina install`, which ask as always, and a shell takes the
+  btop as on the README's picture of the desktop, and from the start menu: a cloud
+  agent's login first while it is not logged in, then Nextcloud and KeePassXC, the AI
+  agent, the agent tools, the agent's services, the bundles the machine lacks, "Theme,
+  update and check" (`patina theme`, `patina update`, `patina doctor`, in a menu of
+  its own), and the first keys. Nextcloud is the client's own wizard with the address
+  the welcome asks filled in, so the client logs in through the browser and asks what
+  to sync, and KeePassXC opens the `.kdbx` found in the client's sync folders or one
+  picked with kdialog; nothing else of either app's is set (November 2026; other clouds
+  may follow, and KeePassXC as the desktop's password store in KWallet's place waits
+  for a test on real hardware, since every login KWallet holds is asked for again).
+  Its window is as large as its halves need, in characters, which the desktop's size
+  for new windows leaves alone, so btop always draws (November 2026). The AI and app
+  steps run `patina ai` or `patina install`, which ask as always, and a shell takes the
   welcome's half when it ends; btop is in the minimal bundle for it (November 2026).
   Its icon is a checklist glyph of its own, not the start button's mark, which it
   carried until the first run on real hardware took one for the other (November 2026).
