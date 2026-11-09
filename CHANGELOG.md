@@ -6,6 +6,8 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.13] - 2026-11-09
+
 ### Added
 
 - The welcome names the patina version running, under its wordmark.
@@ -39,6 +41,18 @@ All notable changes to patina are documented here. The format follows
 - Every line of a list is one line: the welcome's steps are shorter, and a line wider
   than the terminal ends with "…" where it wrapped before (a small screen narrows the
   welcome's half); the line picked is used whole.
+
+### Fixed
+
+- Firefox and Thunderbird have KWin's title bar, with the minimise, maximise and close
+  buttons every other window has, in place of their tabs in the title bar with
+  buttons of their own in GNOME's style. Each app can turn it back: Firefox under
+  Customize Toolbar (Title Bar), Thunderbird under Settings, General.
+- The AI agent's password dialog opens at its own size, above the other windows, in
+  place of a small prompt in a window of 70% of the screen on Wayland, where the rule
+  for new windows took it for an app's main window. The same goes for the welcome's
+  file picker and every other kdialog window; the dialog does not take the keyboard
+  from the window in use.
 
 ## [0.1.0-alpha.12] - 2026-11-09
 
@@ -79,15 +93,6 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
-- Firefox and Thunderbird have KWin's title bar, with the minimise, maximise and close
-  buttons every other window has, in place of their tabs in the title bar with
-  buttons of their own in GNOME's style. Each app can turn it back: Firefox under
-  Customize Toolbar (Title Bar), Thunderbird under Settings, General.
-- The AI agent's password dialog opens at its own size, above the other windows, in
-  place of a small prompt in a window of 70% of the screen on Wayland, where the rule
-  for new windows took it for an app's main window. The same goes for the welcome's
-  file picker and every other kdialog window; the dialog does not take the keyboard
-  from the window in use.
 - The command palette no longer looks stuck at "Thinking…" and holds still while the
   agent works: it counts the seconds and shows what the agent wrote, or a reasoning
   model (Big Pickle, gpt-oss, Qwen) thought, last, with a row for each step it takes
@@ -1120,7 +1125,8 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.12...main
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.13...main
+[0.1.0-alpha.13]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.13
 [0.1.0-alpha.12]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.12
 [0.1.0-alpha.11]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.11
 [0.1.0-alpha.10]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.10
