@@ -12,7 +12,8 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   choose otherwise: default theme, its mode (dark or light; `patina theme mode` keeps
   the user's choice in the state directory) and desktop, Flatpak remote, fonts, the command the
   `agent` action opens, the speed settings (animation factor, compositor latency,
-  file indexing), and the window and panel defaults (where a new window opens and how
+  file indexing), how a touchpad scrolls (natural, as on a phone, or traditional, as a
+  mouse wheel), and the window and panel defaults (where a new window opens and how
   big, the bar: the start button alone in its centre or leading the task icons there,
   or the desktop's own, and which actions' apps are pinned to it), where
   the command palette opens (the middle of the screen or the top), the start menu (a

@@ -6,6 +6,13 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Touchpads scroll the natural way, as on a phone: the content follows the fingers, up
+  and down and sideways alike (libinput turns both together). It is the default for
+  every touchpad in the Wayland session; one you set in System Settings keeps your
+  choice, and `input.touchpad_scrolling: traditional` in `defaults/settings.yaml` turns
+  it back. Mice and their wheels scroll as before.
 ### Fixed
 
 - `patina update` brings the start menu's restart button, beside shut down, to a

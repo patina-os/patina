@@ -938,6 +938,14 @@ case "$(yq eval '.speed.file_indexing' "$settings")" in
     ;;
 esac
 
+# Touchpad scrolling, as the default KWin gives every touchpad (Wayland): a touchpad set
+# in System Settings keeps its own entry in kcminputrc, which wins over the default.
+natural=false
+[[ "$(yq eval '.input.touchpad_scrolling // "traditional"' "$settings")" != natural ]] || natural=true
+before=$changes
+kset kcminputrc NaturalScroll "$natural" Libinput Defaults Touchpad
+input_keys=$((changes - before))
+
 # Windows: where a new one opens, and the size of a new main window as a KWin rule
 # applied once at its first appearance. The size is a share of the screen, so the rule
 # needs a screen: inside a session it comes from kscreen-doctor (the output with
@@ -1213,6 +1221,11 @@ if [[ $in_session -eq 1 ]]; then
   if [[ $colour_keys -gt 0 ]] && command -v dbus-send > /dev/null; then
     dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange \
       int32:0 int32:0 2> /dev/null || warn "the running apps were not told about the new colours"
+  fi
+  # KWin reads the touchpads' settings again when told the mouse settings changed.
+  if [[ $input_keys -gt 0 ]] && command -v dbus-send > /dev/null; then
+    dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange \
+      int32:3 int32:0 2> /dev/null || warn "KWin was not told about the touchpad; it applies at the next login"
   fi
   if [[ $changes -gt 0 ]] && command -v plasma-apply-cursortheme > /dev/null; then
     plasma-apply-cursortheme "${tpl[CURSORS]}" > /dev/null || warn "plasma-apply-cursortheme failed"

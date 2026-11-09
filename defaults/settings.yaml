@@ -98,6 +98,12 @@ speed:
   animation_speed: 0.5       # factor on the animation length; 1 is Plasma's default, 0 none
   latency: lowest            # compositor latency: lowest | low | balanced | smooth | smoothest
   file_indexing: names       # off | names | content; names means file names under home only
+# Touchpads: the default for every touchpad; one set in the desktop's own settings keeps
+# that choice. Mice and their wheels stay as they are.
+input:
+  touchpad_scrolling: natural  # natural: the content follows the fingers, as on a phone, up and
+                               # down and sideways at once (libinput turns both together) |
+                               # traditional: the way a mouse wheel scrolls (Plasma's default)
 # Windows and the panel: new windows the same size in the middle, and the start button
 # alone in the centre of the bar, so the start menu opens centred on the screen.
 windows:

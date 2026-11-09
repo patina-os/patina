@@ -209,6 +209,13 @@ there, so a run over SSH or in the screenshot session finds them unchanged as we
   and `patina credits` for who made it)
 - the speed settings of `defaults/settings.yaml`: `AnimationDurationFactor`, KWin's
   `LatencyPolicy`, Baloo's indexing (file names under home only, by default)
+- `input.touchpad_scrolling` of `defaults/settings.yaml`: KWin's default for every
+  touchpad, `NaturalScroll` under `[Libinput][Defaults][Touchpad]` in `kcminputrc`
+  (natural scrolling by default; libinput turns both directions together). A touchpad
+  changed in System Settings gets an entry of its own there, which wins. Inside a
+  session KWin is told at once (`KGlobalSettings.notifyChange`, the mouse settings).
+  Only the Wayland session reads it: on X11 Plasma keeps a setting per touchpad
+  (`touchpadxlibinputrc`) and has no default for all of them
 - the window defaults of `defaults/settings.yaml`: KWin's placement (`Centered`), and
   for `windows.size` a KWin rule in `kwinrulesrc` that gives every new normal window
   that share of the screen, not maximised, when it first appears (an app that
