@@ -10,6 +10,22 @@ All notable changes to patina are documented here. The format follows
 
 - The welcome's first keys name Meta+A, "Ask kortex, the AI agent", where an AI agent
   is on, beside Meta+Shift+A for the agent in its terminal; it named only the terminal.
+- Touchpads scroll the natural way, as on a phone: the content follows the fingers, up
+  and down and sideways alike (libinput turns both together). It is the default for
+  every touchpad in the Wayland session; one you set in System Settings keeps your
+  choice, and `input.touchpad_scrolling: traditional` in `defaults/settings.yaml` turns
+  it back. Mice and their wheels scroll as before.
+- kortex 0.5.1: typing in the command palette while it shows the conversation keeps
+  every key. A refresh, once a second while the agent worked, put back what kortex had
+  seen last, so the key typed since was lost (a space at the end always was), and it
+  emptied the rows for a moment, so Enter could find nothing to run. It opens on
+  `kortex › `, with the space, so a follow-up is typed straight away.
+
+### Fixed
+
+- `patina update` brings the start menu's restart button, beside shut down, to a
+  machine installed before 0.1.0-alpha.13; that release brought it to new layouts only.
+  A start menu whose power buttons you changed keeps them.
 
 ## [0.1.0-alpha.13] - 2026-11-09
 
