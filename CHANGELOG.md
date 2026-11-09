@@ -83,6 +83,11 @@ All notable changes to patina are documented here. The format follows
   buttons every other window has, in place of their tabs in the title bar with
   buttons of their own in GNOME's style. Each app can turn it back: Firefox under
   Customize Toolbar (Title Bar), Thunderbird under Settings, General.
+- The AI agent's password dialog opens at its own size, above the other windows, in
+  place of a small prompt in a window of 70% of the screen on Wayland, where the rule
+  for new windows took it for an app's main window. The same goes for the welcome's
+  file picker and every other kdialog window; the dialog does not take the keyboard
+  from the window in use.
 - The command palette no longer looks stuck at "Thinking…" and holds still while the
   agent works: it counts the seconds and shows what the agent wrote, or a reasoning
   model (Big Pickle, gpt-oss, Qwen) thought, last, with a row for each step it takes
