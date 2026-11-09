@@ -57,7 +57,11 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   one copy of `fonts.ui` outside `settings.yaml`, because the file under `/etc` is
   static, and the lint workflow checks that the two agree; the wallpaper comes from the
   desktop renderer), and Firefox's policies (`firefox/policies/policies.json`: no
-  telemetry, studies, Pocket or sponsored content; the user may change the rest). Each
+  telemetry, studies, Pocket or sponsored content; the user may change the rest) and
+  Thunderbird's (`thunderbird/policies/policies.json`). Both start with KWin's title
+  bar, as every other window has, in place of the tabs in the title bar with buttons
+  of their own in GNOME's style; the user may turn it back (Firefox: Customize
+  Toolbar, Title Bar; Thunderbird: Settings, General, Hide system window titlebar). Each
   file is named by its destination under `/etc`
   (`system/sysctl.d/x.conf` lands at `/etc/sysctl.d/x.conf`), and the backend's sudo
   path (`system.write` in `manifest/backends/`) is the only thing that writes them.
