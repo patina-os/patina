@@ -153,7 +153,6 @@ steps() {
   else
     printf '%-9s %s\n' login "Don't open at login (the start menu keeps it)"
   fi
-  printf '%-9s %s\n' close "Close the welcome"
 }
 
 services_step() {
@@ -161,15 +160,15 @@ services_step() {
   local -a lines
   mapfile -t lines < <(yq eval 'to_entries | .[] | .key + "|" + .value.description' "$PATINA_PATH/defaults/services.yaml" |
     awk -F'|' '{ printf "%-10s %s\n", $1, $2 }')
-  choice="$(gum choose --header "A service for the agent (patina ai connect)" "${lines[@]}")" || return 0
+  choice="$(pick "A service for the agent (patina ai connect)" "${lines[@]}")" || return 0
   "$PATINA_PATH/bin/patina-ai" connect "${choice%% *}" || true
 }
 
 # The agent tools are opt-in because most of them are proprietary; the step says so
-# before it installs them.
+# before it installs them, as a list of one, so Esc and Back work as everywhere.
 tools_step() {
-  gum confirm "Most of the agent tools are proprietary; they come from their makers' installers. Install them?" \
-    --affirmative Install --negative Back || return 0
+  pick "The agent tools · most are proprietary, from their makers' installers" \
+    "Install the agent tools" > /dev/null || return 0
   "$PATINA_PATH/bin/patina-install" --bundles agents || true
 }
 
@@ -179,7 +178,7 @@ apps_step() {
   for b in $(left_bundles); do
     lines+=("$(printf '%-9s %s' "$b" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$b.yaml")")")
   done
-  chosen="$(gum choose --no-limit --header "More apps (x or space toggles, enter confirms)" "${lines[@]}")" || return 0
+  chosen="$(pick --many "More apps (Tab picks more than one, Enter installs)" "${lines[@]}")" || return 0
   chosen="$(awk 'NF { print $1 }' <<< "$chosen" | paste -sd, -)"
   [[ -z "$chosen" ]] || "$PATINA_PATH/bin/patina-install" --bundles "$chosen" || true
 }
@@ -193,7 +192,7 @@ apps_step() {
 nextcloud_step() {
   local url
   if [[ -z "$(nextcloud_values url)" ]]; then
-    url="$(gum input --header "Your Nextcloud's address" --placeholder "cloud.example.eu")" || return 0
+    url="$(gum input --header "Your Nextcloud's address · Esc: Back" --placeholder "cloud.example.eu")" || return 0
     url="${url%/}"
     [[ -n "$url" ]] || return 0
     [[ "$url" == *://* ]] || url="https://$url"
@@ -235,28 +234,34 @@ passwords_step() {
       lines+=("${file/#"$HOME"/\~}")
     done < <(find "${dirs[@]}" -name '*.kdbx' -type f -printf '%T@ %p\n' 2> /dev/null | LC_ALL=C sort -rn | cut -d' ' -f2-)
   fi
-  choice=""
-  if [[ ${#lines[@]} -gt 0 ]]; then
-    choice="$(gum choose --header "Your KeePassXC database" "${lines[@]}" "Another file…")" || return 0
-  else
-    say "no KeePassXC database (.kdbx) in your Nextcloud folders; pick the file"
-  fi
-  if [[ -z "$choice" || "$choice" == "Another file…" ]]; then
+  # The file dialog's Cancel is one step back: to the list, or with none to the welcome.
+  while true; do
+    choice=""
+    if [[ ${#lines[@]} -gt 0 ]]; then
+      choice="$(pick "Your KeePassXC database" "${lines[@]}" "Another file…")" || return 0
+    else
+      say "no KeePassXC database (.kdbx) in your Nextcloud folders; pick the file"
+    fi
+    if [[ -n "$choice" && "$choice" != "Another file…" ]]; then
+      break
+    fi
     if ! command -v kdialog > /dev/null; then
       warn "picking the file needs kdialog, which patina update brings with the desktop bundle"
       return 0
     fi
-    file="$(kdialog --title "Your KeePassXC database" --getopenfilename "$HOME" \
-      "*.kdbx|KeePassXC databases (*.kdbx)" 2> /dev/null)" || return 0
-    [[ -n "$file" ]] || return 0
-    choice="${file/#"$HOME"/\~}"
-  fi
+    if file="$(kdialog --title "Your KeePassXC database" --getopenfilename "$HOME" \
+      "*.kdbx|KeePassXC databases (*.kdbx)" 2> /dev/null)" && [[ -n "$file" ]]; then
+      choice="${file/#"$HOME"/\~}"
+      break
+    fi
+    [[ ${#lines[@]} -gt 0 ]] || return 0
+  done
   file="${choice/#\~/$HOME}"
   say "KeePassXC opens $choice, and again at every start"
   setsid -f keepassxc "$file" > /dev/null 2>&1
 }
 
-# patina itself, in a menu of its own that comes back after each step until Back: the
+# patina itself, in a menu of its own that comes back after each step until Back or Esc: the
 # theme and, where it has one, its other mode (patina theme), an update (patina update)
 # and a check (patina doctor). The welcome takes a new theme's colours at once.
 patina_step() {
@@ -272,15 +277,14 @@ patina_step() {
       lines+=("$(printf '%-7s %s' mode "Switch to the $other mode · now $mode")")
     fi
     lines+=("$(printf '%-7s %s' update "Update patina · now $(git -C "$PATINA_PATH" describe --tags --always 2> /dev/null)")"
-      "$(printf '%-7s %s' check "Check patina · what is missing or differs (patina doctor)")"
-      "$(printf '%-7s %s' back "Back to the welcome")")
+      "$(printf '%-7s %s' check "Check patina · what is missing or differs (patina doctor)")")
     echo
-    choice="$(gum choose --header "Theme, update and check" "${lines[@]}")" || return 0
+    choice="$(pick --back "← Back to the welcome" "Theme, update and check" "${lines[@]}")" || return 0
     echo
     case "${choice%% *}" in
       theme)
         mapfile -t lines < <("$PATINA_PATH/bin/patina-theme" list)
-        choice="$(gum choose --header "The theme (* is the current one)" "${lines[@]}")" || continue
+        choice="$(pick "The theme (* is the current one)" "${lines[@]}")" || continue
         "$PATINA_PATH/bin/patina-theme" set "$(awk '{ print $1 }' <<< "${choice#\*}")" || true
         colours
         ;;
@@ -328,8 +332,8 @@ welcome() {
   while true; do
     echo
     mapfile -t lines < <(steps)
-    choice="$(gum choose --header "What next?" "${lines[@]}")" || break
-    [[ -n "$choice" ]] || break
+    # Esc, or the last line, closes the welcome: the first question has nothing before it.
+    choice="$(pick --back "← Close the welcome" "What next?" "${lines[@]}")" || break
     echo
     case "${choice%% *}" in
       agent) "$PATINA_PATH/bin/patina-ai" on || true ;;

@@ -8,6 +8,13 @@ All notable changes to patina are documented here. The format follows
 
 ### Added
 
+- Every list in the welcome goes one question back with Esc or its last line,
+  "← Back": the theme list to "Theme, update and check", a step's list to the menu,
+  and the menu itself closes ("← Close the welcome"). Typing narrows a list; in More
+  apps, Tab picks more than one. Esc did nothing before: Debian 13's gum ignores it in
+  the lists the welcome used, so they are gum's filter lists now. The AI agent's own
+  questions (`patina ai`) follow later.
+
 - The welcome connects your Nextcloud: it asks the address, checks that a Nextcloud
   answers there, and opens the Nextcloud client's own wizard with it filled in, which
   logs in through the browser and asks what to sync to `~/Nextcloud`. Once connected,

@@ -706,4 +706,43 @@ tui_colors() {
   export GUM_CONFIRM_SELECTED_FOREGROUND="${tpl[BASE00]}"
   export GUM_CONFIRM_UNSELECTED_BACKGROUND="${tpl[BASE02]}"
   export GUM_CONFIRM_UNSELECTED_FOREGROUND="${tpl[BASE05]}"
+  export GUM_FILTER_HEADER_FOREGROUND="${tpl[ACCENT]}"
+  export GUM_FILTER_INDICATOR_FOREGROUND="${tpl[ACCENT_ALT]}"
+  export GUM_FILTER_CURSOR_TEXT_FOREGROUND="${tpl[ACCENT_ALT]}"
+  export GUM_FILTER_TEXT_FOREGROUND="${tpl[BASE05]}"
+  export GUM_FILTER_MATCH_FOREGROUND="${tpl[ACCENT]}"
+  export GUM_FILTER_PROMPT_FOREGROUND="${tpl[BASE04]}"
+  export GUM_FILTER_PLACEHOLDER_FOREGROUND="${tpl[BASE04]}"
+  export GUM_FILTER_SELECTED_PREFIX_FOREGROUND="${tpl[ACCENT]}"
+  export GUM_FILTER_UNSELECTED_PREFIX_FOREGROUND="${tpl[BASE04]}"
+}
+
+# A list to pick from on a terminal, with a way back: Esc, or its last line, "← Back"
+# (or the line --back gives). It is gum filter, not gum choose: Debian 13's gum (0.14.4)
+# ignores Esc in gum choose and gum confirm, and leaves only Ctrl+C. Typing narrows the
+# list. It stays below what the terminal shows, as tall as its lines; a height of 0
+# would take the whole screen. Prints the line picked, or with --many those picked with
+# Tab (else the one Enter is on); returns 1 for Esc and the back line.
+# pick [--many] [--back <line>] <header> <line>...
+pick() {
+  local back="← Back" header chosen
+  local -a many=()
+  while [[ "${1:-}" == --* ]]; do
+    case "$1" in
+      --many) many=(--no-limit) ;;
+      --back)
+        back="$2"
+        shift
+        ;;
+      *) die "pick: no option $1" ;;
+    esac
+    shift
+  done
+  header="$1"
+  shift
+  chosen="$(gum filter "${many[@]}" --header "$header" --placeholder "Esc: ${back#← } · type to narrow" \
+    --height "$(($# + 1 + $(wc -l <<< "$header")))" -- "$@" "$back")" || return 1
+  chosen="$(grep -vxF -- "$back" <<< "$chosen" || true)"
+  [[ -n "$chosen" ]] || return 1
+  printf '%s\n' "$chosen"
 }
