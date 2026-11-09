@@ -21,6 +21,10 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- The start menu has its restart button back, beside shut down, both without captions;
+  sleep and log out stay in the menu. A new layout has it; an
+  installed machine gets it with `patina theme set <theme> --layout`, which also puts
+  the bar back to patina's.
 - Ctrl+C is the key that goes back, in place of Esc, which did not leave a list on
   real hardware (it still does where gum takes it). A line under each list's title
   names the keys: ↑↓ move, Enter picks, Ctrl+C back. At a step's own prompt Ctrl+C

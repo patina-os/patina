@@ -29,8 +29,8 @@ panel.addWidget("org.kde.plasma.panelspacer");
 // The start menu (Kickoff, or the Application Dashboard for start_menu.style dashboard):
 // the patina mark as its button, the favourites first (AI and self-hosting, from
 // kicker-extra-favoritesrc); in Kickoff as a grid of apps by their names alone, compact
-// lists, and one power button without a caption (shut down; sleep, restart and log out
-// in its menu), as little around the apps as Kickoff's settings allow.
+// lists, and two power buttons without captions (restart and shut down; sleep and log out
+// in a menu), as little around the apps as Kickoff's settings allow.
 var launcher = panel.addWidget("${LAUNCHER_APPLET}");
 launcher.currentConfigGroup = ["General"];
 launcher.writeConfig("icon", "${LAUNCHER_ICON}");
@@ -40,7 +40,7 @@ if ("${LAUNCHER_APPLET}" === "org.kde.plasma.kickoff") {
   launcher.writeConfig("appNameFormat", 0);
   launcher.writeConfig("compactMode", true);
   launcher.writeConfig("primaryActions", 2);
-  launcher.writeConfig("systemFavorites", ["shutdown"]);
+  launcher.writeConfig("systemFavorites", ["reboot", "shutdown"]);
   launcher.writeConfig("showActionButtonCaptions", false);
   launcher.writeConfig("switchCategoryOnHover", true);
 }
