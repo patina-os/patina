@@ -6,6 +6,11 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The welcome's first keys name Meta+A, "Ask kortex, the AI agent", where an AI agent
+  is on, beside Meta+Shift+A for the agent in its terminal; it named only the terminal.
+
 ## [0.1.0-alpha.13] - 2026-11-09
 
 ### Added
