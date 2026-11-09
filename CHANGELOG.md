@@ -6,6 +6,12 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- `patina update` brings the start menu's restart button, beside shut down, to a
+  machine installed before 0.1.0-alpha.13; that release brought it to new layouts only.
+  A start menu whose power buttons you changed keeps them.
+
 ## [0.1.0-alpha.13] - 2026-11-09
 
 ### Added
