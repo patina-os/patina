@@ -204,11 +204,13 @@ packs. Audience: developers and privacy-minded users in the EU.
   of the start menu (`start_menu.hidden`), with its Konqi and Debian's name. patina's
   welcome (`patina welcome`) opens at every login until its "Don't open at login" is
   picked (November 2026, after it opened at the first login only), in kitty beside
-  btop as on the README's picture of the desktop, and from the start menu: the AI's
-  steps first, together and each named `ai-` so none reads as Nextcloud's or an
-  internet provider's (November 2026), a cloud agent's login first among them while it
-  is not logged in, then the AI agent, its provider, its services and the agent tools;
-  then Nextcloud and KeePassXC, the bundles the machine lacks, "Theme,
+  btop as on the README's picture of the desktop, and from the start menu: the basic
+  onboarding first (`setup`, a menu of its own: the AI agent, in a menu of its own with
+  the agent, its provider's login, its services and the agent tools, so none reads as
+  Nextcloud's or an internet provider's; your cloud data, Nextcloud today; your
+  password manager, KeePassXC today; a provider list appears in a step once it has a
+  second provider; November 2026), saying so while a cloud agent is not logged in;
+  then the bundles the machine lacks, "Theme,
   update and check" (`patina theme`, `patina update`, `patina doctor`, in a menu of
   its own), and the first keys. Nextcloud is the client's own wizard with the address
   the welcome asks filled in, so the client logs in through the browser and asks what

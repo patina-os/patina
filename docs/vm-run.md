@@ -292,9 +292,10 @@ sudo -iu patina-test bash -c '
 - [ ] the splash before the desktop shows the mark alone, its rings without the word
 - [ ] that first login opens patina's welcome, kitty split in two with btop beside it,
   btop drawn in full (not "Terminal size too small"), and not KDE's Welcome Center:
-  the first keys and a menu, its AI steps together at the top, each named `ai-` (the
-  agent, its provider, its services, the agent tools), then Nextcloud, KeePassXC, more
-  apps, theme, update and check, the keys, autostart; every line one line; the patina
+  the first keys and a menu: `setup`, the basic onboarding (`ai`, a menu of the agent,
+  its provider, its services and the agent tools; `cloud`, Nextcloud; `passwords`,
+  KeePassXC), more apps, theme, update and check, the keys, autostart; every line one
+  line; the patina
   version under the wordmark, and Nextcloud and KeePassXC even without the desktop bundle (the step
   installs the client first); a line under each list's title names ↑↓, Enter and
   Ctrl+C; Ctrl+C, or "← Back" at the end of a list, goes one question back (in the

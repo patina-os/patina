@@ -25,10 +25,12 @@ All notable changes to patina are documented here. The format follows
   real hardware (it still does where gum takes it). A line under each list's title
   names the keys: ↑↓ move, Enter picks, Ctrl+C back. At a step's own prompt Ctrl+C
   stops the step and the welcome comes back to its menu.
-- The welcome's AI steps stand together at the top of its menu, each named `ai-`
-  (`ai-agent`, `ai-provider`, `ai-services`, `ai-tools`), so none reads as Nextcloud's
-  or an internet provider's; "A service for the agent" is "AI agent services", and the
-  login toggle is `autostart`.
+- The welcome's menu is shorter: its first step, `setup`, is the basic onboarding, a
+  menu of its own with `ai` (the AI agent, in a menu of its own: the agent, its
+  provider's login, the services it can work with, the agent tools), `cloud` (connect
+  your cloud data: Nextcloud) and `passwords` (connect your password manager:
+  KeePassXC). More providers and steps can join there. Then More apps, "Theme, update
+  and check", the keys, and `autostart` (open at login or not).
 - Every line of a list is one line: the welcome's steps are shorter, and a line wider
   than the terminal ends with "…" where it wrapped before (a small screen narrows the
   welcome's half); the line picked is used whole.
