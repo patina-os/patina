@@ -11,8 +11,8 @@ usage() {
 usage: patina welcome [--window | --login]
 
   (none)    the welcome on this terminal: the basic onboarding (the AI agent, its
-            provider's login, its services and tools; your cloud data, Nextcloud; your
-            password manager, KeePassXC), add more apps, change the
+            provider's login, its services; your cloud data, Nextcloud; your password
+            manager, KeePassXC), add more apps and the AI dev tools, change the
             theme, update and check patina, show the keys, and open at login or not.
             The AI and app steps run patina ai or patina install, which ask as always
   --window  the welcome in a kitty window of its own, beside btop: the start menu's
@@ -55,8 +55,9 @@ login() {
 }
 
 # The bundles a user may still add here: neither required nor an AI agent's (the agent
-# step adds those) nor the agent tools (a step of their own), with something this machine
-# lacks, so minimal is not offered beside desktop, which holds all of it.
+# step adds those) nor the agent tools (apps_step adds them as AI dev tools), with
+# something this machine lacks, so minimal is not offered beside desktop, which holds
+# all of it.
 left_bundles() {
   local b list item
   local -a recorded
@@ -115,6 +116,7 @@ steps() {
     printf '%-10s %s\n' setup "Basic onboarding · AI, cloud, passwords"
   fi
   left="$(left_bundles | paste -sd, - | sed 's/,/, /g')"
+  recorded_bundles | grep -qx agents || left="${left:+$left, }AI dev tools"
   [[ -z "$left" ]] || printf '%-10s %s\n' apps "More apps · $left"
   printf '%-10s %s\n' patina "Theme, update and check · now $(current_theme || echo "no theme"), $(current_mode)"
   printf '%-10s %s\n' keys "All the keyboard shortcuts"
@@ -162,8 +164,9 @@ setup_step() {
 }
 
 # The AI agent's own menu, back to the onboarding with Back: turn it on or change it,
-# its provider's login, the services it can work with and the agent tools, each through
-# patina ai or patina install. A cloud agent not logged in has its login first.
+# its provider's login and the services it can work with, each through patina ai. The
+# agent tools are among the apps, as AI dev tools. A cloud agent not logged in has its
+# login first.
 ai_step() {
   local ai agent provider choice
   local -a lines
@@ -187,10 +190,6 @@ ai_step() {
       lines+=("$(printf '%-10s %s' services "Connect services · $(yq eval \
         '[.[].description | split(" · ") | .[0]] | join(", ")' "$PATINA_PATH/defaults/services.yaml")")")
     fi
-    if ! recorded_bundles | grep -qx agents; then
-      lines+=("$(printf '%-10s %s' tools "Add $(yq eval '.description | sub(" · "; ", ")' \
-        "$PATINA_PATH/manifest/bundles/agents.yaml")")")
-    fi
     echo
     choice="$(pick "The AI agent" "${lines[@]}")" || return 0
     echo
@@ -198,7 +197,6 @@ ai_step() {
       agent) "$PATINA_PATH/bin/patina-ai" on || true ;;
       provider) "$PATINA_PATH/bin/patina-ai" login || true ;;
       services) services_step ;;
-      tools) tools_step ;;
       *) return 0 ;;
     esac
   done
@@ -213,21 +211,19 @@ services_step() {
   "$PATINA_PATH/bin/patina-ai" connect "${choice%% *}" || true
 }
 
-# The agent tools are opt-in because most of them are proprietary; the step says so
-# before it installs them, as a list of one, so Ctrl+C and Back work as everywhere.
-tools_step() {
-  pick "The agent tools · most are proprietary, from their makers' installers" \
-    "Install the agent tools" > /dev/null || return 0
-  "$PATINA_PATH/bin/patina-install" --bundles agents || true
-}
-
 apps_step() {
   local b chosen
   local -a lines=()
   for b in $(left_bundles); do
     lines+=("$(printf '%-9s %s' "$b" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$b.yaml")")")
   done
-  chosen="$(pick --many "More apps (Enter installs the marked ones, else the one it is on)" "${lines[@]}")" || return 0
+  # The agent tools (the agents bundle) are AI dev tools here, among the apps; opt-in
+  # because most of them are proprietary, which the list's title says.
+  if ! recorded_bundles | grep -qx agents; then
+    lines+=("$(printf '%-9s %s' agents "AI dev tools · $(yq eval '.description | sub(" · "; ", ")' \
+      "$PATINA_PATH/manifest/bundles/agents.yaml")")")
+  fi
+  chosen="$(pick --many "More apps · most AI dev tools are proprietary" "${lines[@]}")" || return 0
   chosen="$(awk 'NF { print $1 }' <<< "$chosen" | paste -sd, -)"
   [[ -z "$chosen" ]] || "$PATINA_PATH/bin/patina-install" --bundles "$chosen" || true
 }

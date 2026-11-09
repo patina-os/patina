@@ -150,14 +150,15 @@ git clone https://github.com/patina-os/patina.git ~/.local/share/patina
 
 At every login patina's welcome opens, a kitty window split in two with btop beside
 it: the first keys, and what the install left for later. Its basic onboarding (`setup`)
-sets up the AI agent (the agent, its provider's login, the services it can work with
-and the agent tools, through `patina ai`), connects your cloud data, Nextcloud today
+sets up the AI agent (the agent, its provider's login and the services it can work
+with, through `patina ai`), connects your cloud data, Nextcloud today
 (installing the client first on a machine without the desktop bundle; then the client's
 own wizard, with the address you give filled in: you log in in the browser and choose
 what to sync to `~/Nextcloud`), and connects your password manager, KeePassXC today:
 the database (`.kdbx`) it finds in your Nextcloud, or a file you pick, which KeePassXC
-then opens at every start (KeePassXC, too, installed first where it is missing). The
-bundles you did not pick run `patina install`; "Theme, update and
+then opens at every start (KeePassXC, too, installed first where it is missing). More
+apps adds the bundles you did not pick and the agent tools, as AI dev tools, through
+`patina install`; "Theme, update and
 check" switches the theme or its dark and light mode, runs `patina update` and
 `patina doctor`. Its header names the patina version running. Ctrl+C, or the "← Back" at
 the end of each list, goes one question back, in the welcome as in the questions of

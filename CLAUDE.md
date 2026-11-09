@@ -206,11 +206,11 @@ packs. Audience: developers and privacy-minded users in the EU.
   picked (November 2026, after it opened at the first login only), in kitty beside
   btop as on the README's picture of the desktop, and from the start menu: the basic
   onboarding first (`setup`, a menu of its own: the AI agent, in a menu of its own with
-  the agent, its provider's login, its services and the agent tools, so none reads as
+  the agent, its provider's login and its services, so none reads as
   Nextcloud's or an internet provider's; your cloud data, Nextcloud today; your
   password manager, KeePassXC today; a provider list appears in a step once it has a
   second provider; November 2026), saying so while a cloud agent is not logged in;
-  then the bundles the machine lacks, "Theme,
+  then the bundles the machine lacks with the agent tools among them as AI dev tools, "Theme,
   update and check" (`patina theme`, `patina update`, `patina doctor`, in a menu of
   its own), and the first keys. Nextcloud is the client's own wizard with the address
   the welcome asks filled in, so the client logs in through the browser and asks what
