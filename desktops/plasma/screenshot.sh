@@ -2,9 +2,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # The finished desktop as pictures: a Plasma X11 session on a virtual framebuffer (Xvfb,
 # software OpenGL), the theme applied inside it, then the desktop with kitty split in two
-# (the greeting and btop), when asked the command palette with the agent's answer on the
-# empty desktop, and the start menu in the theme's light mode. No GPU and no login
-# needed. The source of the desktop images in docs/screenshots/.
+# (the greeting and btop), patina's welcome as a first login opens it, when asked the
+# command palette with the agent's answer on the empty desktop, and the start menu in the
+# theme's light mode. No GPU and no login needed. The source of the desktop images in
+# docs/screenshots/.
 set -euo pipefail
 
 usage() {
@@ -15,6 +16,7 @@ Run as the user the layer is installed for (patina install), on a machine or in 
 container with Plasma: Xvfb, startplasma-x11, scrot, xdotool, kitty, fastfetch, fish,
 btop, dbus-run-session and dbus-send. No display or login is needed. Writes into <dir>:
   desktop.png          kitty split in two, the greeting beside btop
+  welcome.png          patina's welcome beside btop, as a first login opens it
   command-palette.png  KRunner on the agent's answer to PATINA_SHOT_ASK, through
                        kortex, on the empty desktop; only when PATINA_SHOT_ASK is set
                        and kortex installed
@@ -55,7 +57,8 @@ grab() {
 # environment is the one a Plasma login sets, so the renderer sees a session
 # (XDG_CURRENT_DESKTOP, the bus) and Qt draws on X.
 session() {
-  local dir="$1" waited=0 theme session_pid split kitty_pid mode dirs width height
+  local dir="$1" waited=0 theme session_pid split kitty_pid welcome_pid mode dirs width height
+  local off="${XDG_STATE_HOME:-$HOME/.local/state}/patina/welcome-off"
   export XDG_SESSION_TYPE=x11 XDG_CURRENT_DESKTOP=KDE KDE_FULL_SESSION=true \
     KDE_SESSION_VERSION=6 DESKTOP_SESSION=plasmax11 QT_QPA_PLATFORM=xcb
   # The data directories a login gets from flatpak's environment generator, so the apps
@@ -63,9 +66,10 @@ session() {
   dirs="$(flatpak --print-updated-env 2> /dev/null | sed -n 's/^XDG_DATA_DIRS=//p' || true)"
   [[ -z "$dirs" ]] || export XDG_DATA_DIRS="$dirs"
   # patina's welcome, which a login opens beside btop (bin/patina-welcome), would cover
-  # the desktop: it is turned off for this session, as its "Don't open at login" does.
-  mkdir -p "${XDG_STATE_HOME:-$HOME/.local/state}/patina"
-  date -u +%FT%TZ > "${XDG_STATE_HOME:-$HOME/.local/state}/patina/welcome-off"
+  # the desktop: it is turned off for this session, as its "Don't open at login" does,
+  # and on again only for its own picture.
+  mkdir -p "${off%/*}"
+  date -u +%FT%TZ > "$off"
   startplasma-x11 &
   session_pid=$!
   until on_bus org.kde.plasmashell; do
@@ -115,6 +119,19 @@ session() {
   grab "$dir" desktop
   rm -f "$split"
   kill "$kitty_pid" 2> /dev/null || true
+  sleep 2
+
+  # patina's welcome as a first login opens it (its autostart entry runs patina welcome
+  # --login): kitty split in two, the welcome on its first question beside btop. It is
+  # on for this picture, so its menu offers "Don't open at login" as at a first login,
+  # and off again afterwards. The login has passed, so nothing else opens it.
+  rm -f "$off"
+  "$PATINA_PATH/bin/patina" welcome --login &
+  welcome_pid=$!
+  sleep "$settle"
+  grab "$dir" welcome
+  kill "$welcome_pid" 2> /dev/null || true
+  date -u +%FT%TZ > "$off"
   sleep 2
 
   if [[ -n "${PATINA_SHOT_ASK:-}" ]]; then
@@ -194,7 +211,7 @@ export LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe
 # Qt wants a UTF-8 locale and warns at every start of one of its tools without one; a
 # container sets none (C). A machine's own UTF-8 locale stays.
 [[ "$(locale charmap 2> /dev/null)" == UTF-8 ]] || export LANG=C.UTF-8
-rm -f "$dir/start-menu.png" "$dir/desktop.png" "$dir/command-palette.png"
+rm -f "$dir/start-menu.png" "$dir/desktop.png" "$dir/welcome.png" "$dir/command-palette.png"
 log="$dir/session.log"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT

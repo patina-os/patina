@@ -389,8 +389,11 @@ welcome() {
   gum style --foreground "${tpl[BASE05]}" "Welcome${name:+, $name}. patina is installed with the apps you picked." \
     "Here is what you can add now, and the keys to start with:"
   echo
-  # The first keys, as defaults/keybindings.yaml has them; the agent's once it is set up.
-  for action in launcher terminal agent keys; do
+  # The first keys, as defaults/keybindings.yaml has them; the agent's once it is set up:
+  # Meta+A where kortex came with an AI bundle (the start menu's "Ask kortex"), the
+  # agent in its terminal where an AI or the agents bundle put it there.
+  for action in launcher terminal ask agent keys; do
+    [[ "$action" != ask || -e "${XDG_DATA_HOME:-$HOME/.local/share}/applications/patina-ask.desktop" ]] || continue
     [[ "$action" != agent || -e "${XDG_DATA_HOME:-$HOME/.local/share}/applications/patina-agent.desktop" ]] || continue
     chord="$(yq eval ".actions.$action" "$keybindings")"
     words="$(yq eval ".names.$action" "$keybindings")"
