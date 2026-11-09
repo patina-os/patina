@@ -26,6 +26,9 @@ All notable changes to patina are documented here. The format follows
   names the keys: ↑↓ move, Enter picks, Ctrl+C back. At a step's own prompt Ctrl+C
   stops the step and the welcome comes back to its menu.
 - The welcome's "A service for the agent" is "Agent services".
+- Every line of a list is one line: the welcome's steps are shorter, and a line wider
+  than the terminal ends with "…" where it wrapped before (a small screen narrows the
+  welcome's half); the line picked is used whole.
 
 ## [0.1.0-alpha.12] - 2026-11-09
 

@@ -101,8 +101,8 @@ nextcloud_values() {
 }
 
 # The steps the menu offers now, one line each: the step, then what it does in at most
-# 68 characters, so a line with gum's cursor fits the welcome's half of the window (82
-# columns, beside btop's). A cloud agent not logged in yet has its login first, where the menu starts:
+# 60 characters, so a line with gum's cursor fits the welcome's half of the window (82
+# columns beside btop's, fewer on a small screen, where pick cuts it). A cloud agent not logged in yet has its login first, where the menu starts:
 # the image's first boot installs it and asks nothing.
 steps() {
   local ai agent provider host
@@ -116,16 +116,15 @@ steps() {
   host="${host%%$'\n'*}"   # the first account
   host="${host#*://}"
   host="${host%%/*}"
-  # Both always: a machine without the desktop bundle gets the client first (client).
+  # Both always: on a machine without the desktop bundle the step installs the client
+  # first (client), and says so when it is picked.
   if [[ -n "$host" ]]; then
     printf '%-9s %s\n' nextcloud "Nextcloud's settings · connected to $host"
   else
-    printf '%-9s %s\n' nextcloud "Connect your Nextcloud · your files, synced to ~/Nextcloud$(command -v nextcloud > /dev/null ||
-      echo ", the client installed first")"
+    printf '%-9s %s\n' nextcloud "Connect your Nextcloud · files synced to ~/Nextcloud"
   fi
-  printf '%-9s %s\n' passwords "Open your passwords in KeePassXC · $([[ -n "$host" ]] &&
-    echo "the database in your Nextcloud" || echo "a database file you pick")$(command -v keepassxc > /dev/null ||
-    echo ", KeePassXC installed first")"
+  printf '%-9s %s\n' passwords "Your passwords in KeePassXC · $([[ -n "$host" ]] &&
+    echo "from your Nextcloud" || echo "a .kdbx file you pick")"
   if [[ "$ai" == none ]]; then
     printf '%-9s %s\n' agent "Turn on the AI agent · opencode or Hermes, local or cloud"
   else

@@ -729,8 +729,8 @@ tui_colors() {
 # on); returns 1 for Ctrl+C, Esc and the back line.
 # pick [--many] [--back <line>] <header> <line>...
 pick() {
-  local back="← Back" header chosen keys="↑↓ move · Enter picks"
-  local -a many=()
+  local back="← Back" header chosen keys="↑↓ move · Enter picks" width line i
+  local -a many=() shown=()
   while [[ "${1:-}" == --* ]]; do
     case "$1" in
       --many)
@@ -747,11 +747,28 @@ pick() {
   done
   header="$1"$'\n'"$(gum style --faint "$keys · Ctrl+C: ${back#← }")"
   shift
+  # One line each: a line wider than the terminal, less gum's cursor, ends with "…"
+  # where gum would wrap it, and the line picked is printed whole (a file's path).
+  width="$(stty size < /dev/tty 2> /dev/null | cut -d' ' -f2)"
+  [[ "${width:-0}" -gt 20 ]] || width=80   # no terminal size: a pty without one says 0
+  width=$((width - 4))
+  for line in "$@"; do
+    [[ ${#line} -le $width ]] || line="${line:0:width-1}…"
+    shown+=("$line")
+  done
   chosen="$(gum filter "${many[@]}" --header "$header" --placeholder "type to narrow" \
-    --height "$(($# + 1 + $(wc -l <<< "$header")))" -- "$@" "$back")" || return 1
+    --height "$(($# + 1 + $(wc -l <<< "$header")))" -- "${shown[@]}" "$back")" || return 1
   chosen="$(grep -vxF -- "$back" <<< "$chosen" || true)"
   [[ -n "$chosen" ]] || return 1
-  printf '%s\n' "$chosen"
+  while IFS= read -r line; do
+    for i in "${!shown[@]}"; do
+      if [[ "${shown[i]}" == "$line" ]]; then
+        line="${*:i+1:1}"
+        break
+      fi
+    done
+    printf '%s\n' "$line"
+  done <<< "$chosen"
 }
 
 # The lines given, one per line, the one whose first word is <current> marked "(now)":
