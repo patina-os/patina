@@ -1014,8 +1014,8 @@ fi
 # The welcome (bin/patina-welcome) asks kitty for the size its two halves need, the
 # welcome and btop beside it, in characters: a share of a small screen, or of a screen
 # whose rule above was not written yet (the image's first boot runs outside a session),
-# left btop too narrow to draw. A rule first in the list leaves the welcome's size alone
-# ("Do not affect", which stops KWin looking further), and needs no screen.
+# left btop too narrow to draw. A rule ahead of the size rule leaves the welcome's size
+# alone ("Do not affect", which stops KWin looking further), and needs no screen.
 rule=patina-welcome
 rules="$(kreadconfig6 --file kwinrulesrc --group General --key rules)"
 if [[ "$percent" -gt 0 ]]; then
@@ -1023,10 +1023,28 @@ if [[ "$percent" -gt 0 ]]; then
   kset kwinrulesrc wmclass patina-welcome "$rule"
   kset kwinrulesrc wmclassmatch 1 "$rule"
   kset kwinrulesrc sizerule 1 "$rule"
-  kset kwinrulesrc rules "$( { echo "$rule"; tr ',' '\n' <<< "$rules"; } | awk 'NF && !seen[$0]++' | paste -sd, -)" General
 elif [[ -n "$(kreadconfig6 --file kwinrulesrc --group "$rule" --key sizerule)" ]]; then
   drop_rule Description wmclass wmclassmatch sizerule
 fi
+# kdialog's windows, the AI agent's sudo password (askpass.sh) and the welcome's file
+# picker: a dialog with no window of its app behind it is a normal window on Wayland,
+# so the size rule would open a small prompt in a large empty window. This rule leaves
+# kdialog's size alone and opens it above other windows, since a script waits on it
+# (sudo, while the user works elsewhere). It does not take the keyboard from the window
+# in use, so nothing typed there lands in the password field. The class is kdialog on
+# X11 and org.kde.kdialog on Wayland.
+rule=patina-kdialog
+kset kwinrulesrc Description "patina: kdialog keeps its size and opens above" "$rule"
+kset kwinrulesrc wmclass '^(org\.kde\.)?kdialog$' "$rule"
+kset kwinrulesrc wmclassmatch 3 "$rule"
+kset kwinrulesrc sizerule 1 "$rule"
+kset kwinrulesrc above true "$rule"
+kset kwinrulesrc aboverule 3 "$rule"
+# Both first in the list, in this order, so a second run finds the list unchanged.
+rules="$(kreadconfig6 --file kwinrulesrc --group General --key rules)"
+first=(patina-kdialog)
+[[ -n "$(kreadconfig6 --file kwinrulesrc --group patina-welcome --key sizerule)" ]] && first+=(patina-welcome)
+kset kwinrulesrc rules "$( { printf '%s\n' "${first[@]}"; tr ',' '\n' <<< "$rules"; } | awk 'NF && !seen[$0]++' | paste -sd, -)" General
 
 # Windows a little see-through: a KWin rule forcing the opacity of every normal window,
 # one share while it is active and one while it is not; 100 for both drops the rule.

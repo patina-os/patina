@@ -214,9 +214,13 @@ there, so a run over SSH or in the screenshot session finds them unchanged as we
   that share of the screen, not maximised, when it first appears (an app that
   remembers a maximised window opens at the size too; the user may maximise it later). The rule needs the screen, so it is written inside a session, from
   `kscreen-doctor` (the output with priority 1); outside one it waits for the next
-  `patina theme set` in a session. A rule first in the list, `patina-welcome`, leaves
-  the welcome's window (class `patina-welcome`) at the size it asks kitty for, in
-  characters, so btop has its 80 columns beside the welcome; it needs no screen. For
+  `patina theme set` in a session. Two rules ahead of it leave a window's size alone:
+  `patina-kdialog` kdialog's windows (the AI agent's sudo password, the welcome's file
+  picker), which Wayland counts as normal windows since no window of their app is
+  behind them, and opens them above other windows without taking the keyboard;
+  `patina-welcome` the welcome's window (class `patina-welcome`) at the size it asks
+  kitty for, in characters, so btop has its 80 columns beside the welcome; neither
+  needs a screen. For
   `windows.opacity` below 100 a second rule that
   forces every normal window to that opacity, one share while active and one while not
   (100 by default: only kitty is see-through, by its own background)
