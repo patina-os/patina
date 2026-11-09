@@ -17,7 +17,7 @@ manifest/
 
 ```yaml
 name: dev
-description: Shown in the TUI   # no comma: gum takes the preselected lines as a list
+description: Shown in the TUI   # one line in the install's list of bundles
 default: true        # preselected in `patina install`
 required: false      # true only for base: the user cannot deselect it
 packages:            # canonical names, resolved through backends/<backend>.yaml

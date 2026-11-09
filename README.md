@@ -150,14 +150,16 @@ git clone https://github.com/patina-os/patina.git ~/.local/share/patina
 
 At every login patina's welcome opens, a kitty window split in two with btop beside
 it: the first keys, and what the install left for later. It connects your Nextcloud
-(the client's own wizard, with the address you give filled in: you log in in the
+(installing the client first on a machine without the desktop bundle; then the client's own wizard, with the address you give filled in: you log in in the
 browser and choose what to sync to `~/Nextcloud`), and opens your passwords in KeePassXC:
 the database (`.kdbx`) it finds in your Nextcloud, or a file you pick, which KeePassXC
-then opens at every start. The AI agent, the services it can work with, the agent tools
+then opens at every start (KeePassXC, too, installed first where it is missing). The AI agent, the agent services it can work with, the agent tools
 and the bundles you did not pick run `patina ai` or `patina install`; "Theme, update and
 check" switches the theme or its dark and light mode, runs `patina update` and
-`patina doctor`. Esc, or the "← Back" at the end of each of its lists, goes one question
-back, and typing narrows a list. Its "Don't open at login" keeps it in the start menu
+`patina doctor`. Its header names the patina version running. Ctrl+C, or the "← Back" at
+the end of each list, goes one question back, in the welcome as in the questions of
+`patina ai` and `patina install`; a line under each list's title names the keys (↑↓,
+Enter, Ctrl+C), and typing narrows a list. Its "Don't open at login" keeps it in the start menu
 only ("Welcome to patina", or `patina welcome` in a terminal), and "Open at every login
 again" brings it back; KDE's own Welcome Center stays off.
 
