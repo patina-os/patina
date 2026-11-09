@@ -3,8 +3,9 @@ name: desktop
 # The finished desktop as pictures, from Path A: `patina install` as a user in a stock
 # Debian 13 container with Plasma, then desktops/plasma/screenshot.sh runs a Plasma X11
 # session on a virtual framebuffer (Xvfb, software OpenGL, no GPU and no login), applies
-# the theme inside it and grabs kitty with the greeting, KRunner on the agent's answer
-# through kortex, and the start menu in the light mode. The pictures are uploaded as an
+# the theme inside it and grabs kitty with the greeting, patina's welcome as a first
+# login opens it, KRunner on the agent's answer through kortex, and the start menu in
+# the light mode. The pictures are uploaded as an
 # artifact; the ones under docs/screenshots/ are copied from there, never edited. amd64
 # only: the smoke workflow proves the layer on arm64 as well, and the desktop looks the
 # same.

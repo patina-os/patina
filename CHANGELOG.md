@@ -8,6 +8,8 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- The welcome's first keys name Meta+A, "Ask kortex, the AI agent", where an AI agent
+  is on, beside Meta+Shift+A for the agent in its terminal; it named only the terminal.
 - Touchpads scroll the natural way, as on a phone: the content follows the fingers, up
   and down and sideways alike (libinput turns both together). It is the default for
   every touchpad in the Wayland session; one you set in System Settings keeps your
