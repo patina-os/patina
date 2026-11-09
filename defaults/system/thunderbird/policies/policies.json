@@ -1,0 +1,10 @@
+{
+  "policies": {
+    "Preferences": {
+      "mail.tabs.drawInTitlebar": {
+        "Value": false,
+        "Status": "default"
+      }
+    }
+  }
+}

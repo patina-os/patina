@@ -20,6 +20,12 @@
       "MoreFromMozilla": false,
       "SkipOnboarding": true,
       "Locked": false
+    },
+    "Preferences": {
+      "browser.tabs.inTitlebar": {
+        "Value": 0,
+        "Status": "default"
+      }
     }
   }
 }
