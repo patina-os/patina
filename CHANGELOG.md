@@ -6,14 +6,9 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
-### Added
+## [0.1.0-alpha.12] - 2026-11-09
 
-- Every list in the welcome goes one question back with Esc or its last line,
-  "← Back": the theme list to "Theme, update and check", a step's list to the menu,
-  and the menu itself closes ("← Close the welcome"). Typing narrows a list; in More
-  apps, Tab picks more than one. Esc did nothing before: Debian 13's gum ignores it in
-  the lists the welcome used, so they are gum's filter lists now. The AI agent's own
-  questions (`patina ai`) follow later.
+### Added
 
 - The welcome connects your Nextcloud: it asks the address, checks that a Nextcloud
   answers there, and opens the Nextcloud client's own wizard with it filled in, which
@@ -25,48 +20,41 @@ All notable changes to patina are documented here. The format follows
 - "Theme, update and check" in the welcome: switch the theme or its dark and light
   mode, run `patina update`, and check the system with `patina doctor`, in a menu of
   its own.
+- Every list in the welcome goes one question back with Esc or its last line,
+  "← Back": the theme list to "Theme, update and check", a step's list to the menu,
+  and the menu itself closes ("← Close the welcome"). Typing narrows a list; in More
+  apps, Tab picks more than one. Esc did nothing before: Debian 13's gum ignores it in
+  the lists the welcome used, so they are gum's filter lists now. The AI agent's own
+  questions (`patina ai`) follow later.
 
 ### Changed
 
-- Meta+A asks the AI agent: the command palette opens on the agent alone, so what you
-  type goes to it, with no `ai` to type first; the start menu's "Ask opencode" entry
-  opens the same. The agent in its own terminal moves to Meta+Shift+A. `patina update`
-  writes the keys, which take effect at the next login.
-- kortex 0.4.0: any search in the command palette ends with "Ask opencode: …" (or
-  "Ask Hermes: …"), as the start menu's does, and comes first when it reads as a
-  question (it ends with `?`, or starts with how, why, wie, warum and the like); `ai`
-  and a request still asks at once. The conversation is called by the agent's name,
-  `opencode ›` in place of `ai ›`. The next `patina update` installs it where an AI
-  agent is on.
-- kortex 0.4.1: its icon, in the command palette's rows, its notifications and the
-  start menu's "Ask opencode", is patina's ▲ inside two contour lines in aurora's
-  violets, in place of a plain ▲; the notification of an answer shows the agent's last
-  words, which after a task say how it went.
-- kortex 0.5.0: the command palette, its rows, its notifications and the start menu's
-  entry say kortex, whichever agent answers: "Ask kortex: …", `kortex ›` for the
-  conversation, "kortex answered". The palette's field said opencode while KRunner's
-  label beside the row said kortex, two names for one thing. The agent is named once,
-  in the palette's hint and the row that says how long; the cheat sheet calls Meta+A
-  "Ask kortex, the AI agent". `patina update` writes the entry and installs kortex.
+- Meta+A asks the AI agent: the command palette opens on kortex alone, so what you
+  type goes to the agent, with no `ai` to type first; the start menu's "Ask kortex"
+  entry opens the same. The agent in its own terminal moves to Meta+Shift+A, and the
+  cheat sheet calls Meta+A "Ask kortex, the AI agent". `patina update` writes the
+  keys, which take effect at the next login.
+- kortex 0.5.0, in place of 0.3.4: any search in the command palette ends with "Ask
+  kortex: …", as the start menu's does, and comes first when it reads as a question
+  (it ends with `?`, or starts with how, why, wie, warum and the like); `ai` and a
+  request still asks at once. The palette, its rows, its notifications and the start
+  menu's entry say kortex whichever agent answers, and `kortex ›` shows the
+  conversation; the agent is named once, in the palette's hint and the row that says
+  how long. Its icon is patina's ▲ inside two contour lines in aurora's violets.
+  `patina update` installs it where an AI agent is on.
 
 ### Fixed
 
-- The command palette holds still while the agent works. KRunner sizes its window to
-  its rows, and the answer streamed into one row that grew a line with each word that
-  wrapped, while the thoughts below it came and went, so the window grew and shrank
-  with each refresh. kortex 0.5.0 shows one-line rows meanwhile: how long the agent has
-  been at it and what it wrote or thought last, and a row per step (the last four);
-  the answer comes once it is done. The seconds now show; KRunner hid them.
-
-- The command palette no longer looks stuck at "Thinking…": while the agent works it
-  counts the seconds and shows, in italics, what a reasoning model (Big Pickle, gpt-oss,
-  Qwen) thinks before it answers. With the palette closed, a click elsewhere included,
-  a notification says that the agent works on the request and then what it answered or
-  why it stopped; its Show opens the conversation again. kortex 0.4.0, as above.
-- The answer and a reasoning model's thoughts grow in the command palette as the agent
-  writes them: opencode keeps each part empty in what kortex reads until the part is
-  done, so the palette showed "Thinking…" until then, and the thoughts never. kortex
-  0.4.1 fills them in from opencode's event stream.
+- The command palette no longer looks stuck at "Thinking…" and holds still while the
+  agent works: it counts the seconds and shows what the agent wrote, or a reasoning
+  model (Big Pickle, gpt-oss, Qwen) thought, last, with a row for each step it takes
+  (the last four), and the answer once it is done. It stood at "Thinking…" because
+  opencode keeps each part empty until the part is done, which kortex now fills in from
+  opencode's event stream; and with the answer streaming into one row, the window grew
+  and shrank with each refresh. With the palette closed, a click elsewhere included, a
+  notification says that the agent works on the request and then what it answered (its
+  last words, which after a task say how it went) or why it stopped; its Show opens
+  the conversation again.
 - The welcome's icon in the bar and the start menu is a checklist glyph of its own: it
   was the start button's mark, so the two looked alike. `patina update` draws it.
 - The welcome starts again, from the start menu and at login: since its checklist
@@ -1089,7 +1077,8 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.11...main
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.12...main
+[0.1.0-alpha.12]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.12
 [0.1.0-alpha.11]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.11
 [0.1.0-alpha.10]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.10
 [0.1.0-alpha.9]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.9
