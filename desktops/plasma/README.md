@@ -280,9 +280,10 @@ install runs it (the live reload, the window rule, which needs a screen, and pat
 favourites in place of Plasma's), with patina's welcome turned off for it and KDE's
 Welcome Center closed should a Plasma open it after all, and the pointer moved
 from the middle of the screen, where Xvfb leaves it, to the empty desktop on the right
-(`xdotool`), so no tooltip or hover is in the pictures. Then three grabs of
+(`xdotool`), so no tooltip or hover is in the pictures. Then up to four grabs of
 the whole screen (`scrot`): `desktop.png`, kitty split in two with the fastfetch
-greeting and btop; when `PATINA_SHOT_ASK` holds a request and an AI bundle installed
+greeting and btop; `welcome.png`, patina's welcome beside btop as a first login opens
+it (`patina welcome --login`, turned on for that grab alone); when `PATINA_SHOT_ASK` holds a request and an AI bundle installed
 kortex, `command-palette.png` on the empty desktop: what Enter on kortex's "Ask the
 agent" does (its `Run` over D-Bus), KRunner opened by kortex on the conversation,
 grabbed once the agent asks for an action (Allow once, Always, Deny); and
