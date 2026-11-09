@@ -204,9 +204,11 @@ packs. Audience: developers and privacy-minded users in the EU.
   of the start menu (`start_menu.hidden`), with its Konqi and Debian's name. patina's
   welcome (`patina welcome`) opens at every login until its "Don't open at login" is
   picked (November 2026, after it opened at the first login only), in kitty beside
-  btop as on the README's picture of the desktop, and from the start menu: a cloud
-  agent's login first while it is not logged in, then Nextcloud and KeePassXC, the AI
-  agent, the agent tools, the agent's services, the bundles the machine lacks, "Theme,
+  btop as on the README's picture of the desktop, and from the start menu: the AI's
+  steps first, together and each named `ai-` so none reads as Nextcloud's or an
+  internet provider's (November 2026), a cloud agent's login first among them while it
+  is not logged in, then the AI agent, its provider, its services and the agent tools;
+  then Nextcloud and KeePassXC, the bundles the machine lacks, "Theme,
   update and check" (`patina theme`, `patina update`, `patina doctor`, in a menu of
   its own), and the first keys. Nextcloud is the client's own wizard with the address
   the welcome asks filled in, so the client logs in through the browser and asks what
@@ -228,7 +230,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   nothing, so what the machine has is marked "(now)" and the install's bundles are a
   list whose lines Enter turns on and off. The welcome shows the Nextcloud and KeePassXC
   steps on every machine and installs the client first where the desktop bundle is
-  missing, and names the patina version running under its wordmark (November 2026).
+  missing, and names the patina version running under its wordmark; every line of a
+  list is one line, cut with "…" where the terminal is narrower (November 2026).
   Its icon is a checklist glyph of its own, not the start button's mark, which it
   carried until the first run on real hardware took one for the other (November 2026).
 - Image: a small live image built with Debian's live-build, with Calamares as the branded
