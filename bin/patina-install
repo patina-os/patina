@@ -58,12 +58,15 @@ section() {
 
 # The questions, on a terminal: the theme, the app bundles, the AI agent and where its
 # model runs, a summary and a yes. Sets PATINA_THEME, bundles, agent, ai and
-# PATINA_AI_MODEL; a cloud agent's provider and key are patina ai login's. Esc or Cancel
-# leaves without a change. Bundle descriptions carry no comma: gum takes the preselected
-# lines as a comma-separated list.
+# PATINA_AI_MODEL; a cloud agent's provider and key are patina ai login's. Each question
+# goes one back with Ctrl+C or its Back line (pick in lib.sh); the first leaves without
+# a change. What this machine has is marked "(now)", since pick's lists preselect none,
+# and the bundles are a list whose lines Enter turns on and off, the defaults on.
 ask() {
-  local current d mode name kind lines choice chosen_lines b
-  local -a theme_lines=() bundle_lines=() preselected=() ai_lines=() mode_lines=() model_lines=()
+  local current d mode name kind choice b step=theme now line back
+  local ask_theme=0 ask_ai=0 ask_model=0
+  local -a lines=() asked=() names=()
+  local -A on=() about=()
   current="${PATINA_THEME:-$(current_theme || yq eval '.theme' "$PATINA_PATH/defaults/settings.yaml")}"
   d="$(theme_dir "$current")" || die "no theme '$current' under themes/ (try patina theme list)"
   mode="$(current_mode)"
@@ -74,70 +77,140 @@ ask() {
   gum style --foreground "${tpl[BASE04]}" \
     "patina $("$PATINA_PATH/bin/patina" version) · $(basename "$BACKEND" .yaml) · $(uname -m)"
   echo
-  if [[ -z "${PATINA_THEME:-}" ]]; then
-    mapfile -t theme_lines < <("$PATINA_PATH/bin/patina-theme" list | sed 's/^[* ] //')
-    choice="$(printf '%s\n' "${theme_lines[@]}" | grep "^$current ")" || choice="${theme_lines[0]}"
-    choice="$(gum choose --header "Theme" --selected "$choice" "${theme_lines[@]}")" || exit 0
-    PATINA_THEME="${choice%% *}"
-    export PATINA_THEME
-    echo
-  fi
+  [[ -n "${PATINA_THEME:-}" ]] || ask_theme=1
+  [[ -n "${PATINA_AI:-}" ]] || ask_ai=1
+  [[ -n "${PATINA_AI_MODEL:-}" ]] || ask_model=1
   for name in $(all_bundles); do
     yq eval -e '.required == true or .ai' "$PATINA_PATH/manifest/bundles/$name.yaml" > /dev/null 2>&1 && continue
     kind="opt-in"
     yq eval -e '.default == true' "$PATINA_PATH/manifest/bundles/$name.yaml" > /dev/null 2>&1 && kind="default"
-    lines="$(printf '%-9s %-8s %s' "$name" "($kind)" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$name.yaml")")"
-    bundle_lines+=("$lines")
-    [[ " ${bundles[*]} " == *" $name "* ]] && preselected+=("$lines")
+    names+=("$name")
+    about[$name]="$(printf '%-8s %s' "($kind)" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$name.yaml")")"
+    [[ " ${bundles[*]} " != *" $name "* ]] || on[$name]=1
   done
-  chosen_lines="$(gum choose --no-limit --header "App bundles (x or space toggles, enter confirms)" \
-    --selected "$(IFS=,; echo "${preselected[*]}")" "${bundle_lines[@]}")" || exit 0
-  mapfile -t bundles < <(printf 'base\n%s\n' "$(printf '%s\n' "$chosen_lines" | awk 'NF { print $1 }')" | awk 'NF && !seen[$0]++')
-  echo
-  if [[ -z "${PATINA_AI:-}" ]]; then
-    ai_lines=("$(printf '%-9s %s' none "No AI agent · patina ai on turns it on later")")
-    mapfile -t -O 1 ai_lines < <(agent_lines)
-    current="$agent"
-    [[ "$ai" != none ]] || current=none
-    choice="$(printf '%s\n' "${ai_lines[@]}" | grep "^$current ")" || choice="${ai_lines[0]}"
-    choice="$(gum choose --header "AI agent (Meta+A, and ai in the command palette)" \
-      --selected "$choice" "${ai_lines[@]}")" || exit 0
-    choice="${choice%% *}"
-    if [[ "$choice" == none ]]; then
-      ai=none
-    else
-      agent="$choice"
-      for mode in local cloud; do
-        b="$(ai_bundle "$mode" "$agent")" || continue
-        mode_lines+=("$(printf '%-6s %s' "$mode" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$b.yaml")")")
-      done
-      choice="$(printf '%s\n' "${mode_lines[@]}" | grep "^$ai ")" || choice="${mode_lines[0]}"
-      choice="$(gum choose --header "Where its model runs" --selected "$choice" "${mode_lines[@]}")" || exit 0
-      ai="${choice%% *}"
-    fi
-    echo
-  fi
-  if [[ "$ai" == local && -z "${PATINA_AI_MODEL:-}" ]]; then
-    # A small model carries its hint: it gets commands and facts wrong more often.
-    mapfile -t model_lines < <(yq eval ".ai.local.small_hint as \$h | [.ai.local.models[] |
-      select(.min_memory_gb <= $(memory_gb))][] | (.model + \"|\" + .name +
-      (if .small then \" · \" + \$h else \"\" end))" "$PATINA_PATH/defaults/settings.yaml" |
-      awk -F'|' '{ printf "%-24s %s\n", $1, $2 }')
-    choice="$(printf '%s\n' "${model_lines[@]}" | grep "^$(local_model) ")" || choice="${model_lines[0]}"
-    choice="$(gum choose --header "Local model ($(memory_gb) GB of memory; the first fits best)" \
-      --selected "$choice" "${model_lines[@]}")" || exit 0
-    PATINA_AI_MODEL="${choice%% *}"
-    export PATINA_AI_MODEL
-    echo
-  fi
-  gum style --border rounded --border-foreground "${tpl[ACCENT]}" --padding "1 3" \
-    "$(printf 'theme    %s\nbundles  %s\nai       %s\nbackend  %s (%s)' "$PATINA_THEME" "${bundles[*]}" \
-      "$(ai_summary)" "$(basename "$BACKEND" .yaml)" "$(uname -m)")"
-  echo
-  if ! gum confirm "Install now?" --affirmative Install --negative Cancel; then
-    say "nothing changed"
-    exit 0
-  fi
+  while true; do
+    # The first question asked leaves; every other goes back to the one before it.
+    back="← Back"
+    [[ ${#asked[@]} -gt 0 ]] || back="← Leave · nothing changes"
+    case "$step" in
+      theme)
+        step=bundles
+        [[ $ask_theme -eq 1 ]] || continue
+        mapfile -t lines < <("$PATINA_PATH/bin/patina-theme" list | sed 's/^[* ] //')
+        mapfile -t lines < <(mark_now "$(current_theme || true)" "${lines[@]}")
+        if ! choice="$(pick --back "$back" "Theme" "${lines[@]}")"; then
+          say "nothing changed"
+          exit 0
+        fi
+        PATINA_THEME="${choice%% *}"
+        export PATINA_THEME
+        asked+=(theme)
+        ;;
+      bundles)
+        lines=("$(printf '%-9s %s' next "Go on with base$(for name in "${names[@]}"; do
+          [[ -z "${on[$name]:-}" ]] || printf ', %s' "$name"
+        done)")")
+        for name in "${names[@]}"; do
+          line="[ ]"
+          [[ -z "${on[$name]:-}" ]] || line="[x]"
+          lines+=("$(printf '%-9s %s %s' "$name" "$line" "${about[$name]}")")
+        done
+        if ! choice="$(pick --back "$back" "App bundles (Enter turns one on or off)" "${lines[@]}")"; then
+          if [[ ${#asked[@]} -eq 0 ]]; then
+            say "nothing changed"
+            exit 0
+          fi
+          step="${asked[-1]}"
+          unset 'asked[-1]'
+          continue
+        fi
+        name="${choice%% *}"
+        if [[ "$name" != next ]]; then
+          if [[ -n "${on[$name]:-}" ]]; then unset 'on[$name]'; else on[$name]=1; fi
+          continue
+        fi
+        bundles=(base)
+        for name in "${names[@]}"; do
+          [[ -z "${on[$name]:-}" ]] || bundles+=("$name")
+        done
+        asked+=(bundles)
+        step=agent
+        ;;
+      agent)
+        step=mode
+        [[ $ask_ai -eq 1 ]] || continue
+        lines=("$(printf '%-9s %s' none "No AI agent · patina ai on turns it on later")")
+        mapfile -t -O 1 lines < <(agent_lines)
+        now=""
+        if [[ -s "$PATINA_STATE/ai" ]]; then
+          now="$(cat "$PATINA_STATE/ai")"
+          [[ "$now" == none ]] || now="$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || echo opencode)"
+        fi
+        mapfile -t lines < <(mark_now "$now" "${lines[@]}")
+        if ! choice="$(pick --back "$back" "AI agent (Meta+A, and ai in the command palette)" "${lines[@]}")"; then
+          step="${asked[-1]}"
+          unset 'asked[-1]'
+          continue
+        fi
+        choice="${choice%% *}"
+        asked+=(agent)
+        if [[ "$choice" == none ]]; then
+          ai=none
+          step=summary
+        else
+          agent="$choice"
+        fi
+        ;;
+      mode)
+        step=model
+        [[ $ask_ai -eq 1 ]] || continue
+        lines=()
+        for mode in local cloud; do
+          b="$(ai_bundle "$mode" "$agent")" || continue
+          lines+=("$(printf '%-6s %s' "$mode" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$b.yaml")")")
+        done
+        now=""
+        [[ "$agent" != "$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || true)" ]] ||
+          now="$(cat "$PATINA_STATE/ai" 2> /dev/null || true)"
+        mapfile -t lines < <(mark_now "$now" "${lines[@]}")
+        if ! choice="$(pick --back "$back" "Where its model runs" "${lines[@]}")"; then
+          step="${asked[-1]}"
+          unset 'asked[-1]'
+          continue
+        fi
+        ai="${choice%% *}"
+        asked+=(mode)
+        ;;
+      model)
+        step=summary
+        [[ "$ai" == local && $ask_model -eq 1 ]] || continue
+        # A small model carries its hint: it gets commands and facts wrong more often.
+        mapfile -t lines < <(yq eval ".ai.local.small_hint as \$h | [.ai.local.models[] |
+          select(.min_memory_gb <= $(memory_gb))][] | (.model + \"|\" + .name +
+          (if .small then \" · \" + \$h else \"\" end))" "$PATINA_PATH/defaults/settings.yaml" |
+          awk -F'|' '{ printf "%-24s %s\n", $1, $2 }')
+        mapfile -t lines < <(mark_now "$(cat "$PATINA_STATE/ai-model" 2> /dev/null || true)" "${lines[@]}")
+        if ! choice="$(pick --back "$back" "Local model ($(memory_gb) GB of memory; the first fits best)" "${lines[@]}")"; then
+          step="${asked[-1]}"
+          unset 'asked[-1]'
+          continue
+        fi
+        PATINA_AI_MODEL="${choice%% *}"
+        export PATINA_AI_MODEL
+        asked+=(model)
+        ;;
+      summary)
+        gum style --border rounded --border-foreground "${tpl[ACCENT]}" --padding "1 3" \
+          "$(printf 'theme    %s\nbundles  %s\nai       %s\nbackend  %s (%s)' "$PATINA_THEME" "${bundles[*]}" \
+            "$(ai_summary)" "$(basename "$BACKEND" .yaml)" "$(uname -m)")"
+        if pick "Install now?" "Install now" > /dev/null; then
+          break
+        fi
+        step="${asked[-1]}"
+        unset 'asked[-1]'
+        ;;
+    esac
+  done
   tui=1
 }
 

@@ -717,19 +717,26 @@ tui_colors() {
   export GUM_FILTER_UNSELECTED_PREFIX_FOREGROUND="${tpl[BASE04]}"
 }
 
-# A list to pick from on a terminal, with a way back: Esc, or its last line, "← Back"
+# A list to pick from on a terminal, with a way back: Ctrl+C, or its last line, "← Back"
 # (or the line --back gives). It is gum filter, not gum choose: Debian 13's gum (0.14.4)
-# ignores Esc in gum choose and gum confirm, and leaves only Ctrl+C. Typing narrows the
-# list. It stays below what the terminal shows, as tall as its lines; a height of 0
-# would take the whole screen. Prints the line picked, or with --many those picked with
-# Tab (else the one Enter is on); returns 1 for Esc and the back line.
+# ignores Esc in gum choose and gum confirm, and Esc did not leave gum filter either on
+# the first runs on real hardware, so Ctrl+C is the key the lists name. In gum's raw
+# mode it is a key, not a signal: gum leaves with 130 and the script goes on. Esc still
+# goes back where gum takes it. A line under the header names the keys, where gum
+# choose's help named the arrows and Enter. Typing narrows the list. It stays below what
+# the terminal shows, as tall as its lines; a height of 0 would take the whole screen.
+# Prints the line picked, or with --many those picked with Tab (else the one Enter is
+# on); returns 1 for Ctrl+C, Esc and the back line.
 # pick [--many] [--back <line>] <header> <line>...
 pick() {
-  local back="← Back" header chosen
+  local back="← Back" header chosen keys="↑↓ move · Enter picks"
   local -a many=()
   while [[ "${1:-}" == --* ]]; do
     case "$1" in
-      --many) many=(--no-limit) ;;
+      --many)
+        many=(--no-limit)
+        keys+=" · Tab marks more"
+        ;;
       --back)
         back="$2"
         shift
@@ -738,11 +745,26 @@ pick() {
     esac
     shift
   done
-  header="$1"
+  header="$1"$'\n'"$(gum style --faint "$keys · Ctrl+C: ${back#← }")"
   shift
-  chosen="$(gum filter "${many[@]}" --header "$header" --placeholder "Esc: ${back#← } · type to narrow" \
+  chosen="$(gum filter "${many[@]}" --header "$header" --placeholder "type to narrow" \
     --height "$(($# + 1 + $(wc -l <<< "$header")))" -- "$@" "$back")" || return 1
   chosen="$(grep -vxF -- "$back" <<< "$chosen" || true)"
   [[ -n "$chosen" ]] || return 1
   printf '%s\n' "$chosen"
+}
+
+# The lines given, one per line, the one whose first word is <current> marked "(now)":
+# pick's lists have no preselected line, as gum choose's had. An empty <current> marks
+# none. mark_now <current> <line>...
+mark_now() {
+  local current="$1" line
+  shift
+  for line in "$@"; do
+    if [[ -n "$current" && "${line%% *}" == "$current" ]]; then
+      printf '%s (now)\n' "$line"
+    else
+      printf '%s\n' "$line"
+    fi
+  done
 }

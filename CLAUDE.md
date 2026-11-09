@@ -218,11 +218,17 @@ packs. Audience: developers and privacy-minded users in the EU.
   for new windows leaves alone, so btop always draws (November 2026). The AI and app
   steps run `patina ai` or `patina install`, which ask as always, and a shell takes the
   welcome's half when it ends; btop is in the minimal bundle for it (November 2026).
-  Every list of the welcome goes one question back with Esc or its last line, "← Back"
-  (on the menu, "← Close the welcome"), and typing narrows it: `pick` in `lib.sh`, gum's
-  filter list, since Debian 13's gum (0.14.4) ignores Esc in its plain lists and yes/no
-  questions (November 2026, after Esc did nothing on the first run on real hardware);
-  `patina ai`'s questions are to take it too.
+  Every list of the welcome, of `patina ai` and of `patina install` goes one question
+  back with Ctrl+C or its last line, "← Back" (on the welcome's menu, "← Close the
+  welcome"; on the install's first question, leaving without a change), and typing
+  narrows it: `pick` in `lib.sh`, gum's filter list, since Debian 13's gum (0.14.4)
+  ignores Esc in its plain lists and yes/no questions, and Esc did not leave the filter
+  list either on real hardware; Ctrl+C is a key in gum's raw mode, and a line under
+  each list's title names it beside ↑↓ and Enter (November 2026). pick preselects
+  nothing, so what the machine has is marked "(now)" and the install's bundles are a
+  list whose lines Enter turns on and off. The welcome shows the Nextcloud and KeePassXC
+  steps on every machine and installs the client first where the desktop bundle is
+  missing, and names the patina version running under its wordmark (November 2026).
   Its icon is a checklist glyph of its own, not the start button's mark, which it
   carried until the first run on real hardware took one for the other (November 2026).
 - Image: a small live image built with Debian's live-build, with Calamares as the branded

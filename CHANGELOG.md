@@ -6,6 +6,27 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- The welcome names the patina version running, under its wordmark.
+- The Nextcloud and KeePassXC steps are in the welcome on every machine: where the
+  desktop bundle is missing, the step installs the client first (it asks for your
+  password), then goes on as before. They were hidden there.
+- Every question of `patina ai` (the agent, where its model runs, the cloud provider,
+  your own API's address, key and model) and of `patina install` (the theme, the app
+  bundles, the agent, where it runs, the local model, "Install now?") goes one question
+  back with Ctrl+C or the "← Back" at the end of its list, as the welcome's do; the
+  install's first question leaves without a change. What the machine has is marked
+  "(now)", and the install's bundles are a list whose lines Enter turns on and off.
+
+### Changed
+
+- Ctrl+C is the key that goes back, in place of Esc, which did not leave a list on
+  real hardware (it still does where gum takes it). A line under each list's title
+  names the keys: ↑↓ move, Enter picks, Ctrl+C back. At a step's own prompt Ctrl+C
+  stops the step and the welcome comes back to its menu.
+- The welcome's "A service for the agent" is "Agent services".
+
 ## [0.1.0-alpha.12] - 2026-11-09
 
 ### Added

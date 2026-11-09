@@ -68,7 +68,7 @@ status() {
 }
 
 on() {
-  local mode="" agent="" word bundle choice
+  local mode="" agent="" word bundle choice ai now ask_agent=0 ask_mode=0 step=agent
   local -a lines
   for word in "$@"; do
     case "$word" in
@@ -77,30 +77,63 @@ on() {
       *) die "patina ai on takes opencode or hermes, and local or cloud, not '$word'" ;;
     esac
   done
-  # Neither given, on a terminal: which agent first, the one this machine had offered
-  # first; otherwise that one (opencode before any).
+  ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)"
+  # Neither given, on a terminal: which agent first; otherwise that one (opencode before
+  # any). The one this machine has is marked.
   if [[ $# -eq 0 && -t 0 && -t 1 ]] && command -v gum > /dev/null; then
-    mapfile -t lines < <(agent_lines)
-    choice="$(printf '%s\n' "${lines[@]}" | grep "^$(current_agent) ")" || choice="${lines[0]}"
-    agent="$(gum choose --header "AI agent (Meta+A, and ai in the command palette)" \
-      --selected "$choice" "${lines[@]}")" || exit 0
-    agent="${agent%% *}"
+    ask_agent=1
   fi
-  [[ -n "$agent" ]] || agent="$(current_agent)"
   if [[ -z "$mode" ]]; then
     if [[ ! -t 0 || ! -t 1 ]] || ! command -v gum > /dev/null; then
       die "on needs local or cloud (patina ai --help)"
     fi
-    mode="$(gum choose --header "Where $agent's model runs" \
-      "local  on this computer, nothing leaves it" "cloud  a provider you log in to")" || exit 0
-    mode="${mode%% *}"
+    ask_mode=1
   fi
+  # The questions, each one back with Ctrl+C or its Back line, the first back to where
+  # patina ai was started: the agent, where its model runs, and for a cloud agent on a
+  # terminal the provider and what patina keeps of its login. Then the install and the
+  # agent's own login; elsewhere the install alone, and login later.
+  while true; do
+    case "$step" in
+      agent)
+        if [[ $ask_agent -eq 1 ]]; then
+          now=""
+          [[ "$ai" == none ]] || now="$(current_agent)"
+          mapfile -t lines < <(agent_lines)
+          mapfile -t lines < <(mark_now "$now" "${lines[@]}")
+          choice="$(pick "AI agent (Meta+A, and ai in the command palette)" "${lines[@]}")" || exit 0
+          agent="${choice%% *}"
+        fi
+        [[ -n "$agent" ]] || agent="$(current_agent)"
+        step=mode
+        ;;
+      mode)
+        if [[ $ask_mode -eq 1 ]]; then
+          now=""
+          [[ "$ai" == none || "$agent" != "$(current_agent)" ]] || now="$ai"
+          mapfile -t lines < <(mark_now "$now" "local  on this computer, nothing leaves it" \
+            "cloud  a provider you log in to")
+          if ! choice="$(pick "Where $agent's model runs" "${lines[@]}")"; then
+            [[ $ask_agent -eq 1 ]] || exit 0
+            step=agent
+            continue
+          fi
+          mode="${choice%% *}"
+        fi
+        step=provider
+        ;;
+      provider)
+        provider=""   # none from a provider list left with Back
+        if [[ "$mode" == cloud && -t 0 && -t 1 ]] && command -v gum > /dev/null && ! provider_step "$agent"; then
+          [[ $ask_mode -eq 1 ]] || exit 0
+          step=mode
+          continue
+        fi
+        break
+        ;;
+    esac
+  done
   bundle="$(ai_bundle "$mode" "$agent")" || die "no bundle in manifest/bundles/ answers ai: $mode with $agent"
-  # A cloud agent on a terminal: the provider and what patina keeps of its login first,
-  # the install, then the agent's own login. Elsewhere the install alone; login later.
-  if [[ "$mode" == cloud && -t 0 && -t 1 ]] && command -v gum > /dev/null; then
-    provider_step "$agent" || exit 0
-  fi
   PATINA_AI="$mode" PATINA_AI_AGENT="$agent" PATINA_AI_PROVIDER="${provider:-${PATINA_AI_PROVIDER:-}}" \
     "$PATINA_PATH/bin/patina-install" --bundles "$bundle"
   [[ -z "$provider" ]] || after_install "$agent"
@@ -113,66 +146,104 @@ provider=""
 # The cloud provider, on a terminal with gum, and what patina keeps of its login, asked
 # before the install writes the agent's configuration: your own API's address, key and
 # model, or Hermes' key. opencode's own login comes after the install (after_install).
-# Sets provider; fails when it is left with Esc. provider_step <agent>
+# Sets provider; fails when it is left with Ctrl+C or Back, and a step after the list
+# goes back to it. provider_step <agent>
 provider_step() {
-  local choice keeps="opencode's own login" key value
+  local choice keeps="opencode's own login" key value now="" rc
   local -a lines
   [[ "$1" != hermes ]] || keeps="Hermes' own .env"
   mapfile -t lines < <(yq eval "$(offered_providers "$1") | (.id + \"|\" + .name)" "$settings" |
     awk -F'|' '{ printf "%-10s %s\n", $1, $2 }')
-  choice="$(printf '%s\n' "${lines[@]}" | grep "^$(cloud_provider "$1") ")" || choice="${lines[0]}"
-  choice="$(gum choose --header "Cloud provider for $1 (the key stays in $keeps)" \
-    --selected "$choice" "${lines[@]}")" || return 1
-  provider="${choice%% *}"
-  case "$(provider_login "$provider")" in
-    endpoint) endpoint_step "$1" || return 1 ;;
-    key)
-      [[ "$1" == hermes ]] || return 0
-      key="$(P="$provider" yq eval '.ai.cloud.providers[] | select(.id == strenv(P)) | .hermes.key' "$settings")"
-      if ai_logged_in hermes "$provider" &&
-          ! gum confirm "Hermes has a key for $provider. Replace it?" --affirmative Replace --negative Keep --default=false; then
-        return 0
-      fi
-      value="$(gum input --password --header "Your $provider API key (kept in Hermes' own .env, readable by you only)" \
-        --placeholder "paste it here")" || return 1
-      [[ -n "$value" ]] || die "no key entered, nothing changed"
-      mkdir -p "$hermes_home"
-      hermes_env "$key" "$value"
-      ;;
-  esac
+  if [[ "$(cat "$PATINA_STATE/ai" 2> /dev/null || true)" == cloud && "$1" == "$(current_agent)" ]]; then
+    now="$(cloud_provider "$1")"
+  fi
+  mapfile -t lines < <(mark_now "$now" "${lines[@]}")
+  while true; do
+    choice="$(pick "Cloud provider for $1 (the key stays in $keeps)" "${lines[@]}")" || return 1
+    provider="${choice%% *}"
+    case "$(provider_login "$provider")" in
+      endpoint) endpoint_step "$1" || continue ;;
+      key)
+        [[ "$1" == hermes ]] || return 0
+        key="$(P="$provider" yq eval '.ai.cloud.providers[] | select(.id == strenv(P)) | .hermes.key' "$settings")"
+        if ai_logged_in hermes "$provider"; then
+          # Keep is the key Hermes has; Ctrl+C (gum's 130) goes back to the list.
+          rc=0
+          gum confirm "Hermes has a key for $provider. Replace it? (Ctrl+C: Back)" \
+            --affirmative Replace --negative Keep --default=false || rc=$?
+          [[ $rc -ne 130 ]] || continue
+          [[ $rc -eq 0 ]] || return 0
+        fi
+        value="$(gum input --password --header "Your $provider API key (kept in Hermes' own .env, readable by you only) · Ctrl+C: Back" \
+          --placeholder "paste it here")" || continue
+        [[ -n "$value" ]] || die "no key entered, nothing changed"
+        mkdir -p "$hermes_home"
+        hermes_env "$key" "$value"
+        ;;
+    esac
+    return 0
+  done
 }
 
 # Your own OpenAI-compatible API: its address, its key and a model from the list it
 # gives (GET /models, at the address or under its /v1), typed in when it gives none.
 # The key goes to a file only the user can read, which opencode's entry names, or to
 # Hermes' own .env; a server without keys gets "none", which it ignores. The address and
-# the model go to the state directory, where patina install finds them. Fails when it
-# is left with Esc. endpoint_step <agent>
+# the model go to the state directory, where patina install finds them. Each question
+# goes one back with Ctrl+C; the first fails, back to the providers. endpoint_step <agent>
 endpoint_step() {
-  local url key models="" model try
-  url="$(gum input --header "The address of your OpenAI-compatible API" --placeholder "https://ai.example.com/v1" \
-    --value "$(yq eval '.url // ""' "$PATINA_STATE/ai-endpoint.yaml" 2> /dev/null || true)")" || return 1
-  url="${url%/}"
-  [[ "$url" =~ ^https?://[^/]+ ]] || die "an address starts with https:// or http://, not '$url'"
-  key="$(gum input --password --header "Its API key (empty for a server without one)" --placeholder "paste it here")" ||
-    return 1
-  [[ -n "$key" ]] || key=none
-  for try in "$url" "$url/v1"; do
-    [[ "$try" != "$url/v1" || "$url" != */v1 ]] || continue
-    # The key on curl's standard input, not its command line, which other users can see.
-    models="$(curl -fsS -m 15 -H @- "$try/models" <<< "Authorization: Bearer $key" 2> /dev/null |
-      yq eval -p json '.data[].id' 2> /dev/null)" || models=""
-    if [[ -n "$models" ]]; then
-      url="$try"
-      break
-    fi
+  local url="" key models="" model="" try step=url now
+  local -a lines
+  while true; do
+    case "$step" in
+      url)
+        url="$(gum input --header "The address of your OpenAI-compatible API · Ctrl+C: Back" \
+          --placeholder "https://ai.example.com/v1" \
+          --value "${url:-$(yq eval '.url // ""' "$PATINA_STATE/ai-endpoint.yaml" 2> /dev/null || true)}")" || return 1
+        url="${url%/}"
+        if [[ ! "$url" =~ ^https?://[^/]+ ]]; then
+          warn "an address starts with https:// or http://, not '$url'"
+          continue
+        fi
+        step=key
+        ;;
+      key)
+        if ! key="$(gum input --password --header "Its API key (empty for a server without one) · Ctrl+C: Back" \
+            --placeholder "paste it here")"; then
+          step=url
+          continue
+        fi
+        [[ -n "$key" ]] || key=none
+        models=""
+        for try in "$url" "$url/v1"; do
+          [[ "$try" != "$url/v1" || "$url" != */v1 ]] || continue
+          # The key on curl's standard input, not its command line, which other users can see.
+          models="$(curl -fsS -m 15 -H @- "$try/models" <<< "Authorization: Bearer $key" 2> /dev/null |
+            yq eval -p json '.data[].id' 2> /dev/null)" || models=""
+          if [[ -n "$models" ]]; then
+            url="$try"
+            break
+          fi
+        done
+        step=model
+        ;;
+      model)
+        if [[ -n "$models" ]]; then
+          now="$(yq eval '.model // ""' "$PATINA_STATE/ai-endpoint.yaml" 2> /dev/null || true)"
+          mapfile -t lines <<< "$models"
+          mapfile -t lines < <(mark_now "$now" "${lines[@]}")
+          if model="$(pick "Model ($(wc -l <<< "$models") at $url)" "${lines[@]}")"; then
+            model="${model%% *}"
+            break
+          fi
+        else
+          say "ai: $url gave no list of models; type the model's name"
+          model="$(gum input --header "The model's name · Ctrl+C: Back" --placeholder "as the API names it")" && break
+        fi
+        step=key
+        ;;
+    esac
   done
-  if [[ -n "$models" ]]; then
-    model="$(gum filter --header "Model ($(wc -l <<< "$models") at $url; type to search)" <<< "$models")" || return 1
-  else
-    say "ai: $url gave no list of models; type the model's name"
-    model="$(gum input --header "The model's name" --placeholder "as the API names it")" || return 1
-  fi
   [[ -n "$model" ]] || die "no model picked, nothing changed"
   if [[ "$1" == hermes ]]; then
     mkdir -p "$hermes_home"

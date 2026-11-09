@@ -12,7 +12,7 @@ usage: patina welcome [--window | --login]
 
   (none)    the welcome on this terminal: connect your Nextcloud, open your passwords
             in KeePassXC, turn on the AI agent and log in to its cloud provider, add
-            the agent tools, connect a service for the agent, add more apps, change the
+            the agent tools, connect agent services, add more apps, change the
             theme, update and check patina, show the keys, and open at login or not.
             The AI and app steps run patina ai or patina install, which ask as always
   --window  the welcome in a kitty window of its own, beside btop: the start menu's
@@ -116,17 +116,16 @@ steps() {
   host="${host%%$'\n'*}"   # the first account
   host="${host#*://}"
   host="${host%%/*}"
-  if command -v nextcloud > /dev/null; then
-    if [[ -n "$host" ]]; then
-      printf '%-9s %s\n' nextcloud "Nextcloud's settings · connected to $host"
-    else
-      printf '%-9s %s\n' nextcloud "Connect your Nextcloud · your files, synced to ~/Nextcloud"
-    fi
+  # Both always: a machine without the desktop bundle gets the client first (client).
+  if [[ -n "$host" ]]; then
+    printf '%-9s %s\n' nextcloud "Nextcloud's settings · connected to $host"
+  else
+    printf '%-9s %s\n' nextcloud "Connect your Nextcloud · your files, synced to ~/Nextcloud$(command -v nextcloud > /dev/null ||
+      echo ", the client installed first")"
   fi
-  if command -v keepassxc > /dev/null; then
-    printf '%-9s %s\n' passwords "Open your passwords in KeePassXC · $([[ -n "$host" ]] &&
-      echo "the database in your Nextcloud" || echo "a database file you pick")"
-  fi
+  printf '%-9s %s\n' passwords "Open your passwords in KeePassXC · $([[ -n "$host" ]] &&
+    echo "the database in your Nextcloud" || echo "a database file you pick")$(command -v keepassxc > /dev/null ||
+    echo ", KeePassXC installed first")"
   if [[ "$ai" == none ]]; then
     printf '%-9s %s\n' agent "Turn on the AI agent · opencode or Hermes, local or cloud"
   else
@@ -136,7 +135,7 @@ steps() {
     if [[ "$ai" == cloud ]] && ai_logged_in "$agent" "$provider"; then
       printf '%-9s %s\n' provider "Change the AI provider · now $provider"
     fi
-    printf '%-9s %s\n' services "A service for the agent · $(yq eval \
+    printf '%-9s %s\n' services "Agent services · $(yq eval \
       '[.[].description | split(" · ") | .[0]] | join(", ")' "$PATINA_PATH/defaults/services.yaml")"
   fi
   if ! recorded_bundles | grep -qx agents; then
@@ -160,12 +159,12 @@ services_step() {
   local -a lines
   mapfile -t lines < <(yq eval 'to_entries | .[] | .key + "|" + .value.description' "$PATINA_PATH/defaults/services.yaml" |
     awk -F'|' '{ printf "%-10s %s\n", $1, $2 }')
-  choice="$(pick "A service for the agent (patina ai connect)" "${lines[@]}")" || return 0
+  choice="$(pick "Agent services · what the agent can work with (patina ai connect)" "${lines[@]}")" || return 0
   "$PATINA_PATH/bin/patina-ai" connect "${choice%% *}" || true
 }
 
 # The agent tools are opt-in because most of them are proprietary; the step says so
-# before it installs them, as a list of one, so Esc and Back work as everywhere.
+# before it installs them, as a list of one, so Ctrl+C and Back work as everywhere.
 tools_step() {
   pick "The agent tools · most are proprietary, from their makers' installers" \
     "Install the agent tools" > /dev/null || return 0
@@ -178,9 +177,25 @@ apps_step() {
   for b in $(left_bundles); do
     lines+=("$(printf '%-9s %s' "$b" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$b.yaml")")")
   done
-  chosen="$(pick --many "More apps (Tab picks more than one, Enter installs)" "${lines[@]}")" || return 0
+  chosen="$(pick --many "More apps (Enter installs the marked ones, else the one it is on)" "${lines[@]}")" || return 0
   chosen="$(awk 'NF { print $1 }' <<< "$chosen" | paste -sd, -)"
   [[ -z "$chosen" ]] || "$PATINA_PATH/bin/patina-install" --bundles "$chosen" || true
+}
+
+# A step's app, from the desktop bundle, which a machine with minimal lacks: its packages
+# through the backend, asked first, so the step goes on with it. Fails when it is left
+# or the install fails. client <name> <command> <package>...
+client() {
+  local name="$1" command="$2"
+  shift 2
+  command -v "$command" > /dev/null && return 0
+  pick "$name is not installed on this machine (the desktop bundle has it)" \
+    "Install $name now · asks for your password" > /dev/null || return 1
+  BACKEND="$(backend_file)"
+  if ! { backend_run refresh && backend_run install "$@"; } || ! command -v "$command" > /dev/null; then
+    warn "$name could not be installed; patina install --bundles desktop brings it with the other apps"
+    return 1
+  fi
 }
 
 # Nextcloud: the client's own wizard, which logs in through the browser and asks what to
@@ -191,8 +206,9 @@ apps_step() {
 # sets itself up to.
 nextcloud_step() {
   local url
+  client "The Nextcloud client" nextcloud nextcloud-desktop || return 0
   if [[ -z "$(nextcloud_values url)" ]]; then
-    url="$(gum input --header "Your Nextcloud's address · Esc: Back" --placeholder "cloud.example.eu")" || return 0
+    url="$(gum input --header "Your Nextcloud's address · Ctrl+C: Back" --placeholder "cloud.example.eu")" || return 0
     url="${url%/}"
     [[ -n "$url" ]] || return 0
     [[ "$url" == *://* ]] || url="https://$url"
@@ -223,6 +239,7 @@ nextcloud_step() {
 passwords_step() {
   local dir file choice
   local -a dirs=() lines=()
+  client KeePassXC keepassxc keepassxc kdialog || return 0
   while IFS= read -r dir; do
     if [[ -d "$dir" ]]; then
       dirs+=("$dir")
@@ -261,7 +278,7 @@ passwords_step() {
   setsid -f keepassxc "$file" > /dev/null 2>&1
 }
 
-# patina itself, in a menu of its own that comes back after each step until Back or Esc: the
+# patina itself, in a menu of its own that comes back after each step until Back or Ctrl+C: the
 # theme and, where it has one, its other mode (patina theme), an update (patina update)
 # and a check (patina doctor). The welcome takes a new theme's colours at once.
 patina_step() {
@@ -316,7 +333,12 @@ welcome() {
   colours
   name="$(getent passwd "$(id -un)" | cut -d: -f5 | cut -d, -f1)"
   name="${name%% *}"
+  # Ctrl+C is the lists' way back. Outside gum, at a step's own prompt or install, it
+  # stops that step and the welcome comes back to its menu: a handler, not an ignored
+  # signal, which the steps would inherit.
+  trap 'echo' INT
   print_wordmark auto "${tpl[VARIANT]}"
+  gum style --foreground "${tpl[BASE04]}" "patina $("$PATINA_PATH/bin/patina" version) · $(uname -m)"
   echo
   gum style --foreground "${tpl[BASE05]}" "Welcome${name:+, $name}. patina is installed with the apps you picked." \
     "Here is what you can add now, and the keys to start with:"
@@ -332,7 +354,7 @@ welcome() {
   while true; do
     echo
     mapfile -t lines < <(steps)
-    # Esc, or the last line, closes the welcome: the first question has nothing before it.
+    # Ctrl+C, or the last line, closes the welcome: the first question has nothing before it.
     choice="$(pick --back "← Close the welcome" "What next?" "${lines[@]}")" || break
     echo
     case "${choice%% *}" in
