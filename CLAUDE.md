@@ -204,9 +204,13 @@ packs. Audience: developers and privacy-minded users in the EU.
   of the start menu (`start_menu.hidden`), with its Konqi and Debian's name. patina's
   welcome (`patina welcome`) opens at every login until its "Don't open at login" is
   picked (November 2026, after it opened at the first login only), in kitty beside
-  btop as on the README's picture of the desktop, and from the start menu: a cloud
-  agent's login first while it is not logged in, then Nextcloud and KeePassXC, the AI
-  agent, the agent tools, the agent's services, the bundles the machine lacks, "Theme,
+  btop as on the README's picture of the desktop, and from the start menu: the basic
+  onboarding first (`setup`, a menu of its own: the AI agent, in a menu of its own with
+  the agent, its provider's login and its services, so none reads as
+  Nextcloud's or an internet provider's; your cloud data, Nextcloud today; your
+  password manager, KeePassXC today; a provider list appears in a step once it has a
+  second provider; November 2026), saying so while a cloud agent is not logged in;
+  then the bundles the machine lacks with the agent tools among them as AI dev tools, "Theme,
   update and check" (`patina theme`, `patina update`, `patina doctor`, in a menu of
   its own), and the first keys. Nextcloud is the client's own wizard with the address
   the welcome asks filled in, so the client logs in through the browser and asks what
@@ -228,7 +232,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   nothing, so what the machine has is marked "(now)" and the install's bundles are a
   list whose lines Enter turns on and off. The welcome shows the Nextcloud and KeePassXC
   steps on every machine and installs the client first where the desktop bundle is
-  missing, and names the patina version running under its wordmark (November 2026).
+  missing, and names the patina version running under its wordmark; every line of a
+  list is one line, cut with "…" where the terminal is narrower (November 2026).
   Its icon is a checklist glyph of its own, not the start button's mark, which it
   carried until the first run on real hardware took one for the other (November 2026).
 - Image: a small live image built with Debian's live-build, with Calamares as the branded

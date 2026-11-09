@@ -25,7 +25,16 @@ All notable changes to patina are documented here. The format follows
   real hardware (it still does where gum takes it). A line under each list's title
   names the keys: ↑↓ move, Enter picks, Ctrl+C back. At a step's own prompt Ctrl+C
   stops the step and the welcome comes back to its menu.
-- The welcome's "A service for the agent" is "Agent services".
+- The welcome's menu is shorter: its first step, `setup`, is the basic onboarding, a
+  menu of its own with `ai` (the AI agent, in a menu of its own: the agent, its
+  provider's login, the services it can work with), `cloud` (connect
+  your cloud data: Nextcloud) and `passwords` (connect your password manager:
+  KeePassXC). More providers and steps can join there. Then More apps, where the agent
+  tools (Claude Code, Codex, opencode, Claude Desktop, Ollama) are the AI dev tools,
+  "Theme, update and check", the keys, and `autostart` (open at login or not).
+- Every line of a list is one line: the welcome's steps are shorter, and a line wider
+  than the terminal ends with "…" where it wrapped before (a small screen narrows the
+  welcome's half); the line picked is used whole.
 
 ## [0.1.0-alpha.12] - 2026-11-09
 

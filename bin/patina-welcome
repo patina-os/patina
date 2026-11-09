@@ -10,9 +10,9 @@ usage() {
   cat << EOU
 usage: patina welcome [--window | --login]
 
-  (none)    the welcome on this terminal: connect your Nextcloud, open your passwords
-            in KeePassXC, turn on the AI agent and log in to its cloud provider, add
-            the agent tools, connect agent services, add more apps, change the
+  (none)    the welcome on this terminal: the basic onboarding (the AI agent, its
+            provider's login, its services; your cloud data, Nextcloud; your password
+            manager, KeePassXC), add more apps and the AI dev tools, change the
             theme, update and check patina, show the keys, and open at login or not.
             The AI and app steps run patina ai or patina install, which ask as always
   --window  the welcome in a kitty window of its own, beside btop: the start menu's
@@ -55,8 +55,9 @@ login() {
 }
 
 # The bundles a user may still add here: neither required nor an AI agent's (the agent
-# step adds those) nor the agent tools (a step of their own), with something this machine
-# lacks, so minimal is not offered beside desktop, which holds all of it.
+# step adds those) nor the agent tools (apps_step adds them as AI dev tools), with
+# something this machine lacks, so minimal is not offered beside desktop, which holds
+# all of it.
 left_bundles() {
   local b list item
   local -a recorded
@@ -100,58 +101,105 @@ nextcloud_values() {
     }' "$nextcloud_cfg"
 }
 
-# The steps the menu offers now, one line each: the step, then what it does in at most
-# 68 characters, so a line with gum's cursor fits the welcome's half of the window (82
-# columns, beside btop's). A cloud agent not logged in yet has its login first, where the menu starts:
-# the image's first boot installs it and asks nothing.
+# The welcome's menu, one line each: the step, then what it does in a few words, so a
+# line with gum's cursor fits the welcome's half of the window (82 columns beside
+# btop's, fewer on a small screen, where pick cuts it). The basic onboarding is one
+# step, setup, a menu of its own (setup_step); a cloud agent not logged in yet says so
+# on it, since the image's first boot installs the agent and asks nothing.
 steps() {
-  local ai agent provider host
+  local ai agent left
   ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)"
   agent="$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || echo opencode)"
-  provider="$(cat "$PATINA_STATE/ai-provider" 2> /dev/null || true)"
-  if [[ "$ai" == cloud ]] && ! ai_logged_in "$agent" "$provider"; then
-    printf '%-9s %s\n' provider "Log in to the AI provider · Mistral, your own API and more"
-  fi
-  host="$(nextcloud_values url)"
-  host="${host%%$'\n'*}"   # the first account
-  host="${host#*://}"
-  host="${host%%/*}"
-  # Both always: a machine without the desktop bundle gets the client first (client).
-  if [[ -n "$host" ]]; then
-    printf '%-9s %s\n' nextcloud "Nextcloud's settings · connected to $host"
+  if [[ "$ai" == cloud ]] && ! ai_logged_in "$agent" "$(cat "$PATINA_STATE/ai-provider" 2> /dev/null || true)"; then
+    printf '%-10s %s\n' setup "Basic onboarding · log in to the AI provider first"
   else
-    printf '%-9s %s\n' nextcloud "Connect your Nextcloud · your files, synced to ~/Nextcloud$(command -v nextcloud > /dev/null ||
-      echo ", the client installed first")"
-  fi
-  printf '%-9s %s\n' passwords "Open your passwords in KeePassXC · $([[ -n "$host" ]] &&
-    echo "the database in your Nextcloud" || echo "a database file you pick")$(command -v keepassxc > /dev/null ||
-    echo ", KeePassXC installed first")"
-  if [[ "$ai" == none ]]; then
-    printf '%-9s %s\n' agent "Turn on the AI agent · opencode or Hermes, local or cloud"
-  else
-    # A small local model says so here too: it gets commands and facts wrong more often.
-    printf '%-9s %s\n' agent "Change the AI agent · now $agent, $ai$([[ "$ai" != local ]] ||
-      small_hint "$(cat "$PATINA_STATE/ai-model" 2> /dev/null || true)")"
-    if [[ "$ai" == cloud ]] && ai_logged_in "$agent" "$provider"; then
-      printf '%-9s %s\n' provider "Change the AI provider · now $provider"
-    fi
-    printf '%-9s %s\n' services "Agent services · $(yq eval \
-      '[.[].description | split(" · ") | .[0]] | join(", ")' "$PATINA_PATH/defaults/services.yaml")"
-  fi
-  if ! recorded_bundles | grep -qx agents; then
-    printf '%-9s %s\n' tools "Add $(yq eval '.description | sub(" · "; ", ")' "$PATINA_PATH/manifest/bundles/agents.yaml")"
+    printf '%-10s %s\n' setup "Basic onboarding · AI, cloud, passwords"
   fi
   left="$(left_bundles | paste -sd, - | sed 's/,/, /g')"
-  if [[ -n "$left" ]]; then
-    printf '%-9s %s\n' apps "More apps · $left"
-  fi
-  printf '%-9s %s\n' patina "Theme, update and check · now $(current_theme || echo "no theme"), $(current_mode)"
-  printf '%-9s %s\n' keys "All the keyboard shortcuts"
+  recorded_bundles | grep -qx agents || left="${left:+$left, }AI dev tools"
+  [[ -z "$left" ]] || printf '%-10s %s\n' apps "More apps · $left"
+  printf '%-10s %s\n' patina "Theme, update and check · now $(current_theme || echo "no theme"), $(current_mode)"
+  printf '%-10s %s\n' keys "All the keyboard shortcuts"
   if [[ -e "$off" ]]; then
-    printf '%-9s %s\n' login "Open at every login again"
+    printf '%-10s %s\n' autostart "Open at every login again"
   else
-    printf '%-9s %s\n' login "Don't open at login (the start menu keeps it)"
+    printf '%-10s %s\n' autostart "Don't open at login (the start menu keeps it)"
   fi
+}
+
+# The basic onboarding, a menu that comes back after each step until Back: the AI
+# agent (ai_step), your cloud data and your password manager. Each names what it
+# connects; with one provider of its kind there is no list to pick it from yet, and a
+# second one adds that list to its step.
+setup_step() {
+  local ai agent host choice
+  local -a lines
+  while true; do
+    ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)"
+    agent="$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || echo opencode)"
+    host="$(nextcloud_values url)"
+    host="${host%%$'\n'*}"   # the first account
+    host="${host#*://}"
+    host="${host%%/*}"
+    lines=()
+    if [[ "$ai" == none ]]; then
+      lines+=("$(printf '%-10s %s' ai "Set up the AI agent")")
+    elif [[ "$ai" == cloud ]] && ! ai_logged_in "$agent" "$(cat "$PATINA_STATE/ai-provider" 2> /dev/null || true)"; then
+      lines+=("$(printf '%-10s %s' ai "Set up the AI agent · log in to its provider")")
+    else
+      lines+=("$(printf '%-10s %s' ai "Set up the AI agent · now $agent, $ai")")
+    fi
+    lines+=("$(printf '%-10s %s' cloud "Connect your cloud data · $([[ -n "$host" ]] && echo "now Nextcloud, $host" || echo Nextcloud)")")
+    lines+=("$(printf '%-10s %s' passwords "Connect your password manager · KeePassXC")")
+    echo
+    choice="$(pick --back "← Back to the welcome" "Basic onboarding" "${lines[@]}")" || return 0
+    echo
+    case "${choice%% *}" in
+      ai) ai_step ;;
+      cloud) nextcloud_step ;;
+      passwords) passwords_step ;;
+      *) return 0 ;;
+    esac
+  done
+}
+
+# The AI agent's own menu, back to the onboarding with Back: turn it on or change it,
+# its provider's login and the services it can work with, each through patina ai. The
+# agent tools are among the apps, as AI dev tools. A cloud agent not logged in has its
+# login first.
+ai_step() {
+  local ai agent provider choice
+  local -a lines
+  while true; do
+    ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)"
+    agent="$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || echo opencode)"
+    provider="$(cat "$PATINA_STATE/ai-provider" 2> /dev/null || true)"
+    lines=()
+    if [[ "$ai" == none ]]; then
+      lines+=("$(printf '%-10s %s' agent "Turn on the agent · opencode or Hermes, local or cloud")")
+    else
+      if [[ "$ai" == cloud ]] && ! ai_logged_in "$agent" "$provider"; then
+        lines+=("$(printf '%-10s %s' provider "Log in to the provider · Mistral, your own API and more")")
+      fi
+      # A small local model says so here too: it gets commands and facts wrong more often.
+      lines+=("$(printf '%-10s %s' agent "Change the agent · now $agent, $ai$([[ "$ai" != local ]] ||
+        small_hint "$(cat "$PATINA_STATE/ai-model" 2> /dev/null || true)")")")
+      if [[ "$ai" == cloud ]] && ai_logged_in "$agent" "$provider"; then
+        lines+=("$(printf '%-10s %s' provider "Change the provider · now $provider")")
+      fi
+      lines+=("$(printf '%-10s %s' services "Connect services · $(yq eval \
+        '[.[].description | split(" · ") | .[0]] | join(", ")' "$PATINA_PATH/defaults/services.yaml")")")
+    fi
+    echo
+    choice="$(pick "The AI agent" "${lines[@]}")" || return 0
+    echo
+    case "${choice%% *}" in
+      agent) "$PATINA_PATH/bin/patina-ai" on || true ;;
+      provider) "$PATINA_PATH/bin/patina-ai" login || true ;;
+      services) services_step ;;
+      *) return 0 ;;
+    esac
+  done
 }
 
 services_step() {
@@ -159,16 +207,8 @@ services_step() {
   local -a lines
   mapfile -t lines < <(yq eval 'to_entries | .[] | .key + "|" + .value.description' "$PATINA_PATH/defaults/services.yaml" |
     awk -F'|' '{ printf "%-10s %s\n", $1, $2 }')
-  choice="$(pick "Agent services · what the agent can work with (patina ai connect)" "${lines[@]}")" || return 0
+  choice="$(pick "Services the agent can work with (patina ai connect)" "${lines[@]}")" || return 0
   "$PATINA_PATH/bin/patina-ai" connect "${choice%% *}" || true
-}
-
-# The agent tools are opt-in because most of them are proprietary; the step says so
-# before it installs them, as a list of one, so Ctrl+C and Back work as everywhere.
-tools_step() {
-  pick "The agent tools · most are proprietary, from their makers' installers" \
-    "Install the agent tools" > /dev/null || return 0
-  "$PATINA_PATH/bin/patina-install" --bundles agents || true
 }
 
 apps_step() {
@@ -177,7 +217,13 @@ apps_step() {
   for b in $(left_bundles); do
     lines+=("$(printf '%-9s %s' "$b" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$b.yaml")")")
   done
-  chosen="$(pick --many "More apps (Enter installs the marked ones, else the one it is on)" "${lines[@]}")" || return 0
+  # The agent tools (the agents bundle) are AI dev tools here, among the apps; opt-in
+  # because most of them are proprietary, which the list's title says.
+  if ! recorded_bundles | grep -qx agents; then
+    lines+=("$(printf '%-9s %s' agents "AI dev tools · $(yq eval '.description | sub(" · "; ", ")' \
+      "$PATINA_PATH/manifest/bundles/agents.yaml")")")
+  fi
+  chosen="$(pick --many "More apps · most AI dev tools are proprietary" "${lines[@]}")" || return 0
   chosen="$(awk 'NF { print $1 }' <<< "$chosen" | paste -sd, -)"
   [[ -z "$chosen" ]] || "$PATINA_PATH/bin/patina-install" --bundles "$chosen" || true
 }
@@ -189,7 +235,7 @@ client() {
   local name="$1" command="$2"
   shift 2
   command -v "$command" > /dev/null && return 0
-  pick "$name is not installed on this machine (the desktop bundle has it)" \
+  pick "${name^} is not installed on this machine (the desktop bundle has it)" \
     "Install $name now · asks for your password" > /dev/null || return 1
   BACKEND="$(backend_file)"
   if ! { backend_run refresh && backend_run install "$@"; } || ! command -v "$command" > /dev/null; then
@@ -206,7 +252,7 @@ client() {
 # sets itself up to.
 nextcloud_step() {
   local url
-  client "The Nextcloud client" nextcloud nextcloud-desktop || return 0
+  client "the Nextcloud client" nextcloud nextcloud-desktop || return 0
   if [[ -z "$(nextcloud_values url)" ]]; then
     url="$(gum input --header "Your Nextcloud's address · Ctrl+C: Back" --placeholder "cloud.example.eu")" || return 0
     url="${url%/}"
@@ -358,16 +404,11 @@ welcome() {
     choice="$(pick --back "← Close the welcome" "What next?" "${lines[@]}")" || break
     echo
     case "${choice%% *}" in
-      agent) "$PATINA_PATH/bin/patina-ai" on || true ;;
-      provider) "$PATINA_PATH/bin/patina-ai" login || true ;;
-      nextcloud) nextcloud_step ;;
-      passwords) passwords_step ;;
-      services) services_step ;;
-      tools) tools_step ;;
+      setup) setup_step ;;
       apps) apps_step ;;
       patina) patina_step ;;
       keys) "$PATINA_PATH/bin/patina-keys" ;;
-      login)
+      autostart)
         if [[ -e "$off" ]]; then
           rm -f "$off"
           say "the welcome opens at every login again"
