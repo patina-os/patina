@@ -19,7 +19,10 @@ Files, from `templates/`, each named after the theme:
   own, `~/.local/share/icons/patina-<theme>/`: it inherits that icon theme and holds
   only its folder icons, recoloured to the accent (the accent, 80 % and 35 % of it in
   place of the icon theme's blues, following link chains such as inode-directory ->
-  folder -> folder-blue), with the icon theme's own symbolic glyphs of those folders
+  folder -> folder-blue), only under the names a folder has (`folder…`, `user-…`,
+  `inode-directory`), since KDE shortens a name word by word in this icon theme before
+  it asks the one inherited, and `network`, a link to a folder, made every network
+  icon of the tray the green folder; with the icon theme's own symbolic glyphs of those folders
   beside them (a symbolic name falls back to the coloured folder in the first theme
   that has it, so the bar's show-desktop button was a green block), and a monochrome glyph under the name of every app's icon
   (`mono`: the Icon= of each installed desktop entry a menu shows, mapped to a glyph,
@@ -233,7 +236,9 @@ there, so a run over SSH or in the screenshot session finds them unchanged as we
   behind them, and opens them above other windows without taking the keyboard;
   `patina-welcome` the welcome's window (class `patina-welcome`) at the size it asks
   kitty for, in characters, so btop has its 80 columns beside the welcome; neither
-  needs a screen. For
+  needs a screen. Both name a size (`1,1`) their "Do not affect" never applies, since
+  KWin reads a size rule without one as unused and deletes a rule left with nothing to
+  do. For
   `windows.opacity` below 100 a second rule that
   forces every normal window to that opacity, one share while active and one while not
   (100 by default: only kitty is see-through, by its own background)

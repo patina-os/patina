@@ -399,6 +399,11 @@ if [[ -n "$variant" && -f "/usr/share/icons/$icons_base/index.theme" ]]; then
   out="$tmp/icons"
   # Every folder icon of the icon theme that ends at the variant, under its own name:
   # folder.svg -> folder-blue.svg, and inode-directory.svg -> folder.svg -> folder-blue.svg.
+  # Only under the names a folder has (folder…, user-…, the type inode-directory): KDE
+  # shortens a name this icon theme lacks, word by word, before it asks the one this
+  # inherits, so a wider word that ends at a folder took every icon it begins: network
+  # (network.svg -> folder-blue-network.svg) made the tray's Wi-Fi, Bluetooth and every
+  # other network icon the green folder, and desktop did the same to desktop effects.
   for places in /usr/share/icons/"$icons_base"/*/places; do
     declare -A target=()
     while IFS=$'\t' read -r name to; do
@@ -406,6 +411,10 @@ if [[ -n "$variant" && -f "/usr/share/icons/$icons_base/index.theme" ]]; then
     done < <(find -H "$places" -maxdepth 1 -type l -printf '%f\t%l\n')
     links=()
     for name in "${!target[@]}"; do
+      case "$name" in
+        folder* | user-* | inode-directory.svg) ;;
+        *) continue ;;
+      esac
       to="${target[$name]}"
       to="${target[$to]:-$to}"
       case "$to" in
@@ -1031,16 +1040,22 @@ fi
 # welcome and btop beside it, in characters: a share of a small screen, or of a screen
 # whose rule above was not written yet (the image's first boot runs outside a session),
 # left btop too narrow to draw. A rule ahead of the size rule leaves the welcome's size
-# alone ("Do not affect", which stops KWin looking further), and needs no screen.
+# alone ("Do not affect", which stops KWin looking further), and needs no screen. It
+# names a size all the same, which "Do not affect" never applies: KWin reads a size rule
+# without one as unused, so the size rule took the welcome after all (71 of btop's 80
+# columns on a 13" screen at 110%), and it deletes a rule left with nothing to do, as
+# this one was once the welcome opened. The kdialog rule below names one for the same
+# reason.
 rule=patina-welcome
 rules="$(kreadconfig6 --file kwinrulesrc --group General --key rules)"
 if [[ "$percent" -gt 0 ]]; then
   kset kwinrulesrc Description "patina: the welcome keeps the size it asks for" "$rule"
   kset kwinrulesrc wmclass patina-welcome "$rule"
   kset kwinrulesrc wmclassmatch 1 "$rule"
+  kset kwinrulesrc size 1,1 "$rule"
   kset kwinrulesrc sizerule 1 "$rule"
 elif [[ -n "$(kreadconfig6 --file kwinrulesrc --group "$rule" --key sizerule)" ]]; then
-  drop_rule Description wmclass wmclassmatch sizerule
+  drop_rule Description wmclass wmclassmatch size sizerule
 fi
 # kdialog's windows, the AI agent's sudo password (askpass.sh) and the welcome's file
 # picker: a dialog with no window of its app behind it is a normal window on Wayland,
@@ -1053,6 +1068,7 @@ rule=patina-kdialog
 kset kwinrulesrc Description "patina: kdialog keeps its size and opens above" "$rule"
 kset kwinrulesrc wmclass '^(org\.kde\.)?kdialog$' "$rule"
 kset kwinrulesrc wmclassmatch 3 "$rule"
+kset kwinrulesrc size 1,1 "$rule"
 kset kwinrulesrc sizerule 1 "$rule"
 kset kwinrulesrc above true "$rule"
 kset kwinrulesrc aboverule 3 "$rule"
