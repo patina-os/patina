@@ -8,6 +8,15 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- kortex 0.6.0, the command palette's part of what the agent's test run changed. A
+  question of the agent's is a row with its answers, where the palette stood at
+  "Working" for good. Always is no longer offered on a row of `sudo`, `rm`, a shell
+  and the like, with either agent: one Always let every later `sudo` run unasked. A
+  row that asks shows the lines an edit changes, what a service's tool is given and
+  what the agent said it would do. The answer is what the agent said after its last
+  step, keeps its start when long, and its Markdown is read; a Deny ends in "Stopped",
+  not "Done.". Stop ends a request. With Hermes, the same request asked twice is
+  answered, and a question it gave up on leaves the palette.
 - The choice between the two agents says what each means day to day, in the install's
   question, the installer's page, `patina ai` and the README: opencode asks before
   each change and looks around without asking (one to a few questions per task);
