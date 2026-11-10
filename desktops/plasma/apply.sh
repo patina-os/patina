@@ -285,10 +285,19 @@ fi
 # The agent launcher, only with an AI bundle (ai-local, ai-cloud, hermes-local,
 # hermes-cloud) or the agents bundle installed. It and the cheat sheet's launcher come
 # before the icons, which give every app's desktop entry its glyph. It opens the agent
-# CLI (Hermes with its bundles) in the kitty profile desktops/terminal/ writes.
+# CLI (Hermes with its bundles) in the kitty profile desktops/terminal/ writes. Where
+# kortex answers for that agent, it asks kortex for its panel instead: the agent's view
+# of the conversation docked at the screen's right edge (agent-panel.desktop), and
+# falls back to the kitty profile when kortex cannot.
+kortex_icon="$data/icons/hicolor/scalable/apps/kortex.svg"
 if [[ " ${PATINA_BUNDLES:-} " =~ \ (agents|ai-local|ai-cloud|hermes-local|hermes-cloud)\  ]]; then
   tpl[AGENT_COMMAND]="$(command -v "${tpl[AGENT]}" 2> /dev/null || echo "${tpl[AGENT]}")"
-  render "$templates/agent.desktop" "$tmp/agent.desktop"
+  agent_template="$templates/agent.desktop"
+  if [[ " ${PATINA_BUNDLES:-} " =~ \ (ai-local|ai-cloud|hermes-local|hermes-cloud)\  && -f "$kortex_icon" &&
+    "${tpl[AGENT]}" =~ ^(opencode|hermes)$ ]]; then
+    agent_template="$templates/agent-panel.desktop"
+  fi
+  render "$agent_template" "$tmp/agent.desktop"
   put "$tmp/agent.desktop" "$agent_desktop"
 elif [[ -e "$agent_desktop" ]]; then
   say "removing $agent_desktop (no AI or agents bundle is installed)"
@@ -301,7 +310,6 @@ fi
 # goes to the agent, with no `ai` first. kortex is its name whichever agent answers, as
 # in the palette. Its icon is kortex's ▲ by path, which the glyphs below leave alone; by
 # name it would become a glyph, and KRunner's rows would lose the ▲ too.
-kortex_icon="$data/icons/hicolor/scalable/apps/kortex.svg"
 if [[ " ${PATINA_BUNDLES:-} " =~ \ (ai-local|ai-cloud|hermes-local|hermes-cloud)\  && -f "$kortex_icon" ]]; then
   tpl[ASK_ICON]="$kortex_icon"
   render "$templates/ask.desktop" "$tmp/ask.desktop"

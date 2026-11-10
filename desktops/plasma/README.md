@@ -152,7 +152,12 @@ Files, from `templates/`, each named after the theme:
   agents bundle:
   `~/.local/share/applications/patina-agent.desktop`, which opens the command `agent`
   of `defaults/settings.yaml` in the agent's kitty profile; removed again when none of
-  them is installed
+  them is installed. Where kortex answers for that agent (an AI bundle, kortex
+  installed, `agent` is opencode or hermes) it comes from `templates/agent-panel.desktop`
+  instead: kortex's `Panel`, the agent's own view of the current conversation in a
+  terminal docked at the screen's right edge, full height and a fifth of the width
+  (480 to 720 px), above other windows, so the user works on beside it; the kitty
+  profile when kortex has no `Panel`
 - with an AI bundle and kortex installed: `~/.local/share/applications/patina-ask.desktop`
   (from `templates/ask.desktop`), "Ask kortex" whichever agent kortex talks to,
   first in the start menu's AI folder and behind Meta+A (the `ask` action):

@@ -206,8 +206,9 @@ patina install --bundles agents
 - [ ] Claude Code, Codex CLI, opencode, Claude Desktop and Ollama install;
   `systemctl is-active ollama` is `active`
 - [ ] `~/.config/opencode/opencode.json` points opencode at `http://localhost:11434`
-- [ ] Meta+Shift+A opens opencode in its own kitty profile; without the bundle or an
-  AI agent the key does nothing
+- [ ] Meta+Shift+A docks opencode's view at the screen's right edge, full height
+  (kortex's panel); with only the agents bundle it opens the agent in its own kitty
+  profile; without the bundle or an AI agent the key does nothing
 - [ ] a second `patina install --bundles agents` ends with `nothing to do`
 
 Roll back to "patina-desktop" afterwards.

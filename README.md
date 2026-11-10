@@ -49,8 +49,8 @@ and Deny. It is made for three things:
   together and changes it the patina way (`defaults/agent.md`).
 - **Working with an agent.** Scripts, projects, your servers, and the services you
   connect (Linear, Notion, GitHub, Nextcloud). Close the palette while it works and a
-  notification brings the answer back; Meta+Shift+A opens the agent in its own
-  terminal for longer work.
+  notification brings the answer back; Meta+Shift+A docks what the agent does at the
+  screen's right edge, every step, while you work on beside it.
 
 An agent can be wrong, a small local model more often: read what it proposes before
 you allow it. [opencode](https://opencode.ai) asks before each change and looks
@@ -239,8 +239,8 @@ same one. datum (graphite, ice and coral around a contour map) stays as an optio
 (`patina theme set datum`).
 Meta plus
 one key opens the terminal (Return), the search (Space), the browser (B), the files (E)
-and the AI agent: Meta+A asks it in the command palette, Meta+Shift+A opens it in its
-own terminal profile;
+and the AI agent: Meta+A asks it in the command palette, Meta+Shift+A shows what it does
+in a panel at the right edge;
 Meta+K shows all of them, and Plasma's own, at a glance (`patina keys`). Themes shared
 in a repository of their own install with `patina theme install <git-url>`, as data
 only. The
@@ -345,7 +345,8 @@ sudo rm -rf /etc/systemd/system/ollama.service /usr/local/bin/ollama /usr/local/
 sudo userdel ollama
 ```
 
-Meta+A asks it in the command palette, Meta+Shift+A opens it in a terminal. opencode
+Meta+A asks it in the command palette, as in a chat, and Meta+Shift+A shows its steps
+in a panel docked at the screen's right edge. opencode
 reads freely, and asks before anything that changes a file,
 runs a command or reaches a server (`defaults/apps.yaml`); Hermes asks before what it
 counts as dangerous, as above. `defaults/agent.md` tells either how

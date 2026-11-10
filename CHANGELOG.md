@@ -8,6 +8,13 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- The command palette reads like a chat with the agent, and Meta+Shift+A docks what it
+  does at the screen's right edge (kortex's panel: the agent's own view of the
+  conversation, full height, a fifth of the width, above other windows), so you work
+  on beside it. A row that asks says in the agent's words what the step does
+  (`agent.md` tells it to explain each change first); a command that deletes or runs
+  as root shows under the words. With only the agents bundle, or a kortex without the
+  panel, Meta+Shift+A opens the agent in its kitty profile as before.
 - Meta+A opens the command palette on the conversation while a request runs or waits
   for an answer, through kortex's `Open`; it opened an empty palette, and the waiting
   row was out of sight. Empty as before otherwise, and with a kortex older than `Open`.
