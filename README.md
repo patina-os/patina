@@ -53,9 +53,11 @@ and Deny. It is made for three things:
   terminal for longer work.
 
 An agent can be wrong, a small local model more often: read what it proposes before
-you allow it. [opencode](https://opencode.ai) asks before every change;
-[Hermes Agent](https://github.com/NousResearch/hermes-agent) remembers you and asks only
-before a command it counts as dangerous. Both are free software, with a model on your
+you allow it. [opencode](https://opencode.ai) asks before each change and looks
+around without asking: expect one to a few questions per task.
+[Hermes Agent](https://github.com/NousResearch/hermes-agent) remembers you, changes
+files and installs apps without asking, and asks only before a command it counts as
+dangerous. Both are free software, with a model on your
 machine or from a cloud provider you pick, once you turn one on;
 [The AI agent](#the-ai-agent) says more.
 
@@ -287,7 +289,9 @@ as does patina's welcome, which offers it again at each login.
 Both are free software:
 
 - **[opencode](https://opencode.ai)** (MIT), the default agent: it asks before every
-  change.
+  change, on the machine and in a connected service, and runs commands that only look
+  (`ls`, `ps`, `journalctl`) without asking. Asking more is the safer choice, and the
+  one to take when you cannot judge afterwards what an agent did.
 - **[Hermes Agent](https://github.com/NousResearch/hermes-agent)** (MIT, Nous
   Research): it remembers across conversations, and asks first only before a command
   it counts as dangerous (deleting a folder, formatting a disk, piping a download into

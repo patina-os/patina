@@ -8,6 +8,11 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- The choice between the two agents says what each means day to day, in the install's
+  question, the installer's page, `patina ai` and the README: opencode asks before
+  each change and looks around without asking (one to a few questions per task);
+  Hermes changes files and installs apps without asking and asks only before what it
+  counts as dangerous. "Asks before risky commands only" read as the safer of the two.
 - A diagnosis no longer asks for every look. Commands that only look run without a
   row to allow: `ls`, `ps`, `du`, `stat`, `ip addr`, `journalctl`, `dpkg -l`,
   `apt-cache`, `nmcli device status`, `lpstat`, `patina doctor` and their like (the

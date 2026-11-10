@@ -132,8 +132,8 @@ for id in $(yq eval '.items[].id' "$chooser"); do
   tpl[AI_NAME]="$(yq eval ".items[] | select(.id == \"$id\") | .name" "$chooser")"
   tpl[AI_DEMO]=1
   case "$id" in
-    opencode) tpl[AI_DETAIL]="free · asks before every change" tpl[AI_ASK]="allow? y/n" ;;
-    hermes) tpl[AI_DETAIL]="free · remembers · asks before risky commands" tpl[AI_ASK]="done" ;;
+    opencode) tpl[AI_DETAIL]="free · asks before each change" tpl[AI_ASK]="allow? y/n" ;;
+    hermes) tpl[AI_DETAIL]="free · remembers · changes files unasked" tpl[AI_ASK]="done" ;;
     *) tpl[AI_DETAIL]="patina ai on turns one on later" tpl[AI_ASK]="" tpl[AI_DEMO]=0.15 ;;
   esac
   render "$templates/calamares/ai.svg" "$tmp/agent-$id.svg"

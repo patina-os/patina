@@ -226,10 +226,11 @@ current_agent() {
 }
 
 # The AI agents the questions offer (`patina install`, `patina ai on`), one line each:
-# the agent, then what it is.
+# the agent, then what it is, and what choosing it means day to day: how often it
+# asks. "Asks before risky commands only" read as the safer of the two.
 agent_lines() {
-  printf '%-9s %s\n' opencode "opencode · free · asks before every change" \
-    hermes "Hermes Agent · free · remembers · asks before risky commands only"
+  printf '%-9s %s\n' opencode "opencode · free · asks before each change, looking is free" \
+    hermes "Hermes Agent · free · remembers · changes files and installs apps unasked"
 }
 
 # The bundle that answers the AI question with this mode and agent (its `ai` and `agent`

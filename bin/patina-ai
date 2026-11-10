@@ -25,10 +25,14 @@ usage: patina ai [status] | on [opencode|hermes] [local|cloud] | login | off | c
               stays in opencode's own login or Hermes' own .env, your own API's in a
               file only you can read. The welcome runs this as its first step
   on opencode ...
-              opencode, free, which asks before every change (the default)
+              opencode, free (the default): it asks before each change, on the machine
+              and in a connected service, and looks around without asking. Expect one
+              to a few questions per task
   on hermes ...
-              Hermes Agent, free, which remembers across conversations and asks first
-              only before a command it counts as dangerous; about 2 GB
+              Hermes Agent, free, which remembers across conversations. It changes
+              files, stops programs and installs apps without asking, and asks only
+              before what it counts as dangerous (deleting a folder, anything as
+              root); about 2 GB
   on          asks which on a terminal
   off         no agent: Meta+A, its launcher and \`ai\` in the command palette go away.
               What was installed stays; the end of the output says how to remove it
