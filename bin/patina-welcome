@@ -391,7 +391,8 @@ welcome() {
   echo
   # The first keys, as defaults/keybindings.yaml has them; the agent's once it is set up:
   # Meta+A where kortex came with an AI bundle (the start menu's "Ask kortex"), the
-  # agent in its terminal where an AI or the agents bundle put it there.
+  # agent's view (kortex's panel, or the agent in its terminal) where an AI or the
+  # agents bundle put it there.
   for action in launcher terminal ask agent keys; do
     [[ "$action" != ask || -e "${XDG_DATA_HOME:-$HOME/.local/share}/applications/patina-ask.desktop" ]] || continue
     [[ "$action" != agent || -e "${XDG_DATA_HOME:-$HOME/.local/share}/applications/patina-agent.desktop" ]] || continue
