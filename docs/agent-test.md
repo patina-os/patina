@@ -173,14 +173,16 @@ day; the test itself ran on 0.5.1.
 
 ## Changed after the record
 
-kortex's pull request 22 (for its release after 0.6.0) and the patina change that goes
-with it: Meta+A opens the conversation while a request runs or waits for an answer (it
+kortex's pull request 22 (in its release 0.7.0, pinned on 10 November 2026) and the
+patina change that goes with it: Meta+A opens the conversation while a request runs or waits for an answer (it
 opened an empty palette); the Thinking row shows the start of the last sentence the
 model finished, not half sentences from the end of what streamed in; no empty step row
 while a tool call is being written; failed requests say why in words, not urllib's;
 kortex asks the agent for news only while something is on screen or runs, not every
 0.7 seconds for a quarter of an hour after its last use. The driver and the stand-in
-services went to kortex's `tests/agent/`.
+services went to kortex's `tests/agent/`. The same release made the palette a
+conversation, the agent's steps in a panel docked at the screen's right edge (kortex's
+pull request 23, patina's 119), as the maintainer chose after the test.
 
 ## What the run could not show
 

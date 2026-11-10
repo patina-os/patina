@@ -18,6 +18,11 @@ All notable changes to patina are documented here. The format follows
 - Meta+A opens the command palette on the conversation while a request runs or waits
   for an answer, through kortex's `Open`; it opened an empty palette, and the waiting
   row was out of sight. Empty as before otherwise, and with a kortex older than `Open`.
+- kortex 0.7.0, which brings the two above (its `Panel` and `Open`). The row that says
+  how long shows the start of the last sentence the agent finished, not half sentences
+  that changed with every word; a failed request says why in words ("opencode is not
+  running"); kortex stops asking the agent for news once it is done and the palette
+  shows something else, where it asked every 0.7 s for a quarter of an hour.
 - kortex 0.6.0, the command palette's part of what the agent's test run changed. A
   question of the agent's is a row with its answers, where the palette stood at
   "Working" for good. Always is no longer offered on a row of `sudo`, `rm`, a shell
