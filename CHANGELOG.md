@@ -8,6 +8,9 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- Meta+A opens the command palette on the conversation while a request runs or waits
+  for an answer, through kortex's `Open`; it opened an empty palette, and the waiting
+  row was out of sight. Empty as before otherwise, and with a kortex older than `Open`.
 - kortex 0.6.0, the command palette's part of what the agent's test run changed. A
   question of the agent's is a row with its answers, where the palette stood at
   "Working" for good. Always is no longer offered on a row of `sudo`, `rm`, a shell

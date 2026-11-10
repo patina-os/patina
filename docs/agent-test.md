@@ -158,7 +158,6 @@ day; the test itself ran on 0.5.1.
 - **The `reads` lists** of the four presets were written from memory of the services'
   tool names, not checked against the real servers. A wrong name only means that tool
   asks.
-- **Meta+A** opens an empty palette while a request waits for an answer.
 - **Open-ended requests** ("update everything", "newest neovim", "tidy up") made the
   model wander through many commands. `agent.md` now tells it to stop; whether it does
   was not measured.
@@ -168,11 +167,20 @@ day; the test itself ran on 0.5.1.
   ("sudo with privilege flag"); `patina ai connect` does not check a token for it. A
   job it schedules through its own cron probably never runs, since kortex stops Hermes
   after a quiet quarter of an hour; that was not waited out.
-- **Smaller points:** the Thinking row shows half sentences of the model's reasoning;
-  an empty step row while a tool call is composed; raw error texts in the palette;
-  kortex asks the agent for news every 0.7 seconds for a quarter of an hour after its
-  last use; opencode is installed unpinned; the minimal bundle adds no Flathub remote,
-  so an agent concluded that an app "is not on Flathub".
+- **Smaller points:** opencode is installed unpinned, and the minimal bundle adds no
+  Flathub remote, so an agent concluded that an app "is not on Flathub"; both left as
+  they are by decision.
+
+## Changed after the record
+
+kortex's pull request 22 (for its release after 0.6.0) and the patina change that goes
+with it: Meta+A opens the conversation while a request runs or waits for an answer (it
+opened an empty palette); the Thinking row shows the start of the last sentence the
+model finished, not half sentences from the end of what streamed in; no empty step row
+while a tool call is being written; failed requests say why in words, not urllib's;
+kortex asks the agent for news only while something is on screen or runs, not every
+0.7 seconds for a quarter of an hour after its last use. The driver and the stand-in
+services went to kortex's `tests/agent/`.
 
 ## What the run could not show
 
@@ -186,10 +194,10 @@ day; the test itself ran on 0.5.1.
 
 ## To repeat it
 
-The test bed was not kept: a Debian 13 container with Plasma, a user with sudo, patina
-by Path A, a small script that calls kortex's `org.kde.krunner1` interface on a private
-session bus and prints the rows as they change (kortex's own `tests/e2e.py` does the
-same against a scripted model), and two stand-in MCP servers that keep their state in a
-JSON file and log every call. Stage a fault or seed the service, type the request,
+A Debian 13 container with Plasma, a user with sudo and patina by Path A (the container
+itself was not kept); the driver that calls kortex's `org.kde.krunner1` interface on a
+private session bus and prints the rows as they change, and two stand-in MCP servers
+that keep their state in a JSON file and log every call, both in kortex's
+`tests/agent/`, whose README says how to use them. Stage a fault or seed the service, type the request,
 answer the rows as a user would, and compare the machine or the state file before and
 after: what the agent says it did is not evidence.
