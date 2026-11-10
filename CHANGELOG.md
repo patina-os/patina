@@ -6,6 +6,8 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.14] - 2026-11-10
+
 ### Changed
 
 - kortex 0.7.2: the agent's panel (Meta+Shift+A) is an entry of its own in the taskbar,
@@ -1264,7 +1266,8 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.13...main
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.14...main
+[0.1.0-alpha.14]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.14
 [0.1.0-alpha.13]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.13
 [0.1.0-alpha.12]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.12
 [0.1.0-alpha.11]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.11
