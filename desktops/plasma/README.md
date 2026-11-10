@@ -233,7 +233,9 @@ there, so a run over SSH or in the screenshot session finds them unchanged as we
   behind them, and opens them above other windows without taking the keyboard;
   `patina-welcome` the welcome's window (class `patina-welcome`) at the size it asks
   kitty for, in characters, so btop has its 80 columns beside the welcome; neither
-  needs a screen. For
+  needs a screen. Both name a size (`1,1`) their "Do not affect" never applies, since
+  KWin reads a size rule without one as unused and deletes a rule left with nothing to
+  do. For
   `windows.opacity` below 100 a second rule that
   forces every normal window to that opacity, one share while active and one while not
   (100 by default: only kitty is see-through, by its own background)

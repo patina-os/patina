@@ -88,6 +88,12 @@ All notable changes to patina are documented here. The format follows
   marked "(now)". Pick the model once more with `patina ai login`. The list now holds
   only the chat models where the API says which (`modality`), not its image, embedding
   or speech models.
+- The welcome keeps the size it asks for, so btop draws beside it on a small screen
+  too, and kdialog's windows (the AI agent's sudo password) keep theirs. KWin reads a
+  rule that leaves a size alone without naming one as no rule at all: the size for new
+  windows took both (btop got 71 of its 80 columns on a 13" screen at 110%), and KWin
+  deleted the welcome's rule. Both rules now name a size they never apply; the next
+  `patina update` writes them.
 - A connected service no longer changes without a yes. opencode allows every tool its
   permissions do not name, and patina's named none of a service's: closing a ticket, a
   status change over a whole team and deleting a note for good ran without a row to
