@@ -82,11 +82,12 @@ jobs:
             /home/patina/.local/share/applications/org.kde.plasma-welcome.desktop
       - name: The desktop as pictures
         # The command palette's picture needs an answer, and CI has no model to give
-        # one: kortex's scripted demo model (docs/demo/demo_llm.py at a fixed commit,
-        # the one that recorded kortex's README animation) stands in for the cloud
-        # provider in opencode's configuration. It answers a request to install
-        # PhotoCraft by asking to run `patina install --bundles artcraft`, which waits
-        # for Allow once, Always or Deny. Everything else is real: kortex, opencode serve and
+        # one: kortex's scripted demo model (docs/demo/demo_llm.py at a fixed commit)
+        # stands in for the cloud provider in opencode's configuration. It answers a
+        # request to install PhotoCraft by saying it will install the artcraft bundle and
+        # asking to run `patina install --bundles artcraft`: a row in its words with the
+        # command under them, waiting for Allow once, Always or Deny. Everything else is
+        # real: kortex, opencode serve and
         # KRunner, which follows the conversation on kortex's own refresh alone; the step
         # fails when it never asks kortex again. Into the user's home: a path the upload
         # step reads unchanged inside the container, which the runner's temp directory is

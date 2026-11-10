@@ -37,9 +37,12 @@ release; the arm64 image stays in CI until its own install check.
 
 Meta+A and what you want, in your own words, or any search in the command palette or
 the start menu: [kortex](https://github.com/patina-os/kortex), patina's KRunner runner,
-hands the request to the AI agent you picked and shows the answer right in the command
-palette, and every action the agent asks about as its own line with Allow once, Always
-and Deny. It is made for three things:
+hands the request to the AI agent you picked and talks with you right in the command
+palette, as in a chat. Each change the agent wants to make asks first, in the agent's
+own words, with Allow once, Always and Deny; a step that deletes or runs as root shows
+its command under the words. Meta+Shift+A docks the agent's own view at the screen's
+right edge, every step and command, while you work on beside it. It is made for three
+things:
 
 - **Troubleshooting.** "Why is my wifi so slow?", "the printer stopped printing":
   the agent looks where a forum thread would send you (the journal, the network, the
@@ -49,8 +52,8 @@ and Deny. It is made for three things:
   together and changes it the patina way (`defaults/agent.md`).
 - **Working with an agent.** Scripts, projects, your servers, and the services you
   connect (Linear, Notion, GitHub, Nextcloud). Close the palette while it works and a
-  notification brings the answer back; Meta+Shift+A docks what the agent does at the
-  screen's right edge, every step, while you work on beside it.
+  notification brings the answer back, or says that the agent asks; Meta+A opens the
+  conversation on it.
 
 An agent can be wrong, a small local model more often: read what it proposes before
 you allow it. [opencode](https://opencode.ai) asks before each change and looks
@@ -85,10 +88,10 @@ split in two: the fastfetch greeting beside btop.
 
 The command palette in the same session, in the middle of the empty desktop, dark
 glass with a light hairline round it: `ai install photocraft`, kortex's answer through
-a real `opencode serve` beside kortex's green ▲, and the agent's request to run
-`patina install --bundles artcraft`, selected with a faint green tint and waiting for
-Allow once, Always or Deny. The model is kortex's scripted demo model, since CI has
-none to run.
+a real `opencode serve` beside kortex's green ▲, and the agent asking first in its own
+words, with `patina install --bundles artcraft` under them, selected with a faint green
+tint and waiting for Allow once, Always or Deny. The model is kortex's scripted demo
+model, since CI has none to run.
 
 ![KRunner with kortex in the middle of the desktop: the agent asks before it installs the artcraft bundle for PhotoCraft](docs/screenshots/command-palette-amd64.png)
 
@@ -356,17 +359,22 @@ for sudo to ask in: a password dialog in the theme's colours asks you, in the co
 palette right away and in the terminal from the next login after the agent was
 installed. Nothing stores the password. Press Meta+A and type your request, or type it
 into any search of the command palette (Meta+Space) or the start menu, which ends with
-"Ask kortex: …" (first when it reads as a question; `ai` and a request asks at once):
+"Ask kortex: …" (first when it reads as a question):
 [kortex](https://github.com/patina-os/kortex), a KRunner runner in a repository of its
 own (so it also serves other Plasma desktops), is where you talk to the agent, opencode
-or Hermes. While the agent works, the command palette says for how long and what it
-wrote or thought last, with a row for each step it takes, each on one line so the
-palette holds still; then it shows the answer, and every action the agent asks about
-with Allow once, Always and Deny. Close the palette and a notification says when the
-agent has answered; its Show opens the conversation again. `ai` alone lists the recent
-conversations, `kortex ›` shows the current one, and Open in
-terminal continues a conversation in the agent's own interface for longer work. Every AI answer installs it,
-from its tagged release.
+or Hermes, as in a chat. While the agent works, one line says for how long and what it
+wrote, thought or does last ("running a command"), so the palette holds still; then
+the answer comes. Each change the agent asks about is a row in its own words, which it
+writes first because `defaults/agent.md` tells it to, with Allow once, Always and Deny;
+a step that deletes, runs as root or the like shows its command under the words, since
+words can be wrong, and a step it did not explain shows as its command. Close the
+palette and a notification says when the agent asks or has answered; Meta+A or its
+Show opens the conversation again. `ai` alone lists the recent conversations and
+`kortex ›` shows the current one. The commands are in the panel: Meta+Shift+A, or Show
+what the agent does on the palette's row, opens the agent's own interface on the
+conversation in a terminal docked at the screen's right edge, full height and a fifth
+of its width, above your windows, so you go on working beside it; close it when you
+have seen enough. Every AI answer installs kortex, from its tagged release.
 
 ### Services
 
