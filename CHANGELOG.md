@@ -8,6 +8,30 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- The choice between the two agents says what each means day to day, in the install's
+  question, the installer's page, `patina ai` and the README: opencode asks before
+  each change and looks around without asking (one to a few questions per task);
+  Hermes changes files and installs apps without asking and asks only before what it
+  counts as dangerous. "Asks before risky commands only" read as the safer of the two.
+- A diagnosis no longer asks for every look. Commands that only look run without a
+  row to allow: `ls`, `ps`, `du`, `stat`, `ip addr`, `journalctl`, `dpkg -l`,
+  `apt-cache`, `nmcli device status`, `lpstat`, `patina doctor` and their like (the
+  list is `permission.bash` in `defaults/apps.yaml`), and so does reading under
+  `/etc`, `/usr`, `/proc`, `/sys`, `/run` and `/var/log`, which asked twice for one
+  command. Fixing apt's sources took 17 rows, and a user who has clicked Allow that
+  often no longer reads the row that matters. None of the commands prints a file's
+  content or the environment; a redirect, a pipe into a command not on the list, or
+  `sudo` asks as before.
+- The agent's instruction says more of what a test run showed it lacked: one plain
+  command per step and no scripts to find something out; to stop after about five
+  commands and say what it found; to name every file it deletes and to copy a file
+  before it overwrites it; to say what a Flatpak downloads and to install no release
+  binaries; that its services are the tools it has, and that a sign-in is the user's
+  to run.
+- `patina ai` names the services the agent has, and `patina ai connect` lists a server
+  of your own beside the presets.
+- Big Pickle's note says that its free limit is counted per network address and may be
+  used up on a shared one.
 - The welcome's first keys name Meta+A, "Ask kortex, the AI agent", where an AI agent
   is on, beside Meta+Shift+A for the agent in its terminal; it named only the terminal.
 - Touchpads scroll the natural way, as on a phone: the content follows the fingers, up
@@ -21,8 +45,49 @@ All notable changes to patina are documented here. The format follows
   emptied the rows for a moment, so Enter could find nothing to run. It opens on
   `kortex › `, with the space, so a follow-up is typed straight away.
 
+- The AI agent's instruction (`defaults/agent.md`) says four things a test run showed
+  it lacked: apt and flatpak get `-y`, since the agent has no terminal and a command
+  that asks stops (a removal cost a second Allow and password); "update" is Debian's
+  packages, the Flathub apps and `patina update`, which updates neither of the other
+  two; a machine with the minimal bundle has bash and no fish, so the agent checks
+  before it edits a shell's configuration; and an answer in the command palette is
+  plain text, which showed Markdown's tables and fences raw.
+
 ### Fixed
 
+- A connected service no longer changes without a yes. opencode allows every tool its
+  permissions do not name, and patina's named none of a service's: closing a ticket, a
+  status change over a whole team and deleting a note for good ran without a row to
+  allow. `patina ai connect`, and `patina install` for every server already under
+  `mcp`, now write rules that make a service's tools ask, with the ones that only read
+  allowed (`reads` in `defaults/services.yaml`); `patina ai disconnect` takes them out.
+- With Hermes too, a service's tools that change something ask first. Hermes asks only
+  before a command it counts as dangerous, and no tool of a service is one: in a test
+  run it made 13 changes to the services without a word, a note deleted for good and a
+  ticket taken from a colleague among them. The install now sets a hook of Hermes'
+  before every tool of a service (`patina ai gate`), which lets the preset's reading
+  tools pass and sends every other to Hermes' approval: a row to allow in the command
+  palette, with the tool and what it is given. A gate that cannot run stops the tool.
+- The agent no longer reads the files that hold a secret without asking: the services'
+  tokens, your own API's key, private SSH and GPG keys, password databases, opencode's
+  and Hermes' own key files. opencode's read tool ran freely on them, and with a cloud
+  model what it reads goes to the provider.
+- `patina ai connect linear` (and notion) says "is on" only once the sign-in in the
+  browser succeeded, restarts a running agent so it takes the sign-in, and needs a
+  terminal as the token services do: run by the agent it sat for two minutes, then was
+  tried again in the background. A service that refuses its token says so ("did not
+  answer (… 401)") in place of "is on". `patina ai disconnect` stops a running agent,
+  which kept the service and its token for up to a quarter of an hour.
+- A change of the AI agent's model reaches the command palette at once. kortex kept
+  the opencode server that had read the configuration as it was, so after `patina ai
+  on local` (or a `patina update` that changed the file) Meta+A went on asking the
+  cloud provider for up to a quarter of an hour, although "nothing leaves this
+  computer" had just been picked. `patina install` now stops a running kortex when it
+  rewrites opencode's configuration; the next request starts it with the new model.
+- `patina ai connect nextcloud` takes only an address for the address: "not a url"
+  was written into the agent's configuration and reported as on. A service's name is
+  read in any case (`patina ai connect GitHub`), and the list no longer says that the
+  agent runs the command for you, which it cannot for a service that takes a token.
 - `patina update` brings the start menu's restart button, beside shut down, to a
   machine installed before 0.1.0-alpha.13; that release brought it to new layouts only.
   A start menu whose power buttons you changed keeps them.

@@ -82,7 +82,9 @@ ai:
         note: >-
           Big Pickle runs at OpenCode Zen, a US service: what you ask leaves the EU and
           falls under US law, and while Big Pickle is free, it may be used to improve
-          the model, so ask it nothing private.
+          the model, so ask it nothing private. Its free limit is counted per network
+          address: behind a shared one (an office, a university, a VPN) it may be used
+          up before you ask.
       - id: anthropic
         name: "Anthropic (US, leaves the EU)"
         model: "anthropic/claude-sonnet-5-5"

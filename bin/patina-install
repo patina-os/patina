@@ -616,7 +616,7 @@ endpoint_value() {
 install_opencode() {
   local file="$HOME/.config/opencode/opencode.json" rules="$PATINA_PATH/defaults/agent.md"
   local keyfile="${XDG_CONFIG_HOME:-$HOME/.config}/patina/ai/custom.key"
-  local model local_tag="" provider="" url="" custom="" host="" tmp
+  local model local_tag="" provider="" url="" custom="" host="" tmp name
   if [[ "$ai" == local ]]; then
     local_tag="$(local_model)"
     [[ -n "$local_tag" ]] || die "no model of ai.local.models fits this machine"
@@ -660,8 +660,24 @@ install_opencode() {
     say "opencode: the $ai agent in $file"
     cp "$tmp" "$file"
     changed
+    # A running kortex keeps the server that read the file as it was, with the model
+    # it named then: a cloud one for up to a quarter of an hour after "local" was
+    # picked. It stops, and D-Bus starts it again at the next request.
+    pkill -TERM -u "$(id -u)" -f kortex/kortex.py || true
   fi
   rm -f "$tmp"
+  # The tools of every service the agent has (`mcp`) ask before they change something;
+  # one connected before patina wrote these rules, or by hand, gets them here.
+  for name in $(yq eval -r '.mcp // {} | keys | .[]' "$file" 2> /dev/null); do
+    tmp="$(mktemp)"
+    if service_permissions "$file" "$name" > "$tmp" 2> /dev/null && ! cmp -s "$tmp" "$file"; then
+      say "opencode: the tools of $name ask before they change something"
+      cp "$tmp" "$file"
+      changed
+      pkill -TERM -u "$(id -u)" -f kortex/kortex.py || true
+    fi
+    rm -f "$tmp"
+  done
   [[ "$ai" == cloud ]] || return 0
   if [[ -n "$url" ]]; then
     say "ai: opencode uses your own API at $url ($custom)"
@@ -681,6 +697,7 @@ install_opencode() {
 # API's entry gets the address and model patina ai login recorded.
 install_hermes() {
   local home="${HERMES_HOME:-$HOME/.hermes}" provider="" entry key="" url="" tmp
+  local gate="$PATINA_PATH/bin/patina ai gate" allowed="${HERMES_HOME:-$HOME/.hermes}/shell-hooks-allowlist.json"
   local file="$home/config.yaml" settings="$PATINA_PATH/defaults/settings.yaml"
   if [[ "$ai" == local ]]; then
     [[ -n "$(local_model)" ]] || die "no model of ai.local.models fits this machine"
@@ -703,8 +720,13 @@ install_hermes() {
   [[ -s "$file" ]] || echo '{}' > "$file"
   tmp="$(mktemp)"
   # The model entry as a whole, so nothing of another provider (its address) stays behind.
-  if ! ENTRY="$entry" RULES="$(< "$PATINA_PATH/defaults/agent.md")" yq eval \
-      '.model = (strenv(ENTRY) | from_json) | .approvals.mode = "manual" | .agent.environment_hint = strenv(RULES)' \
+  # The gate: Hermes' hook before every tool of a service (`patina ai gate`), which
+  # sends the ones that change something to its approval. It fails closed: a gate
+  # that cannot run stops the tool, it does not let it through.
+  if ! ENTRY="$entry" RULES="$(< "$PATINA_PATH/defaults/agent.md")" GATE="$gate" yq eval \
+      '.model = (strenv(ENTRY) | from_json) | .approvals.mode = "manual" | .agent.environment_hint = strenv(RULES) |
+       .hooks.pre_tool_call = ([.hooks.pre_tool_call // [] | .[] | select(.command != strenv(GATE))] +
+         [{"matcher": "mcp__.*|tool_call", "command": strenv(GATE), "timeout": 20, "fail_closed": true}])' \
       "$file" > "$tmp" 2> /dev/null; then
     warn "hermes: cannot parse $file; set model, approvals.mode and agent.environment_hint by hand"
     rm -f "$tmp"
@@ -718,6 +740,23 @@ install_hermes() {
     changed
   fi
   rm -f "$tmp"
+  # Hermes runs a hook only once it is allowed, which it asks on a terminal; its gateway
+  # has none, so the gate is named in the list it keeps of the hooks allowed.
+  [[ -s "$allowed" ]] || echo '{}' > "$allowed"
+  if ! GATE="$gate" yq eval -e '.approvals // [] | any_c(.event == "pre_tool_call" and .command == strenv(GATE))' \
+      "$allowed" > /dev/null 2>&1; then
+    tmp="$(mktemp)"
+    if GATE="$gate" yq eval -o=json -I=2 '.approvals = (.approvals // []) + [{"event": "pre_tool_call", "command": strenv(GATE)}]' \
+        "$allowed" > "$tmp" 2> /dev/null; then
+      say "hermes: the tools of a service ask before they change something"
+      cp "$tmp" "$allowed"
+      changed
+    else
+      warn "hermes: cannot parse $allowed; a service's tools will not ask"
+      failed=1
+    fi
+    rm -f "$tmp"
+  fi
   [[ "$ai" == cloud ]] || return 0
   if [[ -n "$url" ]]; then
     say "ai: Hermes uses your own API at $url ($(endpoint_value model))"

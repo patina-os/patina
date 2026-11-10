@@ -53,9 +53,11 @@ and Deny. It is made for three things:
   terminal for longer work.
 
 An agent can be wrong, a small local model more often: read what it proposes before
-you allow it. [opencode](https://opencode.ai) asks before every change;
-[Hermes Agent](https://github.com/NousResearch/hermes-agent) remembers you and asks only
-before a command it counts as dangerous. Both are free software, with a model on your
+you allow it. [opencode](https://opencode.ai) asks before each change and looks
+around without asking: expect one to a few questions per task.
+[Hermes Agent](https://github.com/NousResearch/hermes-agent) remembers you, changes
+files and installs apps without asking, and asks only before a command it counts as
+dangerous. Both are free software, with a model on your
 machine or from a cloud provider you pick, once you turn one on;
 [The AI agent](#the-ai-agent) says more.
 
@@ -287,7 +289,9 @@ as does patina's welcome, which offers it again at each login.
 Both are free software:
 
 - **[opencode](https://opencode.ai)** (MIT), the default agent: it asks before every
-  change.
+  change, on the machine and in a connected service, and runs commands that only look
+  (`ls`, `ps`, `journalctl`) without asking. Asking more is the safer choice, and the
+  one to take when you cannot judge afterwards what an agent did.
 - **[Hermes Agent](https://github.com/NousResearch/hermes-agent)** (MIT, Nous
   Research): it remembers across conversations, and asks first only before a command
   it counts as dangerous (deleting a folder, formatting a disk, piping a download into
@@ -380,13 +384,19 @@ an app password.
 
 ```sh
 patina ai connect               # the presets, and which are on
-patina ai connect linear        # sign in through the browser
+patina ai connect linear        # sign in through the browser, on a terminal
 patina ai connect nextcloud     # asks for the address, user and app password
 patina ai disconnect linear
 ```
 
-Ask the agent to connect one and it runs the same command; a token it leaves to you on a
-terminal, so it never sees one. Tokens are kept readable by you only, in
+Ask the agent to connect one and it tells you the command to run: the sign-in in the
+browser and the token are yours to give, on a terminal, so the agent never sees a
+token. With either agent, a service's tools that change something (a ticket filed, a
+note deleted) ask first, as a command does, with what they are given; the ones that
+only read run without asking (`reads` in `defaults/services.yaml`), and a server of
+your own asks for every tool. opencode does this through its permissions; Hermes,
+which by itself asks before no tool of a service, through a hook patina sets
+(`patina ai gate`). Tokens are kept readable by you only, in
 `~/.config/patina/services/` for opencode and in Hermes' own `~/.hermes/.env`, and the
 agent's configuration names them, never the token itself. A service connected while
 the agent works reaches opencode at once through kortex, and Hermes from its next

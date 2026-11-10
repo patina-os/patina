@@ -44,7 +44,12 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   `${TOKEN_FILE}` and `${<KEY>}` are filled in. opencode's entry names the token file
   (`{file:...}`), Hermes' a line of its own `~/.hermes/.env` (`${PATINA_<NAME>_TOKEN}`),
   so no token is in a configuration; `patina doctor` reports a token file that is
-  gone, which would stop opencode from starting.
+  gone, which would stop opencode from starting. `reads` lists the service's tools
+  that only read, as patterns on the tool's name: opencode runs them without asking
+  and asks before every other tool of the service (`permission."<name>_*"`, written
+  by `patina ai connect` and `patina install` for every server under `mcp`). Hermes
+  gets the same through its `pre_tool_call` hook, `patina ai gate`, which reads `reads`
+  at each call.
 - `agent.md`: the AI agent's standing instruction, in the agent's own language: what
   machine it runs on, how a patina desktop is changed (patina's commands, then
   `kwriteconfig6`, apt and Flathub), and that it explains and asks before a change. The
