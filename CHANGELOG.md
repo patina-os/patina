@@ -8,6 +8,8 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- kortex 0.7.2: the agent's panel (Meta+Shift+A) is an entry of its own in the taskbar,
+  with kortex's mark, no longer one more kitty window under kitty's icon.
 - Claude Desktop's icon in the bar and the start menu is Claude's spark in white, its
   own tray icon from its package (black in the light mode), in place of a sun, the
   nearest glyph Papirus has. Nothing of it is kept in patina: the renderer takes the
