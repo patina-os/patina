@@ -21,6 +21,14 @@ All notable changes to patina are documented here. The format follows
   emptied the rows for a moment, so Enter could find nothing to run. It opens on
   `kortex › `, with the space, so a follow-up is typed straight away.
 
+- The AI agent's instruction (`defaults/agent.md`) says four things a test run showed
+  it lacked: apt and flatpak get `-y`, since the agent has no terminal and a command
+  that asks stops (a removal cost a second Allow and password); "update" is Debian's
+  packages, the Flathub apps and `patina update`, which updates neither of the other
+  two; a machine with the minimal bundle has bash and no fish, so the agent checks
+  before it edits a shell's configuration; and an answer in the command palette is
+  plain text, which showed Markdown's tables and fences raw.
+
 ### Fixed
 
 - A change of the AI agent's model reaches the command palette at once. kortex kept
