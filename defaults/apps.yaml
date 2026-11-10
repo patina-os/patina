@@ -19,11 +19,35 @@ opencode:
   # OpenAI-compatible endpoint on this machine and the model Ollama's own opencode guide
   # names. Which model opencode uses, the model that fits this machine's memory and the
   # instructions (defaults/agent.md) come from the AI step of `patina install`, which
-  # knows the answer to its question. Permissions: reading runs freely (opencode's own
-  # read, list and search tools), anything that changes files, runs a command (ssh to a
-  # server included) or fetches a web page asks first; a few read-only commands are
-  # allowed. The last matching rule wins, so "*" comes first and the redirect rule last:
-  # opencode matches the whole command, so "df *" alone would also allow "df > ~/.profile".
+  # knows the answer to its question.
+  #
+  # Permissions: anything that changes files, runs a command (ssh to a server included)
+  # or fetches a web page asks first. What runs without asking:
+  # - opencode's own read, list and search tools, but not on the files that hold a
+  #   secret (`read`): the agent's and the services' tokens, private keys, password
+  #   databases. With a cloud model, what the agent reads goes to its provider.
+  # - Reading under the system's own directories (`external_directory`); a change
+  #   there still asks, as an edit or a command does.
+  # - Commands that only look (`bash`): a diagnosis of a dozen steps asked a dozen
+  #   times, and a user who has clicked Allow that often no longer reads the row that
+  #   matters. None of them prints a file's content (no cat, head, grep: they would
+  #   read the secrets `read` keeps back) or the environment, and none takes an
+  #   option that writes a file (git log --output does, so it is not here). "x *"
+  #   also matches a bare "x"; a rule without the space ("id*") matches other commands.
+  # A rule taken out of this list stays in a file written before, after the redirect
+  # rule, where it would allow its command with a redirect: rename or drop one only
+  # with a migration that removes it ("lsblk*" keeps its name for that reason).
+  # The last matching rule wins, so "*" comes first and the redirect rule last:
+  # opencode matches each command of a line by itself, with its redirect, so "df *"
+  # alone would also allow "df > ~/.profile". The redirect rule also holds back the
+  # harmless "2>/dev/null", which is why the instruction asks for plain commands.
+  # Known gap (opencode 1.19): a redirect on a group or subshell is no part of the
+  # command inside, so "(df -h) > file" writes without asking, and a line that is only
+  # a redirect ("> file") asks nothing whatever the rules say. No rule here can close
+  # either; they matter when a model is steered by text it read somewhere.
+  # A service's tools (MCP) ask through rules `patina ai connect` and `patina install`
+  # write for each server in `mcp`: "<service>_*" asks, the service's `reads`
+  # (defaults/services.yaml) are allowed.
   requires:
     upstream: opencode
   file: ~/.config/opencode/opencode.json
@@ -41,16 +65,117 @@ opencode:
     permission:
       edit: ask
       webfetch: ask
-      external_directory: ask
+      read:
+        "*": allow
+        "*.env": ask
+        "*.env.*": ask
+        "*.env.example": allow
+        "*.token": deny
+        "*.key": deny
+        "*.kdbx": deny
+        "*/.ssh/id_*": deny
+        "*/.gnupg/*": deny
+        "*/opencode/auth.json": deny
+        "*/.hermes/.env": deny
+      external_directory:
+        "*": ask
+        "/etc/*": allow
+        "/usr/*": allow
+        "/proc/*": allow
+        "/sys/*": allow
+        "/run/*": allow
+        "/var/log/*": allow
+        "/var/lib/dpkg/*": allow
       bash:
         "*": ask
+        # the machine
         "df *": allow
+        "du *": allow
         "free *": allow
-        "git status*": allow
         "lsblk*": allow
+        "findmnt *": allow
+        "mount": allow
+        "uname *": allow
+        "uptime *": allow
+        "date": allow
+        "hostname": allow
+        "whoami": allow
+        "id *": allow
+        "locale *": allow
+        "lscpu *": allow
+        "lsusb *": allow
+        "lspci *": allow
+        "lsmod *": allow
+        "sensors *": allow
+        # files, by name and size only
+        "ls *": allow
+        "stat *": allow
+        "pwd": allow
+        "which *": allow
+        "command -v *": allow
+        "type *": allow
+        "echo *": allow
+        # what runs
+        "ps *": allow
+        "pgrep *": allow
+        "top -bn1*": allow
+        "systemctl status *": allow
+        "systemctl --user status *": allow
+        "systemctl is-active *": allow
+        "systemctl is-enabled *": allow
+        "systemctl list-units*": allow
+        "systemctl list-timers*": allow
+        "systemctl --failed *": allow
+        "journalctl *": allow
+        # the network, printing, sound, Bluetooth
+        "ip addr": allow
+        "ip addr show*": allow
+        "ip address show*": allow
+        "ip route": allow
+        "ip route show*": allow
+        "ip -br *": allow
+        "ss *": allow
+        "getent *": allow
+        "ping -c *": allow
+        "resolvectl status*": allow
+        "nmcli": allow
+        "nmcli general status*": allow
+        "nmcli device status*": allow
+        "nmcli device show*": allow
+        "nmcli device wifi list*": allow
+        "nmcli connection show*": allow
+        "rfkill list*": allow
+        "lpstat *": allow
+        "pactl info*": allow
+        "pactl list*": allow
+        "wpctl status*": allow
+        "bluetoothctl show*": allow
+        "bluetoothctl devices*": allow
+        # packages
+        "dpkg -l*": allow
+        "dpkg -s *": allow
+        "dpkg -L *": allow
+        "dpkg-query *": allow
+        "apt list*": allow
+        "apt policy*": allow
+        "apt-cache *": allow
+        "apt-get -s *": allow
+        "flatpak list*": allow
+        "flatpak info *": allow
+        "flatpak remotes*": allow
+        "flatpak history*": allow
+        # the desktop and patina
+        "kreadconfig6 *": allow
+        "git status*": allow
+        "patina help*": allow
+        "patina version*": allow
+        "patina --version": allow
+        "patina -V": allow
         "patina doctor*": allow
         "patina keys*": allow
         "patina theme list*": allow
-        "systemctl status *": allow
-        "uname *": allow
+        "patina theme current*": allow
+        "patina install --list*": allow
+        "patina ai status*": allow
+        "patina ai connect": allow
         "*>*": ask

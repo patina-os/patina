@@ -158,6 +158,23 @@ PATINA_THEMES="${XDG_CONFIG_HOME:-$HOME/.config}/patina/themes"
 
 # The directory of a theme: the repository's themes/ first, then the installed ones.
 # Entries starting with _ are templates.
+# opencode's file with the permission rules for one MCP server's tools, on stdout:
+# service_permissions <opencode.json> <name>. "<name>_*" asks, and the tools the
+# service's preset names as reading only (`reads` in defaults/services.yaml) are
+# allowed; a server that is no preset asks for all of its tools. The last matching
+# rule wins, so the reads come after the ask. Without a rule opencode allows a tool,
+# and a service's change (a ticket closed, a note deleted) ran without a yes.
+service_permissions() {
+  local reads
+  reads="$(N="$2" yq eval -o=json -I=0 '.[strenv(N)].reads // []' "$PATINA_PATH/defaults/services.yaml")"
+  # shellcheck disable=SC2016 # $all and $r are yq's variables
+  N="$2" READS="$reads" yq eval -o=json -I=2 '
+    .permission = ((.permission // {}) | with_entries(select(.key | test("^" + strenv(N) + "_") | not))) |
+    .permission[strenv(N) + "_*"] = "ask" |
+    . as $all | ((strenv(READS) | from_json | .[]) as $r ireduce ($all; .permission[strenv(N) + "_" + $r] = "allow"))
+  ' "$1"
+}
+
 theme_dir() {
   local d
   [[ "$1" =~ ^[a-z0-9][a-z0-9-]*$ ]] || return 1

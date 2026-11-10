@@ -65,6 +65,19 @@ status() {
       ;;
     *) say "ai: none; patina ai on turns it on" ;;
   esac
+  [[ "$ai" == none ]] || connected
+}
+
+# The services the agent has, on one line of status.
+connected() {
+  local names=""
+  if [[ -f "$opencode_file" ]]; then
+    names="$(yq eval -r '.mcp // {} | keys | join(", ")' "$opencode_file" 2> /dev/null || true)"
+  fi
+  if [[ -z "$names" && -f "$hermes_file" ]]; then
+    names="$(yq eval '.mcp_servers // {} | keys | join(", ")' "$hermes_file" 2> /dev/null || true)"
+  fi
+  say "ai: services: ${names:-none; patina ai connect lists them}"
 }
 
 on() {
@@ -362,11 +375,18 @@ services_list() {
     fi
     printf '  %-10s %-4s %s\n' "$name" "$state" "$(yq eval ".\"$name\".description" "$services")"
   done
-  say "ai: patina ai connect <service> turns one on; one that takes a token asks for it on a terminal"
+  # What the agent has beside patina's presets: a server added by hand, or by the agent.
+  if [[ -f "$opencode_file" ]]; then
+    for name in $(yq eval -r '.mcp // {} | keys | .[]' "$opencode_file" 2> /dev/null); do
+      yq eval -e ".\"$name\"" "$services" > /dev/null 2>&1 ||
+        printf '  %-10s %-4s %s\n' "$name" on "your own · in $opencode_file"
+    done
+  fi
+  say "ai: patina ai connect <service> turns one on, on a terminal: it signs in or asks for a token there"
 }
 
 connect() {
-  local name="${1:-}" sign_in entry key prompt value token="" i
+  local name="${1:-}" sign_in entry key prompt value token="" i why
   local -a fills=()
   if [[ -z "$name" ]]; then
     services_list
@@ -382,6 +402,10 @@ connect() {
     [[ -t 0 && -t 1 ]] ||
       die "$name needs you at a terminal: run 'patina ai connect $name' there. It asks for $(yq eval ".\"$name\".token" "$services"); the agent never sees it"
   fi
+  # A sign-in in the browser waits for the user as long as it takes; the agent's
+  # commands end after two minutes, and it then tried again behind the user's back.
+  [[ "$sign_in" != browser || ( -t 0 && -t 1 ) ]] ||
+    die "$name signs in through your browser: run 'patina ai connect $name' on a terminal and finish the sign-in there"
   while IFS=$'\t' read -r key prompt; do
     [[ -n "$key" ]] || continue   # yq prints an empty line for a preset without questions
     read -rp "$prompt: " value < /dev/tty
@@ -406,11 +430,22 @@ connect() {
     fi
     for ((i = 0; i < ${#fills[@]}; i += 2)); do entry="$(fill "$entry" "${fills[i]}" "${fills[i + 1]}")"; done
     NAME="$name" ENTRY="$entry" write_config "$opencode_file" json '.mcp[strenv(NAME)] = (strenv(ENTRY) | from_json)' || true
-    say "ai: $name is on for opencode; kortex hands it to a running agent at once"
+    service_rules "$name"
     if [[ "$sign_in" == browser ]]; then
       say "ai: sign in to $name in the browser; opencode keeps the sign-in, patina never sees it"
-      opencode mcp auth "$name" || say "ai: not signed in; later: opencode mcp auth $name"
+      if opencode mcp auth "$name"; then
+        say "ai: $name is on for opencode"
+      else
+        say "ai: $name is set up for opencode but not signed in; later: opencode mcp auth $name"
+      fi
+      # A running agent took the service before the sign-in and would keep it unsigned.
+      pkill -TERM -u "$(id -u)" -f kortex/kortex.py || true
+    elif why="$(refused "$name")"; then
+      warn "ai: $name is set up for opencode, but it did not answer ($why); check what you entered and run 'patina ai connect $name' again"
+    else
+      say "ai: $name is on for opencode; kortex hands it to a running agent at once"
     fi
+    say "ai: its tools that change something ask first, in the command palette and the terminal"
   fi
   if [[ -f "$hermes_file" ]]; then
     entry="$(yq eval -o=json -I=0 ".\"$name\".hermes" "$services")"
@@ -425,12 +460,34 @@ connect() {
   fi
 }
 
+# The rules that make a service's tools ask (service_permissions): service_rules <name>.
+service_rules() {
+  local tmp
+  tmp="$(mktemp)"
+  if service_permissions "$opencode_file" "$1" > "$tmp" 2> /dev/null && ! cmp -s "$tmp" "$opencode_file"; then
+    cp "$tmp" "$opencode_file"
+  fi
+  rm -f "$tmp"
+}
+
+# Whether a service just connected did not answer: opencode's own list says which do
+# not, with the reason on the line after (a token the service refuses, an address that
+# is no Nextcloud). Prints the reason and succeeds when it did not: refused <name>.
+refused() {
+  local out
+  out="$(opencode mcp list 2> /dev/null | sed 's/\x1b\[[0-9;]*m//g')" || return 1
+  grep -q " $1 failed" <<< "$out" || return 1
+  grep -A1 -m1 " $1 failed" <<< "$out" | tail -n 1 | sed 's/^[^[:alnum:]]*//'
+}
+
 disconnect() {
   local name="${1:-}" off=0
   [[ -n "$name" ]] || die "disconnect needs a service; patina ai connect lists them"
   name="${name,,}"
   [[ -f "$opencode_file" || -f "$hermes_file" ]] || die "no AI agent on this machine"
-  if [[ -f "$opencode_file" ]] && NAME="$name" write_config "$opencode_file" json 'del(.mcp[strenv(NAME)])'; then
+  if [[ -f "$opencode_file" ]] && NAME="$name" write_config "$opencode_file" json '
+      del(.mcp[strenv(NAME)]) |
+      with(select(has("permission")); .permission |= with_entries(select(.key | test("^" + strenv(NAME) + "_") | not)))'; then
     off=1
     if [[ "$(yq eval ".\"$name\".sign_in // \"\"" "$services")" == browser ]] && command -v opencode > /dev/null; then
       opencode mcp logout "$name" > /dev/null 2>&1 || true
@@ -447,7 +504,9 @@ disconnect() {
   rm -f "$tokens/$name.token"
   hermes_env "PATINA_${name^^}_TOKEN"
   if [[ $off -eq 1 ]]; then
-    say "ai: $name is off; a running agent keeps it until kortex restarts it (a quiet quarter of an hour)"
+    # A running agent would keep the service, and its token, until it next starts.
+    pkill -TERM -u "$(id -u)" -f kortex/kortex.py || true
+    say "ai: $name is off"
   else
     say "ai: $name was not on"
   fi

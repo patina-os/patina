@@ -616,7 +616,7 @@ endpoint_value() {
 install_opencode() {
   local file="$HOME/.config/opencode/opencode.json" rules="$PATINA_PATH/defaults/agent.md"
   local keyfile="${XDG_CONFIG_HOME:-$HOME/.config}/patina/ai/custom.key"
-  local model local_tag="" provider="" url="" custom="" host="" tmp
+  local model local_tag="" provider="" url="" custom="" host="" tmp name
   if [[ "$ai" == local ]]; then
     local_tag="$(local_model)"
     [[ -n "$local_tag" ]] || die "no model of ai.local.models fits this machine"
@@ -666,6 +666,18 @@ install_opencode() {
     pkill -TERM -u "$(id -u)" -f kortex/kortex.py || true
   fi
   rm -f "$tmp"
+  # The tools of every service the agent has (`mcp`) ask before they change something;
+  # one connected before patina wrote these rules, or by hand, gets them here.
+  for name in $(yq eval -r '.mcp // {} | keys | .[]' "$file" 2> /dev/null); do
+    tmp="$(mktemp)"
+    if service_permissions "$file" "$name" > "$tmp" 2> /dev/null && ! cmp -s "$tmp" "$file"; then
+      say "opencode: the tools of $name ask before they change something"
+      cp "$tmp" "$file"
+      changed
+      pkill -TERM -u "$(id -u)" -f kortex/kortex.py || true
+    fi
+    rm -f "$tmp"
+  done
   [[ "$ai" == cloud ]] || return 0
   if [[ -n "$url" ]]; then
     say "ai: opencode uses your own API at $url ($custom)"

@@ -8,6 +8,25 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- A diagnosis no longer asks for every look. Commands that only look run without a
+  row to allow: `ls`, `ps`, `du`, `stat`, `ip addr`, `journalctl`, `dpkg -l`,
+  `apt-cache`, `nmcli device status`, `lpstat`, `patina doctor` and their like (the
+  list is `permission.bash` in `defaults/apps.yaml`), and so does reading under
+  `/etc`, `/usr`, `/proc`, `/sys`, `/run` and `/var/log`, which asked twice for one
+  command. Fixing apt's sources took 17 rows, and a user who has clicked Allow that
+  often no longer reads the row that matters. None of the commands prints a file's
+  content or the environment; a redirect, a pipe into a command not on the list, or
+  `sudo` asks as before.
+- The agent's instruction says more of what a test run showed it lacked: one plain
+  command per step and no scripts to find something out; to stop after about five
+  commands and say what it found; to name every file it deletes and to copy a file
+  before it overwrites it; to say what a Flatpak downloads and to install no release
+  binaries; that its services are the tools it has, and that a sign-in is the user's
+  to run.
+- `patina ai` names the services the agent has, and `patina ai connect` lists a server
+  of your own beside the presets.
+- Big Pickle's note says that its free limit is counted per network address and may be
+  used up on a shared one.
 - The welcome's first keys name Meta+A, "Ask kortex, the AI agent", where an AI agent
   is on, beside Meta+Shift+A for the agent in its terminal; it named only the terminal.
 - Touchpads scroll the natural way, as on a phone: the content follows the fingers, up
@@ -31,6 +50,22 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- A connected service no longer changes without a yes. opencode allows every tool its
+  permissions do not name, and patina's named none of a service's: closing a ticket, a
+  status change over a whole team and deleting a note for good ran without a row to
+  allow. `patina ai connect`, and `patina install` for every server already under
+  `mcp`, now write rules that make a service's tools ask, with the ones that only read
+  allowed (`reads` in `defaults/services.yaml`); `patina ai disconnect` takes them out.
+- The agent no longer reads the files that hold a secret without asking: the services'
+  tokens, your own API's key, private SSH and GPG keys, password databases, opencode's
+  and Hermes' own key files. opencode's read tool ran freely on them, and with a cloud
+  model what it reads goes to the provider.
+- `patina ai connect linear` (and notion) says "is on" only once the sign-in in the
+  browser succeeded, restarts a running agent so it takes the sign-in, and needs a
+  terminal as the token services do: run by the agent it sat for two minutes, then was
+  tried again in the background. A service that refuses its token says so ("did not
+  answer (… 401)") in place of "is on". `patina ai disconnect` stops a running agent,
+  which kept the service and its token for up to a quarter of an hour.
 - A change of the AI agent's model reaches the command palette at once. kortex kept
   the opencode server that had read the configuration as it was, so after `patina ai
   on local` (or a `patina update` that changed the file) Meta+A went on asking the

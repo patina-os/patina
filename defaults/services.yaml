@@ -10,10 +10,15 @@
 # configuration. `ask` lists the other values the terminal asks for (one whose key is HOST
 # is an address and must start with https:// or http://); ${TOKEN_FILE} and
 # ${<KEY>} fill the entries. Linear, Notion and GitHub are US services, never on by
-# default.
+# default. `reads` lists the service's tools that only read, as opencode's patterns on a
+# tool's name: they run without asking, every other tool of the service asks first
+# (`service_permissions` in bin/lib.sh writes the rules into opencode's file). A
+# pattern that matches no tool does no harm, the tool then asks; one too wide lets a
+# change through, so a pattern starts with the verb, never `*list*`.
 linear:
   description: Linear · issues and projects
   sign_in: browser
+  reads: ["list_*", "get_*", "search_*"]
   opencode:
     type: remote
     url: https://mcp.linear.app/mcp
@@ -23,6 +28,7 @@ linear:
 notion:
   description: Notion · pages and databases
   sign_in: browser
+  reads: ["notion-search", "notion-fetch", "notion-get-*"]
   opencode:
     type: remote
     url: https://mcp.notion.com/mcp
@@ -32,6 +38,7 @@ notion:
 github:
   description: GitHub · repositories, issues and pull requests
   sign_in: token
+  reads: ["get_*", "list_*", "search_*"]
   token: >-
     a fine-grained personal access token, made at
     https://github.com/settings/personal-access-tokens
@@ -50,6 +57,7 @@ nextcloud:
   # makes none of its own. Calendar and tasks, notes, files, contacts, Deck and more.
   description: Nextcloud · calendar and tasks, notes, files, contacts
   sign_in: token
+  reads: ["nc_*_get_*", "nc_*_list_*", "nc_*_search_*"]
   token: an app password, made in your Nextcloud under Settings › Security
   ask:
     - key: HOST

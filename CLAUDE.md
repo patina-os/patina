@@ -95,7 +95,12 @@ packs. Audience: developers and privacy-minded users in the EU.
   root with `sudo -A`, through a password dialog in the theme's colours. The services it works
   with are MCP presets (Linear, Notion, GitHub, Nextcloud), off until `patina ai
   connect` turns one on; a token is asked for on a terminal and kept in a file only the
-  user can read (October 2026). Its place in the command
+  user can read (October 2026). A service's tools that change something ask first, as
+  a command does, through rules `patina ai connect` and the install write for every
+  server; the ones a preset names as reading only (`reads`) do not, and neither do
+  commands that only look, a list in `defaults/apps.yaml` (November 2026, after a test
+  run in which a diagnosis asked up to twenty times and a service's change not once).
+  Its place in the command
   palette is kortex, a KRunner runner kept in a repository of its own
   (`patina-os/kortex`), which may use what patina's tooling may not (it is Python);
   every AI bundle installs its tagged release, pinned in `manifest/upstream.yaml`. Any
