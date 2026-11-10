@@ -117,12 +117,20 @@ packs. Audience: developers and privacy-minded users in the EU.
   kortex's place later. No `ai` to type (November 2026, after the first run on real
   hardware): any search in the command palette ends with that row too, first when it
   reads as a question; Meta+A (the `ask` action, the AI folder's entry) opens the
-  command palette on the agent alone and Meta+Shift+A the agent in its terminal.
-  While the agent works, the palette's rows are one line each, so its window holds
-  still: how long it has been at it and what it wrote or thought last, and a row per
-  step (the last four); the answer comes once it is done (November 2026, after the
-  window grew and shrank with each refresh as the answer streamed into one row). With
-  the palette closed a notification follows the request to its answer.
+  command palette on the agent alone and Meta+Shift+A the panel. While the agent
+  works, the palette's row that says so is one line, so its window holds still: how
+  long it has been at it and what it wrote, thought or does last; the answer comes
+  once it is done (November 2026, after the window grew and shrank with each refresh
+  as the answer streamed into one row). With the palette closed a notification
+  follows the request to its answer. The palette is a conversation, as in a chat: no
+  row per step, and a row that asks in the agent's own words, `agent.md` telling it
+  to explain each change first; a command that deletes, runs as root or the like
+  shows under the words, since the test run saw words that were wrong, and a step
+  not explained shows as its command. The steps are in the panel: the agent's own
+  interface on the conversation in a terminal kortex docks at the screen's right
+  edge, full height and a fifth of the width (480 to 720 px), above other windows, so
+  the user works on beside it; Meta+Shift+A and the palette's Show what the agent
+  does open it (November 2026, chosen by the maintainer after the agent test).
 - Look: the default theme is aurora, made for OLED screens (October 2026, after the
   redesign whose eight directions `docs/design/futures.html` keeps): true black with
   panels one step above it, neon green as the accent and violet as the second colour.

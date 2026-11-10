@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Agent (${AGENT})
+Comment=What the agent does, beside your work: its own view of the conversation, docked at the right edge
+Exec=sh -c "dbus-send --session --print-reply --dest=io.github.patina_os.kortex /runner io.github.patina_os.kortex.Panel > /dev/null 2>&1 || exec kitty --config '${CONFIG_HOME}/kitty/patina-agent.conf' --class patina-agent --title agent ${AGENT_COMMAND}"
+Icon=utilities-terminal
+Terminal=false
+Categories=Development;
+Keywords=agent;ai;terminal;
+StartupWMClass=patina-agent

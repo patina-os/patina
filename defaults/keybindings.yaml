@@ -11,7 +11,7 @@ actions:
   browser: Meta+B          # the default web browser
   files: Meta+E            # the file manager
   ask: Meta+A              # the command palette on the AI agent alone; with an AI bundle
-  agent: Meta+Shift+A      # the agent in its own terminal profile; with an AI or the agents bundle
+  agent: Meta+Shift+A      # kortex's panel, the agent's steps docked right; else its terminal
   close-window: Meta+Q
   overview: Meta+Tab       # all windows and desktops at a glance
   lock-screen: Meta+L
@@ -24,7 +24,7 @@ names:
   browser: Open the web browser
   files: Open the file manager
   ask: Ask kortex, the AI agent
-  agent: Open the AI agent in a terminal
+  agent: Show what the AI agent does, docked right
   close-window: Close the window
   overview: Show all windows and desktops
   lock-screen: Lock the screen
