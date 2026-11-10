@@ -445,7 +445,11 @@ jobs:
           [[ "$(yq eval '.agent.environment_hint' "$config")" == "$(cat defaults/agent.md)" ]]
           [[ "$(cat "$HOME/.config/kortex/agent")" == hermes ]]
           [[ "$(cat "$HOME/.local/state/patina/ai-agent")" == hermes ]]
-          bin/patina ai | grep -q 'ai: hermes, cloud'
+          # Into a file: status says more after this line, and grep -q closing the
+          # pipe at its first match ends patina with SIGPIPE, which pipefail reports.
+          bin/patina ai > hermes-status.txt
+          grep -q 'ai: hermes, cloud' hermes-status.txt
+          grep -q 'ai: services:' hermes-status.txt
           bin/patina install --unattended | tee hermes-second-run.txt
           grep -q 'patina: nothing to do' hermes-second-run.txt
           bin/patina doctor
