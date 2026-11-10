@@ -82,6 +82,12 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- Your own API's model keeps its whole name. The list took a model's first word for
+  its name, so "Qwen 3.8 27B" became "Qwen", which the API does not know (opencode
+  answered "Model not found: Qwen"), and every model whose name starts with "Qwen" was
+  marked "(now)". Pick the model once more with `patina ai login`. The list now holds
+  only the chat models where the API says which (`modality`), not its image, embedding
+  or speech models.
 - A connected service no longer changes without a yes. opencode allows every tool its
   permissions do not name, and patina's named none of a service's: closing a ticket, a
   status change over a whole team and deleting a note for good ran without a row to

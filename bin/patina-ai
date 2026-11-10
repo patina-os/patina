@@ -204,12 +204,14 @@ provider_step() {
 
 # Your own OpenAI-compatible API: its address, its key and a model from the list it
 # gives (GET /models, at the address or under its /v1), typed in when it gives none.
+# The list holds its chat models where it says which (a `modality`, as some servers
+# give), and each line is a model's name whole: a name may hold spaces ("Qwen 3.8 27B").
 # The key goes to a file only the user can read, which opencode's entry names, or to
 # Hermes' own .env; a server without keys gets "none", which it ignores. The address and
 # the model go to the state directory, where patina install finds them. Each question
 # goes one back with Ctrl+C; the first fails, back to the providers. endpoint_step <agent>
 endpoint_step() {
-  local url="" key models="" model="" try step=url now
+  local url="" key models="" model="" try step=url now line
   local -a lines
   while true; do
     case "$step" in
@@ -236,7 +238,7 @@ endpoint_step() {
           [[ "$try" != "$url/v1" || "$url" != */v1 ]] || continue
           # The key on curl's standard input, not its command line, which other users can see.
           models="$(curl -fsS -m 15 -H @- "$try/models" <<< "Authorization: Bearer $key" 2> /dev/null |
-            yq eval -p json '.data[].id' 2> /dev/null)" || models=""
+            yq eval -p json '.data[] | select((.modality // "chat") == "chat") | .id' 2> /dev/null)" || models=""
           if [[ -n "$models" ]]; then
             url="$try"
             break
@@ -247,10 +249,14 @@ endpoint_step() {
       model)
         if [[ -n "$models" ]]; then
           now="$(yq eval '.model // ""' "$PATINA_STATE/ai-endpoint.yaml" 2> /dev/null || true)"
-          mapfile -t lines <<< "$models"
-          mapfile -t lines < <(mark_now "$now" "${lines[@]}")
+          # Not mark_now, which takes a line's first word for the model's name.
+          lines=()
+          while IFS= read -r line; do
+            [[ "$line" != "$now" ]] || line+=" (now)"
+            lines+=("$line")
+          done <<< "$models"
           if model="$(pick "Model ($(wc -l <<< "$models") at $url)" "${lines[@]}")"; then
-            model="${model%% *}"
+            model="${model% (now)}"
             break
           fi
         else
