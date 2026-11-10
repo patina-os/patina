@@ -8,6 +8,11 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- Claude Desktop's icon in the bar and the start menu is Claude's spark in white, its
+  own tray icon from its package (black in the light mode), in place of a sun, the
+  nearest glyph Papirus has. Nothing of it is kept in patina: the renderer takes the
+  file the installed app ships, and the sun comes back if an update moves it.
+
 - kortex 0.7.1: with the palette closed, the notification that a step asks first says
   what the agent said of it, as the palette's row does, and no longer comes for a step
   just allowed; the line that says how long no longer cuts a sentence at "8.0G".
