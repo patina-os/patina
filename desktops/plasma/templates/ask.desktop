@@ -2,7 +2,7 @@
 Type=Application
 Name=Ask kortex
 Comment=The command palette on kortex alone: type your request and read the answer there
-Exec=dbus-send --session --type=method_call --dest=org.kde.krunner /App org.kde.krunner.App.querySingleRunner string:kortex string:
+Exec=sh -c "dbus-send --session --print-reply --dest=io.github.patina_os.kortex /runner io.github.patina_os.kortex.Open > /dev/null 2>&1 || dbus-send --session --type=method_call --dest=org.kde.krunner /App org.kde.krunner.App.querySingleRunner string:kortex string:"
 Icon=${ASK_ICON}
 Terminal=false
 Categories=Utility;
