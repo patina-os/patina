@@ -116,8 +116,8 @@ page, `patina ai`, the README).
 ## What was changed
 
 In patina (pull request 115) and kortex (pull request 19), both merged on 10 November
-2026. patina still pins kortex 0.5.1: kortex's part reaches a machine with its next
-release and a new pin in `manifest/upstream.yaml`.
+2026. kortex's part is its release 0.6.0, pinned in `manifest/upstream.yaml` the same
+day; the test itself ran on 0.5.1.
 
 **patina**
 
