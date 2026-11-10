@@ -660,6 +660,10 @@ install_opencode() {
     say "opencode: the $ai agent in $file"
     cp "$tmp" "$file"
     changed
+    # A running kortex keeps the server that read the file as it was, with the model
+    # it named then: a cloud one for up to a quarter of an hour after "local" was
+    # picked. It stops, and D-Bus starts it again at the next request.
+    pkill -TERM -u "$(id -u)" -f kortex/kortex.py || true
   fi
   rm -f "$tmp"
   [[ "$ai" == cloud ]] || return 0

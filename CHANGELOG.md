@@ -23,6 +23,12 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- A change of the AI agent's model reaches the command palette at once. kortex kept
+  the opencode server that had read the configuration as it was, so after `patina ai
+  on local` (or a `patina update` that changed the file) Meta+A went on asking the
+  cloud provider for up to a quarter of an hour, although "nothing leaves this
+  computer" had just been picked. `patina install` now stops a running kortex when it
+  rewrites opencode's configuration; the next request starts it with the new model.
 - `patina update` brings the start menu's restart button, beside shut down, to a
   machine installed before 0.1.0-alpha.13; that release brought it to new layouts only.
   A start menu whose power buttons you changed keeps them.
