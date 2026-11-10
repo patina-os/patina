@@ -8,6 +8,9 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- kortex 0.7.1: with the palette closed, the notification that a step asks first says
+  what the agent said of it, as the palette's row does, and no longer comes for a step
+  just allowed; the line that says how long no longer cuts a sentence at "8.0G".
 - The command palette reads like a chat with the agent, and Meta+Shift+A docks what it
   does at the screen's right edge (kortex's panel: the agent's own view of the
   conversation, full height, a fifth of the width, above other windows), so you work
