@@ -391,11 +391,12 @@ patina ai disconnect linear
 
 Ask the agent to connect one and it tells you the command to run: the sign-in in the
 browser and the token are yours to give, on a terminal, so the agent never sees a
-token. With opencode, a service's tools that change something (a ticket filed, a note
-deleted) ask first, as a command does, with what they are given; the ones that only
-read run without asking (`reads` in `defaults/services.yaml`), and a server of your
-own asks for every tool until you allow some in `permission`. Hermes asks only before
-what it counts as dangerous. Tokens are kept readable by you only, in
+token. With either agent, a service's tools that change something (a ticket filed, a
+note deleted) ask first, as a command does, with what they are given; the ones that
+only read run without asking (`reads` in `defaults/services.yaml`), and a server of
+your own asks for every tool. opencode does this through its permissions; Hermes,
+which by itself asks before no tool of a service, through a hook patina sets
+(`patina ai gate`). Tokens are kept readable by you only, in
 `~/.config/patina/services/` for opencode and in Hermes' own `~/.hermes/.env`, and the
 agent's configuration names them, never the token itself. A service connected while
 the agent works reaches opencode at once through kortex, and Hermes from its next

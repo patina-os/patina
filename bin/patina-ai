@@ -457,6 +457,7 @@ connect() {
     for ((i = 0; i < ${#fills[@]}; i += 2)); do entry="$(fill "$entry" "${fills[i]}" "${fills[i + 1]}")"; done
     NAME="$name" ENTRY="$entry" write_config "$hermes_file" yaml '.mcp_servers[strenv(NAME)] = (strenv(ENTRY) | from_json)' || true
     say "ai: $name is on for Hermes, from its next conversation (kortex starts its gateway again)"
+    say "ai: its tools that change something ask first, in the command palette"
     if [[ "$sign_in" == browser ]]; then
       say "ai: sign in to $name in the browser; Hermes keeps the sign-in, patina never sees it"
       hermes mcp login "$name" || say "ai: not signed in; later: hermes mcp login $name"
@@ -516,9 +517,38 @@ disconnect() {
   fi
 }
 
+# Hermes' question before a service's tool: its `pre_tool_call` hook (written into
+# ~/.hermes/config.yaml by the install) runs this for every tool of an MCP server, with
+# the call as JSON on stdin. Hermes asks only before a command it counts as dangerous,
+# and no tool of a service is one: a ticket closed, a note deleted for good ran without
+# a word. A tool the service's preset names as reading only (`reads`) passes; any other
+# is sent to Hermes' approval, which kortex shows as a row to allow. Hermes loads a
+# service's tools lazily and calls them through its own `tool_call`, which names the
+# tool in its input.
+gate() {
+  local payload name server tool pattern given=.tool_input
+  payload="$(cat)"
+  name="$(yq -p=json eval -r '.tool_name // ""' <<< "$payload")"
+  if [[ "$name" == tool_call ]]; then
+    name="$(yq -p=json eval -r '.tool_input.name // ""' <<< "$payload")"
+    given=.tool_input.arguments
+  fi
+  [[ "$name" == mcp__*__* ]] || return 0
+  server="${name#mcp__}"
+  tool="${server#*__}"
+  server="${server%%__*}"
+  while read -r pattern; do
+    # shellcheck disable=SC2053 # the right side is the preset's pattern
+    [[ -z "$pattern" || "$tool" != $pattern ]] || return 0
+  done < <(N="$server" yq eval -r '.[strenv(N)].reads // [] | .[]' "$services")
+  M="$server: $tool $(yq -p=json eval -o=json -I=0 "$given // {}" <<< "$payload")" K="patina:$server:$tool" \
+    yq eval -n -o=json -I=0 '{"action": "approve", "message": strenv(M), "rule_key": strenv(K)}'
+}
+
 main() {
   case "${1:-status}" in
     status) status ;;
+    gate) gate ;;
     on)
       shift
       on "$@"

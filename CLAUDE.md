@@ -100,6 +100,9 @@ packs. Audience: developers and privacy-minded users in the EU.
   server; the ones a preset names as reading only (`reads`) do not, and neither do
   commands that only look, a list in `defaults/apps.yaml` (November 2026, after a test
   run in which a diagnosis asked up to twenty times and a service's change not once).
+  With Hermes the same holds through a hook of its own before every tool of a service
+  (`patina ai gate`), the one place where patina makes Hermes ask more than it does by
+  itself (November 2026, after it changed services thirteen times without a word).
   Its place in the command
   palette is kortex, a KRunner runner kept in a repository of its own
   (`patina-os/kortex`), which may use what patina's tooling may not (it is Python);

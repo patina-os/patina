@@ -61,6 +61,13 @@ All notable changes to patina are documented here. The format follows
   allow. `patina ai connect`, and `patina install` for every server already under
   `mcp`, now write rules that make a service's tools ask, with the ones that only read
   allowed (`reads` in `defaults/services.yaml`); `patina ai disconnect` takes them out.
+- With Hermes too, a service's tools that change something ask first. Hermes asks only
+  before a command it counts as dangerous, and no tool of a service is one: in a test
+  run it made 13 changes to the services without a word, a note deleted for good and a
+  ticket taken from a colleague among them. The install now sets a hook of Hermes'
+  before every tool of a service (`patina ai gate`), which lets the preset's reading
+  tools pass and sends every other to Hermes' approval: a row to allow in the command
+  palette, with the tool and what it is given. A gate that cannot run stops the tool.
 - The agent no longer reads the files that hold a secret without asking: the services'
   tokens, your own API's key, private SSH and GPG keys, password databases, opencode's
   and Hermes' own key files. opencode's read tool ran freely on them, and with a cloud
