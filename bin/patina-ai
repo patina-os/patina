@@ -362,7 +362,7 @@ services_list() {
     fi
     printf '  %-10s %-4s %s\n' "$name" "$state" "$(yq eval ".\"$name\".description" "$services")"
   done
-  say "ai: patina ai connect <service> turns one on; the agent runs it for you too"
+  say "ai: patina ai connect <service> turns one on; one that takes a token asks for it on a terminal"
 }
 
 connect() {
@@ -372,6 +372,7 @@ connect() {
     services_list
     return
   fi
+  name="${name,,}"   # GitHub, as its name is written
   yq eval -e ".\"$name\"" "$services" > /dev/null 2>&1 || die "no service '$name'; patina ai connect lists them"
   [[ -f "$opencode_file" || -f "$hermes_file" ]] || die "no AI agent on this machine yet; patina ai on first"
   sign_in="$(yq eval ".\"$name\".sign_in" "$services")"
@@ -385,6 +386,8 @@ connect() {
     [[ -n "$key" ]] || continue   # yq prints an empty line for a preset without questions
     read -rp "$prompt: " value < /dev/tty
     [[ -n "$value" ]] || die "$name: nothing entered, nothing changed"
+    [[ "$key" != HOST || "$value" =~ ^https?://[^[:space:]/]+ ]] ||
+      die "$name: an address starts with https://, nothing changed"
     fills+=("\${$key}" "$value")
   done < <(yq eval ".\"$name\".ask // [] | .[] | [.key, .prompt] | @tsv" "$services")
   if [[ "$sign_in" == token ]]; then
@@ -425,6 +428,7 @@ connect() {
 disconnect() {
   local name="${1:-}" off=0
   [[ -n "$name" ]] || die "disconnect needs a service; patina ai connect lists them"
+  name="${name,,}"
   [[ -f "$opencode_file" || -f "$hermes_file" ]] || die "no AI agent on this machine"
   if [[ -f "$opencode_file" ]] && NAME="$name" write_config "$opencode_file" json 'del(.mcp[strenv(NAME)])'; then
     off=1

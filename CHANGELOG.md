@@ -29,6 +29,10 @@ All notable changes to patina are documented here. The format follows
   cloud provider for up to a quarter of an hour, although "nothing leaves this
   computer" had just been picked. `patina install` now stops a running kortex when it
   rewrites opencode's configuration; the next request starts it with the new model.
+- `patina ai connect nextcloud` takes only an address for the address: "not a url"
+  was written into the agent's configuration and reported as on. A service's name is
+  read in any case (`patina ai connect GitHub`), and the list no longer says that the
+  agent runs the command for you, which it cannot for a service that takes a token.
 - `patina update` brings the start menu's restart button, beside shut down, to a
   machine installed before 0.1.0-alpha.13; that release brought it to new layouts only.
   A start menu whose power buttons you changed keeps them.
