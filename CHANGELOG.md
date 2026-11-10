@@ -94,6 +94,13 @@ All notable changes to patina are documented here. The format follows
   windows took both (btop got 71 of its 80 columns on a 13" screen at 110%), and KWin
   deleted the welcome's rule. Both rules now name a size they never apply; the next
   `patina update` writes them.
+- The tray's Wi-Fi and Bluetooth icons are their own white glyphs again, as are the
+  networks, Connect and Disconnect in the network popup: all were one green folder.
+  The folders in the accent came under every name Papirus links to a folder, `network`
+  among them, and KDE shortens an icon's name in that theme first, so every
+  `network-…` icon ended there (and `desktop-…` ones such as desktop effects). Only
+  the names a folder has (`folder…`, `user-…`, `inode-directory`) get the accent now;
+  log in again after the next `patina update`.
 - A connected service no longer changes without a yes. opencode allows every tool its
   permissions do not name, and patina's named none of a service's: closing a ticket, a
   status change over a whole team and deleting a note for good ran without a row to

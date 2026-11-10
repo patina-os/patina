@@ -399,6 +399,11 @@ if [[ -n "$variant" && -f "/usr/share/icons/$icons_base/index.theme" ]]; then
   out="$tmp/icons"
   # Every folder icon of the icon theme that ends at the variant, under its own name:
   # folder.svg -> folder-blue.svg, and inode-directory.svg -> folder.svg -> folder-blue.svg.
+  # Only under the names a folder has (folder…, user-…, the type inode-directory): KDE
+  # shortens a name this icon theme lacks, word by word, before it asks the one this
+  # inherits, so a wider word that ends at a folder took every icon it begins: network
+  # (network.svg -> folder-blue-network.svg) made the tray's Wi-Fi, Bluetooth and every
+  # other network icon the green folder, and desktop did the same to desktop effects.
   for places in /usr/share/icons/"$icons_base"/*/places; do
     declare -A target=()
     while IFS=$'\t' read -r name to; do
@@ -406,6 +411,10 @@ if [[ -n "$variant" && -f "/usr/share/icons/$icons_base/index.theme" ]]; then
     done < <(find -H "$places" -maxdepth 1 -type l -printf '%f\t%l\n')
     links=()
     for name in "${!target[@]}"; do
+      case "$name" in
+        folder* | user-* | inode-directory.svg) ;;
+        *) continue ;;
+      esac
       to="${target[$name]}"
       to="${target[$to]:-$to}"
       case "$to" in
