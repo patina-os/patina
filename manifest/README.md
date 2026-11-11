@@ -29,7 +29,7 @@ upstream:            # keys of manifest/upstream.yaml
 ai: local            # only on the bundles that answer the AI question (local, cloud)
 agent: hermes        # with `ai`: the agent it installs; opencode when left out
 system:              # files of defaults/system/ written only with a bundle that names
-  - sudoers.d/patina  # them, and removed once the machine has none (`patina ai off`)
+  - sudoers.d/patina-agents  # them, removed once the machine has none (`patina ai off`)
 ```
 
 A bundle with an `ai` key is not a line of the bundle list: it is the answer of the AI

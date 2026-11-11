@@ -3,5 +3,6 @@
 # its own and without a terminal, so sudo asked for the password at every command it ran
 # as root. Written by `patina install` with a bundle that names it (`system:` in
 # manifest/bundles/, the AI and agents bundles), removed without one; edits are
-# overwritten. Mode 0440, as visudo wants it.
+# overwritten. Mode 0440, as visudo wants it. Not named after a user, as admins name
+# their own files here (the desktop workflow's user patina has one).
 Defaults timestamp_type=global

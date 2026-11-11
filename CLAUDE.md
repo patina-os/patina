@@ -94,10 +94,10 @@ packs. Audience: developers and privacy-minded users in the EU.
   (`defaults/apps.yaml`) and reads `defaults/agent.md`. Either agent runs what needs
   root with `sudo -A`, through a password dialog in the theme's colours that a
   notification opens, so it never takes the keyboard by itself, and one password covers
-  every sudo of the user's for sudo's timeout (`/etc/sudoers.d/patina`, with an AI or
-  agents bundle), where Debian asks per terminal and the agent has none (November 2026,
-  after a change of GRUB's boot order asked more than ten times; that Hermes then runs
-  a plain `sudo` unasked in that time is accepted). The services it works
+  every sudo of the user's for sudo's timeout (`/etc/sudoers.d/patina-agents`, with an
+  AI or agents bundle), where Debian asks per terminal and the agent has none
+  (November 2026, after a change of GRUB's boot order asked more than ten times; that
+  Hermes then runs a plain `sudo` unasked in that time is accepted). The services it works
   with are MCP presets (Linear, Notion, GitHub, Nextcloud), off until `patina ai
   connect` turns one on; a token is asked for on a terminal and kept in a file only the
   user can read (October 2026). A service's tools that change something ask first, as

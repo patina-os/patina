@@ -467,7 +467,9 @@ install_system() {
     while IFS= read -r src; do
       dest="/etc/${src#"$dir/"}"
       if [[ "$dir" == "$PATINA_PATH/defaults/system" ]] && printf '%s\n' "${unwanted[@]}" | grep -qxF "${src#"$dir/"}"; then
-        if [[ -e "$dest" ]]; then
+        # Only what patina wrote goes: sudo's own files by the checksum kept of them,
+        # since one of that name may be an admin's, any other by being its source.
+        if [[ -f "$PATINA_STATE/system$dest.sha256" ]] || { [[ "$dest" != /etc/sudoers.d/* ]] && cmp -s "$src" "$dest"; }; then
           say "system: removing $dest (no bundle of this machine names it)"
           backend_run system.remove "$dest"
           rm -f "$PATINA_STATE/system$dest.sha256"

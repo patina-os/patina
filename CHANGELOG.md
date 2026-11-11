@@ -9,9 +9,9 @@ All notable changes to patina are documented here. The format follows
 ### Changed
 
 - The AI agent asks for your password once, not at every command it runs as root: with
-  an AI or agents bundle, `/etc/sudoers.d/patina` makes one sudo password cover all of
-  your sessions for sudo's quarter of an hour, where Debian keeps it per terminal and
-  the agent, which has none, was asked again for each command. A password typed in a
+  an AI or agents bundle, `/etc/sudoers.d/patina-agents` makes one sudo password cover
+  all of your sessions for sudo's quarter of an hour, where Debian keeps it per terminal
+  and the agent, which has none, was asked again for each command. A password typed in a
   terminal now covers the agent too, and Hermes runs a plain `sudo` without asking in
   that time (the README says so). `patina ai off` removes the file at the next install.
 - The sudo password dialog waits for you: a notification asks first, and its "Enter

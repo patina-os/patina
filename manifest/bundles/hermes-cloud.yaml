@@ -22,4 +22,4 @@ upstream:
   - kortex
   - uv   # uvx runs local MCP servers, the Nextcloud preset's (defaults/services.yaml)
 system:   # files of defaults/system/ written only with a bundle that names them
-  - sudoers.d/patina   # one sudo password for the agent's commands, not one per command
+  - sudoers.d/patina-agents   # one sudo password for the agent's commands, not one each

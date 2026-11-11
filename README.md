@@ -361,8 +361,8 @@ for sudo to ask in: a notification asks for your password, and its "Enter passwo
 opens a dialog in the theme's colours, so nothing you type elsewhere lands in it, in
 the command palette right away and in the terminal from the next login after the agent
 was installed. One password covers every sudo of yours for sudo's quarter of an hour,
-in a terminal too, where Debian asks again in each (`/etc/sudoers.d/patina`, written
-with an AI or agents bundle). Nothing stores the password. Press Meta+A and type your request, or type it
+in a terminal too, where Debian asks again in each (`/etc/sudoers.d/patina-agents`,
+written with an AI or agents bundle). Nothing stores the password. Press Meta+A and type your request, or type it
 into any search of the command palette (Meta+Space) or the start menu, which ends with
 "Ask kortex: …" (first when it reads as a question):
 [kortex](https://github.com/patina-os/kortex), a KRunner runner in a repository of its

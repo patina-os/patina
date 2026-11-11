@@ -184,7 +184,7 @@ Files, from `templates/`, each named after the theme:
   and fonts like any KDE window, with the mark as its window icon: a dialog that opened
   by itself took the keyboard on Wayland, and what the user typed elsewhere landed in its
   field. Cancel, on either, makes sudo give up; a retry after a wrong password opens the
-  dialog at once. The same bundles write `/etc/sudoers.d/patina`
+  dialog at once. The same bundles write `/etc/sudoers.d/patina-agents`
   (`defaults/system/`), so one password covers every sudo of the session for sudo's
   timeout, not one command. Removed again with the bundles
 - the cheat sheet's launcher, `~/.local/share/applications/patina-keys.desktop` (from
