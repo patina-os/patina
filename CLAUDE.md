@@ -194,7 +194,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   (`desktops/plasma/templates/start-menu.js`), desktop data like the layout script and
   the one KWin script patina keeps, moves it (October 2026). Plasma's Application
   Dashboard, full screen and centred, dark over either mode, stays an option too. The menu's
-  background is glass the wallpaper glows through, its category icons in the accent,
+  background is frosted glass the wallpaper's colours glow through, almost borderless
+  (November 2026, after CachyOS's menu), its category icons in the accent,
   the apps' glyphs in the bar and the menu and the labels in the text colour; its
   search field a faint veil the accent outlines only while it is used, and its header
   and footer the same glass, without Breeze's bands (November 2026); all are

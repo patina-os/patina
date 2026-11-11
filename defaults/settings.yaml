@@ -134,8 +134,9 @@ start_menu:
                              # the middle | center: in the middle of the screen's width with the
                              # grouped bar too, moved there by a KWin script of patina's own
   grain: 6                   # percent of fine noise on the start menu and the other popups; 0 none
-  glass: 45                  # percent opacity of the popups' background where KWin blurs behind
-                             # it (Breeze: 85); lower lets more of the wallpaper glow through
+  glass: 72                  # percent opacity of the popups' background where KWin blurs behind
+                             # it (Breeze: 85): frosted, the wallpaper's colours glow through and
+                             # its shapes do not; lower lets more of it through
   bands: 0                   # percent opacity of the band Breeze lays over the glass at the top and
                              # bottom of the start menu and the other popups (Breeze: 75, with a
                              # line against the content at 20); 0 leaves one pane, without lines
@@ -143,8 +144,9 @@ start_menu:
                              # menu, the command palette and the other popups, which have no edge
                              # but the accent's, five times as much under the pointer and ten times
                              # while typing; 0 keeps Breeze's solid field
-  rim: 12                    # percent of the text colour in the popups' 1 px rim, a light
-                             # hairline round the glass (Breeze: a darker line); 0 keeps Breeze's
+  rim: 4                     # percent of the text colour in the popups' 1 px rim, a barely
+                             # visible edge round the glass, so it reads as almost borderless
+                             # (Breeze: a darker line); 0 keeps Breeze's
   selection: 10              # percent of the accent filling the selected row of the start menu,
                              # the command palette and the other popups (Breeze: 30); its thin
                              # edge takes four times as much
