@@ -53,11 +53,12 @@ Files, from `templates/`, each named after the theme:
   centre tile, which Plasma repeats. Plasma draws all panel popups and the command
   palette from that background, so the start menu, KRunner, the calendar and the tray
   share the grain. Where KWin's Background Contrast effect blurs behind a popup, Plasma
-  draws the translucent background, whose 85 % opacity becomes `start_menu.glass` (45
-  by default), so the wallpaper glows through the window colour, near black in the
+  draws the translucent background, whose 85 % opacity becomes `start_menu.glass` (72
+  by default, frosted: KWin's blur is at its strongest by default), so the wallpaper's
+  colours glow through the window colour, near black in the
   dark mode. Breeze's darker 1 px rim along their edges becomes the text colour at
-  `start_menu.rim` percent (12 by default; 0 keeps Breeze's), a light hairline that
-  follows the rounded corners too. It also holds the highlight of Plasma's lists (`widgets/viewitem.svgz`,
+  `start_menu.rim` percent (4 by default; 0 keeps Breeze's), an edge barely seen, so
+  the glass reads as almost borderless, that follows the rounded corners too. It also holds the highlight of Plasma's lists (`widgets/viewitem.svgz`,
   from `templates/viewitem.svg`): the selected row of the start menu, the command
   palette and the tray popups is `start_menu.selection` percent of the accent (10 by
   default; Breeze fills 30) inside a 1 px edge of four times that, a pressed row twice

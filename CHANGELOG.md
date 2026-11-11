@@ -6,6 +6,14 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The start menu, the command palette and the other panel popups are frosted glass,
+  almost borderless: their background is 72 % opaque over KWin's blur instead of 45 %,
+  so the wallpaper's colours come through and its shapes no longer do
+  (`start_menu.glass`), and the light hairline round them is down to a barely visible
+  edge (`start_menu.rim`, 4 % instead of 12 %). The grain stays.
+
 ## [0.1.0-alpha.14] - 2026-11-11
 
 ### Changed
