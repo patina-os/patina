@@ -174,7 +174,9 @@ packs. Audience: developers and privacy-minded users in the EU.
   small icons; the Plasma splash shows the mark alone (`icon.svg`, November 2026).
   The desktop's icons are Papirus as Debian ships it, its
   folders recoloured to the theme's accent and every app's icon a monochrome glyph in
-  the text colour, all at one height, by the renderer; kitty is the one see-through
+  the text colour, all at one height, by the renderer (an app's own glyph where its
+  package ships one in white and black, Claude Desktop's spark from its tray icon,
+  taken from the installed app and never kept in patina; November 2026); kitty is the one see-through
   window (other apps stay opaque); the start menu and the other panel popups carry a
   slight grain. The brand's colours (deep violet, violet, lavender, white, and green
   for the ▲) are aurora's and do not follow a theme; on a light ground the terminal

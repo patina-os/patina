@@ -17,7 +17,8 @@ All notable changes to patina are documented here. The format follows
 - The sudo password dialog waits for you: a notification asks first, and its "Enter
   password" opens the dialog. It opened by itself above everything, took the keyboard
   (on Wayland no window rule can keep it from that), so what you typed elsewhere went
-  into the password field. A retry after a wrong password opens the dialog at once. Adds Debian's libnotify-bin to the AI bundles.
+  into the password field. A retry after a wrong password opens the dialog at once.
+  Adds Debian's libnotify-bin to the AI bundles.
 - `agent.md` tells the agent to look without sudo, to make a change that needs root as
   one command line with its backup and what applies it, and never to run two commands
   with sudo at once: a change of GRUB's boot order asked for the password more than ten
@@ -25,6 +26,18 @@ All notable changes to patina are documented here. The format follows
   patina's, since `/etc/default/grub.d/patina.cfg` sets GRUB's timeout after
   `/etc/default/grub`. opencode reads under `/boot` and runs `efibootmgr` and
   `grub-editenv list` without asking.
+
+## [0.1.0-alpha.14] - 2026-11-10
+
+### Changed
+
+- kortex 0.7.2: the agent's panel (Meta+Shift+A) is an entry of its own in the taskbar,
+  with kortex's mark, no longer one more kitty window under kitty's icon.
+- Claude Desktop's icon in the bar and the start menu is Claude's spark in white, its
+  own tray icon from its package (black in the light mode), in place of a sun, the
+  nearest glyph Papirus has. Nothing of it is kept in patina: the renderer takes the
+  file the installed app ships, and the sun comes back if an update moves it.
+
 - kortex 0.7.1: with the palette closed, the notification that a step asks first says
   what the agent said of it, as the palette's row does, and no longer comes for a step
   just allowed; the line that says how long no longer cuts a sentence at "8.0G".
@@ -1274,7 +1287,8 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.13...main
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.14...main
+[0.1.0-alpha.14]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.14
 [0.1.0-alpha.13]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.13
 [0.1.0-alpha.12]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.12
 [0.1.0-alpha.11]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.11
