@@ -6,6 +6,8 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.14] - 2026-11-11
+
 ### Changed
 
 - The AI agent asks for your password once, not at every command it runs as root: with
@@ -26,11 +28,6 @@ All notable changes to patina are documented here. The format follows
   patina's, since `/etc/default/grub.d/patina.cfg` sets GRUB's timeout after
   `/etc/default/grub`. opencode reads under `/boot` and runs `efibootmgr` and
   `grub-editenv list` without asking.
-
-## [0.1.0-alpha.14] - 2026-11-10
-
-### Changed
-
 - kortex 0.7.2: the agent's panel (Meta+Shift+A) is an entry of its own in the taskbar,
   with kortex's mark, no longer one more kitty window under kitty's icon.
 - Claude Desktop's icon in the bar and the start menu is Claude's spark in white, its
