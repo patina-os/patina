@@ -5,7 +5,10 @@
 # `shade` (the back of a folder, 80 %) and `deep` (the pictograms on it, 35 %).
 # `mono` puts every app in one colour: each app's icon (the Icon= of its desktop entry)
 # becomes a monochrome glyph of the icon theme, which takes the colour scheme's text
-# colour; `apps` names the glyph for an icon, every other app gets `other`. The
+# colour; `apps` names the glyph for an icon, every other app gets `other`. `own` names,
+# for an app whose package ships a glyph of its own in both colours, its file for the
+# dark mode (white) and for the light one (black), taken in place of the `apps` glyph
+# while the file is there; it is the app's own, so nothing of it is kept here. The
 # renderer writes ~/.local/share/icons/patina-<theme>/, which inherits the icon theme
 # and holds only the recoloured folders and the glyphs; an icon theme not named here
 # is used as it is. `categories` maps the icon a start menu category's directory entry
@@ -41,7 +44,7 @@ Papirus-Dark: &papirus
       gwenview: image-x-generic-symbolic
       haruna: video-x-generic-symbolic
       artcraft-launcher: applications-graphics-symbolic
-      claude-desktop: weather-clear-symbolic               # a spark
+      claude-desktop: weather-clear-symbolic               # a spark, while `own` has none
       preferences-system: preferences-system-symbolic      # System Settings
       plasmadiscover: system-software-install-symbolic
       help-browser: help-browser-symbolic
@@ -50,6 +53,10 @@ Papirus-Dark: &papirus
       spectacle: camera-photo-symbolic
       utilities-system-monitor: utilities-system-monitor-symbolic
       kdeconnect: phone-symbolic
+    own:
+      claude-desktop:                                      # Claude's spark, its tray icon (64 px)
+        dark: /usr/lib/claude-desktop/resources/TrayIconLinux-Dark.png
+        light: /usr/lib/claude-desktop/resources/TrayIconLinux.png
   categories:
     help-about-symbolic: system-help-symbolic              # Help (kf5-help.directory), an action
 Papirus-Light: *papirus

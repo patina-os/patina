@@ -442,12 +442,19 @@ if [[ -n "$variant" && -f "/usr/share/icons/$icons_base/index.theme" ]]; then
   # names becomes a glyph of the icon theme, which takes the colour scheme's text
   # colour. A name the icon theme also uses outside its apps (a folder, a file type) is
   # left alone; an app installed later gets its glyph at the next `patina theme set`.
+  # An app that ships a glyph of its own (`own`) gets that one, the file for the mode
+  # (white in the dark mode, black in the light): a picture, which no colour scheme
+  # recolours, so a switch of mode copies the other one.
   other="$(yq eval ".[\"$icons_base\"].mono.other // \"\"" "$here/icons.yaml")"
   if [[ -n "$other" ]]; then
-    declare -A glyph=() taken=()
+    declare -A glyph=() taken=() own=()
     while IFS=$'\t' read -r icon g; do
       glyph["$icon"]="$g"
     done < <(yq eval ".[\"$icons_base\"].mono.apps | to_entries | .[] | [.key, .value] | @tsv" "$here/icons.yaml")
+    while IFS=$'\t' read -r icon file; do
+      own["$icon"]="$file"
+    done < <(MODE="${tpl[VARIANT]}" yq eval ".[\"$icons_base\"].mono.own // {} | to_entries | .[] |
+      [.key, (.value[strenv(MODE)] // \"\")] | @tsv" "$here/icons.yaml")
     while IFS= read -r name; do
       taken["${name%.svg}"]=1
     done < <(find -L /usr/share/icons/"$icons_base"/{16x16,22x22,24x24,32x32,48x48,64x64}/{places,mimetypes,devices,actions,status,emblems} \
@@ -456,6 +463,10 @@ if [[ -n "$variant" && -f "/usr/share/icons/$icons_base/index.theme" ]]; then
     while IFS= read -r icon; do
       [[ "$icon" =~ ^[A-Za-z0-9._+-]+$ && "$icon" != *.png && "$icon" != *.svg* && "$icon" != *-symbolic &&
         -z "${taken[$icon]:-}" ]] || continue
+      if [[ -n "${own[$icon]:-}" && -f "${own[$icon]}" ]]; then
+        cp -L "${own[$icon]}" "$out/32x32/symbolic/apps/$icon.${own[$icon]##*.}"
+        continue
+      fi
       g="${glyph[$icon]:-$other}"
       src="$(find -L /usr/share/icons/"$icons_base"/32x32/symbolic -name "$g.svg" -print -quit)"
       if [[ -z "$src" ]]; then

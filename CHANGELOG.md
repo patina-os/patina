@@ -6,7 +6,16 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.14] - 2026-11-10
+
 ### Changed
+
+- kortex 0.7.2: the agent's panel (Meta+Shift+A) is an entry of its own in the taskbar,
+  with kortex's mark, no longer one more kitty window under kitty's icon.
+- Claude Desktop's icon in the bar and the start menu is Claude's spark in white, its
+  own tray icon from its package (black in the light mode), in place of a sun, the
+  nearest glyph Papirus has. Nothing of it is kept in patina: the renderer takes the
+  file the installed app ships, and the sun comes back if an update moves it.
 
 - kortex 0.7.1: with the palette closed, the notification that a step asks first says
   what the agent said of it, as the palette's row does, and no longer comes for a step
@@ -1257,7 +1266,8 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.13...main
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.14...main
+[0.1.0-alpha.14]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.14
 [0.1.0-alpha.13]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.13
 [0.1.0-alpha.12]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.12
 [0.1.0-alpha.11]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.11

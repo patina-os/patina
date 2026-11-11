@@ -27,8 +27,11 @@ Files, from `templates/`, each named after the theme:
   that has it, so the bar's show-desktop button was a green block), and a monochrome glyph under the name of every app's icon
   (`mono`: the Icon= of each installed desktop entry a menu shows, mapped to a glyph,
   `other` for the rest; names the icon theme uses for folders or file types are left
-  alone), so the bar, the menu and the title bars are one colour, the colour scheme's
-  text colour (white in the dark mode, dark in the light one). With
+  alone; `own`: an app's own glyph from its package, the white file in the dark mode and
+  the black one in the light, as Claude Desktop's spark from its tray icon, in place of
+  the mapped glyph while the file is there), so the bar, the menu and the title bars are
+  one colour, the colour scheme's text colour (white in the dark mode, dark in the light
+  one). With
   `start_menu.icons: accent` (the default) the icon theme's symbolic category icons,
   which the start menu's categories show, take the accent: their colour and their
   `ColorScheme-Text` class become the accent; the labels keep the text colour. A
