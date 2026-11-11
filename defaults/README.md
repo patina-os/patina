@@ -84,7 +84,14 @@ repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
   apart by `$0`, the name of the program reading it. It also turns os-prober on, which
   Debian leaves off, so on a disk shared with other systems the menu lists them, and
   keeps the menu five seconds in place of one when os-prober finds any; it runs
-  os-prober only when grub-mkconfig writes the menu.
+  os-prober only when grub-mkconfig writes the menu. `sudoers.d/patina-agents` is the one
+  file not every install gets: the AI and agents bundles name it (`system:` in
+  `manifest/bundles/`), and with it one sudo password covers all of the user's
+  sessions for sudo's timeout, not one terminal, since an agent runs each command in a
+  shell of its own and sudo asked at every one. `patina install` writes it once visudo
+  has read it, at the mode 0440 visudo wants (`system.write_private`, a checksum in
+  patina's state standing in for the file the user cannot read), and removes it once
+  the machine has no such bundle (`patina ai off`).
 - `boot/`: the boot splash, Plymouth's two-step theme as templates: `frame.svg`, one
   picture of the mark, into which `render_boot_splash` (`bin/lib.sh`) sets the
   characters of `branding/logo.txt` in the brand's colours, each as far faded in as

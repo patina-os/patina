@@ -450,19 +450,50 @@ install_upstream() {
 }
 
 # The system tuning: every file under defaults/system/, and under system/ of a detected
-# device, lands at the same path under /etc, through the backend's sudo path. The apply
+# device, lands at the same path under /etc, through the backend's sudo path; a file a
+# bundle names (`system:`) only while the machine has such a bundle, the ones it records
+# or this run installs, and it goes again once none is left (`patina ai off`). The apply
 # commands run once when a file changed and the machine is booted with systemd; a
 # container gets the files only.
 install_system() {
   local dir src dest changed_here=0 cmd first d splash menu wallpaper stamp out n
-  local -a dirs=("$PATINA_PATH/defaults/system")
+  local -a dirs=("$PATINA_PATH/defaults/system") held=() unwanted=()
   for d in "${devices[@]}"; do
     [[ ! -d "$PATINA_PATH/devices/$d/system" ]] || dirs+=("$PATINA_PATH/devices/$d/system")
   done
+  mapfile -t held < <( { recorded_bundles; printf '%s\n' "${bundles[@]}"; } | awk 'NF && !seen[$0]++')
+  mapfile -t unwanted < <(system_unwanted "${held[@]}")
   for dir in "${dirs[@]}"; do
     while IFS= read -r src; do
       dest="/etc/${src#"$dir/"}"
-      if cmp -s "$src" "$dest"; then
+      if [[ "$dir" == "$PATINA_PATH/defaults/system" ]] && printf '%s\n' "${unwanted[@]}" | grep -qxF "${src#"$dir/"}"; then
+        # Only what patina wrote goes: sudo's own files by the checksum kept of them,
+        # since one of that name may be an admin's, any other by being its source.
+        if [[ -f "$PATINA_STATE/system$dest.sha256" ]] || { [[ "$dest" != /etc/sudoers.d/* ]] && cmp -s "$src" "$dest"; }; then
+          say "system: removing $dest (no bundle of this machine names it)"
+          backend_run system.remove "$dest"
+          rm -f "$PATINA_STATE/system$dest.sha256"
+          changed
+        fi
+        continue
+      fi
+      if system_in_place "$src" "$dest"; then
+        continue
+      fi
+      if [[ "$dest" == /etc/sudoers.d/* ]]; then
+        # A file sudo cannot parse leaves the machine without sudo, so visudo reads it
+        # first. sudo reads it at each run: nothing to apply.
+        if PATH="$PATH:/usr/sbin:/sbin" command -v visudo > /dev/null &&
+          ! PATH="$PATH:/usr/sbin:/sbin" visudo -cqf "$src"; then
+          warn "system: visudo rejects $src; $dest left as it is"
+          failed=1
+          continue
+        fi
+        say "system: writing $dest"
+        backend_run system.write_private "$src" "$dest"
+        mkdir -p "$(dirname "$PATINA_STATE/system$dest")"
+        sha256sum < "$src" | cut -d ' ' -f 1 > "$PATINA_STATE/system$dest.sha256"
+        changed
         continue
       fi
       say "system: writing $dest"

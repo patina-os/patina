@@ -1071,10 +1071,11 @@ fi
 # kdialog's windows, the AI agent's sudo password (askpass.sh) and the welcome's file
 # picker: a dialog with no window of its app behind it is a normal window on Wayland,
 # so the size rule would open a small prompt in a large empty window. This rule leaves
-# kdialog's size alone and opens it above other windows, since a script waits on it
-# (sudo, while the user works elsewhere). It does not take the keyboard from the window
-# in use, so nothing typed there lands in the password field. The class is kdialog on
-# X11 and org.kde.kdialog on Wayland.
+# kdialog's size alone and opens it above other windows, since a script waits on it.
+# A rule cannot keep a new window from taking the keyboard on Wayland, where KWin gives
+# it the focus whatever the rule says, so the password dialog opens only from its
+# notification's button (askpass.sh), never while the user types elsewhere. The class
+# is kdialog on X11 and org.kde.kdialog on Wayland.
 rule=patina-kdialog
 kset kwinrulesrc Description "patina: kdialog keeps its size and opens above" "$rule"
 kset kwinrulesrc wmclass '^(org\.kde\.)?kdialog$' "$rule"

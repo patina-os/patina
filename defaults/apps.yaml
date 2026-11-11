@@ -86,6 +86,7 @@ opencode:
         "/run/*": allow
         "/var/log/*": allow
         "/var/lib/dpkg/*": allow
+        "/boot/*": allow   # GRUB's menu and settings, which the user may read
       bash:
         "*": ask
         # the machine
@@ -164,6 +165,10 @@ opencode:
         "flatpak info *": allow
         "flatpak remotes*": allow
         "flatpak history*": allow
+        # the boot menu
+        "efibootmgr": allow
+        "efibootmgr -v": allow
+        "grub-editenv list": allow
         # the desktop and patina
         "kreadconfig6 *": allow
         "git status*": allow

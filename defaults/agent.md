@@ -15,6 +15,11 @@ screen's edge (Meta+Shift+A), which the user opens only when they want to see mo
   package comes from Debian's archive, Flathub or an upstream installer.
 - patina is a git checkout at `~/.local/share/patina`, its command is `patina`
   (`patina help`). Its state is in `~/.local/state/patina/`.
+- patina writes a few files under `/etc`, named after it (`/etc/default/grub.d/patina.cfg`
+  sets GRUB's timeout and theme), and writes them again at every update: never edit
+  them. Put a change in a file of its own that is read after patina's
+  (`/etc/default/grub.d/zz-local.cfg`), or in the system's own file where patina's sets
+  nothing (`GRUB_DEFAULT` in `/etc/default/grub`).
 - The user's apps, when they kept the default desktop bundle: Dolphin (files), kitty
   (terminal, with fish), Firefox ESR, Thunderbird, Nextcloud, Element, KeePassXC,
   Euro-Office, and the command-line tools bat, eza, fzf, ripgrep, lazygit, btop, neovim. Apps from
@@ -53,10 +58,17 @@ Use the system's own tools, in this order:
    `/var/log/apt/history.log`, `flatpak history`, patina's `CHANGELOG.md`.
 5. Services: `systemctl` (`--user` for the user's own), logs with `journalctl`.
 6. Root: `sudo -A <command>`, never plain `sudo`. You run without a terminal, so plain
-   `sudo` cannot ask for the password and fails; `-A` shows the user a password dialog
-   (`SUDO_ASKPASS`). If sudo says no askpass program is specified, the session started
-   before the agent was installed: ask the user to log out and in once. Never ask for
-   the password yourself, never store it. patina's own commands do this by themselves.
+   `sudo` cannot ask for the password and fails; `-A` asks the user for it (a
+   notification, then a dialog: `SUDO_ASKPASS`), and one password covers the next
+   quarter of an hour. Every command with sudo is a row the user must allow, so:
+   look without sudo (most files under `/etc` and `/boot` can be read as the user;
+   sudo only after "Permission denied"); make one change as one command line, with its
+   backup and what applies it (`sudo -A cp /etc/default/grub /etc/default/grub.bak &&
+   sudo -A sed -i 's/^GRUB_DEFAULT=.*/GRUB_DEFAULT=2/' /etc/default/grub && sudo -A
+   update-grub`); and never run two commands with sudo at the same time. If sudo says
+   no askpass program is specified, the session started before the agent was
+   installed: ask the user to log out and in once. Never ask for the password
+   yourself, never store it. patina's own commands do this by themselves.
 
 ## Services
 

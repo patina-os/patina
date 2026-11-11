@@ -92,7 +92,12 @@ packs. Audience: developers and privacy-minded users in the EU.
   before what it counts as dangerous, and the README says so (October 2026). opencode
   asks before every change
   (`defaults/apps.yaml`) and reads `defaults/agent.md`. Either agent runs what needs
-  root with `sudo -A`, through a password dialog in the theme's colours. The services it works
+  root with `sudo -A`, through a password dialog in the theme's colours that a
+  notification opens, so it never takes the keyboard by itself, and one password covers
+  every sudo of the user's for sudo's timeout (`/etc/sudoers.d/patina-agents`, with an
+  AI or agents bundle), where Debian asks per terminal and the agent has none
+  (November 2026, after a change of GRUB's boot order asked more than ten times; that
+  Hermes then runs a plain `sudo` unasked in that time is accepted). The services it works
   with are MCP presets (Linear, Notion, GitHub, Nextcloud), off until `patina ai
   connect` turns one on; a token is asked for on a terminal and kept in a file only the
   user can read (October 2026). A service's tools that change something ask first, as
@@ -366,7 +371,9 @@ Each directory's README is the authority on its file format.
   `eval`, no `curl | sh` except an upstream installer listed in `manifest/upstream.yaml`.
 - Idempotent: every script may run twice without harm. Check before changing.
 - `sudo` appears only in backend commands from `manifest/backends/`, never elsewhere.
-  System files are written only through that path (`system.write`), only from
+  System files are written only through that path (`system.write`; sudo's own,
+  under `sudoers.d/`, by `system.write_private` once visudo has read them, and a
+  file only bundles the machine lacks name is removed by `system.remove`), only from
   `defaults/system/` and the `system/` directory of a detected device (`devices/`), for the keyring and sources file of an `apt-source` recipe, and
   for the login screen's wallpaper and the Breeze SDDM theme's `theme.conf.user`
   (`/usr/local/share/patina/login.png`, written by the desktop renderer), and for the

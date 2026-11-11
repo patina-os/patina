@@ -8,6 +8,7 @@ packages:
   - nodejs   # the npm installs below
   - npm
   - kdialog   # the password dialog for the agent's `sudo -A` (desktops/plasma/askpass.sh)
+  - libnotify-bin   # notify-send: the password dialog waits for a click on its notification
 flatpaks: []
 upstream:
   - claude-code
@@ -15,3 +16,5 @@ upstream:
   - opencode
   - claude-desktop
   - ollama
+system:   # files of defaults/system/ written only with a bundle that names them
+  - sudoers.d/patina-agents   # one sudo password for the agent's commands, not one each
