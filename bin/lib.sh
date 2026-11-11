@@ -130,6 +130,29 @@ bundle_items() {
   done | awk '!seen[$0]++'
 }
 
+# The files of defaults/system/ a bundle names (`system:`) that none of the given bundles,
+# the machine's, names: patina install removes them, doctor leaves them out.
+system_unwanted() {
+  local b
+  local -a every=() mine=()
+  mapfile -t every < <(all_bundles)
+  for b in "$@"; do
+    [[ ! -f "$PATINA_PATH/manifest/bundles/$b.yaml" ]] || mine+=("$b")
+  done
+  comm -23 <(bundle_items system "${every[@]}" | sort) <(bundle_items system "${mine[@]}" | sort)
+}
+
+# Is a system file in place, identical to its source? sudo's own files (sudoers.d) are
+# root's alone, so for them the checksum patina install kept of what it wrote stands in.
+system_in_place() {
+  local src="$1" dest="$2"
+  if [[ "$dest" == /etc/sudoers.d/* ]]; then
+    [[ -e "$dest" && "$(cat "$PATINA_STATE/system$dest.sha256" 2> /dev/null)" == "$(sha256sum < "$src" | cut -d ' ' -f 1)" ]]
+  else
+    cmp -s "$src" "$dest"
+  fi
+}
+
 # The devices of devices/ this machine is: those with a detect map whose fields of
 # /sys/class/dmi/id (PATINA_DMI overrides the directory) all equal the firmware's. A
 # device without detect is never detected; its README says what to do by hand.

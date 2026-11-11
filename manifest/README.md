@@ -28,6 +28,8 @@ upstream:            # keys of manifest/upstream.yaml
   - claude-code
 ai: local            # only on the bundles that answer the AI question (local, cloud)
 agent: hermes        # with `ai`: the agent it installs; opencode when left out
+system:              # files of defaults/system/ written only with a bundle that names
+  - sudoers.d/patina  # them, and removed once the machine has none (`patina ai off`)
 ```
 
 A bundle with an `ai` key is not a line of the bundle list: it is the answer of the AI
@@ -47,10 +49,11 @@ one.
 ## Backends
 
 A backend is one YAML file: the `ID` values from `/etc/os-release` it serves, the commands
-for refresh, install and is-installed, the name map, and under `system` the one command
-that writes a system file (`write`, for `defaults/system/` and a detected device's `system/`, the keyrings and sources of
+for refresh, install and is-installed, the name map, and under `system` the commands
+that write and remove a system file (`write`, for `defaults/system/` and a detected device's `system/`, the keyrings and sources of
 `apt-source` recipes, and the login screen's wallpaper and SDDM override the desktop
-renderer writes) with the commands run after a tuning file changed (`apply`). Every command that needs root starts with `sudo`; the scripts drop it when
+renderer writes; `write_private` for sudo's own files, at the mode 0440 visudo wants;
+`remove` for a file no bundle of the machine names any more) with the commands run after a tuning file changed (`apply`). Every command that needs root starts with `sudo`; the scripts drop it when
 they already run as root. Adding a base means adding a file here (and a container for
 it in the smoke workflow), not editing scripts. `apt.yaml` is the reference and the only
 backend CI runs; `zypper.yaml`, `dnf.yaml` and `pacman.yaml` are kept as data for

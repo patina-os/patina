@@ -176,9 +176,14 @@ Files, from `templates/`, each named after the theme:
   demand, has it right away. The agents run commands without a terminal, so plain `sudo` cannot
   ask for a password there; they run `sudo -A` (`defaults/agent.md`), and so does
   patina's own backend path when it has no terminal (`run_words` in `bin/lib.sh`).
-  `askpass.sh` asks with kdialog, which draws in the theme's colours and fonts like any
-  KDE window, with the mark as its window icon; Cancel makes sudo give up. Removed again
-  with the bundles
+  `askpass.sh` asks with a notification first (notify-send, critical, so it stays until
+  answered), and its "Enter password" opens kdialog, which draws in the theme's colours
+  and fonts like any KDE window, with the mark as its window icon: a dialog that opened
+  by itself took the keyboard on Wayland, and what the user typed elsewhere landed in its
+  field. Cancel, on either, makes sudo give up; a retry after a wrong password opens the
+  dialog at once. The same bundles write `/etc/sudoers.d/patina`
+  (`defaults/system/`), so one password covers every sudo of the session for sudo's
+  timeout, not one command. Removed again with the bundles
 - the cheat sheet's launcher, `~/.local/share/applications/patina-keys.desktop` (from
   `templates/keys.desktop`): kitty showing `patina keys` until a key is pressed, bound
   to the `keys` action (Meta+K). The sheet lists the actions of

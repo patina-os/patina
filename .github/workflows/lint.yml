@@ -87,6 +87,21 @@ jobs:
             echo "defaults/system/sddm.conf.d/patina.conf does not set Font=$font"
             exit 1
           }
+      - name: sudo can read every sudoers file, and every file a bundle names exists
+        run: |
+          # A file under /etc/sudoers.d that sudo cannot parse leaves the machine without
+          # sudo; patina install runs visudo too, where it is installed.
+          bad=0
+          for f in defaults/system/sudoers.d/* devices/*/system/sudoers.d/*; do
+            [[ -e "$f" ]] || continue
+            /usr/sbin/visudo -cqf "$f" || { echo "visudo rejects $f"; bad=1; }
+          done
+          for f in manifest/bundles/[a-z]*.yaml; do
+            for s in $(yq eval '.system[]?' "$f"); do
+              [[ -f "defaults/system/$s" ]] || { echo "$f: defaults/system/$s is missing"; bad=1; }
+            done
+          done
+          exit "$bad"
       - name: The installer's app pages offer every optional bundle, once
         run: |
           # The apps and more-apps pages (packagechooser-apps.conf, -more.conf) hand their

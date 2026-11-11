@@ -8,6 +8,23 @@ All notable changes to patina are documented here. The format follows
 
 ### Changed
 
+- The AI agent asks for your password once, not at every command it runs as root: with
+  an AI or agents bundle, `/etc/sudoers.d/patina` makes one sudo password cover all of
+  your sessions for sudo's quarter of an hour, where Debian keeps it per terminal and
+  the agent, which has none, was asked again for each command. A password typed in a
+  terminal now covers the agent too, and Hermes runs a plain `sudo` without asking in
+  that time (the README says so). `patina ai off` removes the file at the next install.
+- The sudo password dialog waits for you: a notification asks first, and its "Enter
+  password" opens the dialog. It opened by itself above everything, took the keyboard
+  (on Wayland no window rule can keep it from that), so what you typed elsewhere went
+  into the password field. A retry after a wrong password opens the dialog at once. Adds Debian's libnotify-bin to the AI bundles.
+- `agent.md` tells the agent to look without sudo, to make a change that needs root as
+  one command line with its backup and what applies it, and never to run two commands
+  with sudo at once: a change of GRUB's boot order asked for the password more than ten
+  times and for twice as many rows. It also says which files under `/etc` are
+  patina's, since `/etc/default/grub.d/patina.cfg` sets GRUB's timeout after
+  `/etc/default/grub`. opencode reads under `/boot` and runs `efibootmgr` and
+  `grub-editenv list` without asking.
 - kortex 0.7.1: with the palette closed, the notification that a step asks first says
   what the agent said of it, as the palette's row does, and no longer comes for a step
   just allowed; the line that says how long no longer cuts a sentence at "8.0G".

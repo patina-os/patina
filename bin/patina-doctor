@@ -139,16 +139,22 @@ check_bundles() {
 
 check_system() {
   local dir src dest differs="" d
-  local -a dirs=("$PATINA_PATH/defaults/system")
+  local -a dirs=("$PATINA_PATH/defaults/system") held=() unwanted=()
   echo "system tuning (defaults/system/)"
   for d in $(detected_devices); do
     ok "device: $(yq eval '.name' "$PATINA_PATH/devices/$d/device.yaml") (devices/$d/)"
     [[ ! -d "$PATINA_PATH/devices/$d/system" ]] || dirs+=("$PATINA_PATH/devices/$d/system")
   done
+  # A file only bundles this machine lacks name (`system:`) is not expected here.
+  mapfile -t held < <(recorded_bundles)
+  mapfile -t unwanted < <(system_unwanted "${held[@]}")
   for dir in "${dirs[@]}"; do
     while IFS= read -r src; do
       dest="/etc/${src#"$dir/"}"
-      cmp -s "$src" "$dest" || differs="$differs $dest"
+      if [[ "$dir" == "$PATINA_PATH/defaults/system" ]] && printf '%s\n' "${unwanted[@]}" | grep -qxF "${src#"$dir/"}"; then
+        continue
+      fi
+      system_in_place "$src" "$dest" || differs="$differs $dest"
     done < <(find "$dir" -type f | sort)
   done
   if [[ -z "$differs" ]]; then

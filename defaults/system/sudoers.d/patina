@@ -1,0 +1,7 @@
+# patina: one sudo password for all of the user's sessions, for sudo's own timeout (15
+# minutes on Debian), not one per terminal. The AI agent runs each command in a shell of
+# its own and without a terminal, so sudo asked for the password at every command it ran
+# as root. Written by `patina install` with a bundle that names it (`system:` in
+# manifest/bundles/, the AI and agents bundles), removed without one; edits are
+# overwritten. Mode 0440, as visudo wants it.
+Defaults timestamp_type=global
