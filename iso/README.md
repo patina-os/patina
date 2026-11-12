@@ -178,9 +178,9 @@ iso/
    never loops on first boot.
 
 That is Path A, executed for the user. The image carries only the installer, its
-configuration, the network stack and firmware, so it stays under a gigabyte (873 MB
-for amd64; the arm64 image, with the Snapdragon firmware, 955 MiB, which is 1.0 GB) and
-Debian's mirrors carry the download, not us. The installed system is current Debian
+configuration, the network stack and firmware, so it stays at about a gigabyte (in
+November 2026 the amd64 image is 968 MB; the arm64 image, with the Snapdragon firmware,
+1,001 MB, which is 955 MiB) and Debian's mirrors carry the download, not us. The installed system is current Debian
 stable at install time, and an old image installs today's layer.
 
 ## Laptops that boot with a device tree
@@ -395,8 +395,9 @@ release, never edited.
   `firmware-linux` metapackage each pull Debian's whole non-free firmware set, over 700
   MiB of it for network cards no laptop has, and made the first image 1.2 GB. With the
   detection off, the wifi and graphics families listed by hand and two large Recommends
-  pinned out at build time (`config/apt/preferences`), the amd64 image is 873 MB; the
-  installed system gets the full firmware set from `modules/packages.conf`.
+  pinned out at build time (`config/apt/preferences`), the amd64 image came to 873 MB
+  then (968 MB in November 2026); the installed system gets the full firmware set from
+  `modules/packages.conf`.
 
 ## Still to verify
 
