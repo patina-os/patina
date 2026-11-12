@@ -99,6 +99,29 @@ initrd="$(find "$work/live" -name 'initrd*' | sort | head -n1)"
 [[ -n "$kernel" && -n "$initrd" ]] \
   || { echo "boot-test: no kernel or initrd under live/ in $iso" >&2; exit 65; }
 
+# The boot menu, which this test starts the kernel past, read from the image: where it
+# has entries for laptops that boot with a device tree (devices-all.cfg, written by
+# build.sh and put into the menu by its hook), the menu sources them, live-build filled
+# in the kernel's names, and the image carries the kernel and every tree they load.
+rm -rf "${work:?}/boot"
+bsdtar -C "$work" -xf "$iso" 'boot/grub/*.cfg'
+if [[ -e "$work/boot/grub/devices-all.cfg" ]]; then
+  bsdtar -C "$work" -xf "$iso" 'boot/dtb/*' || true
+  grep -qx 'source /boot/grub/devices-all.cfg' "$work/boot/grub/grub.cfg" \
+    || { echo "boot-test: the boot menu does not source devices-all.cfg" >&2; exit 65; }
+  if grep -q '@[A-Z_]*@' "$work"/boot/grub/devices*.cfg; then
+    echo "boot-test: an unfilled placeholder in the devices' boot menu entries" >&2
+    exit 65
+  fi
+  while read -r file; do
+    [[ -s "$work/$file" ]] \
+      || { echo "boot-test: the boot menu loads /$file, which the image lacks" >&2; exit 65; }
+  done < <(sed -n -E 's#^[[:space:]]*(devicetree|linux|initrd)[[:space:]]+/([^[:space:]]+).*#\2#p' \
+    "$work/boot/grub/devices-all.cfg" | sort -u)
+  echo "boot-test: the boot menu has $(grep -c '^menuentry' "$work/boot/grub/devices-all.cfg")" \
+    "entries for laptops that boot with a device tree, and the image their trees"
+fi
+
 # QEMU loads the kernel itself, past GRUB, so the command line is auto/config's
 # --bootappend-live plus the serial console; change them together.
 echo "boot-test: booting $iso ($arch, $accel, ${cpus} cpus, timeout ${timeout_s}s)"

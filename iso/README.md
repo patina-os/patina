@@ -179,7 +179,7 @@ iso/
 
 That is Path A, executed for the user. The image carries only the installer, its
 configuration, the network stack and firmware, so it stays under a gigabyte (873 MB
-for amd64; the arm64 image, with the Snapdragon firmware, an estimated 970 MB) and
+for amd64; the arm64 image, with the Snapdragon firmware, 955 MiB, which is 1.0 GB) and
 Debian's mirrors carry the download, not us. The installed system is current Debian
 stable at install time, and an old image installs today's layer.
 
