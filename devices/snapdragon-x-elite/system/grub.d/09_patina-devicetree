@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# GRUB loads the device tree /etc/kernel/devicetree names; update-grub runs this.
+set -euo pipefail
+
+# patina: the firmware of these laptops has no ACPI tables Linux can use, so the boot
+# loader hands the kernel the model's device tree. /etc/kernel/devicetree names it in
+# one line (qcom/x1e78100-lenovo-thinkpad-t14s.dtb), the file systemd's kernel-install
+# reads too; the installer writes it, or you do (devices/snapdragon-x-elite/README.md).
+# Debian's kernels carry the trees under /usr/lib/linux-image-<version>/, which GRUB
+# may not be able to read (an encrypted root with /boot apart), so the newest kernel's
+# is copied beside GRUB's configuration and loaded from there, before the menu, for
+# every entry: Debian's 10_linux knows no device trees. Kernel installs and removals
+# run update-grub, so the copy follows them. Without the file this writes nothing.
+# Source: devices/snapdragon-x-elite/system/ in the patina checkout.
+[[ -r /etc/kernel/devicetree ]] || exit 0
+name="$(head -n 1 /etc/kernel/devicetree)"
+tree="$(printf '%s\n' /usr/lib/linux-image-*/"$name" | sort -V | tail -n 1)"
+if [[ -z "$name" || ! -f "$tree" ]]; then
+  echo "patina: no installed kernel carries the device tree '$name'" >&2
+  exit 0
+fi
+cmp -s "$tree" /boot/grub/devicetree.dtb || install -m 0644 "$tree" /boot/grub/devicetree.dtb
+echo "Found device tree: $tree" >&2
+# shellcheck disable=SC2016  # $prefix is GRUB's own, read when the machine boots
+echo 'devicetree $prefix/devicetree.dtb'

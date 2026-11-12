@@ -204,7 +204,9 @@ reinstall.
 
 What the alpha does not cover yet: the installer on aarch64 and on real hardware,
 aarch64 hardware beyond CI (a Raspberry Pi 4 or a Snapdragon X Elite laptop is welcome, see
-[docs/hardware.md](docs/hardware.md)), and an update from one release to the next.
+[docs/hardware.md](docs/hardware.md); the arm64 image has a boot menu entry for the
+ThinkPad T14s Gen 6, and [docs/x-elite-run.md](docs/x-elite-run.md) is its run), and an
+update from one release to the next.
 
 ## Supported bases
 

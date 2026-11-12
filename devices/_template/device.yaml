@@ -5,6 +5,8 @@ arch: aarch64           # x86_64 or aarch64
 status: untested        # untested | boots | works-with-caveats | supported
 base_image: ""          # URL of the Debian image known to boot on it
 detect: {}              # /sys/class/dmi/id fields that must all match, e.g. product_name: X
+detect_compatible: ""   # or, for a machine that boots with a device tree, one of its
+                        # tree's compatible strings (devices/README.md)
 kernel_params: []       # extra kernel command-line parameters, if any
 extra_packages: []      # canonical package names this device needs on top of the bundles
 notes: >

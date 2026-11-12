@@ -154,18 +154,28 @@ system_in_place() {
 }
 
 # The devices of devices/ this machine is: those with a detect map whose fields of
-# /sys/class/dmi/id (PATINA_DMI overrides the directory) all equal the firmware's. A
-# device without detect is never detected; its README says what to do by hand.
+# /sys/class/dmi/id (PATINA_DMI overrides the directory) all equal the firmware's, and
+# those whose detect_compatible is one of the strings the machine's device tree calls
+# itself compatible with (/sys/firmware/devicetree/base, PATINA_DEVICETREE overrides
+# it); a device with both must match both. A device with neither is never detected;
+# its README says what to do by hand.
 detected_devices() {
-  local dmi="${PATINA_DMI:-/sys/class/dmi/id}" f key value match
+  local dmi="${PATINA_DMI:-/sys/class/dmi/id}" f key value match compatible
+  local tree="${PATINA_DEVICETREE:-/sys/firmware/devicetree/base}"
   for f in "$PATINA_PATH"/devices/[a-z]*/device.yaml; do
-    yq eval -e '.detect | length > 0' "$f" > /dev/null 2>&1 || continue
+    compatible="$(yq eval '.detect_compatible // ""' "$f")"
+    [[ -n "$compatible" ]] || yq eval -e '.detect | length > 0' "$f" > /dev/null 2>&1 || continue
     match=1
     while IFS=$'\t' read -r key value; do
       if [[ ! "$key" =~ ^[a-z_]+$ || "$(cat "$dmi/$key" 2> /dev/null)" != "$value" ]]; then
         match=0
       fi
-    done < <(yq eval '.detect | to_entries | .[] | .key + "\t" + .value' "$f")
+    done < <(yq eval '.detect // {} | to_entries | .[] | .key + "\t" + .value' "$f")
+    # The tree's strings end in a NUL each.
+    if [[ -n "$compatible" ]] && { [[ ! -r "$tree/compatible" ]] ||
+      ! grep -qxF "$compatible" < <(tr '\0' '\n' < "$tree/compatible"); }; then
+      match=0
+    fi
     [[ $match -eq 0 ]] || basename "$(dirname "$f")"
   done
 }

@@ -6,3 +6,11 @@
 grub-efi-arm64
 grub-efi-arm64-signed
 shim-signed
+# The initramfs tool Debian 13 uses: the backports kernel takes dracut as well, and the
+# live system and the installer's initramfs step are made for this one.
+initramfs-tools
+# The firmware of the Snapdragon X Elite laptops the boot menu has entries for
+# (devices/snapdragon-x-elite/, extra_packages; its wifi's is in the common list): the
+# battery, the USB-C ports and the graphics start only with it, and the installed
+# system has it from its first start. Debian 13's own package, 93 MB.
+firmware-qcom-soc

@@ -21,15 +21,22 @@ iso/
   live/config/apt/preferences  build-time pins that keep two large Recommends out of
                             the live system; not part of the image
   live/arch/<arch>.list.chroot  the few per-architecture packages (signed GRUB and shim,
-                            microcode); build.sh copies the right one in
+                            microcode; on arm64 the firmware of the laptops its boot
+                            menu has entries for); build.sh copies the right one in
+  live/arch/arm64.lb-config, arm64.pref.chroot  the arm64 image's own live-build option
+                            and build-time apt pin: its kernel is trixie-backports'
   live/config/hooks/        two build hooks: boot the live system into the installer,
-                            and name the boot menu's entries Install patina
+                            and name the boot menu's entries Install patina, with the
+                            entries and device trees of the laptops that need one
   live/config/includes.chroot/
     etc/calamares/settings.conf        the pages shown and the steps run
     etc/calamares/efi-space.sh         the check of the EFI partition's room, before the copy,
                             and the swap for one with room
     etc/calamares/efi-fstab.sh         that partition in the new system's fstab
     etc/calamares/efi-removable.sh     shim at the EFI partition's removable path
+    etc/calamares/device-boot.sh       the boot files of a laptop that boots with a
+                            device tree (below); build.sh puts those files, a device's
+                            system/, under etc/calamares/devices/
     etc/calamares/modules/*.conf       one file per step; packages.conf is the list the
                             installer fetches from Debian's mirrors (Plasma and the base
                             bundle) and the live tooling it removes afterwards;
@@ -172,8 +179,39 @@ iso/
 
 That is Path A, executed for the user. The image carries only the installer, its
 configuration, the network stack and firmware, so it stays under a gigabyte (873 MB
-for amd64) and Debian's mirrors carry the download, not us. The installed system is current Debian
+for amd64; the arm64 image, with the Snapdragon firmware, an estimated 970 MB) and
+Debian's mirrors carry the download, not us. The installed system is current Debian
 stable at install time, and an old image installs today's layer.
+
+## Laptops that boot with a device tree
+
+The one place where the image does what Path A does not do first (November 2026, a
+decision of the maintainer's, after "the image cannot boot them" for the Snapdragon X
+Elite laptops). Their firmware gives Linux no description of the hardware, so the boot
+loader must hand the kernel the model's device tree, before Linux, the installer or
+`patina` run. Everything about a model is data in `devices/<slug>/device.yaml`
+(`devices/README.md`); the image only carries it out:
+
+- The arm64 image's kernel comes from `trixie-backports` (`arch/arm64.lb-config`,
+  `arch/arm64.pref.chroot`): Debian 13's own is older than these laptops. The installer
+  copies the live system, so every arm64 install runs that kernel and keeps
+  `trixie-backports` in its apt sources for the kernel's updates; nothing else is taken
+  from there.
+- `build.sh` writes a boot menu entry per model with `menu` ("Install on ThinkPad T14s
+  Gen 6 (LCD)"): GRUB's `devicetree` with the model's tree, which the hook copies from
+  the live kernel to `boot/dtb/` on the image, and the live system's command line with
+  the device's `kernel_params`, `patina.device=<slug>` and `patina.devicetree=<tree>`.
+  Where the product name the firmware reports matches the model's `smbios`, the entry
+  stands before "Install patina"; all of them stand in a submenu before Utilities.
+  Secure Boot must be off: GRUB loads no device tree while it is on.
+- `device-boot.sh` (`shellprocess-device.conf`), before the initramfs and GRUB's menu
+  are made, reads those two words: the device's `system/` files go to the disk's
+  `/etc`, the ones `patina install` writes on a detected device, and the tree's name to
+  `/etc/kernel/devicetree`. For the Snapdragon laptops that is a GRUB script that loads
+  the tree before the menu, the kernel parameters, and Debian's full initramfs
+  (`devices/snapdragon-x-elite/README.md`). On any other machine the step does nothing.
+
+First boot then runs Path A as on any machine; it finds the files in place.
 
 ## Building
 
@@ -388,4 +426,8 @@ release, never edited.
   `${gs[packagechooser_more]}` is always defined), and the answers filled in
   `shellprocess-firstboot.conf`, as the module's source in that release has it; the
   manual install is the check (`/etc/patina/firstboot.env` names the answers).
-- The arm64 image on real hardware: the boot test covers the QEMU `virt` machine only.
+- The arm64 image on real hardware: the boot test covers the QEMU `virt` machine only,
+  and starts the kernel past GRUB, so the laptops' menu entries, their device trees
+  and `device-boot.sh` have run in a sandbox and on no laptop (`docs/x-elite-run.md`
+  is that run). Open there: whether the live system finds its stick on every USB
+  port, the arm64 image's size, and an install beside Windows.

@@ -1,14 +1,15 @@
 # The X Elite run
 
 The first run of patina on a Snapdragon X Elite laptop (roadmap, Phase 4): a ThinkPad
-T14s Gen 6, with Windows kept beside Debian. Neither Debian's installer nor patina's
-image boots these laptops, so Debian is written by hand from a helper USB stick, following the
-Debian wiki's page for the T14s Gen 6, and Path A follows as in `docs/vm-run.md`. The
-background is in `devices/snapdragon-x-elite/README.md`. Tick the boxes in a copy of
-this file or in a test report (New issue, "Test report", machine "real hardware,
-aarch64"); what fails goes back into `devices/snapdragon-x-elite/`.
+T14s Gen 6, with Windows kept beside it. patina's arm64 image has a boot menu entry for
+the laptop, which loads its device tree, and its installer writes what the installed
+system needs to boot the same way; nobody has started it on one yet, so this run is
+the test, and each step says what to note where it stops. The background is in
+`devices/snapdragon-x-elite/README.md`. Tick the boxes in a copy of this file or in a
+test report (New issue, "Test report", machine "real hardware, aarch64"); what fails
+goes back into `devices/snapdragon-x-elite/` and `iso/`.
 
-You need the laptop, a USB stick of 8 GB or more, Wi-Fi and an afternoon. Keep the
+You need the laptop, a USB stick of 2 GB or more, Wi-Fi and an afternoon. Keep the
 speaker volume low throughout: upstream has no speaker protection yet.
 
 ## 1. The laptop
@@ -16,9 +17,8 @@ speaker volume low throughout: upstream has no speaker protection yet.
 - [ ] the machine type, the first four characters of the product number underneath or
   the System Model in Windows' System Information, is 21N1 or 21N2. A T14s Gen 7 has a
   Snapdragon X2 Elite, which waits for upstream: stop here
-- [ ] the screen, from Windows' display settings: 1920x1200 is the LCD
-  (`qcom/x1e78100-lenovo-thinkpad-t14s.dtb`), 2880x1800 the OLED
-  (`qcom/x1e78100-lenovo-thinkpad-t14s-oled.dtb`); note which, and the memory size
+- [ ] the screen, from Windows' display settings: 1920x1200 is the LCD, 2880x1800 the
+  OLED; note which, and the memory size
 
 ## 2. In Windows
 
@@ -28,10 +28,93 @@ speaker volume low throughout: upstream has no speaker protection yet.
 - [ ] the BitLocker recovery key is written down: `manage-bde -protectors -get C:` in
   an administrator's terminal. Windows asks for it once Secure Boot changes
 - [ ] Fast Startup is off: `powercfg /h off` in an administrator's terminal
-- [ ] Disk Management has shrunk C: by at least 50 GB, the space left unallocated
-- [ ] in the UEFI setup (F1 at power-on), Secure Boot is off
+- [ ] Disk Management has shrunk C: by at least 50 GB and made a new simple volume in
+  the freed space, for the installer to replace; note its size
+- [ ] in the UEFI setup (F1 at power-on), Secure Boot is off: GRUB loads no device
+  tree while it is on
 
-## 3. The helper stick
+## 3. The stick
+
+- [ ] the arm64 image: a release's `patina-arm64.hybrid.iso`, or, while releases carry
+  the amd64 image only, the `patina-arm64` artifact of the `iso` workflow's latest run
+  on `main` (GitHub, Actions; a zip with the image in it)
+- [ ] written to the stick with Rufus (DD image mode when it asks) or `dd`
+- [ ] the stick boots from the F12 menu, in a USB-C port on the left if another port
+  does not find it
+
+## 4. The boot menu
+
+- [ ] patina's menu shows, and "Install on ThinkPad T14s Gen 6 (LCD)" and "(OLED)" lead
+  it. If they do not, they are under "Snapdragon X Elite laptops...": note the product
+  name the firmware reports (`c` for GRUB's command line, then
+  `smbios --type 1 --get-string 5`, Esc to go back)
+- [ ] the entry of your screen starts the installer: the boot splash or the kernel's
+  lines, then the Wi-Fi step or the installer's welcome page. A screen that stays
+  black for two minutes: turn the laptop off, try the other screen's entry, then the
+  USB ports of the other side, and note which combination got how far
+- [ ] the keyboard, the touchpad and Wi-Fi work in the installer
+
+If no combination reaches the installer, the run goes on by hand (the last section),
+and the report says where the stick stopped.
+
+## 5. The installer
+
+- [ ] on the disk page, "Replace a partition", and the volume of step 2, by its size;
+  never "Erase disk", which is preselected and takes Windows with it. The page names
+  Windows' EFI System partition as the boot loader's place
+- [ ] the other pages as you like (the agent page: none, unless you test an agent);
+  the install ends without an error; restart, the stick out
+
+## 6. The first boot
+
+- [ ] patina's boot menu lists patina and Windows Boot Manager, and waits five seconds;
+  Windows starts from it (with the BitLocker key once)
+- [ ] patina starts: the first-boot step on the console asks for your password, runs
+  `patina install` and ends at the login screen (`docs/vm-run.md`, step 2b, has what
+  to expect)
+- [ ] `cat /proc/cmdline` has `clk_ignore_unused deferred_probe_timeout=30`,
+  `uname -r` is 7.2 or later, `cat /etc/kernel/devicetree` names your model's tree,
+  and `patina doctor` names the device (Snapdragon X Elite laptops)
+- [ ] `journalctl -b -p err > ~/errors.txt`, kept for the report
+
+## 7. The hardware
+
+- [ ] the internal screen, keyboard with its special keys, touchpad, TrackPoint, and
+  Wi-Fi from Plasma's network applet
+- [ ] the USB ports on both sides, an external screen over USB-C or HDMI, sound (low),
+  the battery level, a suspend and resume, a shutdown on the charger that switches off
+
+## 8. patina
+
+Steps 5 to 11 of `docs/vm-run.md`, as they are, with these differences:
+
+- step 6: the initramfs is not smaller here: the laptop keeps Debian's full one
+  (`devices/snapdragon-x-elite/README.md` says why). The boot menu waits five seconds,
+  since Windows is beside it
+- step 8, the agents bundle: note any app that has no arm64 build
+- a crash in `git` may be Debian bug #1139313; note it and run the step again
+
+## 9. The report
+
+- [ ] a test report on GitHub: the model and screen, the memory, the UEFI version
+  (`sudo dmidecode -s bios-version`), `uname -r`, the image (the release, or the
+  workflow run's number), which boot menu entry and USB port, what failed, and
+  `~/errors.txt`
+- [ ] the output of `cat /sys/class/dmi/id/{sys_vendor,product_name,product_version,product_family}`
+- [ ] a row in `docs/hardware.md`, and the status in
+  `devices/snapdragon-x-elite/device.yaml`
+
+To give the space back to Windows: put Windows Boot Manager first in the UEFI setup's
+boot order and delete patina's partition in Disk Management.
+
+## By hand, if the stick does not get there
+
+Debian 13 written with debootstrap, as the Debian wiki's page for the T14s Gen 6 has
+it, with systemd-boot, whose kernel-install hands the kernel the device tree. Leave the
+volume of step 2 out, or delete it in Disk Management first: the commands below take
+unallocated space.
+
+### The helper stick
 
 No Debian stick boots this laptop yet, so a borrowed live system is the tool that
 writes Debian to the disk: Ubuntu's, which boots the T14s Gen 6 (Ubuntu's FAQ for the
@@ -43,7 +126,7 @@ stick, and what ends up on the disk is Debian alone.
 - [ ] the stick boots from the F12 menu, in a USB-C port on the left if another port
   does not find it; "Try Ubuntu" (never "Install Ubuntu"), then Wi-Fi and a terminal
 
-## 4. Debian
+### Debian
 
 As root in the helper stick's terminal. Look at the disk first:
 
@@ -142,58 +225,8 @@ umount -R /mnt
 reboot
 ```
 
-(If `umount` says the target is busy, reboot all the same.) Take the stick out, and keep
-it for step 7.
-
-## 5. The first boot
-
-- [ ] systemd-boot's menu lists Debian and Windows Boot Manager; Windows starts from it
-  (with the BitLocker key once)
-- [ ] Debian reaches the login screen; `cat /proc/cmdline` has the parameters,
-  `uname -r` the backports kernel
-- [ ] the internal screen, keyboard with its special keys, touchpad, TrackPoint, and
-  Wi-Fi from Plasma's network applet
-- [ ] the USB ports on both sides, an external screen over USB-C or HDMI, sound (low),
-  the battery level, a suspend and resume, a shutdown on the charger that switches off
-- [ ] `journalctl -b -p err > ~/errors-debian.txt`, kept for the report
-
-## 6. patina
-
-Steps 3 to 11 of `docs/vm-run.md`, as they are, with these differences:
-
-- step 4: `git` and `curl` are already there. A crash in `git` may be Debian bug
-  #1139313; note it and run the step again
-- step 6: there is no GRUB, so its line does not apply. Instead: the boot splash shows
-  at the next boot (the `quiet splash` of `/etc/kernel/cmdline`), and the laptop still
-  boots with the smaller initramfs (`MODULES=dep`); if it does not, step 7
-- step 8, the agents bundle: note any app that has no arm64 build
-
-## 7. If Debian stops booting
-
-patina's initramfs takes only the modules the root's devices need, which on a
-device-tree laptop may miss a driver the disk depends on. Boot the stick again, then:
-
-```sh
-sudo -i
-mount /dev/disk/by-partlabel/patina-root /mnt
-mount /dev/disk/by-partlabel/patina-boot /mnt/boot
-mount /dev/nvme0n1p1 /mnt/efi   # the EFI System partition of step 4
-for d in dev proc sys run; do mount --rbind "/$d" "/mnt/$d" && mount --make-rslave "/mnt/$d"; done
-chroot /mnt sh -c 'echo MODULES=most > /etc/initramfs-tools/conf.d/zz-x-elite.conf && update-initramfs -u -k all'
-```
-
-- [ ] Debian boots again; note it in the report, since `devices/snapdragon-x-elite/`
-  then needs that file as data
-
-To give the space back to Windows: put Windows Boot Manager first in the UEFI setup's
-boot order and delete the two `patina-` partitions in Disk Management.
-
-## 8. The report
-
-- [ ] a test report on GitHub: the model and screen, the memory, the UEFI version
-  (`sudo dmidecode -s bios-version`), `uname -r`, the helper stick's image that ran
-  debootstrap, what failed, and `~/errors-debian.txt`
-- [ ] the output of `cat /sys/class/dmi/id/{sys_vendor,product_name,product_version,product_family}`,
-  from which patina can learn to detect the laptop
-- [ ] a row in `docs/hardware.md`, and the status in
-  `devices/snapdragon-x-elite/device.yaml`
+(If `umount` says the target is busy, reboot all the same.) Take the stick out.
+systemd-boot's menu then lists Debian and Windows Boot Manager. From there: the checks
+of step 7, Path A (steps 3 and 4 of `docs/vm-run.md`), then steps 8 and 9. There is no
+GRUB on this system, so its lines do not apply: `quiet splash` in `/etc/kernel/cmdline`
+is what shows the boot splash.
