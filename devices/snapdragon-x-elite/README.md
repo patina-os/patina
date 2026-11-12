@@ -41,8 +41,8 @@ the sticker underneath, and Windows' System Information shows it as the System M
 ## The run
 
 `docs/x-elite-run.md` is the run, step by step, on a ThinkPad T14s Gen 6 with Windows
-kept: Debian 13 written from a USB stick with Ubuntu's live system (debootstrap,
-kernel and firmware from `trixie-backports`), an XBOOTLDR partition for the kernels,
+kept: Debian 13 written from a helper USB stick, Ubuntu's live system as the tool
+and Debian alone on the disk (debootstrap, kernel and firmware from `trixie-backports`), an XBOOTLDR partition for the kernels,
 since Windows' EFI partition is too small for them, and the boot set up through
 `/etc/kernel/devicetree` and `/etc/kernel/cmdline`, which systemd's kernel-install reads
 at every kernel update. `quiet splash` goes there too: `patina install` otherwise puts

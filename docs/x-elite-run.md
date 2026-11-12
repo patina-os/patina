@@ -2,7 +2,7 @@
 
 The first run of patina on a Snapdragon X Elite laptop (roadmap, Phase 4): a ThinkPad
 T14s Gen 6, with Windows kept beside Debian. Neither Debian's installer nor patina's
-image boots these laptops, so Debian goes on by hand from a USB stick, following the
+image boots these laptops, so Debian is written by hand from a helper USB stick, following the
 Debian wiki's page for the T14s Gen 6, and Path A follows as in `docs/vm-run.md`. The
 background is in `devices/snapdragon-x-elite/README.md`. Tick the boxes in a copy of
 this file or in a test report (New issue, "Test report", machine "real hardware,
@@ -31,20 +31,21 @@ speaker volume low throughout: upstream has no speaker protection yet.
 - [ ] Disk Management has shrunk C: by at least 50 GB, the space left unallocated
 - [ ] in the UEFI setup (F1 at power-on), Secure Boot is off
 
-## 3. The USB stick
+## 3. The helper stick
 
-The stick runs Ubuntu's live system, which boots the T14s Gen 6 (Ubuntu's FAQ for the
-Snapdragon X Elite lists it), only as the tool that writes Debian; nothing of Ubuntu
-stays on the disk.
+No Debian stick boots this laptop yet, so a borrowed live system is the tool that
+writes Debian to the disk: Ubuntu's, which boots the T14s Gen 6 (Ubuntu's FAQ for the
+Snapdragon X Elite lists it). Ubuntu is neither installed nor tested: it runs from the
+stick, and what ends up on the disk is Debian alone.
 
 - [ ] Ubuntu's arm64 desktop image (26.04 LTS or later), written to the stick with
   Rufus or `dd`
 - [ ] the stick boots from the F12 menu, in a USB-C port on the left if another port
-  does not find it; "Try Ubuntu", then Wi-Fi and a terminal
+  does not find it; "Try Ubuntu" (never "Install Ubuntu"), then Wi-Fi and a terminal
 
 ## 4. Debian
 
-As root in the live system's terminal. Look at the disk first:
+As root in the helper stick's terminal. Look at the disk first:
 
 ```sh
 sudo -i
@@ -132,7 +133,7 @@ exit
   model's file
 
 `bootctl` writes no boot entry into the firmware from inside a chroot, so it is made
-from the live system, first in the boot order:
+from the helper stick's system, first in the boot order:
 
 ```sh
 efibootmgr --create --disk "$DISK" --part "${ESP##*p}" --label "Linux Boot Manager" \
@@ -190,7 +191,7 @@ boot order and delete the two `patina-` partitions in Disk Management.
 ## 8. The report
 
 - [ ] a test report on GitHub: the model and screen, the memory, the UEFI version
-  (`sudo dmidecode -s bios-version`), `uname -r`, the Ubuntu image that ran
+  (`sudo dmidecode -s bios-version`), `uname -r`, the helper stick's image that ran
   debootstrap, what failed, and `~/errors-debian.txt`
 - [ ] the output of `cat /sys/class/dmi/id/{sys_vendor,product_name,product_version,product_family}`,
   from which patina can learn to detect the laptop
