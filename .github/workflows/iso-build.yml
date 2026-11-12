@@ -3,8 +3,10 @@ name: iso
 # Builds the patina live image with live-build in a Debian container on both
 # architectures, boots each image in QEMU (the automated half of the release gate in
 # iso/README.md), and attaches the images to the GitHub release of a tag only when every
-# boot test passed; an alpha tag gets the amd64 image only, the one whose manual install
-# check passed. Pull requests that touch the image run the build and the boot test but
+# boot test passed. The amd64 image has passed a manual install; the arm64 one is
+# attached before its own (since 0.1.0-alpha.15), for the testers who run that install
+# on the ARM laptops its boot menu has entries for, and the release's notes say so. Pull
+# requests that touch the image run the build and the boot test but
 # never publish. Each boot test leaves a screenshot of the installer screen in its
 # artifact; the one under docs/screenshots/ is copied from there. Try patina's disk
 # image (iso/disk/) is built and booted beside them, with the installer's pages for its
@@ -187,14 +189,13 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
-      # Alpha tags carry the amd64 image only: it passed its manual install check, the
-      # arm64 one has not yet and stays in CI.
-      IMAGES: ${{ contains(github.ref_name, '-alpha') && 'patina-amd64' || 'patina-*' }}
     steps:
       - uses: actions/checkout@v5
+      # Both images, an alpha's too: the arm64 one goes out before its manual install
+      # check, which its testers run (docs/x-elite-run.md).
       - uses: actions/download-artifact@v8
         with:
-          pattern: ${{ env.IMAGES }}
+          pattern: patina-{amd64,arm64}
           path: image
           merge-multiple: true
       - name: Try patina's disk image and its setup pages

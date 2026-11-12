@@ -265,8 +265,11 @@ packs. Audience: developers and privacy-minded users in the EU.
   are fetched from Debian's mirrors during the install, so the image stays under one
   gigabyte and the installed system is current. Built in GitHub Actions, booted in QEMU
   in CI, published as a GitHub release asset only after that boot test and one manual
-  install check. Secure Boot through Debian's signed shim, GRUB and kernel. First boot
-  runs the same `patina install` as Path A. The arm64 image boots the laptops whose
+  install check; the arm64 image goes out with an alpha before its own (0.1.0-alpha.15,
+  November 2026, a decision of the maintainer's), so that the testers who run that
+  install get it, and the release's notes say so. Secure Boot through Debian's signed
+  shim, GRUB and kernel. First boot runs the same `patina install` as Path A. The arm64
+  image boots the laptops whose
   firmware gives Linux no description of the hardware (the Snapdragon X Elite ones;
   November 2026, a decision of the maintainer's, in place of "the image cannot boot
   them", so that a tester needs no Debian written by hand): its kernel is the one of
@@ -354,7 +357,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `devices/` | the only place for device- or architecture-specific files: what a device is and needs, the system files `patina install` writes on it, and for a laptop that boots with a device tree its entries in the arm64 image's boot menu |
 | `iso/` | live-build configuration, Calamares configuration and branding, the templates `iso/live/assets.sh` renders from the theme (installer artwork, icons and stylesheet, the live system's fonts, the Wi-Fi step's terminal), with the boot menus of `defaults/boot/grub/`, first-boot unit, QEMU boot tests (Phase 3); the arm64 image's kernel settings (`live/arch/`) and the installer step for laptops that boot with a device tree; `disk/` Try patina's disk image and the installer's pages for its setup window |
 | `docs/` | roadmap, branding and trademark rules, tested hardware, `credits.yaml` (the people and projects patina is made of: `patina credits`, the installer's last slide and the README's Credits section), the manual VM run that closes Phases 1 and 2 (`vm-run.md`), the manual run on a Snapdragon X Elite laptop that Phase 4 needs, Debian written by hand beside Windows and then Path A (`x-elite-run.md`), the record of the AI agent's test run of November 2026, with opencode and Hermes side by side and what is still open (`agent-test.md`); `design/` keeps design explorations as self-contained HTML pages (`futures.html`: the eight directions of the 2026 redesign, candidates for more themes); `screenshots/` holds the installer, desktop, start menu and command palette screenshots the README shows, taken by the image's boot test and by the desktop workflow's headless Plasma session, refreshed per release |
-| `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), desktop (Path A plus a Plasma X11 session on a virtual framebuffer, screenshots), iso (build, boot test, Try patina's disk image built and booted, then started twice behind patina's boot splash, release; an alpha tag's release has the amd64 image and disk only), release (run by hand: tags `main` as `v<version>` once `CHANGELOG.md` has the section and lint and smoke passed, and starts iso on the tag) |
+| `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), desktop (Path A plus a Plasma X11 session on a virtual framebuffer, screenshots), iso (build, boot test, Try patina's disk image built and booted, then started twice behind patina's boot splash, release; a release has both images and the amd64 disk, the arm64 image before its manual install check), release (run by hand: tags `main` as `v<version>` once `CHANGELOG.md` has the section and lint and smoke passed, and starts iso on the tag) |
 | `.github/ISSUE_TEMPLATE/` | the test report form testers fill in after a run of `docs/vm-run.md` or `docs/x-elite-run.md` |
 
 Each directory's README is the authority on its file format.

@@ -221,10 +221,13 @@ native build on each, no emulation), then the boot test on a plain runner of the
 architecture, then, for a `v*` tag, the upload of both images and their `SHA256SUMS` to
 that tag's GitHub release (created as a draft when missing, its notes the tag's section
 of `CHANGELOG.md`, a pre-release when the version has a pre-release part; a release made
-by hand on GitHub stays as it is and gets those notes only when it has none). An alpha tag
-(`v0.1.0-alpha.3`) gets the amd64 image only: it passed its manual install check, the
-arm64 image has not yet and stays in CI until it does. The release stays a draft until
-the manual install check below has passed on the uploaded image. The workflow also runs on
+by hand on GitHub stays as it is and gets those notes only when it has none). The amd64
+image passed its manual install check with `v0.1.0-alpha.3`; the arm64 image is attached
+before its own, from `v0.1.0-alpha.15` on (a decision of the maintainer's, so that the
+testers of the ARM laptops get it with checksums and without a GitHub login), and the
+release's notes say that nobody has installed from it yet: `docs/x-elite-run.md` is
+that check. The release stays a draft until the manual install check below has passed on
+the uploaded amd64 image. The workflow also runs on
 every pull request that touches `iso/`, `branding/`, the base bundle or the workflow
 itself, so an image change is built and booted before it is merged; it publishes only
 from a tag.

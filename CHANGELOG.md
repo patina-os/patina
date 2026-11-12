@@ -6,8 +6,15 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.15] - 2026-11-12
+
 ### Added
 
+- The release carries the arm64 image, `patina-arm64.hybrid.iso`, for the first time,
+  for testers: it boots to the installer in CI, and nobody has installed from it yet,
+  on a virtual machine or on hardware. `docs/x-elite-run.md` is that install on a
+  ThinkPad T14s Gen 6; a report of any run on arm64 is welcome. The amd64 image and
+  Try patina's disk are as tested as before.
 - The arm64 image boots Snapdragon X Elite laptops, the ThinkPad T14s Gen 6 first: its
   boot menu has an entry per model ("Install on ThinkPad T14s Gen 6 (LCD)", "(OLED)",
   "Yoga Slim 7x"), leading the menu where the firmware names the model and in a
@@ -1315,7 +1322,8 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.14...main
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.15...main
+[0.1.0-alpha.15]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.15
 [0.1.0-alpha.14]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.14
 [0.1.0-alpha.13]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.13
 [0.1.0-alpha.12]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.12
