@@ -243,8 +243,8 @@ like any aarch64 VM; natively they wait for Debian's kernel, as the other waitin
   Debian wiki documents the ThinkPad T14s Gen 6); the live image cannot boot them,
   because the boot loader has to pass the model's device tree. Debian's firmware
   package covers two Lenovo models; the rest need firmware from their Windows partition
-- [ ] one run of Path A on a Snapdragon X Elite laptop (the procedure is in that
-  directory's README). Needs Phase 1 and the hardware. The firmware helper for the
+- [ ] one run of Path A on a Snapdragon X Elite laptop (`docs/x-elite-run.md`, on a
+  ThinkPad T14s Gen 6). Needs Phase 1 and the hardware. The firmware helper for the
   models Debian's archive does not cover is written after that run, from what it shows
   missing
 - [ ] Snapdragon X2 Elite: waiting for upstream. Device trees land in Linux 7.4, GPU and

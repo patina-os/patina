@@ -17,7 +17,10 @@ All notable changes to patina are documented here. The format follows
   OLED model has a device tree of its own, `device.yaml` carries the kernel parameters
   the Debian wiki now names, and the README says how to tell the models apart, keeps
   Windows beside Debian, and sets the boot up through systemd's kernel-install, so
-  every kernel update carries the device tree.
+  every kernel update carries the device tree. `docs/x-elite-run.md` is that run for
+  a tester: Debian written from Ubuntu's live system on a USB stick, the checks of
+  the first boot, Path A as in `docs/vm-run.md`, and the way back if patina's smaller
+  initramfs leaves the laptop unable to boot.
 
 ## [0.1.0-alpha.14] - 2026-11-11
 

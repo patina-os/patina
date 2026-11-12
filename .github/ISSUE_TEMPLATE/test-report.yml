@@ -11,7 +11,9 @@ body:
         Thank you for testing patina. Follow
         [docs/vm-run.md](https://github.com/patina-os/patina/blob/main/docs/vm-run.md)
         on a fresh Debian 13 with Plasma, ideally a VM with a snapshot, and report
-        here what it showed. A run that stops halfway is worth a report too.
+        here what it showed. On a Snapdragon X Elite laptop, follow
+        [docs/x-elite-run.md](https://github.com/patina-os/patina/blob/main/docs/x-elite-run.md)
+        instead. A run that stops halfway is worth a report too.
   - type: input
     id: version
     attributes:
