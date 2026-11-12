@@ -35,9 +35,10 @@ speaker volume low throughout: upstream has no speaker protection yet.
 
 ## 3. The stick
 
-- [ ] the arm64 image: a release's `patina-arm64.hybrid.iso`, or, while releases carry
-  the amd64 image only, the `patina-arm64` artifact of the `iso` workflow's latest run
-  on `main` (GitHub, Actions; a zip with the image in it)
+- [ ] the arm64 image: `patina-arm64.hybrid.iso` of the newest release
+  (`v0.1.0-alpha.15` or later), and `sha256sum -c --ignore-missing SHA256SUMS` beside
+  it says `OK`; for a fix not yet released, the `patina-arm64` artifact of the `iso`
+  workflow's latest run on `main` (GitHub, Actions; a zip with the image in it)
 - [ ] written to the stick with Rufus (DD image mode when it asks) or `dd`
 - [ ] the stick boots from the F12 menu, in a USB-C port on the left if another port
   does not find it

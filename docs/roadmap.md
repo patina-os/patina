@@ -7,8 +7,8 @@ finished in, not the order they were prepared in: the image and the device entri
 written as data before the layer's own commands existed, so Phases 3 and 4 carried
 ticked items while Phase 1 was still open.
 
-Status: alpha (`v0.1.0-alpha.14`, for testers: Path A, and Path B on amd64). The core
-commands exist and the smoke test runs `patina install` twice in Debian 13 containers on both
+Status: alpha (`v0.1.0-alpha.15`, for testers: Path A, and Path B on amd64; the arm64
+image is out for its first installs). The core commands exist and the smoke test runs `patina install` twice in Debian 13 containers on both
 architectures; the live image builds and boots to the installer in CI; the Plasma
 renderer and the themes, aurora by default, render from data and switch without
 leftovers in the same containers. The run on a fresh Debian 13 VM with Plasma that
@@ -274,6 +274,9 @@ like any aarch64 VM; natively they wait for Debian's kernel, as the other waitin
   image to an alpha's release, the one that passed its manual install; testers install
   from it with step 2b of `docs/vm-run.md`. The arm64 image follows its own install
   check
+- [x] the arm64 image for testers, `v0.1.0-alpha.15`: attached before its install
+  check, which is the run of `docs/x-elite-run.md` on a Snapdragon X Elite laptop; the
+  release's notes say that nobody has installed from it yet
 - [ ] `CHANGELOG.md`: the Unreleased section becomes 0.1.0
 - [ ] tag `v0.1.0`; the `iso` workflow attaches both images to the release after the
   boot tests
