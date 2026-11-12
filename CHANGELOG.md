@@ -13,6 +13,11 @@ All notable changes to patina are documented here. The format follows
   so the wallpaper's colours come through and its shapes no longer do
   (`start_menu.glass`), and the light hairline round them is down to a barely visible
   edge (`start_menu.rim`, 4 % instead of 12 %). The grain stays.
+- `devices/snapdragon-x-elite/`, ready for a first run on a ThinkPad T14s Gen 6: its
+  OLED model has a device tree of its own, `device.yaml` carries the kernel parameters
+  the Debian wiki now names, and the README says how to tell the models apart, keeps
+  Windows beside Debian, and sets the boot up through systemd's kernel-install, so
+  every kernel update carries the device tree.
 
 ## [0.1.0-alpha.14] - 2026-11-11
 

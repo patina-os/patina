@@ -7,18 +7,25 @@ slug: snapdragon-x-elite
 arch: aarch64
 status: untested
 base_image: https://wiki.debian.org/InstallingDebianOn/Thinkpad/T14s_Gen6_Snapdragon
-# The Debian wiki says the kernel needs "some cmdline options" but names none; the first
-# run records them here.
-kernel_params: []
+# Named by the Debian wiki's T14s Gen 6 page (as of 2026-10-29); the other models are
+# untested. With systemd-boot they go into /etc/kernel/cmdline (README).
+kernel_params:
+  - clk_ignore_unused
+  - deferred_probe_timeout=30
 extra_packages:         # from Debian's non-free-firmware area, the only non-free content allowed
   - firmware-qcom-soc   # qcom/x1e80100/: GPU, DSP, battery manager and audio topology, per model
   - firmware-atheros    # ath12k/WCN7850/: the wifi and bluetooth chip these laptops share
 # Device tree per model, as Debian's arm64 kernel ships it under
 # /usr/lib/linux-image-<version>-arm64/qcom/.
+# The T14s Gen 6 (machine types 21N1 and 21N2) has one device tree per screen; both read
+# their firmware from qcom/x1e80100/LENOVO/21N1/. The T14s Gen 7 is a Snapdragon X2.
 models:
-  - name: Lenovo ThinkPad T14s Gen 6 (21N1)
+  - name: Lenovo ThinkPad T14s Gen 6, 1920x1200 LCD (21N1, 21N2)
     dtb: x1e78100-lenovo-thinkpad-t14s.dtb
     firmware_in_debian: true    # firmware-qcom-soc carries qcom/x1e80100/LENOVO/21N1/
+  - name: Lenovo ThinkPad T14s Gen 6, 2880x1800 OLED (21N1, 21N2)
+    dtb: x1e78100-lenovo-thinkpad-t14s-oled.dtb
+    firmware_in_debian: true    # the same firmware as the LCD model
   - name: Lenovo Yoga Slim 7x (83ED)
     dtb: x1e80100-lenovo-yoga-slim7x.dtb
     firmware_in_debian: true    # firmware-qcom-soc carries qcom/x1e80100/LENOVO/83ED/
@@ -42,5 +49,6 @@ notes: >
   boot loader). Upstream, NVMe, keyboard, touchpad, display including external outputs,
   GPU and wifi work; audio has no speaker protection; suspend drains the battery within
   a day; bluetooth and the camera still need an out-of-tree branch. Debian 13's own
-  firmware package covers the two Lenovo models; the others need firmware from the
-  machine's Windows partition, which patina neither ships nor has a helper for yet.
+  firmware package covers the T14s Gen 6 (either screen) and the Yoga Slim 7x; the
+  others need firmware from the machine's Windows partition, which patina neither ships
+  nor has a helper for yet.
