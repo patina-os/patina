@@ -238,15 +238,21 @@ like any aarch64 VM; natively they wait for Debian's kernel, as the other waitin
   procedure (Debian's official Raspberry Pi image, USB SSD, clean reimage per run)
 - [ ] Path A on a Raspberry Pi 4; the goal is correctness, not UX. Needs Phase 1 and
   the hardware
-- [x] `devices/snapdragon-x-elite/`: data only, status untested. Debian 13 runs on these
-  laptops from the kernel and firmware in `trixie-backports`, installed by hand (the
-  Debian wiki documents the ThinkPad T14s Gen 6); the live image cannot boot them,
-  because the boot loader has to pass the model's device tree. Debian's firmware
-  package covers two Lenovo models; the rest need firmware from their Windows partition
-- [ ] one run of Path A on a Snapdragon X Elite laptop (the procedure is in that
-  directory's README). Needs Phase 1 and the hardware. The firmware helper for the
-  models Debian's archive does not cover is written after that run, from what it shows
-  missing
+- [x] `devices/snapdragon-x-elite/`: status untested. Debian 13 runs on these laptops
+  from the kernel in `trixie-backports` (the Debian wiki documents the ThinkPad T14s
+  Gen 6, installed by hand); the boot loader has to pass the model's device tree.
+  Debian's firmware package covers two Lenovo models; the rest need firmware from their
+  Windows partition
+- [x] the arm64 image boots them (November 2026, a decision of the maintainer's, in
+  place of "the image cannot"): its kernel is the one of `trixie-backports`, its boot
+  menu has an entry per model with Debian's firmware, which loads the device tree, and
+  the installer writes the device's boot files to the disk. Written from Debian's
+  documentation and sources; no laptop has started it yet
+- [ ] one run on a Snapdragon X Elite laptop (`docs/x-elite-run.md`, on a ThinkPad T14s
+  Gen 6): the image and its installer, or by hand where the stick does not get there.
+  Needs the hardware. The firmware helper for the models Debian's archive does not
+  cover is written after that run, from what it shows missing; so are Secure Boot and
+  the small initramfs on these laptops
 - [ ] Snapdragon X2 Elite: waiting for upstream. Device trees land in Linux 7.4, GPU and
   NPU drivers are still upstreaming, Debian 13's kernel is 6.12; Qualcomm announced
   Debian support for late 2026. No device directory until one boots Debian's kernel

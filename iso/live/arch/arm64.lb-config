@@ -1,0 +1,6 @@
+# live-build options only the arm64 image takes, one to a line; build.sh hands them to
+# `lb config`. Debian 13's kernel (6.12) is older than the ARM laptops patina can boot
+# (devices/snapdragon-x-elite/), so the arm64 image takes its kernel from
+# trixie-backports (arm64.pref.chroot), for the live system and, since the installer
+# copies it, the installed one, whose apt sources keep trixie-backports for its updates.
+--backports true

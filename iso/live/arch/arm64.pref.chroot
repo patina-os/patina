@@ -1,0 +1,7 @@
+# Build-time apt pin of the arm64 image (build.sh; live-build removes it from the image
+# after the packages are in): the kernel comes from trixie-backports (arm64.lb-config
+# says why). Nothing else does: apt takes from backports only what is pinned, and an
+# installed system keeps a package from backports up to date from there by itself.
+Package: linux-image-arm64 linux-image-*-arm64 linux-binary-*-arm64 linux-modules-*-arm64 linux-base-*-arm64 linux-base-arm64 linux-base
+Pin: release n=trixie-backports
+Pin-Priority: 990

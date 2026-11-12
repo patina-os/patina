@@ -18,6 +18,7 @@ on:
       - 'branding/**'
       - 'manifest/bundles/base.yaml'
       - 'devices/try-patina-windows/**'
+      - 'devices/snapdragon-x-elite/**'
       - '.github/workflows/iso-build.yml'
   push:
     tags: ['v*']

@@ -13,3 +13,22 @@ grep -q '"Install patina"' boot/grub/grub.cfg || {
   echo "0100-patina-boot-menu: no live entry to name in boot/grub/grub.cfg" >&2
   exit 1
 }
+
+# The laptops whose boot loader hands the kernel a device tree (build.sh wrote their
+# entries, live-build filled in the kernel's names): the entries of the model the
+# firmware names lead the menu, all of them stand in a submenu before Utilities, and
+# the trees they load come from the live system's kernel, the one they boot.
+if [[ -e boot/grub/devices-all.cfg ]]; then
+  [[ ! -e boot/grub/devices.cfg ]] || sed -i '/^source \/boot\/grub\/config.cfg$/a source /boot/grub/devices.cfg' boot/grub/grub.cfg
+  sed -i "/^submenu 'Utilities/i source /boot/grub/devices-all.cfg\n" boot/grub/grub.cfg
+  grep -q '^source /boot/grub/devices-all.cfg$' boot/grub/grub.cfg || {
+    echo "0100-patina-boot-menu: no place for the devices' entries in boot/grub/grub.cfg" >&2
+    exit 1
+  }
+  while read -r tree; do
+    src="$(printf '%s\n' ../chroot/usr/lib/linux-image-*/"$tree" | sort -V | tail -n 1)"
+    [[ -f "$src" ]] || { echo "0100-patina-boot-menu: the live kernel carries no $tree" >&2; exit 1; }
+    install -D -m 0644 "$src" "boot/dtb/$tree"
+  done < <(sed -n 's|^[[:space:]]*devicetree /boot/dtb/||p' boot/grub/devices-all.cfg | sort -u)
+  echo "0100-patina-boot-menu: $(grep -c '^menuentry' boot/grub/devices-all.cfg) entries for laptops that boot with a device tree"
+fi

@@ -6,8 +6,31 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- The arm64 image boots Snapdragon X Elite laptops, the ThinkPad T14s Gen 6 first: its
+  boot menu has an entry per model ("Install on ThinkPad T14s Gen 6 (LCD)", "(OLED)",
+  "Yoga Slim 7x"), leading the menu where the firmware names the model and in a
+  submenu elsewhere, which loads the model's device tree, and the installer writes what
+  the installed system needs to boot the same way. Secure Boot must be off. Written
+  from Debian's documentation and sources and not yet started on a laptop:
+  `docs/x-elite-run.md` is the run for a tester, with Windows kept, and keeps the way
+  by hand (Debian written with debootstrap) for a stick that does not get there.
+- `devices/`: a machine that boots with a device tree is detected by a string of its
+  tree (`detect_compatible`), and a model's `menu`, `dtb` and `smbios` make its entry
+  in the image's boot menu. `patina install` writes a Snapdragon X Elite laptop's boot
+  files: a GRUB script that loads the device tree `/etc/kernel/devicetree` names, the
+  kernel parameters, and Debian's full initramfs in place of patina's small one.
+
 ### Changed
 
+- The arm64 image installs the kernel of `trixie-backports` (7.2 today) in place of
+  Debian 13's 6.12, which is older than the ARM laptops, and an arm64 install keeps
+  `trixie-backports` in its apt sources for that kernel's updates. The amd64 image is
+  as it was.
+- `devices/snapdragon-x-elite/`: the ThinkPad T14s Gen 6's OLED model has a device tree
+  of its own, `device.yaml` carries the kernel parameters the Debian wiki now names,
+  and the README says how to tell the models apart.
 - The start menu, the command palette and the other panel popups are frosted glass,
   almost borderless: their background is 72 % opaque over KWin's blur instead of 45 %,
   so the wallpaper's colours come through and its shapes no longer do

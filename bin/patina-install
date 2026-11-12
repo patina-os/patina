@@ -497,7 +497,12 @@ install_system() {
         continue
       fi
       say "system: writing $dest"
-      backend_run system.write "$src" "$dest"
+      # A script the system runs (a device's /etc/grub.d entry) stays executable.
+      if [[ -x "$src" ]]; then
+        backend_run system.write_script "$src" "$dest"
+      else
+        backend_run system.write "$src" "$dest"
+      fi
       changed_here=1
       changed
     done < <(find "$dir" -type f | sort)

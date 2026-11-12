@@ -266,7 +266,15 @@ packs. Audience: developers and privacy-minded users in the EU.
   gigabyte and the installed system is current. Built in GitHub Actions, booted in QEMU
   in CI, published as a GitHub release asset only after that boot test and one manual
   install check. Secure Boot through Debian's signed shim, GRUB and kernel. First boot
-  runs the same `patina install` as Path A.
+  runs the same `patina install` as Path A. The arm64 image boots the laptops whose
+  firmware gives Linux no description of the hardware (the Snapdragon X Elite ones;
+  November 2026, a decision of the maintainer's, in place of "the image cannot boot
+  them", so that a tester needs no Debian written by hand): its kernel is the one of
+  `trixie-backports`, on every arm64 install, since Debian 13's is older than these
+  laptops; its boot menu has an entry per model, from the device's data, which loads
+  the model's device tree (Secure Boot off, since GRUB loads none while it is on); and
+  its installer writes the device's system files and the tree's name to the disk,
+  because the first boot, where Path A would write them, cannot happen without them.
 - Try patina for Windows: TryPatina.exe (`patina-os/win-emulator`, Go, GPL-3.0-or-later)
   sets up stock QEMU from winget on the Windows Hypervisor Platform, asks in a setup
   window what the installer asks (the account; the language, keyboard and time zone,
@@ -304,7 +312,9 @@ packs. Audience: developers and privacy-minded users in the EU.
    kept as data; dnf, pacman later). Nothing is architecture-specific outside `devices/`.
 4. Updates are `git pull` plus versioned migrations.
 5. The image contains no logic of its own; it only automates the stock-Debian path. If
-   Path A and Path B diverge, Path A wins.
+   Path A and Path B diverge, Path A wins. The one exception is the boot of a laptop
+   that needs a device tree (`iso/README.md`): the image carries out the device's data
+   before the first boot, and Path A writes the same files.
 6. Every design choice must reduce ongoing work for one person.
 
 ## Never
@@ -312,9 +322,10 @@ packs. Audience: developers and privacy-minded users in the EU.
 - build or rebuild packages, add a package repository of our own, commit executables or
   firmware, patch a kernel, add out-of-tree modules
 - add architecture- or device-specific code or data outside `devices/` and the
-  per-architecture package lists under `iso/live/arch/`
+  per-architecture package lists and build settings under `iso/live/arch/`
 - add proprietary software, US cloud services or snap as defaults
-- put logic into the image that Path A does not have
+- put logic into the image that Path A does not have, beyond the boot files of a laptop
+  that boots with a device tree, which come from `devices/` as data
 - add a dependency beyond bash, coreutils, git, `yq` and what the base ships without a
   line in `manifest/` and a reason in the commit message
 - add abstraction layers, plugin systems, frameworks or a second language for the tooling
@@ -340,11 +351,11 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, Plasma's `icons.yaml` for the folder colours of an icon theme, one `apply.sh`) and the headless session the desktop workflow screenshots (`screenshot.sh`); Plasma's `askpass.sh`, the AI agent's sudo password dialog; `plasma/` first; `terminal/` renders the terminal and its tools for every desktop |
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
-| `devices/` | the only place for device- or architecture-specific files |
-| `iso/` | live-build configuration, Calamares configuration and branding, the templates `iso/live/assets.sh` renders from the theme (installer artwork, icons and stylesheet, the live system's fonts, the Wi-Fi step's terminal), with the boot menus of `defaults/boot/grub/`, first-boot unit, QEMU boot tests (Phase 3); `disk/` Try patina's disk image and the installer's pages for its setup window |
-| `docs/` | roadmap, branding and trademark rules, tested hardware, `credits.yaml` (the people and projects patina is made of: `patina credits`, the installer's last slide and the README's Credits section), the manual VM run that closes Phases 1 and 2 (`vm-run.md`), the record of the AI agent's test run of November 2026, with opencode and Hermes side by side and what is still open (`agent-test.md`); `design/` keeps design explorations as self-contained HTML pages (`futures.html`: the eight directions of the 2026 redesign, candidates for more themes); `screenshots/` holds the installer, desktop, start menu and command palette screenshots the README shows, taken by the image's boot test and by the desktop workflow's headless Plasma session, refreshed per release |
+| `devices/` | the only place for device- or architecture-specific files: what a device is and needs, the system files `patina install` writes on it, and for a laptop that boots with a device tree its entries in the arm64 image's boot menu |
+| `iso/` | live-build configuration, Calamares configuration and branding, the templates `iso/live/assets.sh` renders from the theme (installer artwork, icons and stylesheet, the live system's fonts, the Wi-Fi step's terminal), with the boot menus of `defaults/boot/grub/`, first-boot unit, QEMU boot tests (Phase 3); the arm64 image's kernel settings (`live/arch/`) and the installer step for laptops that boot with a device tree; `disk/` Try patina's disk image and the installer's pages for its setup window |
+| `docs/` | roadmap, branding and trademark rules, tested hardware, `credits.yaml` (the people and projects patina is made of: `patina credits`, the installer's last slide and the README's Credits section), the manual VM run that closes Phases 1 and 2 (`vm-run.md`), the manual run on a Snapdragon X Elite laptop that Phase 4 needs, Debian written by hand beside Windows and then Path A (`x-elite-run.md`), the record of the AI agent's test run of November 2026, with opencode and Hermes side by side and what is still open (`agent-test.md`); `design/` keeps design explorations as self-contained HTML pages (`futures.html`: the eight directions of the 2026 redesign, candidates for more themes); `screenshots/` holds the installer, desktop, start menu and command palette screenshots the README shows, taken by the image's boot test and by the desktop workflow's headless Plasma session, refreshed per release |
 | `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), desktop (Path A plus a Plasma X11 session on a virtual framebuffer, screenshots), iso (build, boot test, Try patina's disk image built and booted, then started twice behind patina's boot splash, release; an alpha tag's release has the amd64 image and disk only), release (run by hand: tags `main` as `v<version>` once `CHANGELOG.md` has the section and lint and smoke passed, and starts iso on the tag) |
-| `.github/ISSUE_TEMPLATE/` | the test report form testers fill in after a run of `docs/vm-run.md` |
+| `.github/ISSUE_TEMPLATE/` | the test report form testers fill in after a run of `docs/vm-run.md` or `docs/x-elite-run.md` |
 
 Each directory's README is the authority on its file format.
 
@@ -356,7 +367,9 @@ Each directory's README is the authority on its file format.
 - Scripts in `bin/`: `patina-<cmd>`, no extension. Other scripts: `.sh`.
 - Data files end in `.yaml`; GitHub workflows and issue forms keep GitHub's `.yml`; Calamares keeps its
   `.conf` and `branding.desc` names and live-build its `.list.chroot` names, because the
-  tools require them. They are YAML all the same and are linted as such. The files under
+  tools require them. They are YAML all the same and are linted as such. The arm64
+  image's apt pin and live-build options (`iso/live/arch/arm64.pref.chroot`,
+  `arm64.lb-config`) are plain text in the formats apt and `lb config` read. The files under
   `defaults/system/` and `devices/*/system/` are the exception: sysctl, udev, systemd
   and SDDM files named by their destination (Firefox's policies are JSON), excluded from the YAML checks; so is `defaults/agent.md`, the agent's
   instruction in Markdown, which opencode reads.
@@ -372,7 +385,8 @@ Each directory's README is the authority on its file format.
   `eval`, no `curl | sh` except an upstream installer listed in `manifest/upstream.yaml`.
 - Idempotent: every script may run twice without harm. Check before changing.
 - `sudo` appears only in backend commands from `manifest/backends/`, never elsewhere.
-  System files are written only through that path (`system.write`; sudo's own,
+  System files are written only through that path (`system.write`, or
+  `system.write_script` for one that is executable in the checkout; sudo's own,
   under `sudoers.d/`, by `system.write_private` once visudo has read them, and a
   file only bundles the machine lacks name is removed by `system.remove`), only from
   `defaults/system/` and the `system/` directory of a detected device (`devices/`), for the keyring and sources file of an `apt-source` recipe, and
@@ -433,9 +447,11 @@ Each directory's README is the authority on its file format.
 
 1. Only once the device boots Debian. `cp -r devices/_template devices/<slug>`; fill
    `device.yaml` with facts; `status: untested` is fine.
-2. Express device-specific needs as data (`kernel_params`, `extra_packages`). Glue scripts
-   only when data cannot express it (firmware extraction), following the `bin/`
-   conventions; they run only when `patina` detects that device.
+2. Express device-specific needs as data (`kernel_params`, `extra_packages`; for a
+   machine that boots with a device tree, `detect_compatible` and its models' `dtb`,
+   `menu` and `smbios`, `devices/README.md`). Glue scripts only when data cannot
+   express it (firmware extraction), following the `bin/` conventions; they run only
+   when `patina` detects that device.
 3. Add a row to `docs/hardware.md`. Never create an ARM branch or a separate release.
 
 ## How to add a migration

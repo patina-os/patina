@@ -13,6 +13,9 @@ system:
   # The one path that writes under /etc: the files of defaults/system/, the keyrings and
   # sources of apt-source recipes. Arguments: source file, destination.
   write: sudo install -D -m 0644
+  # The same for a file that is executable in the checkout: a script the system runs,
+  # such as a device's entry under /etc/grub.d.
+  write_script: sudo install -D -m 0755
   # sudo's own files (sudoers.d), which visudo wants at this mode; the user cannot
   # read them back, so patina install keeps a checksum of what it wrote.
   write_private: sudo install -D -m 0440
