@@ -12,6 +12,11 @@ All notable changes to patina are documented here. The format follows
   cloud agent from the provider the user picked (their own API, say) to Mistral, nor a
   picked local model back to the first that fits: the record was emptied before it was
   read.
+- The AI agent (opencode) asks before it searches the content of files: its search
+  printed a token from `~/.config/patina/services/` unasked, past the rules that keep
+  secrets from it, because opencode matches a search rule against the search term, not
+  the files. `~/.git-credentials`, `~/.netrc` and GitHub CLI's login are kept from it
+  too.
 
 ## [0.1.0-alpha.15] - 2026-11-12
 

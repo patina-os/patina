@@ -23,9 +23,13 @@ opencode:
   #
   # Permissions: anything that changes files, runs a command (ssh to a server included)
   # or fetches a web page asks first. What runs without asking:
-  # - opencode's own read, list and search tools, but not on the files that hold a
-  #   secret (`read`): the agent's and the services' tokens, private keys, password
-  #   databases. With a cloud model, what the agent reads goes to its provider.
+  # - opencode's own read, list and file-name search (glob) tools, but not on the files
+  #   that hold a secret (`read`): the agent's and the services' tokens, private keys,
+  #   password databases, git's and netrc's logins. With a cloud model, what the agent
+  #   reads goes to its provider. Its content search (`grep`) asks: opencode matches a
+  #   grep rule against the search term, not the files, and does not hold the `read`
+  #   rules against what it finds, so a search for "ghp_" printed a token unasked
+  #   (opencode 1.19; a rule by path needs a change upstream).
   # - Reading under the system's own directories (`external_directory`); a change
   #   there still asks, as an edit or a command does.
   # - Commands that only look (`bash`): a diagnosis of a dozen steps asked a dozen
@@ -65,6 +69,7 @@ opencode:
     permission:
       edit: ask
       webfetch: ask
+      grep: ask
       read:
         "*": allow
         "*.env": ask
@@ -77,6 +82,9 @@ opencode:
         "*/.gnupg/*": deny
         "*/opencode/auth.json": deny
         "*/.hermes/.env": deny
+        "*/.git-credentials": deny
+        "*/.netrc": deny
+        "*/.config/gh/hosts.yml": deny
       external_directory:
         "*": ask
         "/etc/*": allow
