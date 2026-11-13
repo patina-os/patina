@@ -24,7 +24,12 @@ if [[ -n "$(git -C "$PATINA_PATH" status --porcelain)" ]]; then
   warn "the checkout has local changes; the pull keeps them if it can"
 fi
 say "pulling $(git -C "$PATINA_PATH" rev-parse --abbrev-ref HEAD) in $PATINA_PATH"
-git -C "$PATINA_PATH" pull --ff-only --quiet
+if ! git -C "$PATINA_PATH" pull --ff-only --quiet; then
+  die "the pull stopped, nothing changed. A change of your own in the checkout is the
+  usual cause (git -C $PATINA_PATH status): keep your keys in
+  ~/.config/patina/keybindings.yaml (patina keys), set the file back with
+  git -C $PATINA_PATH checkout -- <file> (or git stash), then patina update again"
+fi
 say "now at $(git -C "$PATINA_PATH" describe --tags --always)"
 "$PATINA_PATH/bin/patina-migrate"
 # What the bundles, the system files and the app settings gained since arrives with an

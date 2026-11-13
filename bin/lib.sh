@@ -189,6 +189,17 @@ booted_with_systemd() {
 # ~/.local/share/patina, so nothing of the user's goes under that name.
 PATINA_THEMES="${XDG_CONFIG_HOME:-$HOME/.config}/patina/themes"
 
+# The keys: defaults/keybindings.yaml with the user's own chords merged over it
+# (~/.config/patina/keybindings.yaml, the same keys, only those that differ), so a
+# change of the user's survives git pull. As YAML on stdout, for yq to read from stdin.
+keybindings() {
+  local own="${XDG_CONFIG_HOME:-$HOME/.config}/patina/keybindings.yaml"
+  local -a files=("$PATINA_PATH/defaults/keybindings.yaml")
+  [[ ! -f "$own" ]] || files+=("$own")
+  # shellcheck disable=SC2016 # $f is yq's variable
+  yq eval-all '. as $f ireduce ({}; . * $f)' "${files[@]}"
+}
+
 # The directory of a theme: the repository's themes/ first, then the installed ones.
 # Entries starting with _ are templates.
 # opencode's file with the permission rules for one MCP server's tools, on stdout:

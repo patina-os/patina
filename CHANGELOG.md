@@ -6,6 +6,12 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Your own keys: `~/.config/patina/keybindings.yaml`, with only the chords that differ,
+  is merged over `defaults/keybindings.yaml`, and `patina keys` points there. It said
+  to edit the file in the checkout, which the next `patina update` could not pull over.
+
 ### Fixed
 
 - A second `patina install`, a `patina update` or `patina ai on` no longer switches the
@@ -33,6 +39,8 @@ All notable changes to patina are documented here. The format follows
 - `patina doctor` checks that Plasma uses the theme's colour scheme and that kitty.conf
   includes the theme's colours, where it saw only that the files existed and said
   clean.
+- `patina update` says what to do when the pull stops on a change of the user's in the
+  checkout, where it ended with git's own error.
 
 ## [0.1.0-alpha.15] - 2026-11-12
 

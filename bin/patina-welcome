@@ -25,7 +25,6 @@ EOU
 # Picked "Don't open at login": the welcome stays in the start menu only.
 off="$PATINA_STATE/welcome-off"
 settings="$PATINA_PATH/defaults/settings.yaml"
-keybindings="$PATINA_PATH/defaults/keybindings.yaml"
 # The Nextcloud client's own configuration, which holds its accounts and sync folders.
 nextcloud_cfg="${XDG_CONFIG_HOME:-$HOME/.config}/Nextcloud/nextcloud.cfg"
 
@@ -397,7 +396,7 @@ colours() {
 }
 
 welcome() {
-  local name action choice chord words
+  local name action choice chord words keybindings
   local -a lines
   [[ -t 0 && -t 1 ]] || die "the welcome asks on a terminal; patina welcome --window opens one"
   need_yq
@@ -415,6 +414,7 @@ welcome() {
   gum style --foreground "${tpl[BASE05]}" "Welcome${name:+, $name}. patina is installed with the apps you picked." \
     "Here is what you can add now, and the keys to start with:"
   echo
+  keybindings="$(keybindings)"
   # The first keys, as defaults/keybindings.yaml has them; the agent's once it is set up:
   # Meta+A where kortex came with an AI bundle (the start menu's "Ask kortex"), the
   # agent's view (kortex's panel, or the agent in its terminal) where an AI or the
@@ -422,8 +422,8 @@ welcome() {
   for action in launcher terminal ask agent keys; do
     [[ "$action" != ask || -e "${XDG_DATA_HOME:-$HOME/.local/share}/applications/patina-ask.desktop" ]] || continue
     [[ "$action" != agent || -e "${XDG_DATA_HOME:-$HOME/.local/share}/applications/patina-agent.desktop" ]] || continue
-    chord="$(yq eval ".actions.$action" "$keybindings")"
-    words="$(yq eval ".names.$action" "$keybindings")"
+    chord="$(yq eval ".actions.$action" - <<< "$keybindings")"
+    words="$(yq eval ".names.$action" - <<< "$keybindings")"
     [[ "$action" != keys ]] || words="All the keys at a glance"   # the sheet's own name is "Show these keys"
     printf '  %s  %s\n' "$(gum style --bold --foreground "${tpl[ACCENT]}" "$(printf '%-12s' "$chord")")" "$words"
   done

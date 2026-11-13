@@ -2,12 +2,15 @@
 
 Curated defaults as desktop-agnostic data. Nothing here is specific to Plasma; the
 renderers under `desktops/` translate it. Users keep their own overrides outside the
-repository (planned: `~/.config/patina/`), so `git pull` never clobbers them.
+repository, under `~/.config/patina/`, so `git pull` never clobbers them.
 
 - `keybindings.yaml`: named actions mapped to key chords, and under `names` what each
   does in words. A desktop renderer knows how to bind each action (which command to
   launch, which window-manager function to call); `patina keys` and Meta+K show the
-  names as the cheat sheet.
+  names as the cheat sheet. The user's own chords go in
+  `~/.config/patina/keybindings.yaml`, the same keys with only those that differ
+  (`actions: {terminal: Meta+T}`), merged over this file (`keybindings` in `bin/lib.sh`);
+  `patina theme set` binds them.
 - `settings.yaml`: the small set of knobs `patina install` applies when the user does not
   choose otherwise: default theme, its mode (dark or light; `patina theme mode` keeps
   the user's choice in the state directory) and desktop, Flatpak remote, fonts, the command the
