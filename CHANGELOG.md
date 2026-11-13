@@ -21,6 +21,9 @@ All notable changes to patina are documented here. The format follows
   its first use: opencode allows a tool no rule names, so until the next `patina
   install` wrote its rules, a new service's delete ran unasked. Every tool no rule
   names now asks, and opencode's own tools are allowed by name.
+- Your own API: a key the API refuses is said so and asked again, and an address where
+  no API answers is asked again, where both read "gave no list of models" and the
+  setup went on with a key that could not work.
 
 ## [0.1.0-alpha.15] - 2026-11-12
 
