@@ -30,6 +30,9 @@ All notable changes to patina are documented here. The format follows
 - Typing in a list narrows it to the lines that hold what was typed: a typo no longer
   picks whatever gum matched loosely ("dekstop" turned on headstart), and text no line
   holds is said and the list asks again, where it left the question as if Back.
+- `patina doctor` checks that Plasma uses the theme's colour scheme and that kitty.conf
+  includes the theme's colours, where it saw only that the files existed and said
+  clean.
 
 ## [0.1.0-alpha.15] - 2026-11-12
 
