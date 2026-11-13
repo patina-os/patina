@@ -443,6 +443,16 @@ jobs:
           [[ "$(yq eval -o=json -I=0 '.model' "$config")" == "$entry" ]]
           [[ "$(yq eval '.approvals.mode' "$config")" == manual ]]
           [[ "$(yq eval '.agent.environment_hint' "$config")" == "$(cat defaults/agent.md)" ]]
+          # Your own instructions (patina ai prompt, off a terminal: no editor): Hermes
+          # gets them after patina's, opencode the file after patina's.
+          own="$HOME/.config/patina/agent.md"
+          mkdir -p "$(dirname "$own")"
+          echo "Answer in German." > "$own"
+          bin/patina ai prompt < /dev/null
+          hint="$(yq eval '.agent.environment_hint' "$config")"
+          [[ "$hint" == "$(cat defaults/agent.md)"*"Answer in German." ]]
+          PATINA_AI_AGENT=opencode bin/patina ai prompt < /dev/null
+          [[ "$(yq eval -r '.instructions[-1]' "$HOME/.config/opencode/opencode.json")" == "$own" ]]
           [[ "$(cat "$HOME/.config/kortex/agent")" == hermes ]]
           [[ "$(cat "$HOME/.local/state/patina/ai-agent")" == hermes ]]
           # Into a file: status says more after this line, and grep -q closing the

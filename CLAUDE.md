@@ -87,11 +87,13 @@ packs. Audience: developers and privacy-minded users in the EU.
   `hermes-local` and `hermes-cloud` bundles: from its own
   installer pinned to a release (it refuses to be built as a package), Mistral through
   its OpenAI-compatible API, the user's own API, then Anthropic and OpenAI as its cloud
-  providers, its approvals manual, `defaults/agent.md` as its `agent.environment_hint`, its own
+  providers, its approvals manual, `defaults/agent.md` (and after it the user's own
+  `~/.config/patina/agent.md`, `patina ai prompt`) as its `agent.environment_hint`, its own
   extras (messaging, memory, scheduler) left to `hermes setup`; it asks first only
   before what it counts as dangerous, and the README says so (October 2026). opencode
   asks before every change
-  (`defaults/apps.yaml`) and reads `defaults/agent.md`. Either agent runs what needs
+  (`defaults/apps.yaml`) and reads `defaults/agent.md`, then the user's own instructions
+  (`~/.config/patina/agent.md`, in addition, never in place of patina's; November 2026). Either agent runs what needs
   root with `sudo -A`, through a password dialog in the theme's colours that a
   notification opens, so it never takes the keyboard by itself, and one password covers
   every sudo of the user's for sudo's timeout (`/etc/sudoers.d/patina-agents`, with an

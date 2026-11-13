@@ -644,7 +644,8 @@ endpoint_value() {
   yq eval ".$1 // \"\"" "$PATINA_STATE/ai-endpoint.yaml" 2> /dev/null || true
 }
 
-# opencode: which model it uses and its standing instructions (defaults/agent.md); for
+# opencode: which model it uses and its standing instructions (defaults/agent.md, then
+# the user's own of patina ai prompt while that file is there); for
 # your own API the provider `custom`, with the address and model patina ai login
 # recorded and the key from the file it wrote, readable by the user only. A cloud
 # provider's key is opencode's own login, which patina ai login runs: nothing is asked
@@ -652,7 +653,9 @@ endpoint_value() {
 install_opencode() {
   local file="$HOME/.config/opencode/opencode.json" rules="$PATINA_PATH/defaults/agent.md"
   local keyfile="${XDG_CONFIG_HOME:-$HOME/.config}/patina/ai/custom.key"
-  local model local_tag="" provider="" url="" custom="" host="" tmp name
+  local model local_tag="" provider="" url="" custom="" host="" tmp name own_file own=""
+  own_file="$(own_rules_file)"
+  [[ ! -f "$own_file" ]] || own="$own_file"
   if [[ "$ai" == local ]]; then
     local_tag="$(local_model)"
     [[ -n "$local_tag" ]] || die "no model of ai.local.models fits this machine"
@@ -677,8 +680,7 @@ install_opencode() {
   tmp="$(mktemp)"
   # The model always: without one opencode took the first model it knew, Ollama's.
   if ! MODEL="$model" LOCAL="$local_tag" URL="$url" CUSTOM="$custom" NAME="Your own · $host" \
-      KEY="{file:$keyfile}" RULES="$rules" yq eval -o=json '
-      .instructions = ((.instructions // []) + [strenv(RULES)] | unique) |
+      KEY="{file:$keyfile}" RULES="$rules" OWN_FILE="$own_file" OWN="$own" yq eval -o=json "$opencode_rules"' |
       with(select(strenv(LOCAL) != "");
         .provider.ollama.models[strenv(LOCAL)].name = strenv(LOCAL)) |
       with(select(strenv(URL) != "");
@@ -727,8 +729,9 @@ install_opencode() {
 # Hermes Agent: its model in ~/.hermes/config.yaml (Ollama's OpenAI-compatible address, or
 # the provider's `hermes` entry of ai.cloud.providers), manual approvals (Hermes asks
 # first only before what it counts as dangerous; its default lets a second model let
-# some of that through), its standing instructions (defaults/agent.md as
-# agent.environment_hint, so the user's own SOUL.md stays theirs). The provider's key is
+# some of that through), its standing instructions (defaults/agent.md, then the user's
+# own of patina ai prompt, as agent.environment_hint, so the user's own SOUL.md stays
+# theirs). The provider's key is
 # in Hermes' own .env, where patina ai login puts it: nothing is asked here. Your own
 # API's entry gets the address and model patina ai login recorded.
 install_hermes() {
@@ -759,7 +762,7 @@ install_hermes() {
   # The gate: Hermes' hook before every tool of a service (`patina ai gate`), which
   # sends the ones that change something to its approval. It fails closed: a gate
   # that cannot run stops the tool, it does not let it through.
-  if ! ENTRY="$entry" RULES="$(< "$PATINA_PATH/defaults/agent.md")" GATE="$gate" yq eval \
+  if ! ENTRY="$entry" RULES="$(hermes_rules)" GATE="$gate" yq eval \
       '.model = (strenv(ENTRY) | from_json) | .approvals.mode = "manual" | .agent.environment_hint = strenv(RULES) |
        .hooks.pre_tool_call = ([.hooks.pre_tool_call // [] | .[] | select(.command != strenv(GATE))] +
          [{"matcher": "mcp__.*|tool_call", "command": strenv(GATE), "timeout": 20, "fail_closed": true}])' \
