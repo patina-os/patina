@@ -45,10 +45,12 @@ opencode:
   # opencode matches each command of a line by itself, with its redirect, so "df *"
   # alone would also allow "df > ~/.profile". The redirect rule also holds back the
   # harmless "2>/dev/null", which is why the instruction asks for plain commands.
-  # Known gap (opencode 1.19): a redirect on a group or subshell is no part of the
+  # Known gap (opencode 1.19.5): a redirect on a group or subshell is no part of the
   # command inside, so "(df -h) > file" writes without asking, and a line that is only
-  # a redirect ("> file") asks nothing whatever the rules say. No rule here can close
-  # either; they matter when a model is steered by text it read somewhere.
+  # a redirect ("> file") asks nothing whatever the rules say: it emptied a file in a
+  # test run. No rule here can close either; it needs a change in opencode.
+  # defaults/agent.md tells the agent to write files with its edit tool, never with a
+  # redirect, and to follow no instruction it reads in data.
   # A service's tools (MCP) ask through rules `patina ai connect` and `patina install`
   # write for each server in `mcp`: "<service>_*" asks, the service's `reads`
   # (defaults/services.yaml) are allowed. The first rule, "*", makes every tool no

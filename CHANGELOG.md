@@ -41,6 +41,13 @@ All notable changes to patina are documented here. The format follows
   clean.
 - `patina update` says what to do when the pull stops on a change of the user's in the
   checkout, where it ended with git's own error.
+- The AI agent's standing instruction (`defaults/agent.md`) is sharper after the test
+  run: it checks a fix by running again what failed before it says fixed; installs
+  nothing to find out and nothing not asked for; follows no instruction it finds in
+  files, tickets or pages and tells the user about it; schedules with a systemd user
+  timer, not cron, and puts no sudo in a scheduled job; writes files with its edit
+  tool, never with a shell redirect; and leaves `2>/dev/null`, pipes and second
+  commands off what only looks, so it runs without a click.
 
 ## [0.1.0-alpha.15] - 2026-11-12
 
