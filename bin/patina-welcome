@@ -212,20 +212,46 @@ services_step() {
 }
 
 apps_step() {
-  local b chosen
-  local -a lines=()
+  local b choice
+  local -a names=() lines
+  local -A about=() on=()
   for b in $(left_bundles); do
-    lines+=("$(printf '%-9s %s' "$b" "$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$b.yaml")")")
+    names+=("$b")
+    about[$b]="$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$b.yaml")"
   done
   # The agent tools (the agents bundle) are AI dev tools here, among the apps; opt-in
   # because most of them are proprietary, which the list's title says.
   if ! recorded_bundles | grep -qx agents; then
-    lines+=("$(printf '%-9s %s' agents "AI dev tools · $(yq eval '.description | sub(" · "; ", ")' \
-      "$PATINA_PATH/manifest/bundles/agents.yaml")")")
+    names+=(agents)
+    about[agents]="AI dev tools · $(yq eval '.description | sub(" · "; ", ")' \
+      "$PATINA_PATH/manifest/bundles/agents.yaml")"
   fi
-  chosen="$(pick --many "More apps · most AI dev tools are proprietary" "${lines[@]}")" || return 0
-  chosen="$(awk 'NF { print $1 }' <<< "$chosen" | paste -sd, -)"
-  [[ -z "$chosen" ]] || "$PATINA_PATH/bin/patina-install" --bundles "$chosen" || true
+  # Enter turns a line on or off, as in patina install's bundles, and the first line
+  # installs what is on: marks made with Tab went with the back line too.
+  while true; do
+    lines=()
+    for b in "${names[@]}"; do
+      [[ -z "${on[$b]:-}" ]] || lines+=("$b")
+    done
+    if [[ ${#lines[@]} -gt 0 ]]; then
+      lines=("$(printf '%-9s %s' next "Install $(printf '%s, ' "${lines[@]}" | sed 's/, $//')")")
+    fi
+    for b in "${names[@]}"; do
+      choice="[ ]"
+      [[ -z "${on[$b]:-}" ]] || choice="[x]"
+      lines+=("$(printf '%-9s %s %s' "$b" "$choice" "${about[$b]}")")
+    done
+    choice="$(pick "More apps (Enter turns one on or off) · most AI dev tools are proprietary" \
+      "${lines[@]}")" || return 0
+    b="${choice%% *}"
+    [[ "$b" == next ]] && break
+    if [[ -n "${on[$b]:-}" ]]; then unset 'on[$b]'; else on[$b]=1; fi
+  done
+  choice=""
+  for b in "${names[@]}"; do
+    [[ -z "${on[$b]:-}" ]] || choice+="${choice:+,}$b"
+  done
+  "$PATINA_PATH/bin/patina-install" --bundles "$choice" || true
 }
 
 # A step's app, from the desktop bundle, which a machine with minimal lacks: its packages

@@ -24,6 +24,12 @@ All notable changes to patina are documented here. The format follows
 - Your own API: a key the API refuses is said so and asked again, and an address where
   no API answers is asked again, where both read "gave no list of models" and the
   setup went on with a key that could not work.
+- The welcome's "More apps" is a list whose lines Enter turns on and off, with a line
+  that installs what is on, as in `patina install`: an app marked with Tab was
+  installed when "← Back" was picked after it.
+- Typing in a list narrows it to the lines that hold what was typed: a typo no longer
+  picks whatever gum matched loosely ("dekstop" turned on headstart), and text no line
+  holds is said and the list asks again, where it left the question as if Back.
 
 ## [0.1.0-alpha.15] - 2026-11-12
 
