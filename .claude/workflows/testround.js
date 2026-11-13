@@ -1,7 +1,7 @@
 export const meta = {
   name: 'testround',
   description: 'A test round of patina and kortex: onboarding, daily use and kortex with a real model, findings merged and verified',
-  whenToUse: 'Run again after a batch of fixes or before a release, to find UX problems, design issues and bugs in patina\'s onboarding and daily use and in kortex. Pass {date, previous} (previous: the last round\'s report) to re-check its open findings.',
+  whenToUse: 'Run again after a batch of fixes or before a release, to find UX problems, design issues and bugs in patina\'s onboarding and daily use and in kortex. Pass {date, previous: \'/home/user/patina/docs/test-round.md\'} to re-check the open findings of the last round recorded there.',
   phases: [
     { title: 'Machine', detail: 'the Debian 13 test image: Plasma, patina by Path A, kortex from the working tree' },
     { title: 'Test', detail: 'six testers, one per area, each on a machine of its own' },
