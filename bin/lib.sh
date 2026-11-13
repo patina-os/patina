@@ -189,6 +189,17 @@ booted_with_systemd() {
 # ~/.local/share/patina, so nothing of the user's goes under that name.
 PATINA_THEMES="${XDG_CONFIG_HOME:-$HOME/.config}/patina/themes"
 
+# The keys: defaults/keybindings.yaml with the user's own chords merged over it
+# (~/.config/patina/keybindings.yaml, the same keys, only those that differ), so a
+# change of the user's survives git pull. As YAML on stdout, for yq to read from stdin.
+keybindings() {
+  local own="${XDG_CONFIG_HOME:-$HOME/.config}/patina/keybindings.yaml"
+  local -a files=("$PATINA_PATH/defaults/keybindings.yaml")
+  [[ ! -f "$own" ]] || files+=("$own")
+  # shellcheck disable=SC2016 # $f is yq's variable
+  yq eval-all '. as $f ireduce ({}; . * $f)' "${files[@]}"
+}
+
 # The directory of a theme: the repository's themes/ first, then the installed ones.
 # Entries starting with _ are templates.
 # opencode's file with the permission rules for one MCP server's tools, on stdout:
@@ -776,26 +787,17 @@ tui_colors() {
 # goes back where gum takes it. A line under the header names the keys, where gum
 # choose's help named the arrows and Enter. Typing narrows the list. It stays below what
 # the terminal shows, as tall as its lines; a height of 0 would take the whole screen.
-# Prints the line picked, or with --many those picked with Tab (else the one Enter is
-# on); returns 1 for Ctrl+C, Esc and the back line.
-# pick [--many] [--back <line>] <header> <line>...
+# Prints the line picked; returns 1 for Ctrl+C, Esc and the back line. A list of things
+# to turn on is lines Enter turns on and off (patina install's bundles), not marks made
+# with Tab, which gum returned when Enter was on the back line.
+# pick [--back <line>] <header> <line>...
 pick() {
   local back="← Back" header chosen keys="↑↓ move · Enter picks" width line i
-  local -a many=() shown=()
-  while [[ "${1:-}" == --* ]]; do
-    case "$1" in
-      --many)
-        many=(--no-limit)
-        keys+=" · Tab marks more"
-        ;;
-      --back)
-        back="$2"
-        shift
-        ;;
-      *) die "pick: no option $1" ;;
-    esac
-    shift
-  done
+  local -a shown=()
+  if [[ "${1:-}" == --back ]]; then
+    back="$2"
+    shift 2
+  fi
   header="$1"$'\n'"$(gum style --faint "$keys · Ctrl+C: ${back#← }")"
   shift
   # One line each: a line wider than the terminal, less gum's cursor, ends with "…"
@@ -807,19 +809,22 @@ pick() {
     [[ ${#line} -le $width ]] || line="${line:0:width-1}…"
     shown+=("$line")
   done
-  chosen="$(gum filter "${many[@]}" --header "$header" --placeholder "type to narrow" \
-    --height "$(($# + 1 + $(wc -l <<< "$header")))" -- "${shown[@]}" "$back")" || return 1
-  chosen="$(grep -vxF -- "$back" <<< "$chosen" || true)"
-  [[ -n "$chosen" ]] || return 1
-  while IFS= read -r line; do
+  # Typing narrows to the lines that hold what was typed, not gum's fuzzy matches,
+  # where "dekstop" picked headstart. Typed text nothing holds comes back as itself
+  # (--no-strict), which is said, and the list asks again; it used to read as Back.
+  while true; do
+    chosen="$(gum filter --no-fuzzy --no-strict --header "$header" \
+      --placeholder "type to narrow" --height "$(($# + 1 + $(wc -l <<< "$header")))" \
+      -- "${shown[@]}" "$back")" || return 1
+    [[ -n "$chosen" && "$chosen" != "$back" ]] || return 1
     for i in "${!shown[@]}"; do
-      if [[ "${shown[i]}" == "$line" ]]; then
-        line="${*:i+1:1}"
-        break
+      if [[ "${shown[i]}" == "$chosen" ]]; then
+        printf '%s\n' "${*:i+1:1}"
+        return 0
       fi
     done
-    printf '%s\n' "$line"
-  done <<< "$chosen"
+    warn "nothing matches '$chosen'; type less, or Ctrl+C: ${back#← }"
+  done
 }
 
 # The lines given, one per line, the one whose first word is <current> marked "(now)":

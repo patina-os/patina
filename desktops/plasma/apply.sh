@@ -11,7 +11,6 @@ theme_dir="${1:?usage: apply.sh <theme-dir>}"
 theme_yaml="$theme_dir/theme.yaml"
 [[ -f "$theme_yaml" ]] || { echo "plasma: no theme.yaml in $theme_dir" >&2; exit 1; }
 settings="$PATINA_PATH/defaults/settings.yaml"
-keybindings="$PATINA_PATH/defaults/keybindings.yaml"
 actions="$here/actions.yaml"
 templates="$here/templates"
 
@@ -37,6 +36,7 @@ export XDG_MENU_PREFIX="${XDG_MENU_PREFIX:-plasma-}"
 
 # shellcheck source=bin/lib.sh
 source "$PATINA_PATH/bin/lib.sh"
+keybindings="$(keybindings)"
 say() { printf 'patina: theme: %s\n' "$*"; }
 warn() { printf 'patina: theme: %s\n' "$*" >&2; }
 changed() { changes=$((changes + 1)); }
@@ -1110,9 +1110,10 @@ elif [[ -n "$(kreadconfig6 --file kwinrulesrc --group "$rule" --key opacityactiv
   drop_rule Description types opacityactive opacityactiverule opacityinactive opacityinactiverule
 fi
 
-# Global shortcuts: each action of defaults/keybindings.yaml through actions.yaml.
+# Global shortcuts: each action of defaults/keybindings.yaml, with the user's own chords
+# over it (keybindings in lib.sh), through actions.yaml.
 while IFS= read -r action; do
-  chord="$(yq eval ".actions[\"$action\"]" "$keybindings")"
+  chord="$(yq eval ".actions[\"$action\"]" - <<< "$keybindings")"
   component="$(yq eval ".actions[\"$action\"].component // \"\"" "$actions")"
   label="$(yq eval ".actions[\"$action\"].label // \"$action\"" "$actions")"
   if yq eval -e ".actions[\"$action\"].service" "$actions" > /dev/null 2>&1; then
@@ -1151,7 +1152,7 @@ while IFS= read -r action; do
   else
     warn "$action: no Plasma binding in $actions; skipping"
   fi
-done < <(yq eval '.actions | keys | .[]' "$keybindings")
+done < <(yq eval '.actions | keys | .[]' - <<< "$keybindings")
 while IFS=$'\t' read -r component key default label; do
   kset kglobalshortcutsrc "$key" "none,$default,$label" "$component"
 done < <(yq eval '.unbind[] | [.component, .key, .default, .label] | @tsv' "$actions")

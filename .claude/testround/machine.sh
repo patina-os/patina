@@ -81,7 +81,7 @@ IN
     printf 'url: \"%s\"\nmodel: \"%s\"\n' '$api_url' '$api_model' > ~/.local/state/patina/ai-endpoint.yaml
     printf 'placeholder-the-proxy-adds-the-key\n' > ~/.config/patina/ai/custom.key
     chmod 600 ~/.config/patina/ai/custom.key"
-  docker exec "$c" bash -c 'pgrep dbus-daemon > /dev/null || dbus-daemon --system --fork'
+  docker exec "$c" bash -c 'pgrep dbus-daemon > /dev/null || { rm -f /run/dbus/pid; dbus-daemon --system --fork; }'
   docker exec -u patina -w /home/patina/.local/share/patina \
     -e HOME=/home/patina -e PATINA_AI=cloud -e PATINA_AI_AGENT=opencode -e PATINA_AI_PROVIDER=custom \
     "$c" bash -c 'umask 022; exec bin/patina install --unattended --bundles desktop'
@@ -109,7 +109,9 @@ case "$cmd" in
     mapfile -t args < <(run_args)
     docker rm -f "tr-$2" > /dev/null 2>&1 || true
     docker run -d --name "tr-$2" --hostname "tr-$2" "${args[@]}" "$image" sleep infinity > /dev/null
-    docker exec "tr-$2" bash -c 'umask 022; update-ca-certificates > /dev/null 2>&1; mkdir -p /run/dbus; dbus-daemon --system --fork'
+    docker exec "tr-$2" bash -c 'umask 022; update-ca-certificates > /dev/null 2>&1; mkdir -p /run/dbus; rm -f /run/dbus/pid; dbus-daemon --system --fork'
+    # The README's last step of Path A, by hand: patina on PATH.
+    docker exec -u patina "tr-$2" ln -sf /home/patina/.local/share/patina/bin/patina /home/patina/.local/bin/patina
     echo "machine.sh: tr-$2 up"
     ;;
   sh)
@@ -118,7 +120,7 @@ case "$cmd" in
     shift 2
     if (($#)); then
       docker exec -i -u patina -w /home/patina -e HOME=/home/patina \
-        -e PATH=/home/patina/.local/bin:/usr/local/bin:/usr/bin:/bin "tr-$name" bash -lc "umask 022; $*"
+        -e PATH=/home/patina/.local/bin:/usr/local/bin:/usr/bin:/bin "tr-$name" bash -lc "umask 022; export PATH=\"\$HOME/.local/bin:\$PATH\"; $*"
     else
       docker exec -it -u patina -w /home/patina -e HOME=/home/patina "tr-$name" bash -lc 'umask 022; exec bash -l'
     fi

@@ -211,7 +211,7 @@ provider_step() {
 # the model go to the state directory, where patina install finds them. Each question
 # goes one back with Ctrl+C; the first fails, back to the providers. endpoint_step <agent>
 endpoint_step() {
-  local url="" key models="" model="" try step=url now line
+  local url="" key models="" model="" try step=url now line body code codes
   local -a lines
   while true; do
     case "$step" in
@@ -234,16 +234,34 @@ endpoint_step() {
         fi
         [[ -n "$key" ]] || key=none
         models=""
+        codes=""
+        body="$(mktemp)"
         for try in "$url" "$url/v1"; do
           [[ "$try" != "$url/v1" || "$url" != */v1 ]] || continue
-          # The key on curl's standard input, not its command line, which other users can see.
-          models="$(curl -fsS -m 15 -H @- "$try/models" <<< "Authorization: Bearer $key" 2> /dev/null |
-            yq eval -p json '.data[] | select((.modality // "chat") == "chat") | .id' 2> /dev/null)" || models=""
+          # The key on curl's standard input, not its command line, which other users can
+          # see. The status tells a refused key (401, 403) and no answer at all (000)
+          # from a server that answers without a list.
+          code="$(curl -sS -m 15 -o "$body" -w '%{http_code}' -H @- "$try/models" \
+            <<< "Authorization: Bearer $key" 2> /dev/null)" || true
+          codes+=" ${code:-000}"
+          [[ "$code" == 2* ]] || continue
+          models="$(yq eval -p json '.data[] | select((.modality // "chat") == "chat") | .id' \
+            "$body" 2> /dev/null)" || models=""
           if [[ -n "$models" ]]; then
             url="$try"
             break
           fi
         done
+        rm -f "$body"
+        if [[ -z "$models" && "$codes" =~ (401|403) ]]; then
+          warn "ai: $url refused this key (HTTP ${BASH_REMATCH[1]}); enter it again"
+          continue
+        fi
+        if [[ -z "$models" && "$codes" =~ ^( 000)+$ ]]; then
+          warn "ai: no API answers at $url; check the address"
+          step=url
+          continue
+        fi
         step=model
         ;;
       model)

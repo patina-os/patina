@@ -866,7 +866,7 @@ install_theme() {
 }
 
 record_state() {
-  local m
+  local m v
   mkdir -p "$PATINA_STATE/migrations"
   # Nothing is ever removed, so the record is every bundle installed so far; doctor
   # checks them all.
@@ -877,8 +877,16 @@ record_state() {
   if [[ -n "$ai" ]]; then
     echo "$ai" > "$PATINA_STATE/ai"
     [[ "$ai" == none ]] || echo "$agent" > "$PATINA_STATE/ai-agent"
-    [[ "$ai" != cloud ]] || cloud_provider "$agent" > "$PATINA_STATE/ai-provider"
-    [[ "$ai" != local ]] || local_model > "$PATINA_STATE/ai-model"
+    # Each is worked out before its file is written, since each reads its own file: a
+    # redirect would empty it first and fall back to the first provider or model.
+    if [[ "$ai" == cloud ]]; then
+      v="$(cloud_provider "$agent")"
+      echo "$v" > "$PATINA_STATE/ai-provider"
+    fi
+    if [[ "$ai" == local ]]; then
+      v="$(local_model)"
+      echo "$v" > "$PATINA_STATE/ai-model"
+    fi
   fi
   if [[ $first_install -eq 1 ]]; then
     # A fresh install is the end state every migration leads to, so none is pending.

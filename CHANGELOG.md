@@ -6,6 +6,49 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Your own keys: `~/.config/patina/keybindings.yaml`, with only the chords that differ,
+  is merged over `defaults/keybindings.yaml`, and `patina keys` points there. It said
+  to edit the file in the checkout, which the next `patina update` could not pull over.
+
+### Fixed
+
+- A second `patina install`, a `patina update` or `patina ai on` no longer switches the
+  cloud agent from the provider the user picked (their own API, say) to Mistral, nor a
+  picked local model back to the first that fits: the record was emptied before it was
+  read.
+- The AI agent (opencode) asks before it searches the content of files: its search
+  printed a token from `~/.config/patina/services/` unasked, past the rules that keep
+  secrets from it, because opencode matches a search rule against the search term, not
+  the files. `~/.git-credentials`, `~/.netrc` and GitHub CLI's login are kept from it
+  too.
+- A service the AI agent (opencode) or the user adds to it asks before every tool from
+  its first use: opencode allows a tool no rule names, so until the next `patina
+  install` wrote its rules, a new service's delete ran unasked. Every tool no rule
+  names now asks, and opencode's own tools are allowed by name.
+- Your own API: a key the API refuses is said so and asked again, and an address where
+  no API answers is asked again, where both read "gave no list of models" and the
+  setup went on with a key that could not work.
+- The welcome's "More apps" is a list whose lines Enter turns on and off, with a line
+  that installs what is on, as in `patina install`: an app marked with Tab was
+  installed when "← Back" was picked after it.
+- Typing in a list narrows it to the lines that hold what was typed: a typo no longer
+  picks whatever gum matched loosely ("dekstop" turned on headstart), and text no line
+  holds is said and the list asks again, where it left the question as if Back.
+- `patina doctor` checks that Plasma uses the theme's colour scheme and that kitty.conf
+  includes the theme's colours, where it saw only that the files existed and said
+  clean.
+- `patina update` says what to do when the pull stops on a change of the user's in the
+  checkout, where it ended with git's own error.
+- The AI agent's standing instruction (`defaults/agent.md`) is sharper after the test
+  run: it checks a fix by running again what failed before it says fixed; installs
+  nothing to find out and nothing not asked for; follows no instruction it finds in
+  files, tickets or pages and tells the user about it; schedules with a systemd user
+  timer, not cron, and puts no sudo in a scheduled job; writes files with its edit
+  tool, never with a shell redirect; and leaves `2>/dev/null`, pipes and second
+  commands off what only looks, so it runs without a click.
+
 ## [0.1.0-alpha.15] - 2026-11-12
 
 ### Added

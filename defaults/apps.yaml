@@ -23,9 +23,13 @@ opencode:
   #
   # Permissions: anything that changes files, runs a command (ssh to a server included)
   # or fetches a web page asks first. What runs without asking:
-  # - opencode's own read, list and search tools, but not on the files that hold a
-  #   secret (`read`): the agent's and the services' tokens, private keys, password
-  #   databases. With a cloud model, what the agent reads goes to its provider.
+  # - opencode's own read, list and file-name search (glob) tools, but not on the files
+  #   that hold a secret (`read`): the agent's and the services' tokens, private keys,
+  #   password databases, git's and netrc's logins. With a cloud model, what the agent
+  #   reads goes to its provider. Its content search (`grep`) asks: opencode matches a
+  #   grep rule against the search term, not the files, and does not hold the `read`
+  #   rules against what it finds, so a search for "ghp_" printed a token unasked
+  #   (opencode 1.19; a rule by path needs a change upstream).
   # - Reading under the system's own directories (`external_directory`); a change
   #   there still asks, as an edit or a command does.
   # - Commands that only look (`bash`): a diagnosis of a dozen steps asked a dozen
@@ -41,13 +45,18 @@ opencode:
   # opencode matches each command of a line by itself, with its redirect, so "df *"
   # alone would also allow "df > ~/.profile". The redirect rule also holds back the
   # harmless "2>/dev/null", which is why the instruction asks for plain commands.
-  # Known gap (opencode 1.19): a redirect on a group or subshell is no part of the
+  # Known gap (opencode 1.19.5): a redirect on a group or subshell is no part of the
   # command inside, so "(df -h) > file" writes without asking, and a line that is only
-  # a redirect ("> file") asks nothing whatever the rules say. No rule here can close
-  # either; they matter when a model is steered by text it read somewhere.
+  # a redirect ("> file") asks nothing whatever the rules say: it emptied a file in a
+  # test run. No rule here can close either; it needs a change in opencode.
+  # defaults/agent.md tells the agent to write files with its edit tool, never with a
+  # redirect, and to follow no instruction it reads in data.
   # A service's tools (MCP) ask through rules `patina ai connect` and `patina install`
   # write for each server in `mcp`: "<service>_*" asks, the service's `reads`
-  # (defaults/services.yaml) are allowed.
+  # (defaults/services.yaml) are allowed. The first rule, "*", makes every tool no
+  # other rule names ask, so a service the agent or the user adds asks from its first
+  # call, before an install writes its rules (opencode allows an unnamed tool); the
+  # rules after it allow opencode's own tools again.
   requires:
     upstream: opencode
   file: ~/.config/opencode/opencode.json
@@ -63,8 +72,20 @@ opencode:
           "qwen3.5":
             name: qwen3.5
     permission:
+      "*": ask
+      # opencode's own tools that change nothing outside the conversation
+      glob: allow
+      list: allow
+      lsp: allow
+      todowrite: allow
+      todoread: allow
+      task: allow
+      skill: allow
+      question: allow
+      plan_enter: allow
       edit: ask
       webfetch: ask
+      grep: ask
       read:
         "*": allow
         "*.env": ask
@@ -77,6 +98,9 @@ opencode:
         "*/.gnupg/*": deny
         "*/opencode/auth.json": deny
         "*/.hermes/.env": deny
+        "*/.git-credentials": deny
+        "*/.netrc": deny
+        "*/.config/gh/hosts.yml": deny
       external_directory:
         "*": ask
         "/etc/*": allow

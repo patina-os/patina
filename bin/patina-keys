@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# The cheat sheet: patina's keys from defaults/keybindings.yaml and the desktop's own
-# essentials from desktops/<desktop>/actions.yaml, as a table. Meta+K shows it in kitty.
+# The cheat sheet: patina's keys (defaults/keybindings.yaml, the user's own over it) and
+# the desktop's own essentials from desktops/<desktop>/actions.yaml, as a table. Meta+K
+# shows it in kitty.
 set -euo pipefail
 
 # shellcheck source=bin/lib.sh
@@ -22,7 +23,7 @@ case "${1:-}" in
 esac
 need_yq
 
-keybindings="$PATINA_PATH/defaults/keybindings.yaml"
+keybindings="$(keybindings)"
 desktop="$(yq eval '.desktop' "$PATINA_PATH/defaults/settings.yaml")"
 actions="$PATINA_PATH/desktops/$desktop/actions.yaml"
 
@@ -42,7 +43,7 @@ echo "  patina"
 # shellcheck disable=SC2016 # $a is a yq variable inside the expression, not a shell one
 while IFS=$'\t' read -r chord name; do
   printf '  %s%-34s%s %s\n' "$on" "$chord" "$off" "$name"
-done < <(yq eval '.actions as $a | .names | to_entries | .[] | [$a[.key], .value] | @tsv' "$keybindings")
+done < <(yq eval '.actions as $a | .names | to_entries | .[] | [$a[.key], .value] | @tsv' - <<< "$keybindings")
 if [[ -f "$actions" ]] && yq eval -e '.cheatsheet' "$actions" > /dev/null 2>&1; then
   echo
   echo "  ${desktop^}"
@@ -51,7 +52,8 @@ if [[ -f "$actions" ]] && yq eval -e '.cheatsheet' "$actions" > /dev/null 2>&1; 
   done < <(yq eval '.cheatsheet[] | [.chord, .name] | @tsv' "$actions")
 fi
 echo
-echo "  Change them: defaults/keybindings.yaml, then 'patina theme set <theme>'"
+echo "  Change them: ~/.config/patina/keybindings.yaml, with the chords that differ under"
+echo "  actions: as in defaults/keybindings.yaml, then 'patina theme set <theme>'"
 if [[ $wait_key -eq 1 ]]; then
   read -rsn1 -p "  Press any key to close."
 fi

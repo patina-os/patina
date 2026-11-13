@@ -168,7 +168,7 @@ check_system() {
 }
 
 check_theme() {
-  local theme
+  local theme scheme
   echo "theme"
   if ! theme="$(current_theme)"; then
     bad "no theme recorded (run patina theme set <name>)"
@@ -178,15 +178,22 @@ check_theme() {
     bad "theme '$theme' is recorded but not under themes/"
     return
   fi
-  if [[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/color-schemes/patina-$theme.colors" ]]; then
-    ok "$theme: colour scheme in place ($(current_mode) mode)"
-  else
+  # In place and in use: Plasma's setting and kitty's include line, not only the files.
+  if [[ ! -f "${XDG_DATA_HOME:-$HOME/.local/share}/color-schemes/patina-$theme.colors" ]]; then
     bad "$theme: colour scheme missing (run patina theme set $theme)"
-  fi
-  if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/kitty/patina.conf" ]]; then
-    ok "$theme: terminal colours in place"
+  elif command -v kreadconfig6 > /dev/null &&
+      scheme="$(kreadconfig6 --file kdeglobals --group General --key ColorScheme)" &&
+      [[ "$scheme" != "patina-$theme" ]]; then
+    bad "$theme: Plasma uses the colour scheme '${scheme:-Breeze}', not patina-$theme (run patina theme set $theme)"
   else
+    ok "$theme: colour scheme in place ($(current_mode) mode)"
+  fi
+  if [[ ! -f "${XDG_CONFIG_HOME:-$HOME/.config}/kitty/patina.conf" ]]; then
     bad "$theme: terminal colours missing (run patina theme set $theme)"
+  elif ! grep -qxF 'include patina.conf' "${XDG_CONFIG_HOME:-$HOME/.config}/kitty/kitty.conf" 2> /dev/null; then
+    bad "$theme: kitty.conf does not include the terminal colours (run patina theme set $theme)"
+  else
+    ok "$theme: terminal colours in place"
   fi
   if [[ -f /usr/local/share/patina/login.png ]]; then
     ok "login screen: wallpaper in place"
