@@ -51,7 +51,10 @@ opencode:
   # either; they matter when a model is steered by text it read somewhere.
   # A service's tools (MCP) ask through rules `patina ai connect` and `patina install`
   # write for each server in `mcp`: "<service>_*" asks, the service's `reads`
-  # (defaults/services.yaml) are allowed.
+  # (defaults/services.yaml) are allowed. The first rule, "*", makes every tool no
+  # other rule names ask, so a service the agent or the user adds asks from its first
+  # call, before an install writes its rules (opencode allows an unnamed tool); the
+  # rules after it allow opencode's own tools again.
   requires:
     upstream: opencode
   file: ~/.config/opencode/opencode.json
@@ -67,6 +70,17 @@ opencode:
           "qwen3.5":
             name: qwen3.5
     permission:
+      "*": ask
+      # opencode's own tools that change nothing outside the conversation
+      glob: allow
+      list: allow
+      lsp: allow
+      todowrite: allow
+      todoread: allow
+      task: allow
+      skill: allow
+      question: allow
+      plan_enter: allow
       edit: ask
       webfetch: ask
       grep: ask

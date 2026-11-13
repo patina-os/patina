@@ -17,6 +17,10 @@ All notable changes to patina are documented here. The format follows
   secrets from it, because opencode matches a search rule against the search term, not
   the files. `~/.git-credentials`, `~/.netrc` and GitHub CLI's login are kept from it
   too.
+- A service the AI agent (opencode) or the user adds to it asks before every tool from
+  its first use: opencode allows a tool no rule names, so until the next `patina
+  install` wrote its rules, a new service's delete ran unasked. Every tool no rule
+  names now asks, and opencode's own tools are allowed by name.
 
 ## [0.1.0-alpha.15] - 2026-11-12
 
