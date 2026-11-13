@@ -6,6 +6,13 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- A second `patina install`, a `patina update` or `patina ai on` no longer switches the
+  cloud agent from the provider the user picked (their own API, say) to Mistral, nor a
+  picked local model back to the first that fits: the record was emptied before it was
+  read.
+
 ## [0.1.0-alpha.15] - 2026-11-12
 
 ### Added
