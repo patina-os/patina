@@ -163,7 +163,8 @@ setup_step() {
 }
 
 # The AI agent's own menu, back to the onboarding with Back: turn it on or change it,
-# its provider's login and the services it can work with, each through patina ai. The
+# its provider's login, the services it can work with and your own instructions for
+# it, each through patina ai. The
 # agent tools are among the apps, as AI dev tools. A cloud agent not logged in has its
 # login first.
 ai_step() {
@@ -188,6 +189,7 @@ ai_step() {
       fi
       lines+=("$(printf '%-10s %s' services "Connect services · $(yq eval \
         '[.[].description | split(" · ") | .[0]] | join(", ")' "$PATINA_PATH/defaults/services.yaml")")")
+      lines+=("$(printf '%-10s %s' prompt "Your instructions · what the agent follows besides patina's")")
     fi
     echo
     choice="$(pick "The AI agent" "${lines[@]}")" || return 0
@@ -196,6 +198,7 @@ ai_step() {
       agent) "$PATINA_PATH/bin/patina-ai" on || true ;;
       provider) "$PATINA_PATH/bin/patina-ai" login || true ;;
       services) services_step ;;
+      prompt) "$PATINA_PATH/bin/patina-ai" prompt || true ;;
       *) return 0 ;;
     esac
   done

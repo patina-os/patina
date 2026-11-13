@@ -20,7 +20,8 @@ commands:
   update    Pull the latest patina, run pending migrations, then install what the
             bundles gained (unattended, the bundles installed here)
   theme     List, switch, install or remove themes; dark or light (patina theme --help)
-  ai        The AI agent on or off, and its provider's login (patina ai --help)
+  ai        The AI agent on or off, its provider's login and your own instructions
+            for it (patina ai --help)
   welcome   What to add after the install: the AI agent, the agent tools, services,
             more apps (opens at each login; patina welcome --help)
   keys      Show the keyboard shortcuts (Meta+K opens the same in a window)

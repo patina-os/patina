@@ -11,7 +11,7 @@ source "$PATINA_PATH/bin/lib.sh"
 
 usage() {
   cat << EOU
-usage: patina ai [status] | on [opencode|hermes] [local|cloud] | login | off | connect [<service>] | disconnect <service>
+usage: patina ai [status] | on [opencode|hermes] [local|cloud] | login | off | connect [<service>] | disconnect <service> | prompt
 
   status      the agent this machine has (the default)
   on local    the agent with a model Ollama runs on this computer: a few GB of disk,
@@ -43,6 +43,9 @@ usage: patina ai [status] | on [opencode|hermes] [local|cloud] | login | off | c
               terminal (kept readable by you only, never shown to the agent)
   disconnect <service>
               turn one off again and forget its sign-in
+  prompt      your own instructions for the agent, in addition to patina's: opens
+              ~/.config/patina/agent.md in your editor, and the agent follows them
+              from the next request. Empty the file to go back to patina's alone
 EOU
 }
 
@@ -369,7 +372,7 @@ write_config() {
   tmp="$(mktemp)"
   if ! yq eval -o="$2" -I=2 "$3" "$1" > "$tmp" 2> /dev/null; then
     rm -f "$tmp"
-    die "cannot parse $1 (comments?); add the service by hand"
+    die "cannot parse $1 (comments?); change it by hand"
   fi
   if cmp -s "$tmp" "$1"; then
     rm -f "$tmp"
@@ -569,6 +572,53 @@ gate() {
     yq eval -n -o=json -I=0 '{"action": "approve", "message": strenv(M), "rule_key": strenv(K)}'
 }
 
+# Your own instructions for the agent, in addition to patina's (own_rules_file): on a
+# terminal the file opens in the editor first, a short note in it the first time; then
+# the agent this machine has gets them (opencode the file's name, Hermes its text), and
+# kortex stops, so the next request starts the agent with them. kortex's "Edit the
+# agent's instructions" runs this in a terminal.
+prompt() {
+  local own before changed=0
+  own="$(own_rules_file)"
+  if [[ ! -f "$own" ]]; then
+    mkdir -p "$(dirname "$own")"
+    cat > "$own" << 'EOT'
+<!-- Your own instructions for the AI agent, in addition to patina's. Write them as you
+would tell a person: the language it answers in, how short, what it leaves alone. -->
+EOT
+  fi
+  before="$(cksum < "$own")"
+  if [[ -t 0 && -t 1 ]]; then
+    if command -v sensible-editor > /dev/null; then
+      sensible-editor "$own"
+    else
+      "${VISUAL:-${EDITOR:-nano}}" "$own"
+    fi
+  fi
+  [[ "$(cksum < "$own")" == "$before" ]] || changed=1
+  if [[ "$(current_ai)" == none ]]; then
+    say "ai: your instructions are in $own; the agent gets them once patina ai on turns it on"
+    return 0
+  fi
+  if [[ "$(current_agent)" == hermes ]]; then
+    if [[ -f "$hermes_file" ]] && RULES="$(hermes_rules)" \
+        write_config "$hermes_file" yaml '.agent.environment_hint = strenv(RULES)'; then
+      changed=1
+    fi
+  elif [[ -f "$opencode_file" ]]; then
+    if RULES="$PATINA_PATH/defaults/agent.md" OWN_FILE="$own" OWN="$own" \
+        write_config "$opencode_file" json "$opencode_rules"; then
+      changed=1
+    fi
+  fi
+  if [[ "$changed" == 1 ]]; then
+    pkill -TERM -u "$(id -u)" -f kortex/kortex.py || true
+    say "ai: the agent follows your instructions ($own) from the next request"
+  else
+    say "ai: your instructions ($own) are unchanged"
+  fi
+}
+
 main() {
   case "${1:-status}" in
     status) status ;;
@@ -581,6 +631,7 @@ main() {
     off) off ;;
     connect) connect "${2:-}" ;;
     disconnect) disconnect "${2:-}" ;;
+    prompt) prompt ;;
     -h | --help) usage ;;
     *)
       usage >&2

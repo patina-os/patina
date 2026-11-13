@@ -58,7 +58,9 @@ repository, under `~/.config/patina/`, so `git pull` never clobbers them.
   `kwriteconfig6`, apt and Flathub), and that it explains and asks before a change. The
   AI step of `patina install` names it in opencode's `instructions`, and writes it into
   Hermes' `agent.environment_hint`, so the user's own `SOUL.md` stays theirs; the agent
-  reads it, no script does.
+  reads it, no script does. The user's own instructions are not edited here but in
+  `~/.config/patina/agent.md` (`patina ai prompt`), which opencode reads after this one
+  and Hermes gets after it in the same hint, so a `patina update` never meets them.
 - `system/`: the system tuning every install gets, copied from what CachyOS ships as
   configuration: sysctl, udev rules, systemd drop-ins, tmpfiles, initramfs and GRUB
   settings, plus the login screen's static settings (`sddm.conf.d/`: the Wayland session

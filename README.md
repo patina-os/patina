@@ -357,7 +357,11 @@ in a panel docked at the screen's right edge. opencode
 reads freely, and asks before anything that changes a file,
 runs a command or reaches a server (`defaults/apps.yaml`); Hermes asks before what it
 counts as dangerous, as above. `defaults/agent.md` tells either how
-this machine is put together and how to change it the patina way. What needs root (a
+this machine is put together and how to change it the patina way. Your own
+instructions go beside it: `patina ai prompt` (or "Edit the agent's instructions" in
+the command palette, or the welcome's AI menu) opens `~/.config/patina/agent.md`, and
+the agent follows what you write there (the language it answers in, how short, what it
+leaves alone) from the next request, while patina's own keep coming with updates. What needs root (a
 package, a driver, a system service) it runs with `sudo -A`, since it has no terminal
 for sudo to ask in: a notification asks for your password, and its "Enter password"
 opens a dialog in the theme's colours, so nothing you type elsewhere lands in it, in

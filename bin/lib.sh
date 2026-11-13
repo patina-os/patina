@@ -269,6 +269,33 @@ current_agent() {
   echo "$agent"
 }
 
+# The user's own instructions for the AI agent, in addition to patina's (defaults/agent.md),
+# which stays patina's, so an update never meets a change of the user's in the checkout.
+# `patina ai prompt` opens it.
+own_rules_file() {
+  echo "${XDG_CONFIG_HOME:-$HOME/.config}/patina/agent.md"
+}
+
+# opencode's `instructions`: the files it had besides patina's, then defaults/agent.md,
+# then the user's own while that file is there. A yq expression, with RULES (patina's
+# file), OWN_FILE (the user's) and OWN (the user's when it is there, else empty) in the
+# environment. No `unique`, which sorts: the user's come after patina's.
+# shellcheck disable=SC2034 # used by patina-install and patina-ai, which source this file
+opencode_rules='.instructions = ([(.instructions // [])[] | select(. != strenv(RULES) and . != strenv(OWN_FILE))] +
+  [strenv(RULES)] + ([strenv(OWN)] | map(select(. != ""))))'
+
+# Hermes' `agent.environment_hint`, which holds text, not a file's name: defaults/agent.md,
+# then the user's own instructions when that file says something.
+hermes_rules() {
+  local own
+  own="$(own_rules_file)"
+  cat "$PATINA_PATH/defaults/agent.md"
+  if [[ -s "$own" ]]; then
+    printf "\n# The user's own instructions\n\n"
+    cat "$own"
+  fi
+}
+
 # The AI agents the questions offer (`patina install`, `patina ai on`), one line each:
 # the agent, then what it is, and what choosing it means day to day: how often it
 # asks. "Asks before risky commands only" read as the safer of the two.
