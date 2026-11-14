@@ -6,6 +6,8 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.16] - 2026-11-14
+
 ### Added
 
 - Your own keys: `~/.config/patina/keybindings.yaml`, with only the chords that differ,
@@ -1377,7 +1379,8 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.15...main
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.16...main
+[0.1.0-alpha.16]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.16
 [0.1.0-alpha.15]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.15
 [0.1.0-alpha.14]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.14
 [0.1.0-alpha.13]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.13
