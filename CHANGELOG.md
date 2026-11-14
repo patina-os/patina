@@ -15,7 +15,7 @@ All notable changes to patina are documented here. The format follows
   `~/.config/patina/agent.md` in your editor, and the agent follows it in addition to
   patina's `defaults/agent.md` from the next request, opencode and Hermes alike (opencode
   reads the file, Hermes gets its text after patina's in `agent.environment_hint`). The
-  welcome's AI menu and kortex's "Edit the agent's instructions" open it too. Changing
+  welcome's AI menu and kortex 0.8.0's "Edit the agent's instructions" open it too. Changing
   `defaults/agent.md` in the checkout stopped the next `patina update`, and Hermes saw
   a change only after another `patina install`.
 
