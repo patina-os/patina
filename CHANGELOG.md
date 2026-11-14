@@ -15,12 +15,17 @@ All notable changes to patina are documented here. The format follows
   `~/.config/patina/agent.md` in your editor, and the agent follows it in addition to
   patina's `defaults/agent.md` from the next request, opencode and Hermes alike (opencode
   reads the file, Hermes gets its text after patina's in `agent.environment_hint`). The
-  welcome's AI menu and kortex's "Edit the agent's instructions" open it too. Changing
+  welcome's AI menu and kortex 0.8.0's "Edit the agent's instructions" open it too. Changing
   `defaults/agent.md` in the checkout stopped the next `patina update`, and Hermes saw
   a change only after another `patina install`.
 
 ### Fixed
 
+- kortex 0.8.0: Always is offered only for a command that looks and changes nothing,
+  since one Always on a row that counted files let `find -delete` run unasked later; a
+  row that asks shows every command, a file's changed lines and a service tool's input
+  under the agent's words; an agent that stops without a word or after announcing more
+  says so instead of reading as done; a long answer no longer slows the palette.
 - A second `patina install`, a `patina update` or `patina ai on` no longer switches the
   cloud agent from the provider the user picked (their own API, say) to Mistral, nor a
   picked local model back to the first that fits: the record was emptied before it was
