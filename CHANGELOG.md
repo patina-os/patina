@@ -21,6 +21,11 @@ All notable changes to patina are documented here. The format follows
 
 ### Fixed
 
+- kortex 0.8.0: Always is offered only for a command that looks and changes nothing,
+  since one Always on a row that counted files let `find -delete` run unasked later; a
+  row that asks shows every command, a file's changed lines and a service tool's input
+  under the agent's words; an agent that stops without a word or after announcing more
+  says so instead of reading as done; a long answer no longer slows the palette.
 - A second `patina install`, a `patina update` or `patina ai on` no longer switches the
   cloud agent from the provider the user picked (their own API, say) to Mistral, nor a
   picked local model back to the first that fits: the record was emptied before it was
