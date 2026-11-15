@@ -9,5 +9,7 @@ detect_compatible: ""   # or, for a machine that boots with a device tree, one o
                         # tree's compatible strings (devices/README.md)
 kernel_params: []       # extra kernel command-line parameters, if any
 extra_packages: []      # canonical package names this device needs on top of the bundles
+settings: {}            # speed.wallpaper_size and speed.file_indexing of
+                        # defaults/settings.yaml, where the device needs another value
 notes: >
   One paragraph: what works, what does not, where upstream support stands.

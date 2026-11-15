@@ -100,6 +100,7 @@ speed:
   animation_speed: 0.5       # factor on the animation length; 1 is Plasma's default, 0 none
   latency: lowest            # compositor latency: lowest | low | balanced | smooth | smoothest
   file_indexing: names       # off | names | content; names means file names under home only
+  wallpaper_size: 3840x2160  # what an SVG or JPEG wallpaper is rendered at; a screen scales it
 # Touchpads: the default for every touchpad; one set in the desktop's own settings keeps
 # that choice. Mice and their wheels stay as they are.
 input:

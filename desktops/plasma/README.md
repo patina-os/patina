@@ -77,8 +77,9 @@ Files, from `templates/`, each named after the theme:
 - a Konsole colour scheme and profile under `~/.local/share/konsole/`, made the default
   profile in `konsolerc`
 - one Plasma wallpaper package per image under `~/.local/share/wallpapers/`; an SVG or a
-  JPEG is rendered to PNG with `rsvg-convert` at 3840x2160 (a JPEG through an SVG that
-  embeds it) and only again when the theme's file is newer;
+  JPEG is rendered to PNG with `rsvg-convert` at 3840x2160 (`speed.wallpaper_size`, or
+  what a detected device names; a JPEG through an SVG that embeds it) and only again
+  when the theme's file is newer; a rendering at another size is removed;
   in the theme's other mode that mode's wallpapers come first and the theme's own follow
 - a look-and-feel package, `~/.local/share/plasma/look-and-feel/org.patina.<theme>/`,
   whose `defaults` name the colour scheme, icons, cursors, desktop theme, decoration,
@@ -226,7 +227,8 @@ there, so a run over SSH or in the screenshot session finds them unchanged as we
   `kcm-about-distrorc` the variant About this System shows under Debian's name (patina,
   and `patina credits` for who made it)
 - the speed settings of `defaults/settings.yaml`: `AnimationDurationFactor`, KWin's
-  `LatencyPolicy`, Baloo's indexing (file names under home only, by default)
+  `LatencyPolicy`, Baloo's indexing (file names under home only, by default; a detected
+  device may name another value, as Try patina's machine turns it off)
 - `input.touchpad_scrolling` of `defaults/settings.yaml`: KWin's default for every
   touchpad, `NaturalScroll` under `[Libinput][Defaults][Touchpad]` in `kcminputrc`
   (natural scrolling by default; libinput turns both directions together). A touchpad

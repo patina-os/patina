@@ -11,6 +11,10 @@ All notable changes to patina are documented here. The format follows
 - Try patina's disk image is compressed with zstd instead of zlib, so patina in the
   virtual machine on Windows waits less for its disk: every first read of the
   downloaded disk unpacks it, for as long as the machine lives.
+- In Try patina's virtual machine, wallpapers are rendered at the display's 1920x1080
+  instead of 4K and no file index is kept: it looks the same and leaves the machine's
+  processor, which also draws the desktop, more to do it with. A device may now name
+  these two settings (`settings` in its `device.yaml`), and no others.
 
 ## [0.1.0-alpha.16] - 2026-11-14
 

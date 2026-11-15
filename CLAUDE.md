@@ -294,7 +294,13 @@ packs. Audience: developers and privacy-minded users in the EU.
   without the disk. The VM is a device (`devices/try-patina-windows/`), detected by the
   product name the launcher gives it: the disk's first-boot step, spice-vdagent for copy
   and paste and the Plasma X11 session first, because spice-vdagent shares the clipboard
-  only there, and GRUB at the display's 1920x1080.
+  only there, and GRUB at the display's 1920x1080. The machine draws on its CPU and
+  is slow; patina keeps its look there all the same (November 2026, a decision of the
+  maintainer's, in place of a plainer desktop in the machine): a device may replace
+  only two settings nobody sees, the size wallpapers are rendered at and the file
+  index (`settings` in its `device.yaml`), and the launcher's setup window and the
+  welcome say that patina is faster on a PC, from the image. No GPU in the guest
+  while that needs a patched QEMU.
 - ARM: aarch64 is first-class from day one. An "ARM version" is a tested-hardware list
   plus device glue under `devices/`, never a separate release or branch.
 - License: GPL-3.0-or-later. Theme artwork may carry its own license (`artwork_license`).
@@ -356,7 +362,7 @@ packs. Audience: developers and privacy-minded users in the EU.
 | `desktops/` | per-desktop renderers (templates, an `actions.yaml` for the keybindings, Plasma's `icons.yaml` for the folder colours of an icon theme, one `apply.sh`) and the headless session the desktop workflow screenshots (`screenshot.sh`); Plasma's `askpass.sh`, the AI agent's sudo password dialog; `plasma/` first; `terminal/` renders the terminal and its tools for every desktop |
 | `manifest/` | bundles, backends, upstream recipes: everything that gets installed |
 | `migrations/` | timestamped, idempotent update steps |
-| `devices/` | the only place for device- or architecture-specific files: what a device is and needs, the system files `patina install` writes on it, and for a laptop that boots with a device tree its entries in the arm64 image's boot menu |
+| `devices/` | the only place for device- or architecture-specific files: what a device is and needs, the system files `patina install` writes on it, the two unseen settings it may replace, the line the welcome says on it, and for a laptop that boots with a device tree its entries in the arm64 image's boot menu |
 | `iso/` | live-build configuration, Calamares configuration and branding, the templates `iso/live/assets.sh` renders from the theme (installer artwork, icons and stylesheet, the live system's fonts, the Wi-Fi step's terminal), with the boot menus of `defaults/boot/grub/`, first-boot unit, QEMU boot tests (Phase 3); the arm64 image's kernel settings (`live/arch/`) and the installer step for laptops that boot with a device tree; `disk/` Try patina's disk image and the installer's pages for its setup window |
 | `docs/` | roadmap, branding and trademark rules, tested hardware, `credits.yaml` (the people and projects patina is made of: `patina credits`, the installer's last slide and the README's Credits section), the manual VM run that closes Phases 1 and 2 (`vm-run.md`), the manual run on a Snapdragon X Elite laptop that Phase 4 needs, Debian written by hand beside Windows and then Path A (`x-elite-run.md`), the record of the AI agent's test run of November 2026, with opencode and Hermes side by side and what is still open (`agent-test.md`); the record of the test rounds run by `.claude/workflows/testround.js`, newest first, what each found, changed and left open (`test-round.md`); `design/` keeps design explorations as self-contained HTML pages (`futures.html`: the eight directions of the 2026 redesign, candidates for more themes); `screenshots/` holds the installer, desktop, start menu and command palette screenshots the README shows, taken by the image's boot test and by the desktop workflow's headless Plasma session, refreshed per release |
 | `.github/workflows/` | lint (shellcheck, yamllint), smoke (Debian containers, x86_64 and aarch64), desktop (Path A plus a Plasma X11 session on a virtual framebuffer, screenshots), iso (build, boot test, Try patina's disk image built and booted, then started twice behind patina's boot splash, release; a release has both images and the amd64 disk, the arm64 image before its manual install check), release (run by hand: tags `main` as `v<version>` once `CHANGELOG.md` has the section and lint and smoke passed, and starts iso on the tag) |

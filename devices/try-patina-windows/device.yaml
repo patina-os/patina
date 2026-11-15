@@ -14,6 +14,12 @@ kernel_params: []
 extra_packages:
   - spice-vdagent   # copy and paste with Windows: QEMU's vdagent and its GTK window
   - kwin-x11        # the Plasma X11 session, the one spice-vdagent shares a clipboard in
+# Two savings nobody sees, on a machine that draws on its CPU: wallpapers rendered at
+# the display's one resolution instead of 4K, and no file index.
+settings:
+  speed:
+    wallpaper_size: 1920x1080
+    file_indexing: "off"
 notes: >
   Stock QEMU from winget on the Windows Hypervisor Platform, UEFI, an NVMe disk and
   software rendering (no GPU in the guest). The launcher starts the released disk image
