@@ -6,6 +6,8 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.17] - 2026-11-15
+
 ### Changed
 
 - Try patina's disk image is compressed with zstd instead of zlib, so patina in the
@@ -1392,7 +1394,8 @@ README says how, and the test report form on GitHub takes the results.
 - CI: shellcheck and yamllint; smoke run in containers of the base on x86_64 and
   aarch64.
 
-[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.16...main
+[Unreleased]: https://github.com/patina-os/patina/compare/v0.1.0-alpha.17...main
+[0.1.0-alpha.17]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.17
 [0.1.0-alpha.16]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.16
 [0.1.0-alpha.15]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.15
 [0.1.0-alpha.14]: https://github.com/patina-os/patina/releases/tag/v0.1.0-alpha.14
