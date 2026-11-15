@@ -399,7 +399,7 @@ colours() {
 }
 
 welcome() {
-  local name action choice chord words keybindings
+  local name action choice chord words keybindings device
   local -a lines
   [[ -t 0 && -t 1 ]] || die "the welcome asks on a terminal; patina welcome --window opens one"
   need_yq
@@ -416,6 +416,12 @@ welcome() {
   echo
   gum style --foreground "${tpl[BASE05]}" "Welcome${name:+, $name}. patina is installed with the apps you picked." \
     "Here is what you can add now, and the keys to start with:"
+  # What a detected device has to say about itself (`welcome` in its device.yaml): one
+  # line, as Try patina's machine says that it is slower than a PC.
+  while IFS= read -r device; do
+    words="$(yq eval '.welcome // ""' "$PATINA_PATH/devices/$device/device.yaml")"
+    [[ -z "$words" ]] || gum style --foreground "${tpl[BASE04]}" "$words"
+  done < <(detected_devices)
   echo
   keybindings="$(keybindings)"
   # The first keys, as defaults/keybindings.yaml has them; the agent's once it is set up:

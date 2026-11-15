@@ -173,6 +173,30 @@ jobs:
           test ! -e "$data/wallpapers/patina-zz-copy-$wallpaper"
           test ! -e "$HOME/.config/nvim/colors/patina-zz-copy.lua"
           [[ "$(scheme)" == "patina-$theme" ]]
+      - name: A device replaces the wallpaper's size and the file index, and nothing else
+        # devices/try-patina-windows/ names both (`settings`); a product name in a
+        # stand-in for /sys/class/dmi/id makes this container that machine. The 4K
+        # rendering goes with it, and comes back without the device.
+        run: |
+          theme="$(yq eval '.theme' defaults/settings.yaml)"
+          wallpaper="$(basename "$(yq eval '.wallpapers[0]' "themes/$theme/theme.yaml")")"
+          images="$HOME/.local/share/wallpapers/patina-$theme-${wallpaper%.*}/contents/images"
+          indexing() {
+            kreadconfig6 --file baloofilerc --group "Basic Settings" --key Indexing-Enabled
+          }
+          mkdir dmi
+          yq eval '.detect.product_name' devices/try-patina-windows/device.yaml > dmi/product_name
+          PATINA_DMI="$PWD/dmi" bin/patina theme set "$theme"
+          test -s "$images/1920x1080.png"
+          test ! -e "$images/3840x2160.png"
+          [[ "$(indexing)" == false ]]
+          PATINA_DMI="$PWD/dmi" bin/patina theme set "$theme" | tee again.txt
+          grep -q 'theme: nothing to do' again.txt
+          rm -r dmi
+          bin/patina theme set "$theme"
+          test -s "$images/3840x2160.png"
+          test ! -e "$images/1920x1080.png"
+          [[ "$(indexing)" == true ]]
       - name: The colours, the icons, the start menu, its grain and the windows rendered
         # The scheme's colours are in kdeglobals (where Plasma reads them, not only in
         # the scheme file), the icon theme of the theme carries its folders in the

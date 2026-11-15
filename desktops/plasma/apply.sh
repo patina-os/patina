@@ -41,6 +41,21 @@ say() { printf 'patina: theme: %s\n' "$*"; }
 warn() { printf 'patina: theme: %s\n' "$*" >&2; }
 changed() { changes=$((changes + 1)); }
 
+# The two settings a device may replace (devices/README.md, `settings`), neither of
+# which shows: the size wallpapers are rendered at and what the file index reads. A
+# machine with one screen size and a slow processor names them (Try patina's).
+wallpaper_size="$(yq eval '.speed.wallpaper_size' "$settings")"
+file_indexing="$(yq eval '.speed.file_indexing' "$settings")"
+while IFS= read -r device; do
+  device="$PATINA_PATH/devices/$device/device.yaml"
+  wallpaper_size="$(now="$wallpaper_size" yq eval '.settings.speed.wallpaper_size // strenv(now)' "$device")"
+  file_indexing="$(now="$file_indexing" yq eval '.settings.speed.file_indexing // strenv(now)' "$device")"
+done < <(detected_devices)
+[[ "$wallpaper_size" =~ ^([0-9]+)x([0-9]+)$ ]] ||
+  die "speed.wallpaper_size is a width and a height, such as 3840x2160, not $wallpaper_size"
+wallpaper_width="${BASH_REMATCH[1]}"
+wallpaper_height="${BASH_REMATCH[2]}"
+
 # ---- the theme as template variables ------------------------------------------------
 # tpl[NAME] fills ${NAME} in a template (theme_vars and render in bin/lib.sh): colours as
 # hex (BASE00) and as the r,g,b decimals KDE's files want (BASE00_RGB), in the palette
@@ -195,9 +210,10 @@ render "$templates/konsole.profile" "$tmp/konsole.profile"
 put "$tmp/konsole.profile" "$data/konsole/patina-$theme.profile"
 drop_other_themes "$data/konsole/patina-*" "$data/konsole/patina-$theme."
 
-# Wallpapers: one Plasma wallpaper package per image. An SVG is rendered once, at 4K,
-# and again only when the theme's file is newer than the rendering (a git pull sets
-# the time); a PNG is copied as it is. In a theme's other mode its own wallpapers come
+# Wallpapers: one Plasma wallpaper package per image. An SVG is rendered once, at 4K
+# (speed.wallpaper_size), and again only when the theme's file is newer than the
+# rendering (a git pull sets the time); a PNG is copied as it is. A rendering at
+# another size goes, and the desktop's wallpaper is set again, since it named that file. In a theme's other mode its own wallpapers come
 # first, so the first is the desktop's, and the theme's own follow; the theme's own
 # first one stays the login screen's, which is made for a dark ground.
 wallpaper_dir=""
@@ -208,8 +224,14 @@ while IFS= read -r rel; do
   src="$theme_dir/$rel"
   name="$(basename "${rel%.*}")"
   pkg="$data/wallpapers/patina-$theme-$name"
-  png="$pkg/contents/images/3840x2160.png"
+  png="$pkg/contents/images/$wallpaper_size.png"
   wallpaper_pkgs="$wallpaper_pkgs$pkg "
+  for other in "$pkg"/contents/images/*.png; do
+    if [[ -e "$other" && "$other" != "$png" ]]; then
+      rm -f "$other" "$PATINA_STATE/wallpaper"
+      changed
+    fi
+  done
   if [[ ! -f "$src" ]]; then
     warn "wallpaper $rel is not in the theme; skipping it"
     continue
@@ -224,11 +246,11 @@ while IFS= read -r rel; do
           if [[ "$src" == *.jpg ]]; then
             # A photograph becomes a PNG too, through an SVG that holds it (rsvg reads
             # no file outside the SVG's own directory, so it is embedded).
-            printf '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="3840" height="2160"><image width="3840" height="2160" preserveAspectRatio="xMidYMid slice" xlink:href="data:image/jpeg;base64,%s"/></svg>\n' \
-              "$(base64 -w0 "$src")" > "$tmp/photo.svg"
+            printf '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="%s" height="%s"><image width="%s" height="%s" preserveAspectRatio="xMidYMid slice" xlink:href="data:image/jpeg;base64,%s"/></svg>\n' \
+              "$wallpaper_width" "$wallpaper_height" "$wallpaper_width" "$wallpaper_height" "$(base64 -w0 "$src")" > "$tmp/photo.svg"
             input="$tmp/photo.svg"
           fi
-          rsvg-convert --width 3840 --height 2160 --output "$tmp/wallpaper.png" "$input"
+          rsvg-convert --width "$wallpaper_width" --height "$wallpaper_height" --output "$tmp/wallpaper.png" "$input"
           mv "$tmp/wallpaper.png" "$png"
           changed
         else
@@ -261,11 +283,11 @@ done
 # run goes on.
 login_png=/usr/local/share/patina/login.png
 sddm_breeze=/usr/share/sddm/themes/breeze
-if [[ -n "$login_dir" && -f "$login_dir/contents/images/3840x2160.png" ]]; then
+if [[ -n "$login_dir" && -f "$login_dir/contents/images/$wallpaper_size.png" ]]; then
   render "$templates/sddm-theme.conf.user" "$tmp/theme.conf.user"
   login_todo=()
-  cmp -s "$login_dir/contents/images/3840x2160.png" "$login_png" ||
-    login_todo+=("$login_dir/contents/images/3840x2160.png:$login_png")
+  cmp -s "$login_dir/contents/images/$wallpaper_size.png" "$login_png" ||
+    login_todo+=("$login_dir/contents/images/$wallpaper_size.png:$login_png")
   if [[ -d "$sddm_breeze" ]] && ! cmp -s "$tmp/theme.conf.user" "$sddm_breeze/theme.conf.user"; then
     login_todo+=("$tmp/theme.conf.user:$sddm_breeze/theme.conf.user")
   fi
@@ -679,10 +701,10 @@ put "$tmp/lnf.defaults" "$lnf/contents/defaults"
 # outside the SVG's own directory, so the wallpaper and the mark sit beside it. The full
 # screen one is PNG data under the .jpg name the package format gives it: rsvg-convert
 # writes no JPEG, and Qt reads an image by its content.
-if [[ -n "$wallpaper_dir" && -f "$wallpaper_dir/contents/images/3840x2160.png" ]] &&
+if [[ -n "$wallpaper_dir" && -f "$wallpaper_dir/contents/images/$wallpaper_size.png" ]] &&
     command -v rsvg-convert > /dev/null; then
   mkdir -p "$tmp/preview"
-  cp "$wallpaper_dir/contents/images/3840x2160.png" "$tmp/preview/wallpaper.png"
+  cp "$wallpaper_dir/contents/images/$wallpaper_size.png" "$tmp/preview/wallpaper.png"
   cp "$PATINA_PATH/branding/icon-small.svg" "$tmp/preview/mark.svg"
   render "$templates/look-and-feel-preview.svg" "$tmp/preview/preview.svg"
   rsvg-convert --width 600 --height 337 --output "$tmp/preview.png" "$tmp/preview/preview.svg"
@@ -952,7 +974,7 @@ case "$(yq eval '.speed.latency' "$settings")" in
   *) latency="" ;;
 esac
 [[ -z "$latency" ]] || kset kwinrc LatencyPolicy "$latency" Compositing
-case "$(yq eval '.speed.file_indexing' "$settings")" in
+case "$file_indexing" in
   off) kset baloofilerc Indexing-Enabled false "Basic Settings" ;;
   names)
     kset baloofilerc Indexing-Enabled true "Basic Settings"
@@ -1273,7 +1295,7 @@ if [[ $in_session -eq 1 ]]; then
   wallpaper_set="$PATINA_STATE/wallpaper"
   if [[ -n "$wallpaper_dir" && "$(cat "$wallpaper_set" 2> /dev/null || true)" != "$wallpaper_dir" ]] &&
       command -v plasma-apply-wallpaperimage > /dev/null; then
-    if plasma-apply-wallpaperimage "$wallpaper_dir/contents/images/3840x2160.png" > /dev/null; then
+    if plasma-apply-wallpaperimage "$wallpaper_dir/contents/images/$wallpaper_size.png" > /dev/null; then
       mkdir -p "$PATINA_STATE"
       echo "$wallpaper_dir" > "$wallpaper_set"
       say "wallpaper: $(basename "$wallpaper_dir")"

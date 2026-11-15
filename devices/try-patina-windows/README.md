@@ -54,12 +54,16 @@ type=1,product=Try patina`), which `patina install` reads from
   login, so its sessions win;
 - writes `system/default/grub.d/try-patina.cfg`, which starts GRUB at 1920x1080, the
   display's one resolution: the firmware reports no preferred mode, so GRUB kept
-  800x600, and the boot menu stood in a 4:3 box in the window.
+  800x600, and the boot menu stood in a 4:3 box in the window;
+- renders wallpapers at 1920x1080 instead of 4K and keeps no file index (`settings`
+  in `device.yaml`): two savings nobody sees, on a machine that draws on its CPU. The
+  look itself stays patina's, effects and all.
 
 ## Known caveats
 
-- Software rendering: stock QEMU gives the guest no GPU, so animations are slower than
-  on hardware.
+- Software rendering: stock QEMU gives the guest no GPU, so the desktop is drawn on the
+  CPU and is slower than on hardware; the launcher's setup window and the welcome
+  (`welcome` in `device.yaml`) say so and recommend patina on a PC, from the image.
 - The CPU model is a safe subset (`qemu64` with SSSE3, SSE4 and AES); stock QEMU on the
   Windows Hypervisor Platform does not pass AVX through.
 - The disk is an NVMe disk, not virtio, so the I/O scheduler rules of
