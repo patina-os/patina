@@ -281,6 +281,8 @@ the installer puts them (`EFI/debian` and the removable path), without an accoun
 without firmware and microcode, which a virtual machine has no hardware for. The disk is
 128 GiB, the launcher's ceiling, and costs only what is written; a compressed qcow2 of
 it is what the launcher downloads and keeps, under a layer for the machine's changes.
+It is compressed with zstd, which the guest unpacks faster than qcow2's zlib at every
+first read of the disk.
 What the installer's pages ask, the launcher asks on Windows (the account, the language,
 keyboard and time zone, the apps, the AI agent and the theme) and hands to the guest,
 whose first boot sets them up (`devices/try-patina-windows/`) before Path A runs as

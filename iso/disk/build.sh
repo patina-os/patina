@@ -204,8 +204,10 @@ cleanup
 loops=()
 trap - EXIT
 
+# zstd rather than qcow2's zlib: the launcher keeps this file under the machine's layer,
+# so the guest unpacks a cluster of it at every first read, for as long as it lives.
 say "compressing the image"
-qemu-img convert -c -O qcow2 "$raw" "$out/patina-$arch.qcow2"
+qemu-img convert -c -O qcow2 -o compression_type=zstd "$raw" "$out/patina-$arch.qcow2"
 rm -f "$raw"
 rm -rf "$root"
 ls -l "$out/patina-$arch.qcow2"

@@ -6,6 +6,12 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Try patina's disk image is compressed with zstd instead of zlib, so patina in the
+  virtual machine on Windows waits less for its disk: every first read of the
+  downloaded disk unpacks it, for as long as the machine lives.
+
 ## [0.1.0-alpha.16] - 2026-11-14
 
 ### Added
