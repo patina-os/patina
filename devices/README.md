@@ -29,7 +29,9 @@ SoC's, where one directory serves a platform. A detected device adds its
 `defaults/settings.yaml` when the desktop is rendered, and only these two, neither of
 which shows: `speed.wallpaper_size` and `speed.file_indexing` (a machine with one
 screen size and a slow processor renders wallpapers at that size and keeps no file
-index). The look is not a device's to change. A device with neither key is never detected; its README
+index). The look is not a device's to change. Its `welcome` is one line `patina
+welcome` says under its greeting, for what a user of that machine should know at
+every login (82 columns at most, the welcome's half of its window). A device with neither key is never detected; its README
 says what to do by hand.
 
 A machine whose firmware gives Linux no hardware description boots only when the boot

@@ -20,6 +20,8 @@ settings:
   speed:
     wallpaper_size: 1920x1080
     file_indexing: "off"
+# The welcome says it at every login: one line, 82 columns at most.
+welcome: No graphics card here, so patina is slower than installed on a PC from the ISO.
 notes: >
   Stock QEMU from winget on the Windows Hypervisor Platform, UEFI, an NVMe disk and
   software rendering (no GPU in the guest). The launcher starts the released disk image

@@ -15,6 +15,9 @@ All notable changes to patina are documented here. The format follows
   instead of 4K and no file index is kept: it looks the same and leaves the machine's
   processor, which also draws the desktop, more to do it with. A device may now name
   these two settings (`settings` in its `device.yaml`), and no others.
+- The welcome says in Try patina's virtual machine that patina has no graphics card
+  there and is slower than installed on a PC from the ISO, so nobody takes the
+  machine's speed for patina's. The look stays what it is on a PC.
 
 ## [0.1.0-alpha.16] - 2026-11-14
 

@@ -62,8 +62,8 @@ type=1,product=Try patina`), which `patina install` reads from
 ## Known caveats
 
 - Software rendering: stock QEMU gives the guest no GPU, so the desktop is drawn on the
-  CPU and is slower than on hardware; the launcher's setup window says so and
-  recommends patina on a PC, from the image.
+  CPU and is slower than on hardware; the launcher's setup window and the welcome
+  (`welcome` in `device.yaml`) say so and recommend patina on a PC, from the image.
 - The CPU model is a safe subset (`qemu64` with SSSE3, SSE4 and AES); stock QEMU on the
   Windows Hypervisor Platform does not pass AVX through.
 - The disk is an NVMe disk, not virtio, so the I/O scheduler rules of

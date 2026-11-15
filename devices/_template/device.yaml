@@ -11,5 +11,6 @@ kernel_params: []       # extra kernel command-line parameters, if any
 extra_packages: []      # canonical package names this device needs on top of the bundles
 settings: {}            # speed.wallpaper_size and speed.file_indexing of
                         # defaults/settings.yaml, where the device needs another value
+welcome: ""             # one line the welcome says on this device, 82 columns at most
 notes: >
   One paragraph: what works, what does not, where upstream support stands.
