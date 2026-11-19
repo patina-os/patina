@@ -15,8 +15,26 @@ All notable changes to patina are documented here. The format follows
   runs as root, installs or changes a service still asks every time, and the answer
   lists what ran. It is off unless you turn it on, since that yes covers steps you have
   not seen, and `patina ai handover off` turns it off again. It needs kortex 0.9.0,
-  which patina pins once it is released; `patina ai handover on` says so on a machine
-  with an older one.
+  which this release pins; `patina ai handover on` says so on a machine that still
+  has an older one.
+
+### Changed
+
+- kortex 0.9.0: a step the agent asks about starts with what it would do, in kortex's
+  own words worked out from the step ("Deletes", "Runs as root", "Changes your
+  network"), since the agent's words can be wrong, and its answers are rows to read
+  and pick with Enter, Allow this once and Don't, stop here; they were icons, one of
+  which read as "share". While the agent works, the palette also shows its last
+  sentence, its steps so far in a word each and Show every step. A notification that
+  asks takes the answer, Allow once or Deny, and goes once the step is answered.
+
+### Fixed
+
+- Meta+A with nothing running opens the command palette on kortex's hint, your recent
+  conversations and two requests to try. It opened an empty field, which showed nothing
+  until something was typed (kortex 0.9.0).
+- Enter on the row that says how long the agent has been at it no longer empties the
+  clipboard (kortex 0.9.0).
 
 ## [0.1.0-alpha.17] - 2026-11-15
 
