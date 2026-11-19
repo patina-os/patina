@@ -361,7 +361,13 @@ this machine is put together and how to change it the patina way. Your own
 instructions go beside it: `patina ai prompt` (or "Edit the agent's instructions" in
 the command palette, or the welcome's AI menu) opens `~/.config/patina/agent.md`, and
 the agent follows what you write there (the language it answers in, how short, what it
-leaves alone) from the next request, while patina's own keep coming with updates. What needs root (a
+leaves alone) from the next request, while patina's own keep coming with updates. If
+five questions for a task of five changes are too many for you, `patina ai handover on`
+(or "One yes per task" in the welcome's AI menu) adds an answer to each question,
+"Allow the rest of this task": the later changes of that one request run without
+asking, the answer lists them, and what deletes, runs as root, installs or changes a
+service still asks every time. It is off by default, because that yes covers steps you
+have not seen; it comes with kortex 0.9.0. What needs root (a
 package, a driver, a system service) it runs with `sudo -A`, since it has no terminal
 for sudo to ask in: a notification asks for your password, and its "Enter password"
 opens a dialog in the theme's colours, so nothing you type elsewhere lands in it, in

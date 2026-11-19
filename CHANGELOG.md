@@ -6,6 +6,18 @@ All notable changes to patina are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- One yes for the rest of a task, for those who want it: `patina ai handover on`, or
+  "One yes per task" in the welcome's AI menu. opencode asks before each change; with
+  this, a question in the command palette has a third answer, "Allow the rest of this
+  task", and the later changes of that one request run without asking. What deletes,
+  runs as root, installs or changes a service still asks every time, and the answer
+  lists what ran. It is off unless you turn it on, since that yes covers steps you have
+  not seen, and `patina ai handover off` turns it off again. It needs kortex 0.9.0,
+  which patina pins once it is released; `patina ai handover on` says so on a machine
+  with an older one.
+
 ## [0.1.0-alpha.17] - 2026-11-15
 
 ### Changed
