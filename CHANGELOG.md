@@ -35,6 +35,8 @@ All notable changes to patina are documented here. The format follows
   until something was typed (kortex 0.9.0).
 - Enter on the row that says how long the agent has been at it no longer empties the
   clipboard (kortex 0.9.0).
+- Meta+A after a conversation no longer shows kortex's two requests to try for a moment
+  before the list of conversations arrives (kortex 0.9.1).
 
 ## [0.1.0-alpha.17] - 2026-11-15
 
