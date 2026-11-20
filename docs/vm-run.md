@@ -224,7 +224,7 @@ Log out and back in once, then:
 - [ ] the desktop: the glowing contour map on black, aurora's colour scheme (green
   selections and focus, violet hover), a bar along the bottom edge (it stays there
   when a window is maximised) with the start button alone in the middle and the pinned
-  files, browser and terminal at the left end
+  browser and terminal at the left end
 - [ ] the start menu: the patina dots as its button; it opens in the middle of the
   screen's width, as far from the left edge as from the right; the AI and
   Self-hosting folders among the categories; the favourites are Nextcloud, Element, Euro-Office,
