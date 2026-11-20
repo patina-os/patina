@@ -93,7 +93,16 @@ packs. Audience: developers and privacy-minded users in the EU.
   before what it counts as dangerous, and the README says so (October 2026). opencode
   asks before every change
   (`defaults/apps.yaml`) and reads `defaults/agent.md`, then the user's own instructions
-  (`~/.config/patina/agent.md`, in addition, never in place of patina's; November 2026). Either agent runs what needs
+  (`~/.config/patina/agent.md`, in addition, never in place of patina's; November 2026).
+  One yes for the rest of a task is the user's own choice and off until they make it
+  (`patina ai handover on`, the welcome's AI menu, a row of kortex's; November 2026,
+  after the design study kortex keeps in `docs/design/`): with it a question in the
+  palette has "Allow the rest of this task", which kortex answers the later steps of
+  that one request with, never what deletes, runs as root, installs or changes a
+  service, and the answer lists what ran so. It is not a default, and no level that
+  changes something without any yes is offered: a yes that covers steps not seen yet
+  is what sets opencode apart from Hermes, and kortex's list of what still asks
+  matches a command's shape, not its effect. Either agent runs what needs
   root with `sudo -A`, through a password dialog in the theme's colours that a
   notification opens, so it never takes the keyboard by itself, and one password covers
   every sudo of the user's for sudo's timeout (`/etc/sudoers.d/patina-agents`, with an
@@ -232,7 +241,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   picked (November 2026, after it opened at the first login only), in kitty beside
   btop as on the README's picture of the desktop, and from the start menu: the basic
   onboarding first (`setup`, a menu of its own: the AI agent, in a menu of its own with
-  the agent, its provider's login and its services, so none reads as
+  the agent, its provider's login, its services, the user's instructions and one yes
+  per task, so none reads as
   Nextcloud's or an internet provider's; your cloud data, Nextcloud today; your
   password manager, KeePassXC today; a provider list appears in a step once it has a
   second provider; November 2026), saying so while a cloud agent is not logged in;

@@ -38,9 +38,9 @@ release; the arm64 image comes with it too, for testers, before its own install 
 Meta+A and what you want, in your own words, or any search in the command palette or
 the start menu: [kortex](https://github.com/patina-os/kortex), patina's KRunner runner,
 hands the request to the AI agent you picked and talks with you right in the command
-palette, as in a chat. Each change the agent wants to make asks first, in the agent's
-own words, with Allow once, Always and Deny; a step that deletes or runs as root shows
-its command under the words. Meta+Shift+A docks the agent's own view at the screen's
+palette, as in a chat. Each change the agent wants to make asks first: what the step
+would do ("Deletes", "Runs as root", "Changes your network"), the agent's own words and
+the command, with Allow this once and Don't, stop here as rows under it. Meta+Shift+A docks the agent's own view at the screen's
 right edge, every step and command, while you work on beside it. It is made for three
 things:
 
@@ -361,7 +361,13 @@ this machine is put together and how to change it the patina way. Your own
 instructions go beside it: `patina ai prompt` (or "Edit the agent's instructions" in
 the command palette, or the welcome's AI menu) opens `~/.config/patina/agent.md`, and
 the agent follows what you write there (the language it answers in, how short, what it
-leaves alone) from the next request, while patina's own keep coming with updates. What needs root (a
+leaves alone) from the next request, while patina's own keep coming with updates. If
+five questions for a task of five changes are too many for you, `patina ai handover on`
+(or "One yes per task" in the welcome's AI menu) adds an answer to each question,
+"Allow the rest of this task": the later changes of that one request run without
+asking, the answer lists them, and what deletes, runs as root, installs or changes a
+service still asks every time. It is off by default, because that yes covers steps you
+have not seen. What needs root (a
 package, a driver, a system service) it runs with `sudo -A`, since it has no terminal
 for sudo to ask in: a notification asks for your password, and its "Enter password"
 opens a dialog in the theme's colours, so nothing you type elsewhere lands in it, in
@@ -374,15 +380,18 @@ into any search of the command palette (Meta+Space) or the start menu, which end
 [kortex](https://github.com/patina-os/kortex), a KRunner runner in a repository of its
 own (so it also serves other Plasma desktops), is where you talk to the agent, opencode
 or Hermes, as in a chat. While the agent works, one line says for how long and what it
-wrote, thought or does last ("running a command"), so the palette holds still; then
-the answer comes. Each change the agent asks about is a row in its own words, which it
-writes first because `defaults/agent.md` tells it to, with Allow once, Always and Deny;
-a step that deletes, runs as root or the like shows its command under the words, since
-words can be wrong, and a step it did not explain shows as its command. Close the
-palette and a notification says when the agent asks or has answered; Meta+A or its
+thinks or does ("running a command"), one its last sentence and one its steps so far in
+a word each, so the palette holds still; then the answer comes. Each change the agent
+asks about is a row: what the step would do, which kortex works out from the step
+itself ("Deletes", "Runs as root", "Changes a file"), then the agent's own words, which
+it writes first because `defaults/agent.md` tells it to, then the command, since words
+can be wrong; a step it did not explain shows as its command. Its answers are the rows
+under it: Allow this once, Don't, stop here, and Always allow for a command that only
+looks. Close the palette and a notification says when the agent asks or has answered;
+one that asks takes your answer there, Allow once or Deny, and Meta+A or its
 Show opens the conversation again. `ai` alone lists the recent conversations and
 `kortex ›` shows the current one. The commands are in the panel: Meta+Shift+A, or Show
-what the agent does on the palette's row, opens the agent's own interface on the
+every step in the palette, opens the agent's own interface on the
 conversation in a terminal docked at the screen's right edge, full height and a fifth
 of its width, above your windows, so you go on working beside it; close it when you
 have seen enough. Every AI answer installs kortex, from its tagged release.

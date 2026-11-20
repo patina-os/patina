@@ -163,12 +163,12 @@ setup_step() {
 }
 
 # The AI agent's own menu, back to the onboarding with Back: turn it on or change it,
-# its provider's login, the services it can work with and your own instructions for
-# it, each through patina ai. The
+# its provider's login, the services it can work with, your own instructions for it
+# and whether one yes can cover the rest of a task, each through patina ai. The
 # agent tools are among the apps, as AI dev tools. A cloud agent not logged in has its
 # login first.
 ai_step() {
-  local ai agent provider choice
+  local ai agent provider choice handover=off
   local -a lines
   while true; do
     ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)"
@@ -190,6 +190,17 @@ ai_step() {
       lines+=("$(printf '%-10s %s' services "Connect services · $(yq eval \
         '[.[].description | split(" · ") | .[0]] | join(", ")' "$PATINA_PATH/defaults/services.yaml")")")
       lines+=("$(printf '%-10s %s' prompt "Your instructions · what the agent follows besides patina's")")
+      # One yes for the rest of a task, off unless picked here; opencode only, since
+      # Hermes asks before little as it is.
+      if [[ "$agent" != hermes ]]; then
+        handover=off
+        [[ "$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/kortex/handover" 2> /dev/null || true)" != on ]] || handover=on
+        if [[ "$handover" == on ]]; then
+          lines+=("$(printf '%-10s %s' handover "One yes per task · now on: deleting, root and installs still ask")")
+        else
+          lines+=("$(printf '%-10s %s' handover "One yes per task · now off: every change asks")")
+        fi
+      fi
     fi
     echo
     choice="$(pick "The AI agent" "${lines[@]}")" || return 0
@@ -199,6 +210,13 @@ ai_step() {
       provider) "$PATINA_PATH/bin/patina-ai" login || true ;;
       services) services_step ;;
       prompt) "$PATINA_PATH/bin/patina-ai" prompt || true ;;
+      handover)
+        if [[ "$handover" == on ]]; then
+          "$PATINA_PATH/bin/patina-ai" handover off || true
+        else
+          "$PATINA_PATH/bin/patina-ai" handover on || true
+        fi
+        ;;
       *) return 0 ;;
     esac
   done

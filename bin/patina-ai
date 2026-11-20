@@ -11,7 +11,7 @@ source "$PATINA_PATH/bin/lib.sh"
 
 usage() {
   cat << EOU
-usage: patina ai [status] | on [opencode|hermes] [local|cloud] | login | off | connect [<service>] | disconnect <service> | prompt
+usage: patina ai [status] | on [opencode|hermes] [local|cloud] | login | off | connect [<service>] | disconnect <service> | prompt | handover [on|off]
 
   status      the agent this machine has (the default)
   on local    the agent with a model Ollama runs on this computer: a few GB of disk,
@@ -46,6 +46,16 @@ usage: patina ai [status] | on [opencode|hermes] [local|cloud] | login | off | c
   prompt      your own instructions for the agent, in addition to patina's: opens
               ~/.config/patina/agent.md in your editor, and the agent follows them
               from the next request. Empty the file to go back to patina's alone
+  handover    whether one yes can cover the rest of a task, and what that means
+  handover on
+              opencode asks before each change; with this, a question in the command
+              palette has a third answer, "Allow the rest of this task": the later
+              changes of that one request run without asking and the answer lists
+              them. What deletes, runs as root, installs or changes a service still
+              asks every time. Off by default, since that yes covers steps you have
+              not seen
+  handover off
+              every change asks again
 EOU
 }
 
@@ -619,6 +629,48 @@ EOT
   fi
 }
 
+# One yes for the rest of a task: kortex's own setting, a file it reads at each
+# question, so nothing restarts. Off unless the user turns it on (CLAUDE.md): opencode
+# asks before every change, and a yes that covers steps not seen yet is theirs to give.
+handover() {
+  local file="${XDG_CONFIG_HOME:-$HOME/.config}/kortex/handover" now=off kortex version
+  [[ "$(cat "$file" 2> /dev/null || true)" != on ]] || now=on
+  case "${1:-}" in
+    "")
+      if [[ "$now" == on ]]; then
+        say "ai: handover is on; a question has \"Allow the rest of this task\". patina ai handover off turns it off"
+      else
+        say "ai: handover is off; every change asks. patina ai handover on, and patina ai --help says what it means"
+      fi
+      return 0
+      ;;
+    on | off) ;;
+    *) die "handover takes on or off, not '$1'" ;;
+  esac
+  if [[ "$now" != "$1" ]]; then
+    mkdir -p "$(dirname "$file")"
+    echo "$1" > "$file"
+  fi
+  if [[ "$1" == off ]]; then
+    say "ai: handover is off; every change asks"
+    return 0
+  fi
+  say "ai: handover is on. A question in the command palette now has \"Allow the rest of this task\":"
+  say "ai: the later changes of that one request run without asking, and the answer lists them."
+  say "ai: What deletes, runs as root, installs or changes a service still asks every time."
+  if [[ "$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || echo opencode)" == hermes ]]; then
+    say "ai: Hermes has no such answer: it asks only before what it counts as dangerous"
+  fi
+  # kortex learned it in 0.9.0; an older one ignores the file.
+  kortex="${XDG_DATA_HOME:-$HOME/.local/share}/kortex/kortex.py"
+  if [[ -f "$kortex" ]]; then
+    version="$(python3 "$kortex" --version 2> /dev/null | awk '{ print $2 }')"
+    if [[ -n "$version" ]] && ! printf '0.9.0\n%s\n' "$version" | sort -V -C; then
+      say "ai: this machine has kortex $version, which does not know it yet; it comes with kortex 0.9.0"
+    fi
+  fi
+}
+
 main() {
   case "${1:-status}" in
     status) status ;;
@@ -632,6 +684,7 @@ main() {
     connect) connect "${2:-}" ;;
     disconnect) disconnect "${2:-}" ;;
     prompt) prompt ;;
+    handover) handover "${2:-}" ;;
     -h | --help) usage ;;
     *)
       usage >&2
