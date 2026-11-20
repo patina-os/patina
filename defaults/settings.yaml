@@ -121,7 +121,8 @@ panel:
                              # in the middle, as on Windows 11 (its menu then opens left of the
                              # centre, but for start_menu.position center) | plasma: the stock bar
   floating: false            # false: along the screen's edge, always; true: Plasma's floating bar
-  pinned: [files, browser, terminal]   # actions of keybindings.yaml pinned to the bar, in order
+  pinned: [browser, terminal]   # actions of keybindings.yaml pinned to the bar, in order; the
+                             # file manager is on Meta+E and in the menu, not here
 # The command palette (KRunner on Plasma, the AI agent in it through kortex).
 command_palette:
   position: center           # where it opens: center of the screen | top (Plasma's own)

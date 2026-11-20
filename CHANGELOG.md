@@ -28,6 +28,11 @@ All notable changes to patina are documented here. The format follows
   sentence, its steps so far in a word each and Show every step. A notification that
   asks takes the answer, Allow once or Deny, and goes once the step is answered.
 
+- The bar pins the browser and the terminal, no longer the file manager first: Dolphin
+  stays on Meta+E and in the start menu. A desktop that has its bar already keeps it;
+  unpin Dolphin there with a right click, or take the whole layout again with
+  `patina theme set <name> --layout`.
+
 ### Fixed
 
 - Meta+A with nothing running opens the command palette on kortex's hint, your recent
