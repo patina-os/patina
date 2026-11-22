@@ -88,9 +88,10 @@ split in two: the fastfetch greeting beside btop.
 
 The command palette in the same session, in the middle of the empty desktop, dark
 glass with a light hairline round it: `ai install photocraft`, kortex's answer through
-a real `opencode serve` beside kortex's green ▲, and the agent asking first in its own
-words, with `patina install --bundles artcraft` under them, selected with a faint green
-tint and waiting for Allow once, Always or Deny. The model is kortex's scripted demo
+a real `opencode serve`, and the agent asking first: what the step would do, in
+kortex's words ("Installs or removes software"), the agent's own, and `patina install
+--bundles artcraft` under them, selected with a faint green tint; below it the answers
+as rows, Allow this once and Don't, stop here. The model is kortex's scripted demo
 model, since CI has none to run.
 
 ![KRunner with kortex in the middle of the desktop: the agent asks before it installs the artcraft bundle for PhotoCraft](docs/screenshots/command-palette-amd64.png)
