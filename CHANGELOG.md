@@ -52,6 +52,15 @@ The test round of 25 November 2026 (`docs/test-round.md`):
   which read as "share". While the agent works, the palette also shows its last
   sentence, its steps so far in a word each and Show every step. A notification that
   asks takes the answer, Allow once or Deny, and goes once the step is answered.
+- kortex 0.10.0, the fixes of the test round of 25 November: with Allow the rest of
+  this task, a deletion written as `/bin/rm`, `(rm …)` or after `env` or `sudo`, a
+  change to a service, a timer or a cron job, `kill` and a command kortex cannot read
+  ask every time; Always is no longer offered for `du`, `wc` or the web. kortex no
+  longer stops the agent while the panel is open or it works. A step that asks says
+  in plain words what it would do, its answers carry what they cover in their own
+  text, the provider's and the agent's errors say what to do, code blocks keep their
+  lines, Markdown is read in rows and notifications, and the last conversation
+  survives a restart.
 
 - The bar pins the browser and the terminal, no longer the file manager first: Dolphin
   stays on Meta+E and in the start menu. A desktop that has its bar already keeps it;
