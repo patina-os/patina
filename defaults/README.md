@@ -14,7 +14,8 @@ repository, under `~/.config/patina/`, so `git pull` never clobbers them.
 - `settings.yaml`: the small set of knobs `patina install` applies when the user does not
   choose otherwise: default theme, its mode (dark or light; `patina theme mode` keeps
   the user's choice in the state directory) and desktop, Flatpak remote, fonts, the command the
-  `agent` action opens, the speed settings (animation factor, compositor latency,
+  `agent` action opens, the default web browser (`browser`, a desktop entry, set while
+  none is chosen or Debian's Konqueror is), the speed settings (animation factor, compositor latency,
   file indexing, the size wallpapers are rendered at; a device may replace the last
   two, `devices/README.md`), how a touchpad scrolls (natural, as on a phone, or traditional, as a
   mouse wheel), and the window and panel defaults (where a new window opens and how

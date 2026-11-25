@@ -49,11 +49,14 @@ Files, from `templates/`, each named after the theme:
   element it does not hold comes from Breeze. It holds Breeze's four popup backgrounds
   (`dialogs/background.svgz` and its translucent, opaque and solid forms), with
   `start_menu.grain` above 0 a 32 px noise tile in the text colour
-  (`templates/grain.svg`, rendered to PNG and embedded) laid at that opacity into their
-  centre tile, which Plasma repeats. Plasma draws all panel popups and the command
+  (`templates/grain.svg`, rendered to PNG and embedded) laid at that opacity over the
+  background of every tile Plasma builds them from: the centre, which it repeats, the
+  6 px edges, at the tile's own scale, and the rounded corners, each cut to its curve
+  (only where it is Breeze's round one; the opaque form's are not). With the centre
+  alone the edges showed as a darker frame inside the popup. Plasma draws all panel popups and the command
   palette from that background, so the start menu, KRunner, the calendar and the tray
   share the grain. Where KWin's Background Contrast effect blurs behind a popup, Plasma
-  draws the translucent background, whose 85 % opacity becomes `start_menu.glass` (72
+  draws the translucent background, whose 85 % opacity becomes `start_menu.glass` (60
   by default, frosted: KWin's blur is at its strongest by default), so the wallpaper's
   colours glow through the window colour, near black in the
   dark mode. Breeze's darker 1 px rim along their edges becomes the text colour at
@@ -127,11 +130,12 @@ Files, from `templates/`, each named after the theme:
   (`kbuildsycoca6`) when they change, from Plasma's menu (`XDG_MENU_PREFIX=plasma-`, as
   `startplasma` sets it, also outside a session). The favourites, the folders' apps and then
   `start_menu.favorites` as far as they are installed, go into `kicker-extra-favoritesrc`
-  (`Prepend`, a `;`-list): Kickoff puts them before Plasma's own favourites in a start
-  menu whose favourites store is still empty (the image's first login). On a desktop
-  that was logged into before patina (Path A) the store already holds Plasma's
-  defaults, so with `--layout` inside a session the renderer unlinks those (the browser,
-  Kontact, System Settings, Dolphin, Discover) and links patina's through the activity
+  (`Prepend`, a `;`-list, with `IgnoreDefaults`): Kickoff takes them in place of Plasma's
+  own favourites in a start menu whose favourites store is still empty (the image's
+  first login). On a desktop that was logged into before patina (Path A) the store
+  already holds Plasma's defaults, so with `--layout` inside a session the renderer
+  unlinks those that are not patina's (the browser slot, Kontact, System Settings,
+  Discover; Firefox ESR and Dolphin are patina's) and links patina's through the activity
   manager's D-Bus API (`org.kde.ActivityManager.ResourcesLinking`); favourites the user
   added stay. The layout script also writes their order for the start menu it makes
   (`kactivitymanagerd-statsrc`, `Favorites-…instance-<id>-global`), since a new start
@@ -209,7 +213,16 @@ Files, from `templates/`, each named after the theme:
   KDE's Welcome Center first): a copy of each one's entry under
   `~/.local/share/applications/`, `NoDisplay=true` added and a first line that says
   so, which the user's data directory puts before the system's; the menu and its search
-  skip it, and it still starts when asked. A copy no longer listed goes again
+  skip it, and it still starts when asked. A copy no longer listed goes again. Konqueror
+  is among them (`konqbrowser.desktop`, its one visible entry): kde-baseapps recommends it
+- the default web browser (`browser` in `defaults/settings.yaml`, Firefox ESR):
+  `BrowserApplication` in `kdeglobals` and the default for `x-scheme-handler/http`,
+  `x-scheme-handler/https` and `text/html` in `mimeapps.list`, as System Settings'
+  Default Applications writes them, while `BrowserApplication` is empty or names
+  Konqueror, whose `kfmclient_html.desktop` claims web links first
+  (`InitialPreference=9`), and each link type only while it is empty or Konqueror's. A
+  browser the user picked stays. Written before the layout script, whose pinned
+  browser is the one `xdg-settings` names
 
 Settings, through `kwriteconfig6`, each written only when it differs from what a session
 reads: the renderer puts `~/.config/kdedefaults/` first in `XDG_CONFIG_DIRS`, as

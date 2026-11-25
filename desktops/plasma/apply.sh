@@ -546,7 +546,8 @@ drop_other_themes "$data/icons/patina-*" "$icons_dir"
 # Breeze, the default theme, which gives every element it does not hold. Grain
 # (start_menu.grain): Plasma draws every panel popup, the command palette among them,
 # from one background, so it goes on all of them; the theme holds Breeze's popup
-# backgrounds with a fine noise tile laid into their centre tile, which Plasma repeats.
+# backgrounds with a fine noise tile laid over every tile's background: the centre,
+# which Plasma repeats, the edges and the corners, so the popup is one pane.
 # Selection (start_menu.selection): the highlight of Plasma's lists, a faint fill of
 # the accent inside a thin edge in place of Breeze's 30 % fill. Search fields and bands
 # (start_menu.search and .bands): the one solid box on the glass and the bands over it
@@ -558,10 +559,20 @@ desktoptheme="$data/plasma/desktoptheme/patina-$theme"
 if [[ "${tpl[DESKTOP_THEME]}" == default && -d "$breeze" ]]; then
   out="$tmp/desktoptheme"
   img=""
+  corners=""
   if [[ "$grain" -gt 0 ]] && command -v rsvg-convert > /dev/null; then
     render "$templates/grain.svg" "$tmp/grain.svg"
     rsvg-convert --width 32 --height 32 --output "$tmp/grain.png" "$tmp/grain.svg"
     img="$(base64 -w0 "$tmp/grain.png")"
+    # The rounded corners' grain: the tile's top left 6 px cut to the curve of each of
+    # Breeze's corners (their shapes as its file draws them), as group|shape|png;...
+    for c in "topleft|M 0,6 H 6 V 0 C 2,0 0,2 0,6 Z" "topright|M 0,0 V 6 H 6 C 6,2 4,0 0,0 Z" \
+        "bottomleft|M 6,6 V 0 H 0 c 0,4 2,6 6,6 z" "bottomright|M 0,6 V 0 H 6 C 6,4 4,6 0,6 Z"; do
+      printf '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="6" height="6"><clipPath id="c"><path d="%s"/></clipPath><image width="32" height="32" clip-path="url(#c)" xlink:href="data:image/png;base64,%s"/></svg>\n' \
+        "${c#*|}" "$img" > "$tmp/corner.svg"
+      rsvg-convert --output "$tmp/corner.png" "$tmp/corner.svg"
+      corners="$corners${corners:+;}$c|$(base64 -w0 "$tmp/corner.png")"
+    done
   fi
   printf -v opacity '%d.%02d' $((grain / 100)) $((grain % 100))
   # Glass (start_menu.glass): Plasma takes the translucent background while KWin's
@@ -580,17 +591,41 @@ if [[ "${tpl[DESKTOP_THEME]}" == default && -d "$breeze" ]]; then
     mkdir -p "$out/$variant"
     see=""
     [[ "$variant" == translucent/dialogs ]] && see="$glass"
-    # After the centre's background rect (rect4138 in every variant), an image of the
-    # noise at the same place and size; the root gets the xlink namespace it needs.
+    # Over the background of the centre, the edges and the corners, the noise
+    # (grain()); the root gets the xlink namespace it needs.
     # The rim's strips are the paths at opacity 0.5, the corners path3115 to path3124;
     # the line along a corner's curve is drawn in that corner's own 6 px square.
-    zcat "$breeze/$variant/background.svgz" | awk -v img="$img" -v op="$opacity" -v see="$see" -v rim="$rim" '
+    zcat "$breeze/$variant/background.svgz" |
+      awk -v img="$img" -v corners="$corners" -v op="$opacity" -v see="$see" -v rim="$rim" '
       function attr(tag, name,   m) {
         if (match(tag, "[ \t\n]" name "=\"[^\"]*\"")) {
           m = substr(tag, RSTART + 1, RLENGTH - 1)
           sub("^" name "=\"", "", m); sub("\"$", "", m); return m
         }
         return "0"
+      }
+      # The noise over the background of one tile, the first shape of its group, so the
+      # 6 px edges and the corners carry the grain the centre does; without it they
+      # showed as a darker frame inside the popup. A rect takes the tile at its place and
+      # size, cut at its own scale (slice); a corner takes its own picture, cut to its
+      # curve, only where its shape is the one that picture was cut for.
+      function grain(group, data, shape,   at, rest, tag, size) {
+        if (!match(doc, "<g[^>]*[ \t\n]id=\"" group "\"[^>]*>")) return
+        at = RSTART + RLENGTH
+        rest = substr(doc, at)
+        if (!match(rest, /<(rect|path)[^>]*\/>/)) return
+        tag = substr(rest, RSTART, RLENGTH)
+        at += RSTART + RLENGTH - 1   # attr() matches again, so the place is kept first
+        if (shape == "") {
+          size = "x=\"" attr(tag, "x") "\" y=\"" attr(tag, "y") "\" width=\"" attr(tag, "width") \
+            "\" height=\"" attr(tag, "height") "\""
+        } else if (attr(tag, "d") == shape) {
+          size = "x=\"0\" y=\"0\" width=\"6\" height=\"6\""
+        } else {
+          return
+        }
+        doc = substr(doc, 1, at - 1) "<image " size " opacity=\"" op "\" preserveAspectRatio=\"xMinYMin slice\"" \
+          " xlink:href=\"data:image/png;base64," data "\"/>" substr(doc, at)
       }
       function corner(id, d,   at) {
         if (match(doc, "<path[^>]*id=\"" id "\"[^>]*/>")) {
@@ -622,13 +657,13 @@ if [[ "${tpl[DESKTOP_THEME]}" == default && -d "$breeze" ]]; then
           corner("path3124", "M 0,0 C 0,4 2,6 6,6 V 5 C 2.6,5 1,3.4 1,0 Z")
           corner("path3121", "M 6,0 C 6,4 4,6 0,6 V 5 C 3.4,5 5,3.4 5,0 Z")
         }
-        if (img != "" && match(doc, /<rect[^>]*id="rect4138"[^>]*\/>/)) {
-          at = RSTART + RLENGTH   # attr() matches again, so the place is kept first
-          tag = substr(doc, RSTART, RLENGTH)
-          image = "<image x=\"" attr(tag, "x") "\" y=\"" attr(tag, "y") "\" width=\"" attr(tag, "width") \
-            "\" height=\"" attr(tag, "height") "\" opacity=\"" op "\" preserveAspectRatio=\"none\"" \
-            " xlink:href=\"data:image/png;base64," img "\"/>"
-          doc = substr(doc, 1, at - 1) image substr(doc, at)
+        if (img != "") {
+          grain("center", img); grain("top", img); grain("bottom", img); grain("left", img); grain("right", img)
+          n = split(corners, cs, ";")
+          for (i = 1; i <= n; i++) {
+            split(cs[i], f, "|")
+            grain(f[1], f[3], f[2])
+          }
         }
         printf "%s", doc
       }' | gzip -n > "$out/$variant/background.svgz"
@@ -813,6 +848,26 @@ while IFS= read -r app; do
   service_installed "$app" || continue
   favorites="$favorites${favorites:+;}$app"
 done < <(yq eval '.start_menu.folders[]?.apps[], .start_menu.favorites[]?' "$settings")
+
+# The default web browser (`browser`, Firefox ESR), which the bar's browser and Meta+B
+# open: in KDE's own setting and as the default for web links, as System Settings'
+# Default Applications sets both, while KDE's names none or Debian's Konqueror:
+# kde-baseapps recommends it, and its kfmclient_html entry claims web links before
+# Firefox, so it was the browser of a desktop where nobody picked one. A browser the
+# user picked stays, and so does a handler of web links they set. Before the layout
+# below, which pins the browser it names.
+browser="$(yq eval '.browser // ""' "$settings")"
+if [[ -n "$browser" ]] && service_installed "$browser"; then
+  now="$(kreadconfig6 --file kdeglobals --group General --key BrowserApplication)"
+  if [[ -z "$now" || "$now" =~ konq|kfmclient || "$now" == "$browser" ]]; then
+    kset kdeglobals BrowserApplication "$browser" General
+    for mime in x-scheme-handler/http x-scheme-handler/https text/html; do
+      now="$(kreadconfig6 --file mimeapps.list --group "Default Applications" --key "$mime")"
+      [[ -n "$now" && ! "$now" =~ konq|kfmclient ]] || kset mimeapps.list "$mime" "$browser" "Default Applications"
+    done
+  fi
+fi
+
 # The menu cache follows on its own in a session (kded); a rebuild now makes the
 # folders appear at once and costs nothing outside one.
 if [[ $changes -gt $menu_changes ]] && command -v kbuildsycoca6 > /dev/null; then
@@ -949,10 +1004,14 @@ if command -v kitty > /dev/null; then
   kset kdeglobals TerminalApplication kitty General
   kset kdeglobals TerminalService kitty.desktop General
 fi
+# Without Plasma's own after them (IgnoreDefaults): the browser slot, Kontact, System
+# Settings, Dolphin and Discover. Firefox ESR and Dolphin are among patina's.
 if [[ -n "$favorites" ]]; then
   kset kicker-extra-favoritesrc Prepend "$favorites" General
+  kset kicker-extra-favoritesrc IgnoreDefaults true General
 else
   kdel kicker-extra-favoritesrc Prepend General
+  kdel kicker-extra-favoritesrc IgnoreDefaults General
 fi
 kset ksplashrc Theme "org.patina.$theme" KSplash
 kset ksplashrc Engine KSplashQML KSplash
@@ -1213,8 +1272,9 @@ if [[ $in_session -eq 1 ]]; then
       # The favourites: kicker-extra-favoritesrc only seeds an empty store, and on a
       # desktop that was logged into before patina the store holds Plasma's defaults
       # (Kickoff's main.xml: the browser, Kontact, System Settings, Dolphin, Discover).
-      # They are unlinked and ours linked through the activity manager, which keeps the
-      # favourites of every launcher; the user's own additions stay.
+      # Those that are not patina's are unlinked and ours linked through the activity
+      # manager, which keeps the favourites of every launcher; the user's own additions
+      # stay.
       if [[ -n "$favorites" ]] && command -v dbus-send > /dev/null; then
         say "start menu: patina's favourites"
         link() {
@@ -1223,8 +1283,7 @@ if [[ $in_session -eq 1 ]]; then
             string:org.kde.plasma.favorites.applications "string:$2" "string:$3" > /dev/null
         }
         for res in preferred://browser applications:org.kde.kontact.desktop \
-            applications:systemsettings.desktop applications:org.kde.dolphin.desktop \
-            applications:org.kde.discover.desktop; do
+            applications:systemsettings.desktop applications:org.kde.discover.desktop; do
           link UnlinkResourceFromActivity "$res" :any || true
         done
         IFS=';' read -r -a apps <<< "$favorites"

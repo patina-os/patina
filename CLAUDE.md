@@ -210,7 +210,13 @@ packs. Audience: developers and privacy-minded users in the EU.
   the apps' glyphs in the bar and the menu and the labels in the text colour; its
   search field a faint veil the accent outlines only while it is used, and its header
   and footer the same glass, without Breeze's bands (November 2026); all are
-  knobs in `defaults/settings.yaml`. The user's
+  knobs in `defaults/settings.yaml`. The glass is one pane, the grain on its edges as
+  on its centre, without a frame inside it (November 2026, after the live test of
+  0.1.0-alpha.17). The bar pins the files, the browser and the terminal; the menu's
+  favourites are patina's with Firefox ESR and Dolphin, without Plasma's own. Firefox
+  ESR is the default browser while none or Konqueror is set, and Konqueror, which
+  Debian's Plasma recommends, stays installed but hidden from the menu (November 2026,
+  a decision of the maintainer's). The user's
   picture is the small mark (`icon-small.svg`) while it is Debian's.
   The boot splash is Plymouth's two-step module, from Debian's `plymouth` and
   `plymouth-themes` in the base bundle and the live image (November 2026): the
