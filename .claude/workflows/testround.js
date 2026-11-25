@@ -169,7 +169,7 @@ const MERGED = {
 
 phase('Machine')
 const machine = await agent(
-  `Make sure the test image exists: run \`${M} image\` (it builds patina-tr:latest only when missing; it can take 15 minutes, give the command a 10-minute timeout and run it again until it says built or exists). Then check it: \`${M} up smoke && ${M} sh smoke 'patina help | head -5; ls ~/.local/share/kortex; curl -s -o /dev/null -w "%{http_code}" https://api.franconia.ai/v1/models' ; ${M} down smoke\`. Answer ok=true when patina, kortex and the API answer (200), else ok=false with what failed.`,
+  `Make sure the test image exists: run \`${M} image\` (it builds patina-tr:latest only when missing; it can take 25 minutes, so run it in the background and wait for it to say built or exists). Then check it: \`${M} up smoke && ${M} sh smoke 'patina help | head -5; ls ~/.local/share/kortex; curl -s -o /dev/null -w "%{http_code}" https://api.franconia.ai/v1/models' ; ${M} down smoke\`. Answer ok=true when patina, kortex and the API answer (200), else ok=false with what failed.`,
   { label: 'machine', phase: 'Machine', schema: SINGLE, effort: 'low' },
 )
 if (!machine || !machine.ok) {
