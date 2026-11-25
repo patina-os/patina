@@ -153,8 +153,11 @@ day; the test itself ran on 0.5.1.
 ## What is still open
 
 - **The redirect gap** in opencode (finding 6). No rule of patina's can close it, and
-  the wider list of allowed commands gives it more to start from. Not reported upstream
-  yet. The comment in `defaults/apps.yaml` describes it.
+  the wider list of allowed commands gives it more to start from. Upstream, the bare
+  redirect is anomalyco/opencode#49948, closed in October 2026 for opencode's new shell
+  tool, yet `> file` still runs unasked in 1.19.6; the redirect on a group or subshell
+  has no issue of its own (#64067 is near it). The comment in `defaults/apps.yaml`
+  describes it.
 - **The `reads` lists** of the four presets were written from memory of the services'
   tool names, not checked against the real servers. A wrong name only means that tool
   asks.

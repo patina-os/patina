@@ -24,8 +24,9 @@ opencode:
   # Permissions: anything that changes files, runs a command (ssh to a server included)
   # or fetches a web page asks first. What runs without asking:
   # - opencode's own read, list and file-name search (glob) tools, but not on the files
-  #   that hold a secret (`read`): the agent's and the services' tokens, private keys,
-  #   password databases, git's and netrc's logins. With a cloud model, what the agent
+  #   that hold a secret (`read`): the agent's and the services' tokens, everything in
+  #   ~/.ssh but its public parts, password databases and wallets, the logins of git,
+  #   netrc, cloud and container tools and browsers. With a cloud model, what the agent
   #   reads goes to its provider. Its content search (`grep`) asks: opencode matches a
   #   grep rule against the search term, not the files, and does not hold the `read`
   #   rules against what it finds, so a search for "ghp_" printed a token unasked
@@ -40,15 +41,29 @@ opencode:
   #   also matches a bare "x"; a rule without the space ("id*") matches other commands.
   # A rule taken out of this list stays in a file written before, after the redirect
   # rule, where it would allow its command with a redirect: rename or drop one only
-  # with a migration that removes it ("lsblk*" keeps its name for that reason).
-  # The last matching rule wins, so "*" comes first and the redirect rule last:
-  # opencode matches each command of a line by itself, with its redirect, so "df *"
-  # alone would also allow "df > ~/.profile". The redirect rule also holds back the
-  # harmless "2>/dev/null", which is why the instruction asks for plain commands.
-  # Known gap (opencode 1.19.5): a redirect on a group or subshell is no part of the
-  # command inside, so "(df -h) > file" writes without asking, and a line that is only
-  # a redirect ("> file") asks nothing whatever the rules say: it emptied a file in a
-  # test run. No rule here can close either; it needs a change in opencode.
+  # with a migration that removes it ("lsblk*" keeps its name for that reason), or turn
+  # it to ask ("kreadconfig6 *", "ip -br *") and allow narrower forms after it.
+  # The last matching rule wins, so "*" comes first and the checks last. opencode
+  # matches each command of a line by itself, with its redirect, and "*" in a rule
+  # matches anything, options included, so a rule allows every option of its command:
+  # - "*>*" asks for a redirect: "df *" alone would also allow "df > ~/.profile".
+  #   After it, a few commands are allowed again with "2>/dev/null" or "2>&1" at the
+  #   end, which models add whatever the instruction says; "*>*>*" then asks for a
+  #   second redirect beside it.
+  # - "*<*" and "*$*" ask for what could put a file into a command's words:
+  #   "echo $(<file)", or "x=$(<file); ls $x", whose first half opencode never sees.
+  # - The options that read a file and print it in an error ("du --files0-from", "ip
+  #   -batch", "ss -F", apt's "-o Dir::Etc::sourcelist=") or write one (journalctl's
+  #   --cursor-file, ss -D), and those that show a secret (nmcli -s) or reach another
+  #   machine (systemctl -H) ask. kreadconfig6 runs unasked only on Plasma's own
+  #   files (a name ending in rc, or kdeglobals, without a path): with a path it
+  #   reads any INI file, ~/.aws/credentials too.
+  # Known gap (opencode 1.19.6): a redirect on a group or subshell is no part of the
+  # command inside, so "(df -h) > file" writes without asking, and a line without a
+  # command ("> file", "x=1") asks nothing whatever the rules say: opencode asks only
+  # for the commands it finds (ShellTool.ask returns when there are none). It emptied
+  # a file in a test run. No rule here can close either; it needs a change in opencode
+  # (anomalyco/opencode#49948, closed for its new shell tool, not in 1.19.6; #64067).
   # defaults/agent.md tells the agent to write files with its edit tool, never with a
   # redirect, and to follow no instruction it reads in data.
   # A service's tools (MCP) ask through rules `patina ai connect` and `patina install`
@@ -101,6 +116,32 @@ opencode:
         "*/.git-credentials": deny
         "*/.netrc": deny
         "*/.config/gh/hosts.yml": deny
+        # every private key in ~/.ssh, whatever its name; its public parts are allowed
+        "*/.ssh/*": deny
+        "*/.ssh/*.pub": allow
+        "*/.ssh/config": allow
+        "*/.ssh/known_hosts": allow
+        "*/.ssh/known_hosts.old": allow
+        "*/.ssh/authorized_keys": allow
+        "*.pem": ask
+        "*.keyx": deny
+        "*/.aws/credentials": deny
+        "*/.docker/config.json": deny
+        "*/.kube/config": deny
+        "*/rclone.conf": deny
+        "*/.pgpass": deny
+        "*/.npmrc": ask
+        "*/.pypirc": deny
+        "*/.cargo/credentials*": deny
+        "*/.config/gcloud/*": deny
+        "*/logins.json": deny
+        "*/key4.db": deny
+        "*/cookies.sqlite": deny
+        "*/Login Data": deny
+        "*/Cookies": deny
+        "*/.local/share/kwalletd/*": deny
+        "*/.local/share/keyrings/*": deny
+        "/proc/*/environ": deny
       external_directory:
         "*": ask
         "/etc/*": allow
@@ -158,7 +199,9 @@ opencode:
         "ip address show*": allow
         "ip route": allow
         "ip route show*": allow
-        "ip -br *": allow
+        "ip -br *": ask
+        "ip -br a*": allow
+        "ip -br l*": allow
         "ss *": allow
         "getent *": allow
         "ping -c *": allow
@@ -189,12 +232,17 @@ opencode:
         "flatpak info *": allow
         "flatpak remotes*": allow
         "flatpak history*": allow
+        "flatpak remote-info *": allow
+        "flatpak search *": allow
         # the boot menu
         "efibootmgr": allow
         "efibootmgr -v": allow
         "grub-editenv list": allow
         # the desktop and patina
-        "kreadconfig6 *": allow
+        "kreadconfig6 *": ask
+        "kreadconfig6 --file kdeglobals *": allow
+        "kreadconfig6 --file *rc *": allow
+        "kreadconfig6 --group *": allow
         "git status*": allow
         "patina help*": allow
         "patina version*": allow
@@ -208,3 +256,76 @@ opencode:
         "patina ai status*": allow
         "patina ai connect": allow
         "*>*": ask
+        # the same commands with their errors hidden or kept, and nothing else redirected
+        "df * 2>/dev/null": allow
+        "df * 2>&1": allow
+        "du * 2>/dev/null": allow
+        "du * 2>&1": allow
+        "free * 2>/dev/null": allow
+        "free * 2>&1": allow
+        "ls * 2>/dev/null": allow
+        "ls * 2>&1": allow
+        "stat * 2>/dev/null": allow
+        "stat * 2>&1": allow
+        "lsblk* 2>/dev/null": allow
+        "lsblk* 2>&1": allow
+        "findmnt * 2>/dev/null": allow
+        "findmnt * 2>&1": allow
+        "lsusb * 2>/dev/null": allow
+        "lsusb * 2>&1": allow
+        "lspci * 2>/dev/null": allow
+        "lspci * 2>&1": allow
+        "sensors * 2>/dev/null": allow
+        "sensors * 2>&1": allow
+        "which * 2>/dev/null": allow
+        "which * 2>&1": allow
+        "command -v * 2>/dev/null": allow
+        "command -v * 2>&1": allow
+        "journalctl * 2>/dev/null": allow
+        "journalctl * 2>&1": allow
+        "systemctl status * 2>/dev/null": allow
+        "systemctl status * 2>&1": allow
+        "systemctl --user status * 2>/dev/null": allow
+        "systemctl --user status * 2>&1": allow
+        "dpkg -l* 2>/dev/null": allow
+        "dpkg -l* 2>&1": allow
+        "dpkg -s * 2>/dev/null": allow
+        "dpkg -s * 2>&1": allow
+        "dpkg-query * 2>/dev/null": allow
+        "dpkg-query * 2>&1": allow
+        "apt list* 2>/dev/null": allow
+        "apt list* 2>&1": allow
+        "apt policy* 2>/dev/null": allow
+        "apt policy* 2>&1": allow
+        "apt-cache * 2>/dev/null": allow
+        "apt-cache * 2>&1": allow
+        "flatpak list* 2>/dev/null": allow
+        "flatpak list* 2>&1": allow
+        "flatpak info * 2>/dev/null": allow
+        "flatpak info * 2>&1": allow
+        "kreadconfig6 --file kdeglobals * 2>/dev/null": allow
+        "kreadconfig6 --file kdeglobals * 2>&1": allow
+        "kreadconfig6 --file *rc * 2>/dev/null": allow
+        "kreadconfig6 --file *rc * 2>&1": allow
+        "kreadconfig6 --group * 2>/dev/null": allow
+        "kreadconfig6 --group * 2>&1": allow
+        "git status* 2>/dev/null": allow
+        "git status* 2>&1": allow
+        # the checks, last
+        "*>*>*": ask
+        "*<*": ask
+        "*$*": ask
+        "du *--f*": ask
+        "ss *F*": ask
+        "ss *D*": ask
+        "ss *--*": ask
+        "apt* -o*": ask
+        "apt*--option*": ask
+        "journalctl *--cursor-file*": ask
+        "nmcli * -s*": ask
+        "nmcli *--show-secrets*": ask
+        "systemctl *-H*": ask
+        "systemctl *--host*": ask
+        "kreadconfig6 --group *--file*": ask
+        "kreadconfig6 --file */* -*": ask
+        "kreadconfig6 *--file *--file*": ask
