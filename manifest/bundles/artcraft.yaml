@@ -6,7 +6,7 @@
 # Euro-Office stays the default office suite.
 name: artcraft
 title: ArtCraft (alpha)
-description: The ArtCraft Launcher · PhotoCraft · WordCraft and 11 more
+description: Its launcher · PhotoCraft · WordCraft and 11 more
 default: false
 packages:
   - fuse3   # fusermount for the launcher's AppImage (its runtime carries libfuse itself)
