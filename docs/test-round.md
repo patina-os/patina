@@ -13,6 +13,139 @@ rate.
 A later round reads this file (`previous` in the workflow's arguments), re-checks the
 findings still open below, and adds a section of its own above the first.
 
+## 25 November 2026
+
+### What was tested
+
+- **Software:** patina at `main` of that day (0.1.0-alpha.17 and later), installed by
+  Path A with the bundle desktop and the cloud agent in Debian 13 containers with Plasma
+  6.3; kortex 0.9.1 from its working tree; opencode 1.19.6.
+- **Model:** Qwen 3.6 27B at an OpenAI-compatible API, through "Your own" API.
+- **Focus asked by the maintainer:** what changed since 13 November (Allow the rest of
+  this task, `patina ai prompt`, the user's own keys, the bar's pins, doctor's new
+  checks, lists that narrow by typing, Your own API's errors, kortex 0.8.0 to 0.9.1),
+  the look and the words in both modes, and kortex's conversations: rows,
+  notifications, Markdown, error states.
+- **What could not run:** the live image, the installer and the first boot (no KVM),
+  Hermes, the docked panel itself, and the password dialog (the machines use
+  NOPASSWD).
+
+Six testers, as in the last round. Onboarding drove `patina install`, the welcome and
+`patina ai` in tmux at 82 columns, and took pictures at 1366x768 and 1920x1080. Daily
+use took file snapshots around a second install, every migration run twice, `update`
+against a local remote, and `doctor` after eight kinds of breakage. The look measured
+every palette role in both modes and the real colours in the pictures. kortex on
+tasks ran 21 conversations, among them two that must be refused and five staged
+faults. kortex with services ran about 30 requests against the stand-in services, with
+a planted instruction and probes of Always, redirects, reads and Allow the rest of
+this task. kortex's code read all of `kortex.py` and drove its error paths.
+
+### What it found
+
+119 findings from six testers, 85 after duplicates were merged: 4 high, 29 medium, 52
+low. The skeptics confirmed 83, left 2 uncertain (P20, K24) and refuted none. 31 of the
+85 are findings of the last round still there.
+
+What held:
+- From the last round: P1, P3, P9, P10, K22, K25 and K27 are fixed.
+- Both requests that must be refused were refused, and the staged faults were all
+  fixed in the end.
+- A second install and every migration's second run changed nothing, and a theme's
+  round trip was byte for byte the same.
+
+High, all addressed in this round:
+
+- **P1** Look-only rules let the agent read a private key without a row: `du
+  --files0-from` printed its lines into an error, and `kreadconfig6 *` read
+  `~/.aws/credentials`.
+- **P2** A bare `> file` and a subshell's redirect still emptied or wrote a file
+  without a row (again).
+- **K1** With Allow the rest of this task on, `/bin/rm -r ~/project/old` ran without a
+  question, and so did `\rm`, `(rm …)`, a deletion after `env` or `nice`, or in a loop.
+- **K2** kortex stopped the agent's server a quarter of an hour after the last palette
+  action, while the agent still worked on a task the user followed in the panel.
+
+### What was changed
+
+patina: [patina-os/patina#140](https://github.com/patina-os/patina/pull/140). kortex:
+[patina-os/kortex#39](https://github.com/patina-os/kortex/pull/39).
+
+| Finding | Change | State |
+|---|---|---|
+| P1 | `du --f…`, `ip -batch`, `ss -F`, apt's `-o`, `nmcli -s`, `systemctl -H`, a `<` or `$` in a command and `kreadconfig6` with a path ask; kortex offers no Always for `du` and `wc` | fixed |
+| P2 | Named in `apps.yaml` with its cause; kortex holds such a step if it is ever asked | open: opencode 1.19.6 gives its rules no pattern for these lines and asks nothing |
+| P3 | `patina install` links `~/.local/bin/patina`; doctor fails without it | fixed |
+| P4 | The welcome measures the screen: below about 1440 pixels it fits it, without btop; text wraps between words | fixed |
+| P5, P23 | Lines that go on name no bundle; "(now)" follows the id; long lines shortened | fixed |
+| P6 | The new provider's login runs first; a cancelled one keeps the old provider | fixed |
+| P7 | doctor fails on an `opencode.json` that does not parse or a key file it names that is gone | fixed |
+| P8 | A broken keys file is left out with a warning; a chord already taken is warned about | fixed |
+| P9, P48 | The `.bashrc` block is added once and stays out once deleted; it turns on starship and zoxide; fish has atuin | partly: atuin in bash needs bash-preexec, which Debian does not package |
+| P10 | `patina update` fetches first and says when it cannot reach the remote | fixed |
+| P11 | `patina ai prompt` opens KWrite in a desktop session, nano on a terminal, and says how to save | fixed |
+| P12, P37 | The installer's model page says it changes nothing without an agent and no longer promises a larger model from 20 GB | partly: Calamares cannot skip the page |
+| P13 | A `key_url` per provider, said before the key prompt | fixed |
+| P14, P49, P50 | The light palette darkened within its hues: every text role 4.5:1 or more on base00 to base02; the key line in base04 | fixed |
+| P15, P38, P39 | screenshot.sh stops waiting once kortex answered, turns the locker off, fails on a lock screen, a theme error or a wait that runs out, and restores the welcome | fixed |
+| P16, P19, P20 | `agent.md`: keep a job at the user's level, name what a failed change left, a Flatpak's full size with its runtime, a planted instruction first | fixed (the model's compliance) |
+| P17 | Look-only commands run unasked with a trailing `2>/dev/null` or `2>&1` | partly: pipes still ask |
+| P18 | The read tool keeps back every private key in `~/.ssh` and the usual credential files | fixed |
+| P21 | `patina ai prompt` waits for a running request before restarting kortex | partly: it reads kortex's port and password; a marker kortex reads would be cleaner |
+| P22 | Installed bundles are fixed lines; the summary says nothing installed is removed | fixed |
+| P24 | Meta+A, or any search in the command palette, in place of `ai` | fixed |
+| P25, P26 | The provider by its name; the provider list no longer says where every key goes | fixed |
+| P27, P29 | https:// added everywhere; an address that is no API is refused before the key; empty input asks again | fixed |
+| P28, P30, P33 | Texts of `patina ai login`, `ai off` and `ai` status | fixed |
+| P31 | A `title` per bundle, shown in the installer, the install and the welcome | fixed |
+| P32, K25 | One name, Allow the rest of this task, one list of what still asks, one set of answer labels | fixed |
+| P34, P47 | The agent's entry has its own glyph; Euro-Office by its name | fixed |
+| P35, P45 | Theme names in any case; the mode in effect is reported | fixed (Plasma's lists still say "patina Aurora") |
+| P36 | "Keyboard shortcuts", Meta+Enter, services marked "(on)", the keys step waits | partly: the sheet's own row stays "Show these keys" for smoke.yml; "Basic onboarding" is CLAUDE.md's word |
+| P40–P44, P46 | kitty reloads its colours; keys after `ai off`; the shortcut note; kitty's header; migrations that need a session wait (exit 75); doctor's FAIL lines say `patina install` | fixed |
+| P51 | The password dialog names the command | fixed (not seen on screen) |
+| P52 | The lock screen stays dark in either mode | fixed |
+| P53 | The services' ask-first rules are written by every install | fixed |
+| K1, K23 | Each part of a command is read for the program it runs; what kortex cannot read is held; kinds combine; `kill` is held | fixed |
+| K2 | The server stays while the panel lives or a session is busy | fixed |
+| K3, K4 | Redirects to /dev/null are ignored; package and network commands count as changes only with a changing verb | fixed |
+| K5 | "Changes a service": systemctl, crontab, timers and unit files, held | fixed |
+| K6, K21, K31 | No "Done." without words; after a Deny the answer says what ran; Stop keeps the text | fixed |
+| K7–K10 | Provider and start errors say what is wrong and what to do | K10 partly: the raw line sits under the advice, KRunner has no fold |
+| K11–K14, K26, K28 | Code blocks, links, italics, quotes, rows that ask, status rows and notifications read Markdown; the 12-line cap counts shown lines; `<think>` dropped | fixed |
+| K15 | What an answer covers is in its row's text, not in a subtext KRunner hides | fixed |
+| K16 | No Always for web fetches and searches | fixed |
+| K17, K18, K22 | Tools and rules in words; reads, deletes and changes of a service told apart; the ran list by path | fixed |
+| K19, K20, K24, K29, K30, K32 | Waiting and loading rows, the last conversation kept, Cut off after two fetches, Enter on every row does something, the agent's question with descriptions and buttons, titles cut at a word | fixed |
+| K27 | The asking row has no icons; Enter on it still answers nothing | partly, on purpose |
+
+### To decide
+
+- **P8** from the last round: the image's first boot still clones `main`.
+- **kortex holds more** than the list patina names: `kill` ("Stops a program") and a
+  command it cannot read. Shift+Enter on the asking row no longer allows once, and the
+  notification's longer answers may not fit Plasma's buttons (`docs/desktop-run.md` in
+  kortex asks).
+- **`"*$*"` asks**, so `echo $SHELL` asks; `agent.md` says to write `~`.
+- **atuin in bash** would need bash-preexec from outside Debian.
+- **A migration that exits 75** runs only when `patina update` runs inside a Plasma
+  session; doctor says it is pending. The welcome could run it at login.
+- **`display_name`** in lowercase would make Plasma's colour-scheme list say
+  "patina aurora" too.
+
+### Still open
+
+- **P2** and **P17**'s pipes, upstream in opencode (below).
+- `ps e` prints the environment of processes and `"ps *"` allows it; `git status` runs a
+  repository's `core.fsmonitor`. `apt-cache -c` and `findmnt -F` may print a file into
+  an error as `du` did. Not tested.
+- The dark mode's base03 as inactive header text is 2.2 to 2.55:1.
+
+### For opencode upstream
+
+- **Redirects:** still the same in 1.19.6. The bare redirect is anomalyco/opencode#49948,
+  closed for the new shell tool; a group's or subshell's redirect has no issue of its
+  own.
+
 ## 13 November 2026
 
 ### What was tested
