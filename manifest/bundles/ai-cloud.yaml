@@ -4,7 +4,7 @@
 # install` (the `ai` key), not a line of the bundle list. kortex puts the agent into
 # KRunner and comes from its tagged release.
 name: ai-cloud
-description: The AI agent with a cloud model · opencode with the provider you pick
+description: opencode with a cloud model · the provider you pick
 default: false
 ai: cloud
 packages:

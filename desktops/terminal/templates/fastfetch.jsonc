@@ -23,7 +23,7 @@
     // answer came after fastfetch had stopped waiting, onto the shell's prompt. The
     // greeting runs in kitty only, so the line names it.
     { "type": "custom", "key": "Terminal", "format": "kitty" },
-    { "type": "custom", "key": "Theme", "format": "patina ${DISPLAY_NAME}" },
+    { "type": "custom", "key": "Theme", "format": "patina ${THEME}" },
     "memory",
     "break",
     "colors"

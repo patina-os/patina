@@ -21,7 +21,9 @@ neovim.
 - kitty: `~/.config/kitty/patina.conf` (colours, fonts, padding and a slightly
   see-through background, the one see-through window of the desktop; the size of a new
   window is left to the desktop), included from `kitty.conf`;
-  the include line is added once, above whatever the user keeps there
+  the include line is added once, above whatever the user keeps there. When the file
+  changes, the open kitty windows are told to read it again (SIGUSR1), so the window a
+  theme or mode was switched in takes the new colours
 - kitty's window icon, `~/.config/kitty/kitty.app.png`, which kitty reads at start and
   X11 title bars show: the terminal glyph of the theme's icon theme
   (`utilities-terminal-symbolic` of its `plasma.icons`, the glyph the desktop shows
@@ -34,11 +36,20 @@ neovim.
 - the fastfetch greeting: `~/.local/state/patina/logo.txt`, the text mark in the
   brand's colours for the mode's ground (`print_logo always <variant>`), and
   `~/.config/fastfetch/config.jsonc` pointing at it with the theme's accent for the
-  labels; every new kitty window runs it, through two lines added once at the end of
-  `~/.bashrc` and `~/.config/fish/conf.d/patina-greeting.fish`. Its Terminal line says
+  labels; every new kitty window runs it. Its Terminal line says
   `kitty` as written data, not fastfetch's terminal module, which asks kitty for its
   version over the terminal on Debian: on a slow machine (Try patina's VM) the answer
   arrived after fastfetch stopped waiting and was printed on the shell's prompt
+- the shell: a block at the end of `~/.bashrc` (`templates/bashrc`, bash being
+  Debian's shell and the login shell) with the greeting in kitty, starship's prompt and
+  zoxide (`z`), added once and kept current while its `# patina: start` and
+  `# patina: end` lines stay. `~/.local/state/patina/bashrc-added` records that it
+  was added, so a user who deletes it keeps it out; it takes the place of the two
+  greeting lines earlier versions added. fish, installed beside it for whoever types
+  `fish` or makes it their shell, gets the same from
+  `~/.config/fish/conf.d/patina-greeting.fish`, and atuin's history search (Ctrl+R)
+  there only: atuin's bash part needs bash-preexec, which Debian does not ship, and
+  without it records no command
 - btop: `~/.config/btop/themes/patina-<theme>.theme`, its load gradients running
   from `base0D` through the accent to its second colour (`accent` and `accent_alt`
   of the theme), made `color_theme` in

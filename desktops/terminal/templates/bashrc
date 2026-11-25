@@ -1,0 +1,18 @@
+# patina: start of the greeting and the shell's tools in every new terminal. Added once
+# and kept current; delete it down to its end line to stop it, and it stays out.
+if [[ $- == *i* ]]; then
+  # fastfetch greets every new kitty window with the mark.
+  if [[ -n ${KITTY_WINDOW_ID:-} && -z ${PATINA_GREETED:-} ]] && command -v fastfetch > /dev/null; then
+    export PATINA_GREETED=1
+    fastfetch
+  fi
+  # starship draws the prompt in the theme's colours; zoxide remembers the folders you
+  # go to, so `z <part of a name>` goes there again.
+  if command -v starship > /dev/null; then
+    eval "$(starship init bash)"
+  fi
+  if command -v zoxide > /dev/null; then
+    eval "$(zoxide init bash)"
+  fi
+fi
+# patina: end

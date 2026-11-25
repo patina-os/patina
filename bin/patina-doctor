@@ -48,11 +48,34 @@ check_tools() {
   else
     bad "$PATINA_PATH is not a git checkout; patina update needs one"
   fi
-  if [[ "$(readlink -f "$(command -v patina 2> /dev/null || echo /nonexistent)")" == "$PATINA_PATH/bin/patina" ]]; then
+  # The link patina install makes, which every hint of patina's ("patina ai login")
+  # needs; PATH has ~/.local/bin from the next login, through Debian's ~/.profile.
+  if [[ "$(readlink -f "$HOME/.local/bin/patina")" != "$(readlink -f "$PATINA_PATH/bin/patina")" ]]; then
+    bad "$HOME/.local/bin/patina does not lead to this checkout, so the patina command is missing (patina install links it)"
+  elif [[ "$(readlink -f "$(command -v patina 2> /dev/null || echo /nonexistent)")" == "$(readlink -f "$PATINA_PATH/bin/patina")" ]]; then
     ok "patina on PATH"
   else
-    note "patina is not on PATH; ln -s $PATINA_PATH/bin/patina ~/.local/bin/patina"
+    note "$HOME/.local/bin is not on PATH in this shell; it is from the next login"
   fi
+}
+
+# opencode's own file: opencode refuses its whole configuration when the file does not
+# parse or a file it names is gone (your own API's key, {file:...}), so the agent does
+# not start at all, while patina ai still named the provider. Fails when it does not
+# parse.
+check_agent_file() {
+  local file="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/opencode.json" value missing=""
+  [[ -f "$file" ]] || return 0
+  if ! yq -p json eval '.' "$file" > /dev/null 2>&1; then
+    bad "$file does not parse (a mistake, or a comment patina cannot read), and the agent may not start: fix it, or move it away and run patina install"
+    return 1
+  fi
+  while IFS= read -r value; do
+    if [[ "$value" =~ \{file:([^}]*)\} && ! -e "${BASH_REMATCH[1]}" ]]; then
+      missing+=" ${BASH_REMATCH[1]}"
+    fi
+  done < <(yq -p json eval '.provider // {} | .. | select(tag == "!!str")' "$file" 2> /dev/null)
+  [[ -z "$missing" ]] || bad "the agent does not start, since a file its configuration names is gone:$missing (patina ai login)"
 }
 
 # The services `patina ai connect` turned on: opencode refuses its whole configuration
@@ -78,12 +101,17 @@ check_state() {
   echo "state"
   if [[ -e "$PATINA_STATE/installed-at" ]]; then
     ok "installed $(cat "$PATINA_STATE/installed-at"), bundles: $(recorded_bundles | paste -sd ' ')"
-    local ai
+    local ai provider agent
     ai="$(cat "$PATINA_STATE/ai" 2> /dev/null || true)"
-    [[ "$ai" != cloud ]] || ai="cloud, $(cat "$PATINA_STATE/ai-provider" 2> /dev/null || true)"
-    [[ -z "$ai" || "$ai" == none ]] || ai="$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || echo opencode), $ai"
+    provider="$(cat "$PATINA_STATE/ai-provider" 2> /dev/null || true)"
+    agent="$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || echo opencode)"
+    [[ "$ai" != cloud ]] || ai="cloud, $(provider_name "$provider")"
+    [[ -z "$ai" || "$ai" == none ]] || ai="$agent, $ai"
     [[ -z "$ai" ]] || ok "ai agent: $ai"
-    check_services
+    if [[ "$ai" == *", cloud, "* ]] && ! ai_logged_in "$agent" "$provider"; then
+      note "the agent is not logged in to its provider yet: patina ai login"
+    fi
+    ! check_agent_file || check_services
   else
     bad "no install recorded in $PATINA_STATE (run patina install)"
   fi
@@ -92,7 +120,7 @@ check_state() {
   if [[ "$pending" -eq 0 ]]; then
     ok "no pending migration"
   else
-    bad "$pending pending migration(s): run patina update"
+    bad "$pending pending migration(s): run patina update, in the desktop's terminal for one that changes the desktop"
   fi
 }
 
@@ -115,7 +143,7 @@ check_bundles() {
   if [[ -z "$missing" ]]; then
     ok "packages: all ${#packages[@]} installed"
   else
-    bad "packages missing:$missing"
+    bad "packages missing:$missing (run patina install)"
   fi
   missing=""
   for p in "${flatpaks[@]}"; do
@@ -124,7 +152,7 @@ check_bundles() {
   if [[ -z "$missing" ]]; then
     ok "flatpaks: all ${#flatpaks[@]} installed"
   else
-    bad "flatpaks missing:$missing"
+    bad "flatpaks missing:$missing (run patina install)"
   fi
   missing=""
   for p in "${upstream[@]}"; do
@@ -133,7 +161,7 @@ check_bundles() {
   if [[ -z "$missing" ]]; then
     ok "upstream tools: all ${#upstream[@]} installed"
   else
-    bad "upstream tools missing:$missing"
+    bad "upstream tools missing:$missing (run patina install)"
   fi
 }
 
@@ -160,7 +188,7 @@ check_system() {
   if [[ -z "$differs" ]]; then
     ok "every file in place and identical"
   else
-    bad "missing or different:$differs"
+    bad "missing or different:$differs (run patina install)"
   fi
   if ! booted_with_systemd; then
     note "not booted with systemd (a container?); the tuning cannot be active here"
@@ -168,7 +196,7 @@ check_system() {
 }
 
 check_theme() {
-  local theme scheme
+  local theme scheme mode line
   echo "theme"
   if ! theme="$(current_theme)"; then
     bad "no theme recorded (run patina theme set <name>)"
@@ -186,7 +214,11 @@ check_theme() {
       [[ "$scheme" != "patina-$theme" ]]; then
     bad "$theme: Plasma uses the colour scheme '${scheme:-Breeze}', not patina-$theme (run patina theme set $theme)"
   else
-    ok "$theme: colour scheme in place ($(current_mode) mode)"
+    # The mode in effect: a theme without the mode recorded stays in its own.
+    mode="$(current_mode)"
+    theme_has_mode "$(theme_dir "$theme")/theme.yaml" "$mode" ||
+      mode="$(yq eval '.variant' "$(theme_dir "$theme")/theme.yaml")"
+    ok "$theme: colour scheme in place ($mode mode)"
   fi
   if [[ ! -f "${XDG_CONFIG_HOME:-$HOME/.config}/kitty/patina.conf" ]]; then
     bad "$theme: terminal colours missing (run patina theme set $theme)"
@@ -204,6 +236,11 @@ check_theme() {
       ! grep -qsx 'background=/usr/local/share/patina/login.png' /usr/share/sddm/themes/breeze/theme.conf.user; then
     bad "login screen: the Breeze theme does not point at the wallpaper (run patina theme set $theme)"
   fi
+  # The user's own keys: a file that is not YAML is left out, and a chord another key
+  # has already reaches only one of them (keybindings in lib.sh says which).
+  while IFS= read -r line; do
+    bad "keys: ${line#patina: }"
+  done < <(keybindings 2>&1 > /dev/null)
   if ! command -v kwriteconfig6 > /dev/null; then
     note "kwriteconfig6 is missing: Plasma is not installed here, so only the files were written"
   fi

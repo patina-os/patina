@@ -192,12 +192,39 @@ PATINA_THEMES="${XDG_CONFIG_HOME:-$HOME/.config}/patina/themes"
 # The keys: defaults/keybindings.yaml with the user's own chords merged over it
 # (~/.config/patina/keybindings.yaml, the same keys, only those that differ), so a
 # change of the user's survives git pull. As YAML on stdout, for yq to read from stdin.
+# A file of the user's that is not YAML is left out with a warning, so the keys, the
+# theme and the install still work; a chord of the user's that another key already
+# has, patina's or the desktop's own (the cheat sheet of its actions.yaml), is warned
+# about, since only one of the two can have it.
 keybindings() {
-  local own="${XDG_CONFIG_HOME:-$HOME/.config}/patina/keybindings.yaml"
-  local -a files=("$PATINA_PATH/defaults/keybindings.yaml")
-  [[ ! -f "$own" ]] || files+=("$own")
+  local own="${XDG_CONFIG_HOME:-$HOME/.config}/patina/keybindings.yaml" error merged mine other
+  local desktop
+  local -a files=("$PATINA_PATH/defaults/keybindings.yaml") yours=() others=()
+  if [[ -f "$own" ]]; then
+    if error="$(yq eval '.' "$own" 2>&1 > /dev/null)"; then
+      files+=("$own")
+    else
+      warn "$own is not valid YAML, so patina's own keys apply until it is: ${error#*\': }"
+    fi
+  fi
   # shellcheck disable=SC2016 # $f is yq's variable
-  yq eval-all '. as $f ireduce ({}; . * $f)' "${files[@]}"
+  merged="$(yq eval-all '. as $f ireduce ({}; . * $f)' "${files[@]}")"
+  if [[ ${#files[@]} -gt 1 ]]; then
+    desktop="$(yq eval '.desktop' "$PATINA_PATH/defaults/settings.yaml")"
+    mapfile -t yours < <(yq eval '.actions // {} | to_entries | .[] | [.key, .value] | @tsv' "$own")
+    # shellcheck disable=SC2016 # $c is yq's variable
+    mapfile -t others < <(yq eval '.actions | to_entries | .[] | [.value, "patina: " + .key] | @tsv' - <<< "$merged"
+      [[ ! -f "$PATINA_PATH/desktops/$desktop/actions.yaml" ]] ||
+        D="${desktop^}" yq eval '.cheatsheet[]? | (.chord | split(" / ") | .[]) as $c |
+          [$c, strenv(D) + ": " + .name] | @tsv' "$PATINA_PATH/desktops/$desktop/actions.yaml")
+    for mine in "${yours[@]}"; do
+      for other in "${others[@]}"; do
+        [[ "${other%%$'\t'*}" == "${mine#*$'\t'}" && "${other#*$'\t'}" != "patina: ${mine%%$'\t'*}" ]] || continue
+        warn "$own: ${mine%%$'\t'*} on ${mine#*$'\t'}, a chord taken already (${other#*$'\t'}); only one of them gets it, so pick another"
+      done
+    done
+  fi
+  printf '%s\n' "$merged"
 }
 
 # The directory of a theme: the repository's themes/ first, then the installed ones.
@@ -298,10 +325,11 @@ hermes_rules() {
 
 # The AI agents the questions offer (`patina install`, `patina ai on`), one line each:
 # the agent, then what it is, and what choosing it means day to day: how often it
-# asks. "Asks before risky commands only" read as the safer of the two.
+# asks. "Asks before risky commands only" read as the safer of the two. Both are free,
+# and each line fits pick's 78 columns with "(now)" after its id.
 agent_lines() {
-  printf '%-9s %s\n' opencode "opencode · free · asks before each change, looking is free" \
-    hermes "Hermes Agent · free · remembers · changes files and installs apps unasked"
+  printf '%-9s %s\n' opencode "opencode · asks before each change, looking is free" \
+    hermes "Hermes Agent · remembers · edits files, installs apps unasked"
 }
 
 # The bundle that answers the AI question with this mode and agent (its `ai` and `agent`
@@ -373,13 +401,20 @@ ai_note() {
 }
 
 # Can the agent use the provider now: its key in opencode's own login or Hermes' .env,
-# nothing to log in to, or your own API's address (`patina ai login`)? ai_logged_in
-# <agent> <provider>
+# nothing to log in to, or your own API's address and its key (`patina ai login`), whose
+# file opencode refuses to start without? ai_logged_in <agent> <provider>
 ai_logged_in() {
   local key
   case "$(provider_login "$2")" in
     none) return 0 ;;
-    endpoint) [[ -s "$PATINA_STATE/ai-endpoint.yaml" ]] ;;
+    endpoint)
+      [[ -s "$PATINA_STATE/ai-endpoint.yaml" ]] || return 1
+      if [[ "$1" == hermes ]]; then
+        grep -q '^PATINA_CUSTOM_API_KEY=.' "${HERMES_HOME:-$HOME/.hermes}/.env" 2> /dev/null
+      else
+        [[ -s "${XDG_CONFIG_HOME:-$HOME/.config}/patina/ai/custom.key" ]]
+      fi
+      ;;
     *)
       if [[ "$1" == hermes ]]; then
         key="$(P="$2" yq eval '.ai.cloud.providers[] | select(.id == strenv(P)) | .hermes.key // ""' \
@@ -390,6 +425,23 @@ ai_logged_in() {
       fi
       ;;
   esac
+}
+
+# A cloud provider as people know it, where patina says which one the agent uses: its
+# name in ai.cloud.providers up to the first " (" or " · " ("Mistral", "Big Pickle"),
+# and your own API with its address's host and its model. provider_name <provider>
+provider_name() {
+  local host model
+  if [[ "$(provider_login "$1")" == endpoint ]]; then
+    host="$(yq eval '.url // ""' "$PATINA_STATE/ai-endpoint.yaml" 2> /dev/null || true)"
+    model="$(yq eval '.model // ""' "$PATINA_STATE/ai-endpoint.yaml" 2> /dev/null || true)"
+    host="${host#*://}"
+    host="${host%%/*}"
+    echo "your own API${host:+ at $host}${model:+, $model}"
+    return
+  fi
+  P="$1" yq eval '[.ai.cloud.providers[] | select(.id == strenv(P)) | .name | split(" (") | .[0] |
+    split(" · ") | .[0]][0] // strenv(P)' "$PATINA_PATH/defaults/settings.yaml"
 }
 
 # Does a theme have this mode: its own variant, or a block named after the other one
@@ -816,16 +868,22 @@ tui_colors() {
 # the terminal shows, as tall as its lines; a height of 0 would take the whole screen.
 # Prints the line picked; returns 1 for Ctrl+C, Esc and the back line. A list of things
 # to turn on is lines Enter turns on and off (patina install's bundles), not marks made
-# with Tab, which gum returned when Enter was on the back line.
+# with Tab, which gum returned when Enter was on the back line. Typing matches anywhere
+# in a line and Enter takes the first line that holds it, so a line's words never name
+# the id of a line below it: a status ("now opencode, cloud"), a "Go on with desktop"
+# line or Claude Desktop above the line "cloud" or "desktop" took that Enter. The key line is in the theme's
+# muted text colour (base04, which tui_colors hands to gum), never faint: kitty dims
+# faint text to 1.5:1 on the light ground, and that line is the only one naming Ctrl+C.
 # pick [--back <line>] <header> <line>...
 pick() {
   local back="← Back" header chosen keys="↑↓ move · Enter picks" width line i
-  local -a shown=()
+  local -a shown=() muted=()
   if [[ "${1:-}" == --back ]]; then
     back="$2"
     shift 2
   fi
-  header="$1"$'\n'"$(gum style --faint "$keys · Ctrl+C: ${back#← }")"
+  [[ -z "${GUM_FILTER_PROMPT_FOREGROUND:-}" ]] || muted=(--foreground "$GUM_FILTER_PROMPT_FOREGROUND")
+  header="$1"$'\n'"$(gum style "${muted[@]}" "$keys · Ctrl+C: ${back#← }")"
   shift
   # One line each: a line wider than the terminal, less gum's cursor, ends with "…"
   # where gum would wrap it, and the line picked is printed whole (a file's path).
@@ -855,14 +913,20 @@ pick() {
 }
 
 # The lines given, one per line, the one whose first word is <current> marked "(now)":
-# pick's lists have no preselected line, as gum choose's had. An empty <current> marks
-# none. mark_now <current> <line>...
+# pick's lists have no preselected line, as gum choose's had. The mark goes right after
+# that word, in the spaces before the rest where there are enough, so pick's "…" at a
+# narrow terminal's edge never cuts it. An empty <current> marks none. mark_now
+# <current> <line>...
 mark_now() {
-  local current="$1" line
+  local current="$1" line rest text gap
   shift
   for line in "$@"; do
     if [[ -n "$current" && "${line%% *}" == "$current" ]]; then
-      printf '%s (now)\n' "$line"
+      rest="${line#"$current"}"
+      text="${rest#"${rest%%[! ]*}"}"
+      gap=$((${#rest} - ${#text} - 6))
+      [[ $gap -ge 1 ]] || gap=1
+      printf '%s (now)%*s%s\n' "$current" "$gap" "" "$text"
     else
       printf '%s\n' "$line"
     fi

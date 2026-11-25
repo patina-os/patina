@@ -4,7 +4,7 @@
 # from their upstream installers because Debian packages neither; kortex puts the agent
 # into KRunner and comes from its tagged release.
 name: ai-local
-description: The AI agent on this machine · opencode with a local model from Ollama
+description: opencode on this machine · a local model from Ollama
 default: false
 ai: local
 packages:

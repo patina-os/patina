@@ -48,14 +48,15 @@ list_themes() {
     if theme_has_mode "$d/theme.yaml" dark && theme_has_mode "$d/theme.yaml" light; then
       modes="dark + light"
     fi
-    printf '%s %-12s %s (%s)%s\n' "$([[ "$name" == "$current" ]] && echo '*' || echo ' ')" \
-      "$name" "$(yq eval '.display_name' "$d/theme.yaml")" "$modes" "$note"
+    # The name as it is typed (patina theme set <name>), lowercase as every name of patina's.
+    printf '%s %-12s %s%s\n' "$([[ "$name" == "$current" ]] && echo '*' || echo ' ')" \
+      "$name" "$modes" "$note"
   done
 }
 
 set_theme() {
-  local name="$1" dir desktop renderer mode
-  dir="$(theme_dir "$name")" || die "no theme '$name' (try patina theme list)"
+  local name="${1,,}" dir desktop renderer mode
+  dir="$(theme_dir "$name")" || die "no theme '$1' (try patina theme list)"
   desktop="$(yq eval '.desktop' "$PATINA_PATH/defaults/settings.yaml")"
   renderer="$PATINA_PATH/desktops/$desktop/apply.sh"
   [[ -x "$renderer" ]] || die "no renderer for '$desktop' (desktops/$desktop/apply.sh)"
@@ -185,7 +186,7 @@ update_themes() {
 }
 
 remove_theme() {
-  local name="$1"
+  local name="${1,,}"
   [[ "$name" =~ ^[a-z0-9][a-z0-9-]*$ && -f "$PATINA_THEMES/$name/theme.yaml" ]] ||
     die "no installed theme '$name'; the themes of patina itself cannot be removed"
   [[ "$(current_theme || true)" != "$name" ]] ||
@@ -204,7 +205,14 @@ main() {
     mode)
       [[ $# -le 2 ]] || { usage >&2; exit 1; }
       if [[ $# -eq 1 ]]; then
-        current_mode
+        # The mode in effect: a theme without the mode recorded stays in its own.
+        local mode d
+        mode="$(current_mode)"
+        if d="$(theme_dir "$(current_theme)")" && ! theme_has_mode "$d/theme.yaml" "$mode"; then
+          warn "theme: $(current_theme) has no $mode mode, so it is $(yq eval '.variant' "$d/theme.yaml"); $mode applies to a theme that has it"
+          mode="$(yq eval '.variant' "$d/theme.yaml")"
+        fi
+        echo "$mode"
       else
         set_mode "$2"
       fi

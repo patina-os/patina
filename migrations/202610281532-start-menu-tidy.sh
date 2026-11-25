@@ -3,15 +3,15 @@
 # The start menu as the layout script now sets it up: the apps by their names alone,
 # compact lists, one power button without a caption. Written into the start menus of the
 # running Plasma session through its scripting API, so the rest of the panels stays the
-# user's; outside a session, `patina theme set <theme> --layout` brings it.
+# user's; outside a session it waits for the next `patina update` in one.
 set -euo pipefail
 
 # shellcheck source=bin/lib.sh
 source "$PATINA_PATH/bin/lib.sh"
 if ! dbus-send --session --print-reply --dest=org.freedesktop.DBus /org/freedesktop/DBus \
     org.freedesktop.DBus.NameHasOwner string:org.kde.plasmashell 2> /dev/null | grep -q 'boolean true'; then
-  say "start menu: no Plasma session here; patina theme set <theme> --layout tidies it"
-  exit 0
+  say "start menu: no Plasma session here; the next patina update in one tidies it"
+  exit 75   # not recorded: patina-migrate runs it again (migrations/README.md)
 fi
 script='panels().forEach(function (p) {
   p.widgets("org.kde.plasma.kickoff").forEach(function (w) {

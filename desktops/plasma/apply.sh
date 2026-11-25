@@ -201,6 +201,11 @@ tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
 render "$templates/color-scheme.colors" "$tmp/colors"
+# The Complementary colours, which the lock and logout screens draw in, with a black
+# shadow under the clock: the dark palette's in either mode, as Breeze Light keeps its
+# own dark, so a light mode leaves them light words over a dark ground as well.
+( theme_vars "$theme_yaml" "$settings" dark && render "$templates/complementary.colors" "$tmp/complementary.colors" )
+{ echo; cat "$tmp/complementary.colors"; } >> "$tmp/colors"
 put "$tmp/colors" "$data/color-schemes/patina-$theme.colors"
 drop_other_themes "$data/color-schemes/patina-*.colors" "$data/color-schemes/patina-$theme."
 
@@ -754,10 +759,24 @@ while IFS= read -r app; do
   put "$tmp/hidden.desktop" "$data/applications/$app"
   hidden="$hidden$data/applications/$app "
 done < <(yq eval '.start_menu.hidden[]?' "$settings")
+# The apps the menu calls otherwise (start_menu.names): a copy of each one's entry the
+# same way, its Name replaced and the translations of it dropped, so Nextcloud's
+# package of Euro-Office is Euro-Office in the menu, its search and the favourites.
+while IFS=$'\t' read -r app name; do
+  [[ -f "/usr/share/applications/$app" ]] || continue
+  [[ "$name" =~ ^[[:alnum:]][[:alnum:]\ .+()-]*$ ]] || { warn "start_menu.names: '$name' is not a plain name"; continue; }
+  { printf '# patina: named %s in the start menu (start_menu.names)\n' "$name"
+    sed "/^\[Desktop Entry\]\$/,/^\[/{s/^Name=.*/Name=$name/; /^Name\[/d}" "/usr/share/applications/$app"; } > "$tmp/named.desktop"
+  put "$tmp/named.desktop" "$data/applications/$app"
+  hidden="$hidden$data/applications/$app "
+done < <(yq eval '.start_menu.names // {} | to_entries | .[] | [.key, .value] | @tsv' "$settings")
 for f in "$data"/applications/*.desktop; do
   [[ -e "$f" && "$hidden" != *" $f "* ]] || continue
-  [[ "$(head -n 1 "$f")" == "# patina: hidden from the start menu"* ]] || continue
-  say "removing $f (not in start_menu.hidden)"
+  case "$(head -n 1 "$f")" in
+    "# patina: hidden from the start menu"* | "# patina: named "*" in the start menu"*) ;;
+    *) continue ;;
+  esac
+  say "removing $f (not in start_menu.hidden or start_menu.names)"
   rm -f "$f"
   changed
 done
@@ -959,8 +978,11 @@ kset ksplashrc Engine KSplashQML KSplash
 # About this System keeps Debian's name and website from os-release; the variant names
 # patina and where the people and projects it is made of are thanked.
 kset kcm-about-distrorc Variant "with patina · who made it: patina credits" General
-if [[ -n "$wallpaper_dir" ]]; then
-  kset kscreenlockerrc Image "$wallpaper_dir/" Greeter Wallpaper org.kde.image General
+# The lock screen stays dark in either mode, like the login screen: its wallpaper is the
+# theme's own first one, made for a dark ground, and its clock and words take the
+# Complementary colours, dark in either mode (above).
+if [[ -n "${login_dir:-$wallpaper_dir}" ]]; then
+  kset kscreenlockerrc Image "${login_dir:-$wallpaper_dir}/" Greeter Wallpaper org.kde.image General
 fi
 
 # The speed settings from defaults/settings.yaml.
@@ -1134,6 +1156,8 @@ fi
 
 # Global shortcuts: each action of defaults/keybindings.yaml, with the user's own chords
 # over it (keybindings in lib.sh), through actions.yaml.
+before=$changes
+chords="$(yq eval '.actions[]' - <<< "$keybindings")"
 while IFS= read -r action; do
   chord="$(yq eval ".actions[\"$action\"]" - <<< "$keybindings")"
   component="$(yq eval ".actions[\"$action\"].component // \"\"" "$actions")"
@@ -1168,8 +1192,10 @@ while IFS= read -r action; do
     key="$(yq eval ".actions[\"$action\"].key" "$actions")"
     default="$(yq eval ".actions[\"$action\"].default // \"none\"" "$actions")"
     # Plasma's own chord keeps working beside patina's: Alt+F4 still closes a window.
+    # Not when another key of patina's has it (the browser on Meta+W, Overview's).
     active="$chord"
-    [[ "$default" == none || "$default" == "$chord" ]] || active+=$'\t'"$default"
+    [[ "$default" == none || "$default" == "$chord" ]] || grep -qxF "$default" <<< "$chords" ||
+      active+=$'\t'"$default"
     kset kglobalshortcutsrc "$key" "$active,$default,$label" "$component"
   else
     warn "$action: no Plasma binding in $actions; skipping"
@@ -1178,6 +1204,7 @@ done < <(yq eval '.actions | keys | .[]' - <<< "$keybindings")
 while IFS=$'\t' read -r component key default label; do
   kset kglobalshortcutsrc "$key" "none,$default,$label" "$component"
 done < <(yq eval '.unbind[] | [.component, .key, .default, .label] | @tsv' "$actions")
+shortcut_keys=$((changes - before))
 
 # GTK apps: Plasma's own bridge (kde-config-gtk-style) syncs the colours; the theme,
 # icons, cursor and font names are set here so they are right before it runs. The
@@ -1250,7 +1277,7 @@ if [[ $in_session -eq 1 ]]; then
   # menu shows it, inset so the round crop keeps every dot; a picture patina set before
   # (the system's copy equals ours) is replaced when it changes.
   avatar="$PATINA_STATE/avatar.png"
-  face="/var/lib/AccountsService/icons/$USER"
+  face="/var/lib/AccountsService/icons/${USER:-$(id -un)}"
   if { { [[ ! -e "$avatar" && ! -e "$face" ]] &&
         { [[ ! -e "$HOME/.face" ]] || cmp -s "$HOME/.face" /etc/skel/.face; }; } ||
       { [[ -e "$avatar" ]] && cmp -s "$avatar" "$face"; }; } &&
@@ -1304,7 +1331,7 @@ if [[ $in_session -eq 1 ]]; then
       warn "plasma-apply-wallpaperimage failed"
     fi
   fi
-  [[ $changes -eq 0 ]] || say "shortcuts apply at the next login"
+  [[ $shortcut_keys -eq 0 ]] || say "shortcuts apply at the next login"
 elif [[ "${PATINA_LAYOUT:-}" == 1 ]]; then
   say "no Plasma session here; the panel layout is in place for the first login"
 elif [[ $changes -gt 0 ]]; then

@@ -9,14 +9,39 @@ All notable changes to patina are documented here. The format follows
 ### Added
 
 - One yes for the rest of a task, for those who want it: `patina ai handover on`, or
-  "One yes per task" in the welcome's AI menu. opencode asks before each change; with
-  this, a question in the command palette has a third answer, "Allow the rest of this
-  task", and the later changes of that one request run without asking. What deletes,
-  runs as root, installs or changes a service still asks every time, and the answer
-  lists what ran. It is off unless you turn it on, since that yes covers steps you have
-  not seen, and `patina ai handover off` turns it off again. It needs kortex 0.9.0,
-  which this release pins; `patina ai handover on` says so on a machine that still
-  has an older one.
+  "Allow the rest of this task" in the welcome's AI menu. opencode asks before each
+  change; with this, a question in the command palette has a third answer, "Allow the
+  rest of this task", and the later changes of that one request run without asking.
+  Deleting, running as root, installing software, changing or enabling a service and a
+  connected service's changes still ask every time, and the answer lists what ran. It
+  is off unless you turn it on, since that yes covers steps you have not seen, `patina
+  ai handover off` turns it off again, and `patina ai` says which it is. It needs
+  kortex 0.9.0, which this release pins; `patina ai handover on` says so on a machine
+  that still has an older one.
+- `patina ai login` says where to make each provider's key.
+- bash in a new terminal has starship's prompt and zoxide (`z`), as the README
+  promised; fish, there to switch to, also has atuin's history search on Ctrl+R.
+  Deleting patina's block from `~/.bashrc` sticks.
+- KWrite joins the desktop bundle: `patina ai prompt` opens your instructions in it in
+  a desktop session (nano on a terminal), says how to save, and waits for a running
+  request before it restarts the agent.
+
+### Security
+
+The test round of 25 November 2026 (`docs/test-round.md`):
+
+- The agent no longer runs a command unasked that prints a file into its error
+  (`du --files0-from`, `ip -batch`, `ss -F`, apt's `-o`), reads a path with
+  `kreadconfig6`, or takes a variable or `<` in its words; `nmcli -s` and
+  `systemctl -H` ask too.
+- The agent's read tool keeps back every private key in `~/.ssh` whatever its name,
+  cloud and container logins, browsers' saved passwords and cookies, the wallets and
+  the environment of processes; `*.pem` and `.npmrc` ask.
+- Services added to opencode by hand get their ask-first rules with any
+  `patina install`, also `--bundles desktop`.
+- The agent names a planted instruction at the start of its answer, gives a
+  Flatpak's full size with its runtime and offers Debian's package first, keeps a
+  scheduled job at the user's level, and names what a failed change left behind.
 
 ### Changed
 
@@ -32,6 +57,25 @@ All notable changes to patina are documented here. The format follows
   stays on Meta+E and in the start menu. A desktop that has its bar already keeps it;
   unpin Dolphin there with a right click, or take the whole layout again with
   `patina theme set <name> --layout`.
+- Bundles have one name everywhere: Standard, Minimal, Head start, ArtCraft (alpha),
+  AI dev tools, in the installer, `patina install` and the welcome. In `patina
+  install`, installed bundles show as installed and stay; the summary says nothing
+  installed is removed.
+- The provider is named as people know it ("Mistral", "your own API at …") in
+  `patina ai`, `patina doctor`, the welcome and the install.
+- aurora's light mode: warnings, errors, links, the violet, the lists' key line and the
+  menu's search placeholder read at 4.5:1 on panels and buttons too. The lock screen
+  stays dark in light mode, like the login screen.
+- The start menu calls Euro-Office by its name, and the agent's entry is "What the
+  agent does" with a glyph of its own, no longer kitty's. The keys sheet is "Keyboard
+  shortcuts" in the start menu and the welcome, and shows Meta+Enter.
+- `patina theme list` shows the names you type, and `patina theme set` accepts any
+  letter case; the greeting says `patina aurora`.
+- The administrator password dialog names the command that asks.
+- Screens no longer say to type `ai`: the install, `patina ai` and the installer's
+  slide say Meta+A, or any search in the command palette.
+- The installer's model page says it changes nothing after "No AI agent", and no
+  longer promises a larger model from 20 GB of memory.
 
 ### Fixed
 
@@ -42,6 +86,37 @@ All notable changes to patina are documented here. The format follows
   clipboard (kortex 0.9.0).
 - Meta+A after a conversation no longer shows kortex's two requests to try for a moment
   before the list of conversations arrives (kortex 0.9.1).
+- `patina install` links the `patina` command into `~/.local/bin`, as the image's
+  first boot did, and `patina doctor` fails when that link is missing.
+- `patina doctor` fails when opencode's configuration does not parse or a key file it
+  names is gone, and `patina ai` then says the agent is not logged in. Its lines for
+  missing packages, flatpaks, tools and system files say to run `patina install`.
+- Leaving a new provider's key prompt with Ctrl+C keeps the provider the agent had.
+- Your own API: an address without https:// gets it, an address that is no API is
+  refused before the key is asked, and an empty model name asks again; `patina ai
+  connect` adds https:// too, and an empty address asks again.
+- The welcome fits small screens: below about 1440 pixels wide its window fits the
+  screen and shows the welcome without btop, and text wraps between words.
+- Typing a bundle's name in `patina install` or the welcome's More apps picks that
+  bundle instead of the line that goes on. "(now)" is no longer cut off at narrow
+  terminals.
+- `patina ai off` names only what stays installed.
+- A typo in `~/.config/patina/keybindings.yaml` no longer stops `patina theme set`,
+  `install`, `update` or Meta+K: patina's keys apply and the warning names the line.
+  A chord already taken is warned about, and `patina doctor` reports both.
+- `patina update` says when it cannot reach the remote, instead of blaming a change of
+  yours.
+- A theme or mode switch recolours the open kitty windows, including the one it was
+  typed in. "shortcuts apply at the next login" shows only when a shortcut changed.
+- `patina theme mode` and `patina doctor` report the mode in effect: datum stays dark
+  in light mode.
+- `patina keys` no longer lists the AI keys after `patina ai off`.
+- A migration that needs a Plasma session waits for an update run in one, instead of
+  being marked done.
+- Repairing kitty.conf's include no longer leaves a second patina header.
+- The desktop screenshot run no longer waits four minutes after the agent answered,
+  grabs no lock screen, fails when the theme or a wait fails, and leaves the welcome
+  and the screen locker as it found them.
 
 ## [0.1.0-alpha.17] - 2026-11-15
 

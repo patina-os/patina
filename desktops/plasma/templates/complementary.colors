@@ -1,0 +1,13 @@
+[Colors:Complementary]
+BackgroundAlternate=${BASE01_RGB}
+BackgroundNormal=${BASE00_RGB}
+DecorationFocus=${ACCENT_RGB}
+DecorationHover=${ACCENT_ALT_RGB}
+ForegroundActive=${BASE0C_RGB}
+ForegroundInactive=${BASE04_RGB}
+ForegroundLink=${BASE0D_RGB}
+ForegroundNegative=${BASE08_RGB}
+ForegroundNeutral=${BASE09_RGB}
+ForegroundNormal=${BASE05_RGB}
+ForegroundPositive=${BASE0B_RGB}
+ForegroundVisited=${BASE0F_RGB}

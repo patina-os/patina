@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Run the migrations under migrations/ that have not run yet, in filename order, and
-# record each as a marker in the state directory. `--list` prints the pending ones.
+# record each as a marker in the state directory. `--list` prints the pending ones. A
+# migration that exits 75 could not run here (one that needs a Plasma session, run over
+# SSH): it is not recorded, so the next `patina update` or `patina migrate` runs it again.
 set -euo pipefail
 
 # shellcheck source=bin/lib.sh
@@ -24,6 +26,7 @@ esac
 markers="$PATINA_STATE/migrations"
 mkdir -p "$markers"
 ran=0
+later=0
 for m in "$PATINA_PATH"/migrations/[0-9]*.sh; do
   [[ -e "$m" ]] || continue
   name="$(basename "$m")"
@@ -33,10 +36,20 @@ for m in "$PATINA_PATH"/migrations/[0-9]*.sh; do
     continue
   fi
   say "migration: $name"
-  bash "$m"
+  status=0
+  bash "$m" || status=$?
+  if [[ $status -eq 75 ]]; then
+    later=$((later + 1))
+    continue
+  fi
+  [[ $status -eq 0 ]] || exit "$status"
   date -u +%FT%TZ > "$markers/$name"
   ran=$((ran + 1))
 done
 if [[ $list_only -eq 0 ]]; then
-  say "migrations: $ran run"
+  if [[ $later -eq 0 ]]; then
+    say "migrations: $ran run"
+  else
+    say "migrations: $ran run, $later left for the next patina update (it said why)"
+  fi
 fi

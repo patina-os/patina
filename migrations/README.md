@@ -16,6 +16,9 @@ Rules:
 - Idempotent: running it twice must be harmless, because a user may re-run `patina update`.
 - Small: one change per migration, a few lines, shellcheck-clean, no prompts.
 - Never destructive without a backup next to the file it changes.
+- Exit 0 when done, 75 when it cannot run here (a step that needs a Plasma session, run
+  over SSH): `patina migrate` records only an exit 0, says what is left and runs the
+  rest again with the next `patina update`; any other exit stops the update.
 - Same conventions as `bin/` (see `CLAUDE.md`). It may call `patina` subcommands.
 - `_template.sh` is the skeleton; tools skip entries starting with `_`.
 

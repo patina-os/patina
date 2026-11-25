@@ -2,7 +2,8 @@
 # machine that gets its apps elsewhere. Picked instead of desktop; base brings the look
 # and the system tuning either way.
 name: minimal
-description: Only kitty and Firefox ESR · instead of desktop
+title: Minimal
+description: Only kitty and Firefox ESR · instead of Standard
 default: false
 packages:
   - kitty        # the terminal (Meta+Return)

@@ -24,8 +24,14 @@ if [[ -n "$(git -C "$PATINA_PATH" status --porcelain)" ]]; then
   warn "the checkout has local changes; the pull keeps them if it can"
 fi
 say "pulling $(git -C "$PATINA_PATH" rev-parse --abbrev-ref HEAD) in $PATINA_PATH"
-if ! git -C "$PATINA_PATH" pull --ff-only --quiet; then
-  die "the pull stopped, nothing changed. A change of your own in the checkout is the
+# The fetch first, so a network or a remote that is down is told apart from a change
+# of the user's that the merge refuses.
+if ! git -C "$PATINA_PATH" fetch --quiet; then
+  die "could not reach $(git -C "$PATINA_PATH" remote get-url origin 2> /dev/null || echo "the remote"),
+  nothing changed. Check the network (or try again later) and patina update again"
+fi
+if ! git -C "$PATINA_PATH" merge --ff-only --quiet '@{upstream}'; then
+  die "the update stopped, nothing changed. A change of your own in the checkout is the
   usual cause (git -C $PATINA_PATH status): keep your keys in
   ~/.config/patina/keybindings.yaml (patina keys), set the file back with
   git -C $PATINA_PATH checkout -- <file> (or git stash), then patina update again"

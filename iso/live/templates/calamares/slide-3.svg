@@ -28,7 +28,7 @@
   </g>
   <text font-family="'${UI_FONT}', sans-serif" font-size="36" fill="${BASE04}">
     <tspan x="140" y="730">Apps, files and settings in one box.</tspan>
-    <tspan x="140" y="782">With the agent on, type <tspan font-family="${MONO_FONT}, monospace" fill="${ACCENT}">ai</tspan> and ask:</tspan>
+    <tspan x="140" y="782">With the agent on, press <tspan font-family="${MONO_FONT}, monospace" fill="${ACCENT}">Meta+A</tspan> and ask:</tspan>
     <tspan x="140" y="834">kortex shows every change first.</tspan>
   </text>
 </svg>

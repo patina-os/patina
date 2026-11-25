@@ -17,7 +17,9 @@ manifest/
 
 ```yaml
 name: dev
-description: Shown in the TUI   # one line in the install's list of bundles
+title: Developer tools   # its name wherever patina shows it: the install's list, the
+                         # welcome's More apps and the installer's pages (assets.sh)
+description: Shown in the TUI   # one line in the install's list of bundles, after the title
 default: true        # preselected in `patina install`
 required: false      # true only for base: the user cannot deselect it
 packages:            # canonical names, resolved through backends/<backend>.yaml

@@ -24,7 +24,8 @@ Papirus-Dark: &papirus
     other: application-x-executable-symbolic
     apps:
       kitty: utilities-terminal-symbolic
-      utilities-terminal: utilities-terminal-symbolic      # the agent, Konsole
+      utilities-terminal: utilities-terminal-symbolic      # Konsole
+      patina-agent: sidebar-show-right-symbolic            # the agent, docked right (patina's own)
       firefox-esr: firefox-symbolic
       firefox: firefox-symbolic
       org.kde.dolphin: system-file-manager-symbolic

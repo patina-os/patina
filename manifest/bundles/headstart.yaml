@@ -6,6 +6,7 @@
 # replaced extras (Zed and Tauon) in November 2026: kew took the place of Tauon, whose
 # GNOME runtime was most of that bundle's 2 GB.
 name: headstart
+title: Head start
 description: Zed · kew · ncspot · Telegram · Vesktop · Signal · more
 default: false
 packages:

@@ -40,17 +40,21 @@ ours() {
 
 # kitty: the palette as its sixteen colours plus the base16 extras (16 to 21), so every
 # tool that draws with the terminal's colours follows the theme. The include line is
-# added once, above whatever the user keeps in kitty.conf.
+# added once, above whatever the user keeps in kitty.conf; a header of patina's and an
+# include put out of use further down give way to it, so they are not there twice.
+before=$changes
 render "$templates/kitty.conf" "$tmp/kitty.conf"
 put "$tmp/kitty.conf" "$config/kitty/patina.conf"
+kitty_changed=$((changes - before))
+header='# patina: the theme and fonts; keep your own settings below this line.'
 if ! grep -qxF 'include patina.conf' "$config/kitty/kitty.conf" 2> /dev/null; then
   say "kitty.conf: adding the include line"
   mkdir -p "$config/kitty"
   {
-    printf '# patina: the theme and fonts; keep your own settings below this line.\n'
-    printf 'include patina.conf\n'
+    printf '%s\ninclude patina.conf\n' "$header"
     if [[ -f "$config/kitty/kitty.conf" ]]; then
-      cat "$config/kitty/kitty.conf"
+      awk -v h="$header" '$0 != h && $0 !~ /^#[[:space:]]*include[[:space:]]+patina\.conf[[:space:]]*$/' \
+        "$config/kitty/kitty.conf"
     fi
   } > "$tmp/kitty.conf.new"
   mv "$tmp/kitty.conf.new" "$config/kitty/kitty.conf"
@@ -93,16 +97,35 @@ fi
 print_logo always "${tpl[VARIANT]}" > "$tmp/logo.txt"
 put "$tmp/logo.txt" "$PATINA_STATE/logo.txt"
 ours "$templates/fastfetch.jsonc" "$config/fastfetch/config.jsonc"
-# Which runs in every new kitty window: two lines added once at the end of ~/.bashrc
-# (Debian's shell), and a file of fish's own conf.d. A user who deletes the bash lines
-# or the fish file's first line keeps them out.
-if ! grep -qF '# patina: fastfetch greets' "$HOME/.bashrc" 2> /dev/null; then
-  say ".bashrc: adding the greeting in kitty"
-  {
-    printf '\n# patina: fastfetch greets every new kitty window; delete these two lines to stop it.\n'
-    # shellcheck disable=SC2016 # the line is for ~/.bashrc, expanded there
-    printf '%s\n' 'if [[ $- == *i* && -n ${KITTY_WINDOW_ID:-} && -z ${PATINA_GREETED:-} ]] && command -v fastfetch > /dev/null; then export PATINA_GREETED=1; fastfetch; fi'
-  } >> "$HOME/.bashrc"
+# Which runs in every new terminal: in bash, Debian's shell and the login shell, a block
+# (templates/bashrc) with the greeting in kitty, starship's prompt and zoxide, added once
+# at the end of ~/.bashrc and kept current while its start and end lines stay; in fish,
+# a file of its own conf.d, which also turns on atuin (its bash part needs bash-preexec,
+# which Debian does not ship). The state directory records that the block was added, so
+# a user who deletes it, or the fish file's first line, keeps them out. The two lines
+# of the greeting the block replaced give way to it.
+bashrc="$HOME/.bashrc"
+added="$PATINA_STATE/bashrc-added"
+if { grep -q '^# patina: start' "$bashrc" && grep -qxF '# patina: end' "$bashrc"; } 2> /dev/null ||
+    grep -q '^# patina: fastfetch greets' "$bashrc" 2> /dev/null; then
+  awk -v block="$templates/bashrc" '
+    function put_block(  l) { while ((getline l < block) > 0) print l; close(block) }
+    skip == 2 { skip = 0; next }
+    skip == 1 { if ($0 == "# patina: end") skip = 0; next }
+    /^# patina: start/ { put_block(); skip = 1; next }
+    /^# patina: fastfetch greets/ { put_block(); skip = 2; next }
+    { print }' "$bashrc" > "$tmp/bashrc"
+  if ! cmp -s "$tmp/bashrc" "$bashrc"; then
+    say ".bashrc: the greeting, starship and zoxide as patina has them now"
+    cat "$tmp/bashrc" > "$bashrc"   # in place: a .bashrc that is a link stays one
+    changed
+  fi
+  [[ -e "$added" ]] || { mkdir -p "$PATINA_STATE"; date -u +%FT%TZ > "$added"; }
+elif [[ ! -e "$added" ]]; then
+  say ".bashrc: adding the greeting in kitty, starship and zoxide"
+  { printf '\n'; cat "$templates/bashrc"; } >> "$bashrc"
+  mkdir -p "$PATINA_STATE"
+  date -u +%FT%TZ > "$added"
   changed
 fi
 ours "$templates/greeting.fish" "$config/fish/conf.d/patina-greeting.fish"
@@ -142,6 +165,11 @@ ours "$templates/nvim-plugin.lua" "$config/nvim/plugin/patina.lua"
 ours "$templates/bat-config" "$config/bat/config"
 ours "$templates/environment.conf" "$config/environment.d/60-patina.conf"
 
+# The open kitty windows read their configuration again on SIGUSR1, so the one the
+# theme or the mode was switched in takes the new colours at once.
+if [[ $kitty_changed -gt 0 ]] && pkill -USR1 -u "$(id -u)" -x kitty 2> /dev/null; then
+  say "kitty: the open windows take the new colours"
+fi
 if [[ $changes -eq 0 ]]; then
   say "nothing to do"
 else

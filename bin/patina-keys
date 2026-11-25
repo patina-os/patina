@@ -38,22 +38,36 @@ if logo_colour auto; then
   fi
 fi
 
+# patina's own launchers come with bundles (Ask kortex and the agent with an AI bundle):
+# an action whose launcher is not there has no chord, as the desktop's renderer binds
+# none for it, so it is not listed.
+declare -A missing=()
+if [[ -f "$actions" ]]; then
+  while IFS=$'\t' read -r action service; do
+    [[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/applications/$service" ]] || missing[$action]=1
+  done < <(yq eval '.actions | to_entries | .[] | select(.value.service // "" | test("^patina-.*\\.desktop$")) |
+    [.key, .value.service] | @tsv' "$actions")
+fi
+
 echo
 echo "  patina"
 # shellcheck disable=SC2016 # $a is a yq variable inside the expression, not a shell one
-while IFS=$'\t' read -r chord name; do
-  printf '  %s%-34s%s %s\n' "$on" "$chord" "$off" "$name"
-done < <(yq eval '.actions as $a | .names | to_entries | .[] | [$a[.key], .value] | @tsv' - <<< "$keybindings")
+while IFS=$'\t' read -r action chord name; do
+  [[ -z "${missing[$action]:-}" ]] || continue
+  # The key's name on the keyboard, Enter, as the lists say; the files keep KDE's Return.
+  printf '  %s%-34s%s %s\n' "$on" "${chord//Return/Enter}" "$off" "$name"
+done < <(yq eval '.actions as $a | .names | to_entries | .[] | [.key, $a[.key], .value] | @tsv' - <<< "$keybindings")
 if [[ -f "$actions" ]] && yq eval -e '.cheatsheet' "$actions" > /dev/null 2>&1; then
   echo
   echo "  ${desktop^}"
   while IFS=$'\t' read -r chord name; do
-    printf '  %s%-34s%s %s\n' "$on" "$chord" "$off" "$name"
+    printf '  %s%-34s%s %s\n' "$on" "${chord//Return/Enter}" "$off" "$name"
   done < <(yq eval '.cheatsheet[] | [.chord, .name] | @tsv' "$actions")
 fi
 echo
-echo "  Change them: ~/.config/patina/keybindings.yaml, with the chords that differ under"
-echo "  actions: as in defaults/keybindings.yaml, then 'patina theme set <theme>'"
+echo "  To change a key, copy its line, with the actions: line above it, from"
+echo "  defaults/keybindings.yaml into ~/.config/patina/keybindings.yaml, change it"
+echo "  there, then run: patina theme set $(current_theme || echo '<theme>')"
 if [[ $wait_key -eq 1 ]]; then
   read -rsn1 -p "  Press any key to close."
 fi

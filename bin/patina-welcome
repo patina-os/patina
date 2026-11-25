@@ -31,19 +31,47 @@ nextcloud_cfg="${XDG_CONFIG_HOME:-$HOME/.config}/Nextcloud/nextcloud.cfg"
 # One kitty window split in two, as the README's picture of the desktop: the welcome on
 # the left, with the keyboard, and btop on the right where it is installed. The session
 # comes on kitty's standard input, so no file is left behind. The window is as large as
-# its halves need, in characters: 82 columns each, so btop (80 at least) draws beside
-# the welcome's lines; the desktop's rule for new windows leaves its size alone
-# (desktops/plasma/apply.sh), and a smaller screen gets all of its width.
+# its halves need, in characters: 82 columns each, so btop (80 by 24 at least) draws
+# beside the welcome's lines; the desktop's rule for new windows leaves its size alone
+# (desktops/plasma/apply.sh). A screen too small for that (1366 by 768) gets a window
+# that fits it, the welcome alone where btop would not draw: a larger window than the
+# screen opened at its corner, and btop said its terminal was too small.
 window() {
-  local session
+  local session screen font across=168 down=42 fit_cols fit_rows btop=1
   command -v kitty > /dev/null ||
     die "the welcome's window needs kitty (the desktop or minimal bundle); run patina welcome in a terminal"
+  # The screen in the desktop's units, as the size rule reads it: the first enabled
+  # output's size.
+  if command -v kscreen-doctor > /dev/null; then
+    screen="$(kscreen-doctor --outputs 2> /dev/null | sed 's/\x1b\[[0-9;]*m//g' |
+      awk '/^Output:/ { enabled = 0 } /^[[:space:]]*enabled/ { enabled = 1 }
+           /Geometry:/ && enabled { print $3; exit }')" || true
+  fi
+  if [[ "${screen:-}" =~ ^([0-9]+)x([0-9]+)$ ]]; then
+    # kitty's cell at its font size (the last font_size of its files), at 96 dots per
+    # inch: JetBrains Mono's about 0.62 em wide and 1.45 em high, as measured at 1366 by
+    # 768. The panel and the window's title bar take about 110 pixels of the height.
+    font="$( { cat "${XDG_CONFIG_HOME:-$HOME/.config}"/kitty/{patina,kitty}.conf 2> /dev/null || true; } |
+      awk '$1 == "font_size" { size = $2 } END { print (size + 0 > 0 ? size : 10) }')"
+    read -r fit_cols fit_rows < <(awk -v w="${BASH_REMATCH[1]}" -v h="${BASH_REMATCH[2]}" -v f="$font" \
+      'BEGIN { em = f * 96 / 72; printf "%d %d\n", w * 0.98 / (em * 0.62), (h - 110) / (em * 1.45) }')
+    if [[ $fit_cols -lt $across || $fit_rows -lt $down ]]; then
+      [[ $fit_rows -ge $down ]] || down=$fit_rows
+      [[ $fit_cols -ge $across ]] || across=$fit_cols
+      if [[ $across -lt 166 || $down -lt 24 ]]; then
+        btop=0
+        [[ $across -le 90 ]] || across=90
+      fi
+    fi
+  fi
   session="$(printf 'layout splits\nlaunch --title welcome %q welcome --pane\nfocus' "$PATINA_PATH/bin/patina")"
-  if command -v btop > /dev/null; then
+  if [[ $btop -eq 1 ]] && command -v btop > /dev/null; then
     session+=$'\nlaunch --location=vsplit --bias=50 btop'
+  else
+    across=$((across > 90 ? 90 : across))
   fi
   exec kitty --class patina-welcome --title "Welcome to patina" \
-    -o initial_window_width=168c -o initial_window_height=42c --session - <<< "$session"
+    -o "initial_window_width=${across}c" -o "initial_window_height=${down}c" --session - <<< "$session"
 }
 
 # A login: the welcome, until its menu turns that off. Without kitty there is no window.
@@ -114,11 +142,11 @@ steps() {
   else
     printf '%-10s %s\n' setup "Basic onboarding · AI, cloud, passwords"
   fi
-  left="$(left_bundles | paste -sd, - | sed 's/,/, /g')"
-  recorded_bundles | grep -qx agents || left="${left:+$left, }AI dev tools"
+  left="$( { left_bundles; recorded_bundles | grep -qx agents || echo agents; } | while IFS= read -r b; do
+    yq eval '.title // .name' "$PATINA_PATH/manifest/bundles/$b.yaml"; done | paste -sd, - | sed 's/,/, /g')"
   [[ -z "$left" ]] || printf '%-10s %s\n' apps "More apps · $left"
   printf '%-10s %s\n' patina "Theme, update and check · now $(current_theme || echo "no theme"), $(current_mode)"
-  printf '%-10s %s\n' keys "All the keyboard shortcuts"
+  printf '%-10s %s\n' keys "Keyboard shortcuts · all of them"
   if [[ -e "$off" ]]; then
     printf '%-10s %s\n' autostart "Open at every login again"
   else
@@ -146,7 +174,9 @@ setup_step() {
     elif [[ "$ai" == cloud ]] && ! ai_logged_in "$agent" "$(cat "$PATINA_STATE/ai-provider" 2> /dev/null || true)"; then
       lines+=("$(printf '%-10s %s' ai "Set up the AI agent · log in to its provider")")
     else
-      lines+=("$(printf '%-10s %s' ai "Set up the AI agent · now $agent, $ai")")
+      # The agent alone: its mode, cloud, held the next line's id, and Enter after
+      # typing "cloud" went to the agent (pick).
+      lines+=("$(printf '%-10s %s' ai "Set up the AI agent · now $agent")")
     fi
     lines+=("$(printf '%-10s %s' cloud "Connect your cloud data · $([[ -n "$host" ]] && echo "now Nextcloud, $host" || echo Nextcloud)")")
     lines+=("$(printf '%-10s %s' passwords "Connect your password manager · KeePassXC")")
@@ -164,7 +194,7 @@ setup_step() {
 
 # The AI agent's own menu, back to the onboarding with Back: turn it on or change it,
 # its provider's login, the services it can work with, your own instructions for it
-# and whether one yes can cover the rest of a task, each through patina ai. The
+# and "Allow the rest of this task", each through patina ai. The
 # agent tools are among the apps, as AI dev tools. A cloud agent not logged in has its
 # login first.
 ai_step() {
@@ -185,20 +215,20 @@ ai_step() {
       lines+=("$(printf '%-10s %s' agent "Change the agent · now $agent, $ai$([[ "$ai" != local ]] ||
         small_hint "$(cat "$PATINA_STATE/ai-model" 2> /dev/null || true)")")")
       if [[ "$ai" == cloud ]] && ai_logged_in "$agent" "$provider"; then
-        lines+=("$(printf '%-10s %s' provider "Change the provider · now $provider")")
+        lines+=("$(printf '%-10s %s' provider "Change the provider · now $(provider_name "$provider")")")
       fi
       lines+=("$(printf '%-10s %s' services "Connect services · $(yq eval \
         '[.[].description | split(" · ") | .[0]] | join(", ")' "$PATINA_PATH/defaults/services.yaml")")")
       lines+=("$(printf '%-10s %s' prompt "Your instructions · what the agent follows besides patina's")")
       # One yes for the rest of a task, off unless picked here; opencode only, since
-      # Hermes asks before little as it is.
+      # Hermes asks before little as it is. Turning it on says what still asks.
       if [[ "$agent" != hermes ]]; then
         handover=off
         [[ "$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/kortex/handover" 2> /dev/null || true)" != on ]] || handover=on
         if [[ "$handover" == on ]]; then
-          lines+=("$(printf '%-10s %s' handover "One yes per task · now on: deleting, root and installs still ask")")
+          lines+=("$(printf '%-10s %s' handover "Allow the rest of this task · now on")")
         else
-          lines+=("$(printf '%-10s %s' handover "One yes per task · now off: every change asks")")
+          lines+=("$(printf '%-10s %s' handover "Allow the rest of this task · now off: every change asks")")
         fi
       fi
     fi
@@ -222,11 +252,20 @@ ai_step() {
   done
 }
 
+# The services the agent can work with, the ones it has marked "(on)": in opencode's
+# file (mcp) or Hermes' (mcp_servers), as patina ai connect lists them.
 services_step() {
-  local choice
-  local -a lines
-  mapfile -t lines < <(yq eval 'to_entries | .[] | .key + "|" + .value.description' "$PATINA_PATH/defaults/services.yaml" |
-    awk -F'|' '{ printf "%-10s %s\n", $1, $2 }')
+  local choice name description state
+  local -a lines=()
+  local config="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/opencode.json" hermes="${HERMES_HOME:-$HOME/.hermes}/config.yaml"
+  while IFS='|' read -r name description; do
+    state=""
+    if { [[ -f "$config" ]] && N="$name" yq eval -e '.mcp[strenv(N)]' "$config" > /dev/null 2>&1; } ||
+      { [[ -f "$hermes" ]] && N="$name" yq eval -e '.mcp_servers[strenv(N)]' "$hermes" > /dev/null 2>&1; }; then
+      state="(on) "
+    fi
+    lines+=("$(printf '%-10s %s%s' "$name" "$state" "$description")")
+  done < <(yq eval 'to_entries | .[] | .key + "|" + .value.description' "$PATINA_PATH/defaults/services.yaml")
   choice="$(pick "Services the agent can work with (patina ai connect)" "${lines[@]}")" || return 0
   "$PATINA_PATH/bin/patina-ai" connect "${choice%% *}" || true
 }
@@ -235,26 +274,22 @@ apps_step() {
   local b choice
   local -a names=() lines
   local -A about=() on=()
-  for b in $(left_bundles); do
-    names+=("$b")
-    about[$b]="$(yq eval '.description' "$PATINA_PATH/manifest/bundles/$b.yaml")"
-  done
-  # The agent tools (the agents bundle) are AI dev tools here, among the apps; opt-in
+  # The agent tools (the agents bundle, AI dev tools) are among the apps here; opt-in
   # because most of them are proprietary, which the list's title says.
-  if ! recorded_bundles | grep -qx agents; then
-    names+=(agents)
-    about[agents]="AI dev tools · $(yq eval '.description | sub(" · "; ", ")' \
-      "$PATINA_PATH/manifest/bundles/agents.yaml")"
-  fi
+  for b in $(left_bundles) $(recorded_bundles | grep -qx agents || echo agents); do
+    names+=("$b")
+    about[$b]="$(yq eval '(.title // .name) + " · " + .description' "$PATINA_PATH/manifest/bundles/$b.yaml")"
+  done
   # Enter turns a line on or off, as in patina install's bundles, and the first line
-  # installs what is on: marks made with Tab went with the back line too.
+  # installs what is on: marks made with Tab went with the back line too. That line
+  # names no bundle: typing one's name took it first, and Enter installed (pick).
   while true; do
     lines=()
     for b in "${names[@]}"; do
       [[ -z "${on[$b]:-}" ]] || lines+=("$b")
     done
     if [[ ${#lines[@]} -gt 0 ]]; then
-      lines=("$(printf '%-9s %s' next "Install $(printf '%s, ' "${lines[@]}" | sed 's/, $//')")")
+      lines=("$(printf '%-9s %s' next "Install the ones marked [x]")")
     fi
     for b in "${names[@]}"; do
       choice="[ ]"
@@ -300,9 +335,12 @@ nextcloud_step() {
   local url
   client "the Nextcloud client" nextcloud nextcloud-desktop || return 0
   if [[ -z "$(nextcloud_values url)" ]]; then
-    url="$(gum input --header "Your Nextcloud's address · Ctrl+C: Back" --placeholder "cloud.example.eu")" || return 0
-    url="${url%/}"
-    [[ -n "$url" ]] || return 0
+    while true; do
+      url="$(gum input --header "Your Nextcloud's address · Ctrl+C: Back" --placeholder "cloud.example.eu")" || return 0
+      url="${url%/}"
+      [[ -z "$url" ]] || break
+      warn "no address entered; type your Nextcloud's, or Ctrl+C: Back"
+    done
     [[ "$url" == *://* ]] || url="https://$url"
     # status.php answers on every Nextcloud without a login.
     if [[ "$(curl -fsS -m 15 "$url/status.php" 2> /dev/null | yq eval -p json '.installed' 2> /dev/null)" != true ]]; then
@@ -417,7 +455,7 @@ colours() {
 }
 
 welcome() {
-  local name action choice chord words keybindings device
+  local name action choice chord words keybindings device width
   local -a lines
   [[ -t 0 && -t 1 ]] || die "the welcome asks on a terminal; patina welcome --window opens one"
   need_yq
@@ -429,16 +467,20 @@ welcome() {
   # stops that step and the welcome comes back to its menu: a handler, not an ignored
   # signal, which the steps would inherit.
   trap 'echo' INT
+  # The text wraps between words at the pane's width, which a terminal broke mid-word.
+  width="$(stty size < /dev/tty 2> /dev/null | cut -d' ' -f2)"
+  [[ "${width:-0}" -gt 40 ]] || width=80
+  width=$((width - 2))
   print_wordmark auto "${tpl[VARIANT]}"
   gum style --foreground "${tpl[BASE04]}" "patina $("$PATINA_PATH/bin/patina" version) · $(uname -m)"
   echo
-  gum style --foreground "${tpl[BASE05]}" "Welcome${name:+, $name}. patina is installed with the apps you picked." \
-    "Here is what you can add now, and the keys to start with:"
+  gum style --width "$width" --foreground "${tpl[BASE05]}" \
+    "Welcome${name:+, $name}. patina is installed with the apps you picked. Here is what you can add now, and the keys to start with:"
   # What a detected device has to say about itself (`welcome` in its device.yaml): one
   # line, as Try patina's machine says that it is slower than a PC.
   while IFS= read -r device; do
     words="$(yq eval '.welcome // ""' "$PATINA_PATH/devices/$device/device.yaml")"
-    [[ -z "$words" ]] || gum style --foreground "${tpl[BASE04]}" "$words"
+    [[ -z "$words" ]] || gum style --width "$width" --foreground "${tpl[BASE04]}" "$words"
   done < <(detected_devices)
   echo
   keybindings="$(keybindings)"
@@ -450,8 +492,11 @@ welcome() {
     [[ "$action" != ask || -e "${XDG_DATA_HOME:-$HOME/.local/share}/applications/patina-ask.desktop" ]] || continue
     [[ "$action" != agent || -e "${XDG_DATA_HOME:-$HOME/.local/share}/applications/patina-agent.desktop" ]] || continue
     chord="$(yq eval ".actions.$action" - <<< "$keybindings")"
+    chord="${chord//Return/Enter}"   # the key's name on the keyboard, as the lists say Enter
     words="$(yq eval ".names.$action" - <<< "$keybindings")"
-    [[ "$action" != keys ]] || words="All the keys at a glance"   # the sheet's own name is "Show these keys"
+    [[ "$action" != keys ]] || words="Keyboard shortcuts"   # the sheet's own row is "Show these keys"
+    # Wrapped between words, the lines after the first under the first.
+    words="$(fold -s -w "$((width - 16))" <<< "$words" | sed 's/ *$//; 2,$s/^/                /')"
     printf '  %s  %s\n' "$(gum style --bold --foreground "${tpl[ACCENT]}" "$(printf '%-12s' "$chord")")" "$words"
   done
   while true; do
@@ -464,7 +509,12 @@ welcome() {
       setup) setup_step ;;
       apps) apps_step ;;
       patina) patina_step ;;
-      keys) "$PATINA_PATH/bin/patina-keys" ;;
+      keys)
+        # From the top, and until a key, so the sheet's first lines stay in sight.
+        clear
+        "$PATINA_PATH/bin/patina-keys" --wait || true
+        echo
+        ;;
       autostart)
         if [[ -e "$off" ]]; then
           rm -f "$off"

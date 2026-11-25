@@ -177,9 +177,9 @@ again" brings it back; KDE's own Welcome Center stays off.
 `patina theme list` and `patina theme set <name>` switch the theme (`PATINA_THEME=<name>`
 picks one for the install), and `patina update` runs `git pull`, then any pending
 migrations, then an unattended `patina install` of the bundles you have, so what they
-gained since arrives too. Put `~/.local/bin` on
-your PATH and link `patina` there (`ln -s ~/.local/share/patina/bin/patina
-~/.local/bin/patina`).
+gained since arrives too. `patina install` links the `patina` command into
+`~/.local/bin`, which Debian puts on your PATH at login, so from your next login on
+`patina` alone does.
 
 ## Testing the alpha
 
@@ -264,7 +264,10 @@ Nextcloud client, Thunderbird, Element, KeePassXC, Euro-Office (the European, AG
 ONLYOFFICE), Firefox ESR (telemetry, Pocket and sponsored content off),
 Haruna for video, Gwenview for images, Okular for PDFs, kitty as the terminal and a
 developer kit (fish, starship, bat, eza, fzf, ripgrep, lazygit, btop, zoxide, atuin,
-git-delta, neovim, fastfetch): the `desktop` bundle. Gaming is not a focus.
+git-delta, neovim, fastfetch): the `desktop` bundle. bash stays the shell, with
+starship's prompt and zoxide on; fish is there to switch to (`chsh -s /usr/bin/fish`)
+and has the same, plus atuin's history search on Ctrl+R, which needs a hook bash lacks
+in Debian. Gaming is not a focus.
 
 Smaller or larger: `minimal` is only kitty and Firefox ESR, for a machine that gets its
 apps elsewhere (the look and the system tuning come with every install), and
@@ -364,10 +367,11 @@ the command palette, or the welcome's AI menu) opens `~/.config/patina/agent.md`
 the agent follows what you write there (the language it answers in, how short, what it
 leaves alone) from the next request, while patina's own keep coming with updates. If
 five questions for a task of five changes are too many for you, `patina ai handover on`
-(or "One yes per task" in the welcome's AI menu) adds an answer to each question,
-"Allow the rest of this task": the later changes of that one request run without
-asking, the answer lists them, and what deletes, runs as root, installs or changes a
-service still asks every time. It is off by default, because that yes covers steps you
+(or "Allow the rest of this task" in the welcome's AI menu) adds an answer to each
+question, "Allow the rest of this task": the later changes of that one request run
+without asking, the answer lists them, and deleting, running as root, installing
+software, changing or enabling a service (systemctl, timers, cron) and a connected
+service's changes still ask every time. It is off by default, because that yes covers steps you
 have not seen. What needs root (a
 package, a driver, a system service) it runs with `sudo -A`, since it has no terminal
 for sudo to ask in: a notification asks for your password, and its "Enter password"

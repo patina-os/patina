@@ -25,7 +25,7 @@ commands:
   welcome   What to add after the install: the AI agent, the agent tools, services,
             more apps (opens at each login; patina welcome --help)
   keys      Show the keyboard shortcuts (Meta+K opens the same in a window)
-  doctor    Check the base system and report what patina would change
+  doctor    Check the system, the theme and the AI agent; say what to fix
   credits   Name and thank the people and projects patina is made of
   migrate   Run pending migrations without pulling
   version   Print the patina version
