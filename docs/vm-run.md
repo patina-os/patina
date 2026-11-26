@@ -224,13 +224,15 @@ Log out and back in once, then:
 - [ ] the desktop: the glowing contour map on black, aurora's colour scheme (green
   selections and focus, violet hover), a bar along the bottom edge (it stays there
   when a window is maximised) with the start button alone in the middle and the pinned
-  browser and terminal at the left end
+  files, browser and terminal at the left end
 - [ ] the start menu: the patina dots as its button; it opens in the middle of the
   screen's width, as far from the left edge as from the right; the AI and
   Self-hosting folders among the categories; the favourites are Nextcloud, Element, Euro-Office,
-  Thunderbird, KeePassXC, kitty (and the agent and Claude Desktop with the agents
-  bundle), and none of Debian's (Discover, Dolphin, System Settings, Konqueror); its
-  background is glass, the wallpaper's colour glowing through; its category icons
+  Thunderbird, KeePassXC, kitty, Firefox ESR, Dolphin (and the agent and Claude
+  Desktop with the agents bundle), and none of Plasma's others (Discover, System
+  Settings); Konqueror is nowhere in the menu, and a web link opens Firefox ESR; its
+  background is glass, the wallpaper's colour glowing through, one pane without a
+  frame inside its edge; its category icons
   are green, the apps' glyphs and the labels white; the apps by their names alone and
   one power button at the bottom; the user's picture is the patina dots
 - [ ] the wallpaper is the DeepMind waves; every icon in the bar, the start menu and

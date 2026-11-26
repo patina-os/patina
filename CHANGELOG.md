@@ -62,10 +62,13 @@ The test round of 25 November 2026 (`docs/test-round.md`):
   lines, Markdown is read in rows and notifications, and the last conversation
   survives a restart.
 
-- The bar pins the browser and the terminal, no longer the file manager first: Dolphin
-  stays on Meta+E and in the start menu. A desktop that has its bar already keeps it;
-  unpin Dolphin there with a right click, or take the whole layout again with
-  `patina theme set <name> --layout`.
+- The start menu and the other panel popups are one pane of glass, a little clearer
+  (`start_menu.glass` 60 in place of 72): the 6 px frame inside their edge, which had
+  no grain and read as a thick inner border, carries it now, as do the rounded corners.
+- The start menu's favourites are patina's, with Firefox ESR and Dolphin among them:
+  Plasma's own (its browser slot, Kontact, System Settings, Discover) no longer come
+  after them in a new start menu, and a migration takes them out of the start menu of a
+  running session. Favourites you added stay.
 - Bundles have one name everywhere: Standard, Minimal, Head start, ArtCraft (alpha),
   AI dev tools, in the installer, `patina install` and the welcome. In `patina
   install`, installed bundles show as installed and stay; the summary says nothing
@@ -87,6 +90,16 @@ The test round of 25 November 2026 (`docs/test-round.md`):
   longer promises a larger model from 20 GB of memory.
 
 ### Fixed
+
+- Firefox ESR is the default web browser, so the bar's browser, Meta+B, web links and
+  the start menu no longer open Konqueror, which Debian's Plasma brings and which
+  claimed web links first on a desktop where nobody picked a browser. Konqueror stays
+  installed but out of the start menu and its search. A browser you picked stays.
+- An update from 0.1.0-alpha.12 to .15 no longer switches the AI agent to Mistral, which
+  you never logged in to, after you picked your own API or another provider: a second
+  install there had already written Mistral into the record, and the update read it. A
+  migration takes the provider whose key or address you set up back where the record
+  names one without a key; `patina ai login` picks one where none is set up.
 
 - Meta+A with nothing running opens the command palette on kortex's hint, your recent
   conversations and two requests to try. It opened an empty field, which showed nothing

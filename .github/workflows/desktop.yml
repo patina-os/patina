@@ -46,11 +46,10 @@ jobs:
     steps:
       - name: Install Plasma and what Path A starts from
         # Plasma as Debian ships it (the X11 session and its window manager) with the
-        # file manager Meta+E opens and the browser the bar pins, the virtual
-        # framebuffer and Mesa's software renderer a session needs without a GPU or a
-        # login manager, scrot for the grab and xdotool to move the pointer out of the
-        # pictures. git and curl are what the README asks for; sudo is the user's way
-        # to apt.
+        # apps the bar pins (Dolphin, Firefox), the virtual framebuffer and Mesa's
+        # software renderer a session needs without a GPU or a login manager, scrot
+        # for the grab and xdotool to move the pointer out of the pictures. git and curl
+        # are what the README asks for; sudo is the user's way to apt.
         run: |
           apt-get update -q
           DEBIAN_FRONTEND=noninteractive apt-get install -y -q \
