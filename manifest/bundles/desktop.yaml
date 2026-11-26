@@ -3,6 +3,7 @@
 # Element is its one Flathub app (about 1 GB with its runtime); the editor, the music
 # and the other chat apps are the opt-in headstart bundle.
 name: desktop
+title: Standard
 description: Firefox ESR · Thunderbird · Element · kitty · dev tools
 default: true
 packages:
@@ -10,6 +11,7 @@ packages:
   - thunderbird
   - keepassxc
   - kdialog      # the welcome's file dialog for a KeePassXC database (bin/patina-welcome)
+  - kwrite       # the editor patina ai prompt opens your instructions in, in a desktop session
   - firefox-esr  # the browser; its policies: defaults/system/firefox/
   - okular       # PDF and documents
   - gwenview     # images

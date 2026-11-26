@@ -2,6 +2,7 @@
 # out proprietary defaults. Everything here comes from its upstream installer; Ollama is
 # the only one with a free licence and the only one that runs local models.
 name: agents
+title: AI dev tools
 description: Claude Code · Codex · opencode · Claude Desktop · Ollama
 default: false
 packages:

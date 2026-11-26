@@ -3,16 +3,16 @@
 # The start menu's favourites without Plasma's own (its browser slot, which could be
 # Konqueror, Kontact, System Settings and Discover), with Firefox ESR and Dolphin among
 # patina's: in the running Plasma session, through the activity manager that keeps the
-# favourites of every start menu. Favourites the user added stay; outside a session,
-# `patina theme set <theme> --layout` brings them with the whole bar.
+# favourites of every start menu. Favourites the user added stay; outside a session it
+# waits for the next `patina update` in one.
 set -euo pipefail
 
 # shellcheck source=bin/lib.sh
 source "$PATINA_PATH/bin/lib.sh"
 if ! dbus-send --session --print-reply --dest=org.freedesktop.DBus /org/freedesktop/DBus \
     org.freedesktop.DBus.NameHasOwner string:org.kde.ActivityManager 2> /dev/null | grep -q 'boolean true'; then
-  say "start menu: no Plasma session here; patina theme set <theme> --layout brings patina's favourites"
-  exit 0
+  say "start menu: no Plasma session here; the next patina update in one brings patina's favourites"
+  exit 75   # not recorded: patina-migrate runs it again (migrations/README.md)
 fi
 link() {
   dbus-send --session --print-reply --dest=org.kde.ActivityManager \

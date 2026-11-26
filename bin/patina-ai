@@ -21,9 +21,11 @@ usage: patina ai [status] | on [opencode|hermes] [local|cloud] | login | off | c
               ai.cloud.providers in defaults/settings.yaml, and login later
   login       the cloud agent's provider and its key: Mistral and the other European
               ones, your own OpenAI-compatible API (its address and key, then a model
-              from its list), Big Pickle (free, no key), Anthropic or OpenAI. The key
-              stays in opencode's own login or Hermes' own .env, your own API's in a
-              file only you can read. The welcome runs this as its first step
+              from its list), Big Pickle (free, no key), Anthropic or OpenAI. It says
+              where to make a key, which stays in opencode's own login or Hermes' own
+              .env, your own API's in a file only you can read. A login left with
+              Ctrl+C leaves the provider the agent had. The welcome runs this as its
+              first step
   on opencode ...
               opencode, free (the default): it asks before each change, on the machine
               and in a connected service, and looks around without asking. Expect one
@@ -34,8 +36,9 @@ usage: patina ai [status] | on [opencode|hermes] [local|cloud] | login | off | c
               before what it counts as dangerous (deleting a folder, anything as
               root); about 2 GB
   on          asks which on a terminal
-  off         no agent: Meta+A, its launcher and \`ai\` in the command palette go away.
-              What was installed stays; the end of the output says how to remove it
+  off         no agent: Meta+A, its launcher and its rows in the command palette go
+              away. What was installed stays, and the output names it; the README's
+              AI section says how to remove Ollama, which takes the most space
   connect     the services the agent can work with (Linear, Nextcloud, ...), and which
               are on
   connect <service>
@@ -44,16 +47,18 @@ usage: patina ai [status] | on [opencode|hermes] [local|cloud] | login | off | c
   disconnect <service>
               turn one off again and forget its sign-in
   prompt      your own instructions for the agent, in addition to patina's: opens
-              ~/.config/patina/agent.md in your editor, and the agent follows them
-              from the next request. Empty the file to go back to patina's alone
-  handover    whether one yes can cover the rest of a task, and what that means
+              ~/.config/patina/agent.md in KWrite in a desktop session, else in nano
+              (or your VISUAL or EDITOR), and the agent follows them from the next
+              request. Empty the file to go back to patina's alone
+  handover    whether "Allow the rest of this task" is on, and what that means
   handover on
               opencode asks before each change; with this, a question in the command
               palette has a third answer, "Allow the rest of this task": the later
               changes of that one request run without asking and the answer lists
-              them. What deletes, runs as root, installs or changes a service still
-              asks every time. Off by default, since that yes covers steps you have
-              not seen
+              them. Deleting, running as root, installing software, changing or
+              enabling a service (systemctl, timers, cron) and a connected service's
+              changes still ask every time. Off by default, since that yes covers
+              steps you have not seen
   handover off
               every change asks again
 EOU
@@ -74,15 +79,29 @@ status() {
     cloud)
       provider="$(cat "$PATINA_STATE/ai-provider" 2> /dev/null || echo '?')"
       if ai_logged_in "$agent" "$provider"; then
-        say "ai: $agent, cloud, $provider"
+        say "ai: $agent, cloud, $(provider_name "$provider")"
       else
-        say "ai: $agent, cloud, $provider, not logged in yet; patina ai login does it"
+        say "ai: $agent, cloud, $(provider_name "$provider"), not logged in yet; patina ai login does it"
       fi
       ai_note cloud "$provider"
       ;;
     *) say "ai: none; patina ai on turns it on" ;;
   esac
   [[ "$ai" == none ]] || connected
+  # Hermes has no such answer: it asks only before what it counts as dangerous.
+  if [[ "$ai" != none && "$agent" != hermes ]]; then
+    if [[ "$(handover_now)" == on ]]; then
+      say "ai: \"Allow the rest of this task\" is on; patina ai handover off turns it off"
+    else
+      say "ai: \"Allow the rest of this task\" is off: every change asks (patina ai handover)"
+    fi
+  fi
+}
+
+# Whether one yes may cover the rest of a task: kortex's own setting, on or off.
+handover_file="${XDG_CONFIG_HOME:-$HOME/.config}/kortex/handover"
+handover_now() {
+  if [[ "$(cat "$handover_file" 2> /dev/null || true)" == on ]]; then echo on; else echo off; fi
 }
 
 # The services the agent has, on one line of status.
@@ -131,7 +150,7 @@ on() {
           [[ "$ai" == none ]] || now="$(current_agent)"
           mapfile -t lines < <(agent_lines)
           mapfile -t lines < <(mark_now "$now" "${lines[@]}")
-          choice="$(pick "AI agent (Meta+A, and ai in the command palette)" "${lines[@]}")" || exit 0
+          choice="$(pick "AI agent (Meta+A, or any search in the command palette)" "${lines[@]}")" || exit 0
           agent="${choice%% *}"
         fi
         [[ -n "$agent" ]] || agent="$(current_agent)"
@@ -165,7 +184,7 @@ on() {
   done
   bundle="$(ai_bundle "$mode" "$agent")" || die "no bundle in manifest/bundles/ answers ai: $mode with $agent"
   PATINA_AI="$mode" PATINA_AI_AGENT="$agent" PATINA_AI_PROVIDER="${provider:-${PATINA_AI_PROVIDER:-}}" \
-    "$PATINA_PATH/bin/patina-install" --bundles "$bundle"
+    PATINA_AI_LOGIN="${provider:+after}" "$PATINA_PATH/bin/patina-install" --bundles "$bundle"
   [[ -z "$provider" ]] || after_install "$agent"
 }
 
@@ -173,15 +192,16 @@ settings="$PATINA_PATH/defaults/settings.yaml"
 ai_keys="${XDG_CONFIG_HOME:-$HOME/.config}/patina/ai"
 provider=""
 
-# The cloud provider, on a terminal with gum, and what patina keeps of its login, asked
-# before the install writes the agent's configuration: your own API's address, key and
-# model, or Hermes' key. opencode's own login comes after the install (after_install).
-# Sets provider; fails when it is left with Ctrl+C or Back, and a step after the list
-# goes back to it. provider_step <agent>
+# The cloud provider, on a terminal with gum, and its login, asked before the install
+# writes the agent's configuration, so a login left with Ctrl+C leaves the agent on the
+# provider it had: your own API's address, key and model, Hermes' key, or opencode's own
+# login (after the install only where opencode is not installed yet: after_install).
+# Where each keeps the key is said at its own question. Sets provider; fails when it is
+# left with Ctrl+C or Back, and a step after the list goes back to it. provider_step
+# <agent>
 provider_step() {
-  local choice keeps="opencode's own login" key value now="" rc
+  local choice key value now="" rc
   local -a lines
-  [[ "$1" != hermes ]] || keeps="Hermes' own .env"
   mapfile -t lines < <(yq eval "$(offered_providers "$1") | (.id + \"|\" + .name)" "$settings" |
     awk -F'|' '{ printf "%-10s %s\n", $1, $2 }')
   if [[ "$(cat "$PATINA_STATE/ai" 2> /dev/null || true)" == cloud && "$1" == "$(current_agent)" ]]; then
@@ -189,22 +209,30 @@ provider_step() {
   fi
   mapfile -t lines < <(mark_now "$now" "${lines[@]}")
   while true; do
-    choice="$(pick "Cloud provider for $1 (the key stays in $keeps)" "${lines[@]}")" || return 1
+    choice="$(pick "Cloud provider for $1" "${lines[@]}")" || return 1
     provider="${choice%% *}"
     case "$(provider_login "$provider")" in
       endpoint) endpoint_step "$1" || continue ;;
       key)
-        [[ "$1" == hermes ]] || return 0
+        if [[ "$1" != hermes ]]; then
+          command -v opencode > /dev/null || return 0
+          if ! opencode_login "$provider"; then
+            warn "ai: not logged in to $(provider_name "$provider"); the agent keeps the provider it had"
+            continue
+          fi
+          return 0
+        fi
         key="$(P="$provider" yq eval '.ai.cloud.providers[] | select(.id == strenv(P)) | .hermes.key' "$settings")"
         if ai_logged_in hermes "$provider"; then
           # Keep is the key Hermes has; Ctrl+C (gum's 130) goes back to the list.
           rc=0
-          gum confirm "Hermes has a key for $provider. Replace it? (Ctrl+C: Back)" \
+          gum confirm "Hermes has a key for $(provider_name "$provider"). Replace it? (Ctrl+C: Back)" \
             --affirmative Replace --negative Keep --default=false || rc=$?
           [[ $rc -ne 130 ]] || continue
           [[ $rc -eq 0 ]] || return 0
         fi
-        value="$(gum input --password --header "Your $provider API key (kept in Hermes' own .env, readable by you only) · Ctrl+C: Back" \
+        key_hint "$provider"
+        value="$(gum input --password --header "Your $(provider_name "$provider") API key (kept in Hermes' own .env, readable by you only) · Ctrl+C: Back" \
           --placeholder "paste it here")" || continue
         [[ -n "$value" ]] || die "no key entered, nothing changed"
         mkdir -p "$hermes_home"
@@ -215,16 +243,70 @@ provider_step() {
   done
 }
 
+# Where a provider's key is made (key_url of ai.cloud.providers), said before the
+# question that asks for it. key_hint <provider>
+key_hint() {
+  local url
+  url="$(P="$1" yq eval '.ai.cloud.providers[] | select(.id == strenv(P)) | .key_url // ""' "$settings")"
+  [[ -z "$url" ]] || say "ai: make a key at $url (an account is needed), then paste it"
+}
+
+# opencode's own login to a key provider: it keeps the key, patina never sees it. Where
+# opencode has a key for it already, Keep keeps that one. Fails when the login is left
+# with Ctrl+C or did not take, or the question is left with Ctrl+C. opencode_login
+# <provider>
+opencode_login() {
+  local rc=0
+  if ai_logged_in opencode "$1"; then
+    gum confirm "opencode is logged in to $(provider_name "$1"). Log in again? (Ctrl+C: Back)" \
+      --affirmative "Log in" --negative Keep --default=false || rc=$?
+    [[ $rc -ne 130 ]] || return 1
+    [[ $rc -eq 0 ]] || return 0
+  fi
+  key_hint "$1"
+  say "ai: opencode keeps the key in its own login; patina never sees it"
+  opencode auth login --provider "$1" || true
+  ai_logged_in opencode "$1"
+}
+
+# GET /models at your own API's address and under its /v1, with the key on curl's
+# standard input, not its command line, which other users can see. Sets endpoint_step's
+# models (the chat models' names, from the first address that lists any), found (that
+# address, else the first that answered 2xx) and codes (each answer's HTTP status, 000
+# for none). probe <url> [<key>]
+probe() {
+  local try code body
+  models="" found="" codes=""
+  body="$(mktemp)"
+  for try in "$1" "$1/v1"; do
+    [[ "$try" != "$1/v1" || "$1" != */v1 ]] || continue
+    code="$(curl -sS -m 15 -o "$body" -w '%{http_code}' -H @- "$try/models" \
+      <<< "Authorization: Bearer ${2:-none}" 2> /dev/null)" || true
+    codes+=" ${code:-000}"
+    [[ "$code" == 2* ]] || continue
+    found="${found:-$try}"
+    models="$(yq eval -p json '.data[] | select((.modality // "chat") == "chat") | .id' \
+      "$body" 2> /dev/null)" || models=""
+    if [[ -n "$models" ]]; then
+      found="$try"
+      break
+    fi
+  done
+  rm -f "$body"
+}
+
 # Your own OpenAI-compatible API: its address, its key and a model from the list it
 # gives (GET /models, at the address or under its /v1), typed in when it gives none.
 # The list holds its chat models where it says which (a `modality`, as some servers
 # give), and each line is a model's name whole: a name may hold spaces ("Qwen 3.8 27B").
 # The key goes to a file only the user can read, which opencode's entry names, or to
 # Hermes' own .env; a server without keys gets "none", which it ignores. The address and
-# the model go to the state directory, where patina install finds them. Each question
-# goes one back with Ctrl+C; the first fails, back to the providers. endpoint_step <agent>
+# the model go to the state directory, where patina install finds them. An address
+# without https:// gets it, and one where no API answers is said before the key is
+# asked. Each question goes one back with Ctrl+C; the first fails, back to the
+# providers. endpoint_step <agent>
 endpoint_step() {
-  local url="" key models="" model="" try step=url now line body code codes
+  local url="" key models="" found="" model="" step=url now line codes
   local -a lines
   while true; do
     case "$step" in
@@ -233,48 +315,49 @@ endpoint_step() {
           --placeholder "https://ai.example.com/v1" \
           --value "${url:-$(yq eval '.url // ""' "$PATINA_STATE/ai-endpoint.yaml" 2> /dev/null || true)}")" || return 1
         url="${url%/}"
-        if [[ ! "$url" =~ ^https?://[^/]+ ]]; then
-          warn "an address starts with https:// or http://, not '$url'"
+        if [[ -z "$url" ]]; then
+          warn "ai: no address entered; type it, or Ctrl+C: Back"
+          continue
+        fi
+        [[ "$url" == *://* ]] || url="https://$url"
+        if [[ ! "$url" =~ ^https?://[^/[:space:]]+ ]]; then
+          warn "ai: '$url' is no web address; type one such as https://ai.example.com/v1"
+          continue
+        fi
+        # Without a key: an API answers /models with 401 or 403 where it wants one, and
+        # with its list where it does not; a website that is no API answers 404, at the
+        # address and under /v1 alike.
+        probe "$url"
+        if [[ "$codes" =~ ^( 000)+$ ]]; then
+          warn "ai: nothing answers at $url; check the address"
+          continue
+        fi
+        if [[ -z "$found" && ! "$codes" =~ (401|403) ]]; then
+          warn "ai: no OpenAI-compatible API at $url (/models: HTTP$codes); it often ends in /v1"
           continue
         fi
         step=key
         ;;
       key)
-        if ! key="$(gum input --password --header "Its API key (empty for a server without one) · Ctrl+C: Back" \
+        if ! key="$(gum input --password --header "Its API key (kept readable by you only; empty for a server without one) · Ctrl+C: Back" \
             --placeholder "paste it here")"; then
           step=url
           continue
         fi
         [[ -n "$key" ]] || key=none
-        models=""
-        codes=""
-        body="$(mktemp)"
-        for try in "$url" "$url/v1"; do
-          [[ "$try" != "$url/v1" || "$url" != */v1 ]] || continue
-          # The key on curl's standard input, not its command line, which other users can
-          # see. The status tells a refused key (401, 403) and no answer at all (000)
-          # from a server that answers without a list.
-          code="$(curl -sS -m 15 -o "$body" -w '%{http_code}' -H @- "$try/models" \
-            <<< "Authorization: Bearer $key" 2> /dev/null)" || true
-          codes+=" ${code:-000}"
-          [[ "$code" == 2* ]] || continue
-          models="$(yq eval -p json '.data[] | select((.modality // "chat") == "chat") | .id' \
-            "$body" 2> /dev/null)" || models=""
-          if [[ -n "$models" ]]; then
-            url="$try"
-            break
-          fi
-        done
-        rm -f "$body"
+        # The status tells a refused key (401, 403) from a server that answers without
+        # a list.
+        probe "$url" "$key"
         if [[ -z "$models" && "$codes" =~ (401|403) ]]; then
           warn "ai: $url refused this key (HTTP ${BASH_REMATCH[1]}); enter it again"
           continue
         fi
-        if [[ -z "$models" && "$codes" =~ ^( 000)+$ ]]; then
-          warn "ai: no API answers at $url; check the address"
+        if [[ -z "$found" ]]; then
+          warn "ai: $url gave no answer with this key (HTTP$codes); check the address"
           step=url
           continue
         fi
+        url="$found"
         step=model
         ;;
       model)
@@ -292,7 +375,11 @@ endpoint_step() {
           fi
         else
           say "ai: $url gave no list of models; type the model's name"
-          model="$(gum input --header "The model's name · Ctrl+C: Back" --placeholder "as the API names it")" && break
+          if model="$(gum input --header "The model's name · Ctrl+C: Back" --placeholder "as the API names it")"; then
+            [[ -z "$model" ]] || break
+            warn "ai: no name entered; type the model's name, or Ctrl+C: Back"
+            continue
+          fi
         fi
         step=key
         ;;
@@ -311,21 +398,52 @@ endpoint_step() {
   say "ai: your own API at $url, $model"
 }
 
-# After the install: opencode's own login to the provider (it keeps the key, patina
-# never sees it), and kortex stopped, so the next `ai` starts the agent with the new
-# provider: its server read the configuration when it started. after_install <agent>
+# After the install: opencode's own login to the provider where opencode came with this
+# install (provider_step logged in where it was there already), and kortex stopped, so
+# the next request starts the agent with the new provider: its server read the
+# configuration when it started. after_install <agent>
 after_install() {
-  if [[ "$1" == opencode && "$(provider_login "$provider")" == key ]]; then
-    if ! ai_logged_in opencode "$provider" ||
-        gum confirm "opencode is logged in to $provider. Log in again?" --affirmative "Log in" --negative Keep --default=false; then
-      say "ai: log in to $provider; opencode keeps the key, patina never sees it"
-      opencode auth login --provider "$provider" || say "ai: not logged in; patina ai login tries again"
-    fi
+  if [[ "$1" == opencode && "$(provider_login "$provider")" == key ]] && ! ai_logged_in opencode "$provider"; then
+    opencode_login "$provider" || say "ai: not logged in yet; patina ai login tries again"
   fi
-  if pkill -TERM -u "$(id -u)" -f kortex/kortex.py; then
-    say "kortex: the next ai starts $1 with $provider"
+  if restart_kortex; then
+    say "kortex: the next request starts $1 with $(provider_name "$provider")"
   fi
   status
+}
+
+# Whether the agent kortex started is at work on a request: opencode's server, which
+# kortex starts on a port of its command line with its own password
+# (~/.config/kortex/password), says per conversation whether it is busy. The password
+# goes to curl on its standard input.
+agent_busy() {
+  local port password
+  port="$(pgrep -u "$(id -u)" -af 'opencode serve --hostname 127.0.0.1 --port' |
+    sed -n 's/.* --port \([0-9][0-9]*\).*/\1/p' | head -n 1)" || true
+  [[ -n "$port" ]] || return 1
+  password="$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/kortex/password" 2> /dev/null)" || return 1
+  curl -fsS -m 5 -K - "http://127.0.0.1:$port/session/status" <<< "user = \"opencode:$password\"" 2> /dev/null |
+    yq -p json -e '[.[] | select(.type != "idle")] | length > 0' > /dev/null 2>&1
+}
+
+# kortex stopped, so the next request starts opencode with what changed; D-Bus starts
+# kortex again then. A request opencode is at work on is waited for first on a terminal:
+# stopping kortex then lost its answer without a word. Ctrl+C leaves it running, and so
+# does no terminal; it gets the change at its next start. Hermes' gateway kortex
+# restarts itself once its configuration changed and no request runs. Fails when kortex
+# was left running.
+restart_kortex() {
+  pgrep -u "$(id -u)" -f kortex/kortex.py > /dev/null || return 0
+  [[ "$(current_agent)" != hermes ]] || return 0
+  if agent_busy; then
+    [[ -t 0 && -t 1 ]] || return 1
+    say "kortex: waiting for the agent's answer first (Ctrl+C: leave it)"
+    while agent_busy; do
+      sleep 2
+    done
+    sleep 5   # for kortex to show the answer: opencode says idle a moment before it is complete
+  fi
+  pkill -TERM -u "$(id -u)" -f kortex/kortex.py || true
 }
 
 # The cloud agent's provider and its key, on a terminal: the questions, the install
@@ -342,13 +460,14 @@ login() {
   esac
   agent="$(current_agent)"
   provider_step "$agent" || exit 0
-  PATINA_AI=cloud PATINA_AI_AGENT="$agent" PATINA_AI_PROVIDER="$provider" \
+  PATINA_AI=cloud PATINA_AI_AGENT="$agent" PATINA_AI_PROVIDER="$provider" PATINA_AI_LOGIN=after \
     "$PATINA_PATH/bin/patina-install" --bundles "$(ai_bundle cloud "$agent")"
   after_install "$agent"
 }
 
 off() {
-  local b theme
+  local b theme list
+  local -a kept=()
   [[ "$(cat "$PATINA_STATE/ai" 2> /dev/null || echo none)" != none ]] || { status; return; }
   echo none > "$PATINA_STATE/ai"
   # The record keeps every bundle installed so far; the AI ones leave it, so the
@@ -362,7 +481,17 @@ off() {
   if theme="$(current_theme)"; then
     "$PATINA_PATH/bin/patina-theme" set "$theme"
   fi
-  say "ai: the agent, kortex and Ollama stay installed; patina ai on brings it back"
+  # What stays: only what this machine has.
+  ! command -v opencode > /dev/null || kept+=(opencode)
+  ! command -v hermes > /dev/null || kept+=("Hermes Agent")
+  [[ ! -f "${XDG_DATA_HOME:-$HOME/.local/share}/kortex/kortex.py" ]] || kept+=(kortex)
+  ! command -v ollama > /dev/null || kept+=(Ollama)
+  if [[ ${#kept[@]} -gt 0 ]]; then
+    printf -v list '%s, ' "${kept[@]}"
+    list="${list%, }"
+    [[ "$list" != *", "* ]] || list="${list%, *} and ${list##*, }"
+    say "ai: $list stay installed; patina ai on brings the agent back"
+  fi
   if command -v ollama > /dev/null; then
     say "ai: Ollama and its models take the most space; the README's AI section says how to remove them"
   fi
@@ -451,8 +580,11 @@ connect() {
     [[ -n "$key" ]] || continue   # yq prints an empty line for a preset without questions
     read -rp "$prompt: " value < /dev/tty
     [[ -n "$value" ]] || die "$name: nothing entered, nothing changed"
-    [[ "$key" != HOST || "$value" =~ ^https?://[^[:space:]/]+ ]] ||
-      die "$name: an address starts with https://, nothing changed"
+    if [[ "$key" == HOST ]]; then
+      value="${value%/}"
+      [[ "$value" == *://* ]] || value="https://$value"
+      [[ "$value" =~ ^https?://[^[:space:]/]+$ ]] || die "$name: '$value' is no web address, nothing changed"
+    fi
     fills+=("\${$key}" "$value")
   done < <(yq eval ".\"$name\".ask // [] | .[] | [.key, .prompt] | @tsv" "$services")
   if [[ "$sign_in" == token ]]; then
@@ -582,11 +714,30 @@ gate() {
     yq eval -n -o=json -I=0 '{"action": "approve", "message": strenv(M), "rule_key": strenv(K)}'
 }
 
+# The file in an editor a newcomer can use, which says how to save first: the user's own
+# (VISUAL, EDITOR) where they set one, else KWrite in a desktop session (the desktop
+# bundle has it), else nano. Debian's sensible-editor asked a numbered question first,
+# or opened Neovim. edit <file>
+edit() {
+  if [[ -n "${VISUAL:-${EDITOR:-}}" ]]; then
+    "${VISUAL:-$EDITOR}" "$1"
+  elif [[ -n "${WAYLAND_DISPLAY:-${DISPLAY:-}}" ]] && command -v kwrite > /dev/null; then
+    say "ai: KWrite opens your instructions; Ctrl+S saves, and closing its window goes on here"
+    kwrite "$1" > /dev/null 2>&1 || true
+  elif command -v nano > /dev/null; then
+    say "ai: nano opens your instructions: Ctrl+O and Enter save, Ctrl+X closes it"
+    sleep 2
+    nano "$1"
+  else
+    sensible-editor "$1"
+  fi
+}
+
 # Your own instructions for the agent, in addition to patina's (own_rules_file): on a
-# terminal the file opens in the editor first, a short note in it the first time; then
-# the agent this machine has gets them (opencode the file's name, Hermes its text), and
-# kortex stops, so the next request starts the agent with them. kortex's "Edit the
-# agent's instructions" runs this in a terminal.
+# terminal the file opens in an editor first (edit), a short note in it the first time;
+# then the agent this machine has gets them (opencode the file's name, Hermes its text),
+# and kortex stops, so the next request starts the agent with them (restart_kortex).
+# kortex's "Edit the agent's instructions" runs this in a terminal.
 prompt() {
   local own before changed=0
   own="$(own_rules_file)"
@@ -599,11 +750,7 @@ EOT
   fi
   before="$(cksum < "$own")"
   if [[ -t 0 && -t 1 ]]; then
-    if command -v sensible-editor > /dev/null; then
-      sensible-editor "$own"
-    else
-      "${VISUAL:-${EDITOR:-nano}}" "$own"
-    fi
+    edit "$own"
   fi
   [[ "$(cksum < "$own")" == "$before" ]] || changed=1
   if [[ "$(current_ai)" == none ]]; then
@@ -622,25 +769,31 @@ EOT
     fi
   fi
   if [[ "$changed" == 1 ]]; then
-    pkill -TERM -u "$(id -u)" -f kortex/kortex.py || true
-    say "ai: the agent follows your instructions ($own) from the next request"
+    if restart_kortex; then
+      say "ai: the agent follows your instructions ($own) from the next request"
+    else
+      say "ai: the agent is at work on a request; it follows your instructions ($own) from"
+      say "ai: its next start, after a quarter of an hour without requests"
+    fi
   else
     say "ai: your instructions ($own) are unchanged"
   fi
 }
 
-# One yes for the rest of a task: kortex's own setting, a file it reads at each
-# question, so nothing restarts. Off unless the user turns it on (CLAUDE.md): opencode
-# asks before every change, and a yes that covers steps not seen yet is theirs to give.
+# "Allow the rest of this task", one yes for the rest of a request: kortex's own
+# setting, a file it reads at each question, so nothing restarts. Off unless the user
+# turns it on (CLAUDE.md): opencode asks before every change, and a yes that covers
+# steps not seen yet is theirs to give. The command keeps its short name, handover.
 handover() {
-  local file="${XDG_CONFIG_HOME:-$HOME/.config}/kortex/handover" now=off kortex version
-  [[ "$(cat "$file" 2> /dev/null || true)" != on ]] || now=on
+  local now kortex version
+  now="$(handover_now)"
   case "${1:-}" in
     "")
       if [[ "$now" == on ]]; then
-        say "ai: handover is on; a question has \"Allow the rest of this task\". patina ai handover off turns it off"
+        say "ai: \"Allow the rest of this task\" is on; patina ai handover off turns it off"
       else
-        say "ai: handover is off; every change asks. patina ai handover on, and patina ai --help says what it means"
+        say "ai: \"Allow the rest of this task\" is off: every change asks. patina ai handover on"
+        say "ai: turns it on, and patina ai --help says what that means"
       fi
       return 0
       ;;
@@ -648,16 +801,20 @@ handover() {
     *) die "handover takes on or off, not '$1'" ;;
   esac
   if [[ "$now" != "$1" ]]; then
-    mkdir -p "$(dirname "$file")"
-    echo "$1" > "$file"
+    mkdir -p "$(dirname "$handover_file")"
+    echo "$1" > "$handover_file"
   fi
   if [[ "$1" == off ]]; then
-    say "ai: handover is off; every change asks"
+    say "ai: \"Allow the rest of this task\" is off: every change asks"
     return 0
   fi
-  say "ai: handover is on. A question in the command palette now has \"Allow the rest of this task\":"
-  say "ai: the later changes of that one request run without asking, and the answer lists them."
-  say "ai: What deletes, runs as root, installs or changes a service still asks every time."
+  # Lines that fit 82 columns after "patina: ai: ".
+  say "ai: \"Allow the rest of this task\" is on. A question in the command"
+  say "ai: palette now has it: the later changes of that one request run"
+  say "ai: without asking, and the answer lists them. Deleting, running as"
+  say "ai: root, installing software, changing or enabling a service"
+  say "ai: (systemctl, timers, cron) and a connected service's changes"
+  say "ai: still ask every time."
   if [[ "$(cat "$PATINA_STATE/ai-agent" 2> /dev/null || echo opencode)" == hermes ]]; then
     say "ai: Hermes has no such answer: it asks only before what it counts as dangerous"
   fi

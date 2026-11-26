@@ -12,7 +12,10 @@ Files, from `templates/`, each named after the theme:
 
 - a Plasma colour scheme, `~/.local/share/color-schemes/patina-<theme>.colors`, with
   the theme's accent (`accent`, `base0E` by default) as the accent, selection and
-  focus colour and its second colour (`accent_alt`) for hover. Its colours are also
+  focus colour and its second colour (`accent_alt`) for hover. Its Complementary
+  colours (`templates/complementary.colors`), which the lock and logout screens draw
+  in, come from the dark palette in either mode, as Breeze Light keeps its own dark:
+  their clock has a black shadow made for light words. Its colours are also
   copied key by key into `kdeglobals` (below), where Plasma, KWin's title bars and
   every KDE app read them
 - for an icon theme named in `icons.yaml` (Papirus, aurora's), an icon theme of its
@@ -169,7 +172,9 @@ Files, from `templates/`, each named after the theme:
   instead: kortex's `Panel`, the agent's own view of the current conversation in a
   terminal docked at the screen's right edge, full height and a fifth of the width
   (480 to 720 px), above other windows, so the user works on beside it; the kitty
-  profile when kortex has no `Panel`
+  profile when kortex has no `Panel`. That one is named "What the agent does", as
+  `patina keys` says of its chord. Either has a glyph of its own (`patina-agent` in
+  `icons.yaml`, a pane on the right), so it is not taken for kitty
 - with an AI bundle and kortex installed: `~/.local/share/applications/patina-ask.desktop`
   (from `templates/ask.desktop`), "Ask kortex" whichever agent kortex talks to,
   first in the start menu's AI folder and behind Meta+A (the `ask` action):
@@ -215,6 +220,10 @@ Files, from `templates/`, each named after the theme:
   so, which the user's data directory puts before the system's; the menu and its search
   skip it, and it still starts when asked. A copy no longer listed goes again. Konqueror
   is among them (`konqbrowser.desktop`, its one visible entry): kde-baseapps recommends it
+- the apps the start menu names otherwise (`start_menu.names`): a copy of each one's
+  entry in the same place, its `Name` replaced and its translations dropped, so the
+  menu, its search and the favourites call Nextcloud's package of Euro-Office by the
+  name patina gives it; a copy no longer listed goes again
 - the default web browser (`browser` in `defaults/settings.yaml`, Firefox ESR):
   `BrowserApplication` in `kdeglobals` and the default for `x-scheme-handler/http`,
   `x-scheme-handler/https` and `text/html` in `mimeapps.list`, as System Settings'
@@ -236,7 +245,9 @@ there, so a run over SSH or in the screenshot session finds them unchanged as we
   look-and-feel package, widget style, icon theme, and kitty as the terminal Plasma
   opens for others (`TerminalApplication`, when a bundle brought kitty: Dolphin's "Open
   Terminal Here", kortex's "Open in terminal"); `kcminputrc` the cursor theme,
-  `plasmarc` the desktop theme, `kscreenlockerrc` the wallpaper for the lock screen,
+  `plasmarc` the desktop theme, `kscreenlockerrc` the wallpaper for the lock screen
+  (the theme's own first wallpaper in either mode, the login screen's, so the lock
+  screen stays dark as that one does),
   `kcm-about-distrorc` the variant About this System shows under Debian's name (patina,
   and `patina credits` for who made it)
 - the speed settings of `defaults/settings.yaml`: `AnimationDurationFactor`, KWin's
@@ -328,7 +339,8 @@ greeting and btop; `welcome.png`, patina's welcome beside btop as a first login 
 it (`patina welcome --login`, turned on for that grab alone); when `PATINA_SHOT_ASK` holds a request and an AI bundle installed
 kortex, `command-palette.png` on the empty desktop: what Enter on kortex's "Ask the
 agent" does (its `Run` over D-Bus), KRunner opened by kortex on the conversation,
-grabbed once the agent asks for an action (Allow once, Always, Deny); and
+grabbed once the agent asks for an action (Allow once, Always, Deny) or has
+answered; and
 `start-menu.png`, the start menu opened as Meta opens it (`activateLauncherMenu` over
 D-Bus) after `patina theme mode light`, the mode the desktop had set again afterwards.
 It is the X11 session, not Wayland, because KWin's Wayland backend needs a DRM render
@@ -339,7 +351,11 @@ scripted demo model and `PATINA_SHOT_ASK` set to `install photocraft`, and
 `docs/screenshots/` keeps its pictures, copied from the workflow's artifact unchanged
 (`desktop-amd64.png`, `start-menu-amd64.png`, `command-palette-amd64.png`).
 `PATINA_SHOT_SIZE` sets the screen (1920x1080 by default); the session's output lands
-in `<dir>/session.log`.
+in `<dir>/session.log`. The screen locker's timeout is off for the run, and a grab
+that shows the lock screen fails it, as does a `patina theme set` or `theme mode`
+that fails inside the session or a script error of the renderer in the log; the
+welcome's "Don't open at login" and the locker's setting are set back as they were.
+The terminal in `desktop.png` is the user's own shell, as a new kitty window opens it.
 
 Tools it calls, all from Debian's archive: `kwriteconfig6`, `kreadconfig6`
 (`libkf6config-bin`, a dependency of every KDE app), `rsvg-convert` (`librsvg2-bin`, in

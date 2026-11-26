@@ -171,6 +171,10 @@ for page in apps more; do
       if [[ "$page" == apps ]] && yq eval -e '.default == true' "$bundle" > /dev/null 2>&1; then
         yq -i ".default = \"$id\"" "$chooser"
       fi
+      # The bundle's own title, as patina install and the welcome name it.
+      TITLE="$(yq eval '.title // ""' "$bundle")" I="$i" \
+        yq -i 'with(select(strenv(TITLE) != ""); .items[env(I)].name = strenv(TITLE))' "$chooser"
+      tpl[BUNDLE_NAME]="$(yq eval ".items[$i].name" "$chooser")"
       tpl[BUNDLE_DETAIL]="$(yq eval '.description' "$bundle")"
       tpl[BUNDLE_COUNT]="$(yq eval '(.packages // [] | length) + (.flatpaks // [] | length) + (.upstream // [] | length)' "$bundle") packages, apps and tools"
     fi

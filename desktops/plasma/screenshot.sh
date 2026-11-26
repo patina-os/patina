@@ -13,9 +13,9 @@ usage() {
 usage: screenshot.sh <dir>
 
 Run as the user the layer is installed for (patina install), on a machine or in a
-container with Plasma: Xvfb, startplasma-x11, scrot, xdotool, kitty, fastfetch, fish,
-btop, dbus-run-session and dbus-send. No display or login is needed. Writes into <dir>:
-  desktop.png          kitty split in two, the greeting beside btop
+container with Plasma: Xvfb, startplasma-x11, scrot, xdotool, kitty, fastfetch, btop,
+dbus-run-session and dbus-send. No display or login is needed. Writes into <dir>:
+  desktop.png          kitty split in two, the greeting in the user's shell beside btop
   welcome.png          patina's welcome beside btop, as a first login opens it
   command-palette.png  KRunner on the agent's answer to PATINA_SHOT_ASK, through
                        kortex, on the empty desktop; only when PATINA_SHOT_ASK is set
@@ -28,7 +28,10 @@ Environment:
   PATINA_SHOT_SIZE     the virtual screen, WIDTHxHEIGHT (default 1920x1080)
   PATINA_SHOT_SETTLE   seconds for the shell, then the terminal, to be drawn (default 25)
   PATINA_SHOT_WAIT     seconds to wait for plasmashell, then for the agent (default 240)
-The session's output lands in <dir>/session.log.
+The session's output lands in <dir>/session.log. It fails when a grab shows the lock
+screen, or when the theme could not be applied in the session (a failed patina theme
+set or theme mode, a script error in the log). The screen locker's timeout is off while
+it runs; it and patina's welcome are set back as they were.
 USAGE
 }
 
@@ -45,11 +48,33 @@ on_bus() {
     org.freedesktop.DBus.NameHasOwner "string:$1" 2> /dev/null | grep -q 'boolean true'
 }
 
-# One grab of the whole screen into <dir>/<name>.png.
+# One grab of the whole screen into <dir>/<name>.png; it fails when the lock screen
+# (kscreenlocker_greet) covers the desktop.
 grab() {
   scrot --overwrite "$1/$2.png"
   [[ -s "$1/$2.png" ]] || { echo "screenshot: scrot wrote nothing to $1/$2.png" >&2; return 1; }
+  if pgrep -u "$(id -u)" -x kscreenlocker_greet > /dev/null; then
+    echo "screenshot: the lock screen covers $1/$2.png" >&2
+    return 1
+  fi
   echo "screenshot: written to $1/$2.png"
+}
+
+# What the session changes for the pictures and sets back at its end: patina's welcome,
+# which a login opens and which would cover the desktop, and the screen locker, whose
+# timeout locked the screen of a run longer than five minutes.
+welcome_off="${XDG_STATE_HOME:-$HOME/.local/state}/patina/welcome-off"
+welcome_was_off=0
+autolock=""
+set_back() {
+  if [[ $welcome_was_off -eq 0 ]]; then
+    rm -f "$welcome_off"
+  fi
+  if [[ -z "$autolock" ]]; then
+    kwriteconfig6 --file kscreenlockerrc --group Daemon --key Autolock --delete
+  else
+    kwriteconfig6 --file kscreenlockerrc --group Daemon --key Autolock "$autolock"
+  fi
 }
 
 # The half that runs under the session bus: it starts the Plasma X11 session on the
@@ -58,7 +83,7 @@ grab() {
 # (XDG_CURRENT_DESKTOP, the bus) and Qt draws on X.
 session() {
   local dir="$1" waited=0 theme session_pid split kitty_pid welcome_pid mode dirs width height
-  local off="${XDG_STATE_HOME:-$HOME/.local/state}/patina/welcome-off"
+  local off="$welcome_off" failed=0
   export XDG_SESSION_TYPE=x11 XDG_CURRENT_DESKTOP=KDE KDE_FULL_SESSION=true \
     KDE_SESSION_VERSION=6 DESKTOP_SESSION=plasmax11 QT_QPA_PLATFORM=xcb
   # The data directories a login gets from flatpak's environment generator, so the apps
@@ -67,9 +92,14 @@ session() {
   [[ -z "$dirs" ]] || export XDG_DATA_DIRS="$dirs"
   # patina's welcome, which a login opens beside btop (bin/patina-welcome), would cover
   # the desktop: it is turned off for this session, as its "Don't open at login" does,
-  # and on again only for its own picture.
+  # and on again only for its own picture. The screen locker locks no screen meanwhile.
+  # Both are set back at the end (set_back).
+  [[ ! -e "$off" ]] || welcome_was_off=1
+  autolock="$(kreadconfig6 --file kscreenlockerrc --group Daemon --key Autolock)"
+  trap 'set_back; jobs -p | xargs -r kill 2> /dev/null || true' EXIT
   mkdir -p "${off%/*}"
   date -u +%FT%TZ > "$off"
+  kwriteconfig6 --file kscreenlockerrc --group Daemon --key Autolock false
   startplasma-x11 &
   session_pid=$!
   until on_bus org.kde.plasmashell; do
@@ -97,7 +127,8 @@ session() {
   # With --layout, as the first install runs it, so the start menu shows patina's
   # favourites in place of the ones Plasma gave the session.
   theme="$("$PATINA_PATH/bin/patina" theme current)"
-  "$PATINA_PATH/bin/patina" theme set "$theme" --layout || true
+  "$PATINA_PATH/bin/patina" theme set "$theme" --layout ||
+    { echo "screenshot: patina theme set failed in the session" >&2; failed=1; }
   sleep 5
   # KDE's Welcome Center stays off (kded5rc, apply.sh); one a Plasma opened all the
   # same would show through the windows.
@@ -105,13 +136,11 @@ session() {
     echo "screenshot: KDE's Welcome Center opened although patina turns it off" >&2
   fi
 
-  # One kitty window split in two: the greeting on the left, btop on the right, its
-  # graphs refreshed four times a second so they fill before the grab. The greeting is
-  # fish's own (fastfetch, desktops/terminal); it asks kitty for its version and reads
-  # the reply itself, so fish waits for kitty to finish its own startup first, or a late
-  # reply lands on the shell's prompt line.
+  # One kitty window split in two: the user's shell with its greeting on the left, as a
+  # new kitty window opens it (desktops/terminal), btop on the right, its graphs
+  # refreshed four times a second so they fill before the grab.
   split="$(mktemp)"
-  printf '%s\n' 'layout splits' "launch fish -C 'sleep 3'" \
+  printf '%s\n' 'layout splits' 'launch' \
     'launch --location=vsplit --bias=58 btop --update 250' > "$split"
   kitty --session "$split" &
   kitty_pid=$!
@@ -142,13 +171,14 @@ session() {
     dbus-send --session --print-reply --reply-timeout=60000 --dest="$kortex" /runner \
       org.kde.krunner1.Run "string:ask"$'\x1f'"$PATINA_SHOT_ASK" string: > /dev/null
     # Done once kortex, which D-Bus started with this session's output, logs that the
-    # agent asks first (the demo model asks to run a command), or the wait is over.
-    # Nothing here asks kortex or KRunner for the conversation: KRunner shows what
-    # kortex's own refresh brought it, as on a desktop.
+    # agent asks first (the demo model asks to run a command), that it answered or
+    # stopped, or the wait is over. Nothing here asks kortex or KRunner for the
+    # conversation: KRunner shows what kortex's own refresh brought it, as on a desktop.
     waited=0
-    until grep -q '^kortex: .* asks first' "$dir/session.log"; do
+    until grep -Eq '^kortex: .*( asks first| answered after | stopped after | did not get the request)' "$dir/session.log"; do
       if (( waited >= wait_s )); then
-        echo "screenshot: the agent asked for nothing within ${wait_s}s; the conversation as it stands" >&2
+        echo "screenshot: the agent neither asked nor answered within ${wait_s}s; the conversation as it stands" >&2
+        failed=1
         break
       fi
       sleep 2
@@ -169,7 +199,8 @@ session() {
   # The start menu in the light mode, opened as Meta opens it; then the mode the desktop
   # had, so a run on a real desktop leaves it as it was.
   mode="$("$PATINA_PATH/bin/patina" theme mode)"
-  "$PATINA_PATH/bin/patina" theme mode light || true
+  "$PATINA_PATH/bin/patina" theme mode light ||
+    { echo "screenshot: patina theme mode light failed in the session" >&2; failed=1; }
   sleep "$settle"
   dbus-send --session --type=method_call --dest=org.kde.plasmashell /PlasmaShell \
     org.kde.PlasmaShell.activateLauncherMenu
@@ -177,7 +208,15 @@ session() {
   grab "$dir" start-menu
   dbus-send --session --type=method_call --dest=org.kde.plasmashell /PlasmaShell \
     org.kde.PlasmaShell.activateLauncherMenu
-  "$PATINA_PATH/bin/patina" theme mode "$mode" || true
+  "$PATINA_PATH/bin/patina" theme mode "$mode" ||
+    { echo "screenshot: patina theme mode $mode failed in the session" >&2; failed=1; }
+  # A script error of the renderer that did not stop it (a part that runs in a
+  # subshell) shows only in the log, as bash's "<script>: line <n>: …".
+  if grep -E '/(desktops/[a-z]+/apply\.sh|bin/patina-[a-z]+|bin/lib\.sh): line [0-9]+: ' "$dir/session.log" >&2; then
+    echo "screenshot: the theme's scripts reported errors in the session (above)" >&2
+    failed=1
+  fi
+  return "$failed"
 }
 
 if [[ "${1:-}" == --session ]]; then
@@ -194,7 +233,7 @@ size="${PATINA_SHOT_SIZE:-1920x1080}"
 [[ "$size" =~ ^([0-9]+)x([0-9]+)$ ]] || { echo "screenshot: PATINA_SHOT_SIZE is not WIDTHxHEIGHT: $size" >&2; exit 64; }
 width="${BASH_REMATCH[1]}"
 height="${BASH_REMATCH[2]}"
-for tool in Xvfb startplasma-x11 scrot xdotool kitty fastfetch fish btop dbus-run-session dbus-send; do
+for tool in Xvfb startplasma-x11 scrot xdotool kitty fastfetch btop dbus-run-session dbus-send kwriteconfig6; do
   command -v "$tool" > /dev/null || { echo "screenshot: $tool missing" >&2; exit 69; }
 done
 if [[ -n "${PATINA_SHOT_ASK:-}" && ! -f "${XDG_DATA_HOME:-$HOME/.local/share}/krunner/dbusplugins/kortex.desktop" ]]; then

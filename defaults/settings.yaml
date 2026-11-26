@@ -25,8 +25,9 @@ ai:
     small_hint: "small, more mistakes"
     small_note: >-
       is a small model: it gets commands and facts wrong more often than a large one,
-      so read what it proposes before you allow it (ministral-3:14b, from 20 GB of
-      memory, or a cloud provider errs less)
+      so read what it proposes before you allow it. A larger model errs less
+      (ministral-3:14b, from 20 GB of memory; patina install's model question offers
+      the ones that fit), and so does a cloud provider
     models:
       - model: "nemotron-3.5-bolt:e4b"
         min_memory_gb: 16
@@ -48,21 +49,26 @@ ai:
   # and its key, and a model from the list that API gives. Hermes offers the ones with a
   # `hermes` entry: its model entry and the key it reads from its .env. A US service
   # says so in its name, and `note` is what `patina ai login` and `patina ai` say once
-  # it is picked.
+  # it is picked. `key_url` is where a key is made, which `patina ai login` names before
+  # it asks for the key. patina names a provider by its `name` up to " (" or " · ".
   cloud:
     providers:
       - id: mistral
         name: "Mistral (EU · France)"
         model: "mistral/mistral-large-latest"
+        key_url: https://console.mistral.ai/api-keys
         # Hermes' model entry and the key it reads from its .env: Mistral through Hermes'
         # `custom` provider, Mistral's OpenAI-compatible API
         hermes:
           key: MISTRAL_API_KEY
           model: {provider: custom, default: mistral-large-latest,
                   base_url: "https://api.mistral.ai/v1", api_key: "${MISTRAL_API_KEY}"}
-      - {id: scaleway, name: "Scaleway (EU · France)", model: "scaleway/mistral-medium-3.5-128b"}
-      - {id: ovhcloud, name: "OVHcloud (EU · France)", model: "ovhcloud/qwen3.5-397b-a17b"}
-      - {id: stackit, name: "STACKIT (EU · Germany)", model: "stackit/openai/gpt-oss-120b"}
+      - {id: scaleway, name: "Scaleway (EU · France)", model: "scaleway/mistral-medium-3.5-128b",
+         key_url: "https://console.scaleway.com/iam/api-keys"}
+      - {id: ovhcloud, name: "OVHcloud (EU · France)", model: "ovhcloud/qwen3.5-397b-a17b",
+         key_url: "https://help.ovhcloud.com/csm/en-public-cloud-ai-endpoints-getting-started"}
+      - {id: stackit, name: "STACKIT (EU · Germany)", model: "stackit/openai/gpt-oss-120b",
+         key_url: "https://docs.stackit.cloud/products/data-and-ai/ai-model-serving/"}
       # Your own: any OpenAI-compatible API (a company's, LiteLLM, vLLM, LM Studio). Its
       # address, key and model are what `patina ai login` asked, in the state directory
       # (ai-endpoint.yaml): opencode gets the provider `custom` of its file, Hermes its
@@ -89,11 +95,13 @@ ai:
       - id: anthropic
         name: "Anthropic (US, leaves the EU)"
         model: "anthropic/claude-sonnet-5-5"
+        key_url: https://platform.claude.com/settings/keys
         note: "Anthropic is a US service: what you ask leaves the EU and falls under US law."
         hermes: {key: ANTHROPIC_API_KEY, model: {provider: anthropic, default: claude-sonnet-5-5}}
       - id: openai
         name: "OpenAI (US, leaves the EU)"
         model: "openai/gpt-5.5"
+        key_url: https://platform.openai.com/api-keys
         note: "OpenAI is a US service: what you ask leaves the EU and falls under US law."
         hermes: {key: OPENAI_API_KEY, model: {provider: openai-api, default: gpt-5.5}}
 # The speed settings (docs/roadmap.md, Phase 2), after what CachyOS sets on Plasma.
@@ -183,3 +191,5 @@ start_menu:
     - org.kde.plasma-welcome.desktop                   # KDE's Welcome Center (patina welcome)
     - konqbrowser.desktop                              # Konqueror, which kde-baseapps recommends
                                                        # (Firefox ESR is the browser)
+  names:                     # apps the menu, its search and the favourites call otherwise
+    nextcloud-office-nextcloudoffice.desktop: Euro-Office   # its package: "Nextcloud Office"

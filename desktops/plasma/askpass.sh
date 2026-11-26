@@ -15,6 +15,24 @@ set -euo pipefail
 # and then the dialog opens at once, since the user is at it; without notify-send or a
 # notification server it opens at once too. kdialog draws in the theme's Plasma colours
 # and fonts, with patina's mark as its window icon.
+#
+# Both name the command: sudo starts this, so its parent's command line is the one that
+# asks (sudo -A and its options left out), escaped for the markup both read and cut at
+# 200 characters. Who asks, the agent or a command of patina's, it does not know.
+command=()
+if [[ -r "/proc/$PPID/cmdline" ]]; then
+  mapfile -d '' -t command < "/proc/$PPID/cmdline"
+  [[ "${command[0]:-}" != *sudo ]] || command=("${command[@]:1}")
+  while [[ "${command[0]:-}" == -* ]]; do
+    command=("${command[@]:1}")
+  done
+fi
+what="${command[*]:-a command}"
+[[ ${#what} -le 200 ]] || what="${what:0:199}…"
+# The replacements quoted: bash 5.2 reads an unquoted & in them as the match.
+what="${what//&/"&amp;"}"
+what="${what//</"&lt;"}"
+what="${what//>/"&gt;"}"
 mark="${XDG_STATE_HOME:-$HOME/.local/state}/patina/launcher.svg"
 last="${XDG_RUNTIME_DIR:-}/patina-askpass"
 icon=()
@@ -24,10 +42,10 @@ if [[ -n "${XDG_RUNTIME_DIR:-}" && -f "$last" && $(($(date +%s) - $(stat -c %Y "
 elif command -v notify-send > /dev/null &&
   picked="$(notify-send --app-name=patina "${icon[@]}" --urgency=critical --expire-time=0 \
     --action=default="Enter password" --action=enter="Enter password" --action=cancel=Cancel \
-    "Administrator password" "A command you allowed needs administrator rights.")"; then
+    "Administrator password" "This needs administrator rights: <b>$what</b>")"; then
   [[ "$picked" == default || "$picked" == enter ]] || exit 1   # Cancel, or closed
   kill -0 "$PPID" 2> /dev/null || exit 1   # the command was stopped meanwhile
 fi
 kdialog "${icon[@]}" --title "patina · administrator password" --password \
-  "<b>A command you allowed needs administrator rights.</b><br>Enter your password, or cancel if you did not expect this."
+  "This needs administrator rights:<br><b>$what</b><br><br>Enter your password, or cancel if you did not expect it."
 [[ -z "${XDG_RUNTIME_DIR:-}" ]] || touch "$last"

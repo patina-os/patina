@@ -158,7 +158,7 @@ packs. Audience: developers and privacy-minded users in the EU.
   rendered at apply time, licensed with the repository).
   Dark is the default mode; aurora carries a light mode as data (a `light:` block),
   switched with `patina theme mode`, and the boot menu, the installer, the splash and
-  the login screen stay dark in either. datum (graphite, ice, coral) stays as an
+  the login screen and the lock screen stay dark in either. datum (graphite, ice, coral) stays as an
   option; amethyst, the first theme, was removed in October 2026. No other third-party artwork. Artwork drawn by a
   script is committed as the SVG it produced, never with the script. The `agent`
   shortcut opens opencode by default (`defaults/settings.yaml`), the free one of the
@@ -261,7 +261,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   may follow, and KeePassXC as the desktop's password store in KWallet's place waits
   for a test on real hardware, since every login KWallet holds is asked for again).
   Its window is as large as its halves need, in characters, which the desktop's size
-  for new windows leaves alone, so btop always draws (November 2026). The AI and app
+  for new windows leaves alone, so btop always draws (November 2026); a screen too
+  small for both halves gets a window that fits it, the welcome alone. The AI and app
   steps run `patina ai` or `patina install`, which ask as always, and a shell takes the
   welcome's half when it ends; btop is in the minimal bundle for it (November 2026).
   Every list of the welcome, of `patina ai` and of `patina install` goes one question
@@ -272,7 +273,8 @@ packs. Audience: developers and privacy-minded users in the EU.
   list either on real hardware; Ctrl+C is a key in gum's raw mode, and a line under
   each list's title names it beside ↑↓ and Enter (November 2026). pick preselects
   nothing, so what the machine has is marked "(now)" and the install's bundles are a
-  list whose lines Enter turns on and off. The welcome shows the Nextcloud and KeePassXC
+  list whose lines Enter turns on and off, an installed one a fixed line, since nothing
+  installed is removed. The welcome shows the Nextcloud and KeePassXC
   steps on every machine and installs the client first where the desktop bundle is
   missing, and names the patina version running under its wordmark; every line of a
   list is one line, cut with "…" where the terminal is narrower (November 2026).

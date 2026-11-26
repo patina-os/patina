@@ -52,6 +52,11 @@ build() {
   local args c=tr-build
   mapfile -t args < <(run_args)
   docker rm -f "$c" > /dev/null 2>&1 || true
+  # Docker Hub limits anonymous pulls (429); Google's mirror of it serves the same image.
+  if ! docker image inspect debian:13 > /dev/null 2>&1 && ! docker pull -q debian:13 > /dev/null; then
+    docker pull -q mirror.gcr.io/library/debian:13 > /dev/null
+    docker tag mirror.gcr.io/library/debian:13 debian:13
+  fi
   docker run -d --name "$c" "${args[@]}" debian:13 sleep infinity > /dev/null
   docker exec -i "$c" bash -euo pipefail << 'IN'
 # docker exec starts with umask 0000, which leaves files world-writable: sudo ignores a
