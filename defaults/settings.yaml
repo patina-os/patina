@@ -9,6 +9,7 @@ fonts:                       # font names only; the desktop bundle installs the 
   monospace: JetBrains Mono  # terminals and details (versions, hostnames, progress)
   display: Sora              # the wordmark, and the headlines of the installer's slides
 agent: opencode              # what the `agent` keybinding opens (needs an AI or the agents bundle)
+browser: firefox-esr.desktop # the default web browser while none or Debian's Konqueror is set
 # The AI agent: the question `patina install` asks after the bundles, and the page of
 # the image's installer. local and cloud are the bundles manifest/bundles/ai-*.yaml name
 # with their `ai` key; the answer is kept in the state directory, PATINA_AI overrides.
@@ -121,8 +122,7 @@ panel:
                              # in the middle, as on Windows 11 (its menu then opens left of the
                              # centre, but for start_menu.position center) | plasma: the stock bar
   floating: false            # false: along the screen's edge, always; true: Plasma's floating bar
-  pinned: [browser, terminal]   # actions of keybindings.yaml pinned to the bar, in order; the
-                             # file manager is on Meta+E and in the menu, not here
+  pinned: [files, browser, terminal]   # actions of keybindings.yaml pinned to the bar, in order
 # The command palette (KRunner on Plasma, the AI agent in it through kortex).
 command_palette:
   position: center           # where it opens: center of the screen | top (Plasma's own)
@@ -136,7 +136,7 @@ start_menu:
                              # the middle | center: in the middle of the screen's width with the
                              # grouped bar too, moved there by a KWin script of patina's own
   grain: 6                   # percent of fine noise on the start menu and the other popups; 0 none
-  glass: 72                  # percent opacity of the popups' background where KWin blurs behind
+  glass: 60                  # percent opacity of the popups' background where KWin blurs behind
                              # it (Breeze: 85): frosted, the wallpaper's colours glow through and
                              # its shapes do not; lower lets more of it through
   bands: 0                   # percent opacity of the band Breeze lays over the glass at the top and
@@ -175,7 +175,11 @@ start_menu:
         - org.keepassxc.KeePassXC.desktop
   favorites:
     - kitty.desktop
+    - firefox-esr.desktop
+    - org.kde.dolphin.desktop
     - dev.zed.Zed.desktop                              # the headstart bundle
     - patina-artcraft-launcher.desktop                 # the ArtCraft Launcher (the artcraft bundle)
   hidden:                    # apps kept out of the menu and its search; they start when asked
     - org.kde.plasma-welcome.desktop                   # KDE's Welcome Center (patina welcome)
+    - konqbrowser.desktop                              # Konqueror, which kde-baseapps recommends
+                                                       # (Firefox ESR is the browser)
